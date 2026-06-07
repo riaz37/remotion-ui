@@ -17,7 +17,7 @@
 
 ### Changed
 
-- **Intro** composition uses `premountFor` on sequences per Remotion docs
+- **Intro** composition uses `<Sequence>` timing per Remotion docs
 
 ## 0.2.0
 
