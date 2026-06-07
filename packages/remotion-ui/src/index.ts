@@ -3,6 +3,7 @@ import { addCommand } from "./commands/add.js";
 import { buildCommand } from "./commands/build.js";
 import { diffCommand } from "./commands/diff.js";
 import { initCommand } from "./commands/init.js";
+import { updateCommand } from "./commands/update.js";
 import { searchCommand } from "./commands/search.js";
 import { viewCommand } from "./commands/view.js";
 
@@ -94,6 +95,31 @@ program
     } catch (error) {
       console.error(
         error instanceof Error ? error.message : "View failed",
+      );
+      process.exit(1);
+    }
+  });
+
+program
+  .command("update")
+  .description("Update installed component(s) from registry (overwrites files)")
+  .argument("[components...]", "component names to update")
+  .option(
+    "-r, --registry-url <url>",
+    "Registry base URL or local path to public/r/",
+  )
+  .option("--preset <preset>", "Registry preset", "default")
+  .option("-y, --yes", "Skip confirmation prompts")
+  .action(async (components: string[], options) => {
+    try {
+      await updateCommand(components, {
+        registryUrl: options.registryUrl,
+        preset: options.preset,
+        yes: options.yes,
+      });
+    } catch (error) {
+      console.error(
+        error instanceof Error ? error.message : "Failed to update components",
       );
       process.exit(1);
     }

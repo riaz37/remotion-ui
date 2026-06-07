@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
+import { exitProgress } from "@/remotion/lib/timing";
 
 export type FadeOutProps = {
   children: ReactNode;
@@ -13,16 +14,8 @@ export const FadeOut: React.FC<FadeOutProps> = ({
   delayInFrames = 0,
 }) => {
   const frame = useCurrentFrame();
-
-  const opacity = interpolate(
-    frame,
-    [delayInFrames, delayInFrames + durationInFrames],
-    [1, 0],
-    {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    },
-  );
+  const progress = exitProgress(frame, delayInFrames, durationInFrames);
+  const opacity = interpolate(progress, [0, 1], [1, 0]);
 
   return (
     <AbsoluteFill style={{ opacity }}>

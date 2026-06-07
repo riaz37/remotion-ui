@@ -1,0 +1,22 @@
+---
+title: use-stagger
+description: Hook for per-child delayInFrames in custom components.
+---
+
+<InstallCommand name="use-stagger" />
+
+```tsx
+import { useStagger } from "@/remotion/hooks/use-stagger";
+
+function ListItem({ index, label }: { index: number; label: string }) {
+  const delayInFrames = useStagger({ index, staggerInFrames: 8 });
+
+  return (
+    <FadeIn delayInFrames={delayInFrames} durationInFrames={20}>
+      <span>{label}</span>
+    </FadeIn>
+  );
+}
+```
+
+For wrapping existing children, prefer the `stagger-children` primitive instead.

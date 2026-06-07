@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
+import { enterProgress } from "@/remotion/lib/timing";
 
 export type SlideUpProps = {
   children: ReactNode;
@@ -15,16 +16,7 @@ export const SlideUp: React.FC<SlideUpProps> = ({
   distance = 40,
 }) => {
   const frame = useCurrentFrame();
-
-  const progress = interpolate(
-    frame,
-    [delayInFrames, delayInFrames + durationInFrames],
-    [0, 1],
-    {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    },
-  );
+  const progress = enterProgress(frame, delayInFrames, durationInFrames);
 
   return (
     <AbsoluteFill

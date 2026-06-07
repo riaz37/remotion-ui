@@ -15,7 +15,44 @@ const primitives = [
   { name: "Progress Bar", slug: "progress-bar" },
   { name: "Rotate In", slug: "rotate-in" },
   { name: "Transition Fade", slug: "transition-fade" },
+  { name: "Transition Slide", slug: "transition-slide" },
 ];
+
+const scenes = [
+  { name: "Lower Third", slug: "lower-third" },
+  { name: "Title Card", slug: "title-card" },
+  { name: "Feature List", slug: "feature-list" },
+  { name: "Stat Card", slug: "stat-card" },
+  { name: "Quote Card", slug: "quote-card" },
+  { name: "End Card", slug: "end-card" },
+];
+
+const compositions = [
+  { name: "Intro", slug: "intro" },
+  { name: "Showcase", slug: "showcase" },
+];
+
+function ComponentGrid({
+  items,
+  basePath,
+}: {
+  items: { name: string; slug: string }[];
+  basePath: string;
+}) {
+  return (
+    <div className="mt-4 grid gap-3 sm:grid-cols-2">
+      {items.map((item) => (
+        <Link
+          key={item.slug}
+          href={`${basePath}/${item.slug}`}
+          className="rounded-lg border border-fd-border px-4 py-3 transition-colors hover:bg-fd-muted"
+        >
+          {item.name}
+        </Link>
+      ))}
+    </div>
+  );
+}
 
 export default function HomePage() {
   return (
@@ -31,20 +68,20 @@ export default function HomePage() {
 
       <div className="mt-12">
         <h2 className="text-xl font-semibold">Primitives</h2>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          {primitives.map((item) => (
-            <Link
-              key={item.slug}
-              href={`/docs/primitives/${item.slug}`}
-              className="rounded-lg border border-fd-border px-4 py-3 transition-colors hover:bg-fd-muted"
-            >
-              {item.name}
-            </Link>
-          ))}
-        </div>
+        <ComponentGrid items={primitives} basePath="/docs/primitives" />
       </div>
 
-      <div className="mt-8 flex gap-4">
+      <div className="mt-10">
+        <h2 className="text-xl font-semibold">Scenes</h2>
+        <ComponentGrid items={scenes} basePath="/docs/scenes" />
+      </div>
+
+      <div className="mt-10">
+        <h2 className="text-xl font-semibold">Compositions</h2>
+        <ComponentGrid items={compositions} basePath="/docs/compositions" />
+      </div>
+
+      <div className="mt-8 flex flex-wrap gap-4">
         <Link
           href="/docs"
           className="rounded-lg bg-fd-primary px-4 py-2 text-fd-primary-foreground"
@@ -56,6 +93,12 @@ export default function HomePage() {
           className="rounded-lg border border-fd-border px-4 py-2"
         >
           Get Started
+        </Link>
+        <Link
+          href="/docs/cli"
+          className="rounded-lg border border-fd-border px-4 py-2"
+        >
+          CLI Reference
         </Link>
       </div>
     </main>

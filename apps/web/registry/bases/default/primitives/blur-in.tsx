@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
+import { AbsoluteFill, useCurrentFrame } from "remotion";
+import { enterProgress } from "@/remotion/lib/timing";
 
 export type BlurInProps = {
   children: ReactNode;
@@ -15,16 +16,7 @@ export const BlurIn: React.FC<BlurInProps> = ({
   maxBlur = 10,
 }) => {
   const frame = useCurrentFrame();
-
-  const progress = interpolate(
-    frame,
-    [delayInFrames, delayInFrames + durationInFrames],
-    [0, 1],
-    {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    },
-  );
+  const progress = enterProgress(frame, delayInFrames, durationInFrames);
 
   return (
     <AbsoluteFill

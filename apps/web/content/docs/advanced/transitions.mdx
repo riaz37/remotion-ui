@@ -43,4 +43,14 @@ const total =
 // 60 + 60 - 15 = 105 frames
 ```
 
+For slide transitions, use `transition-slide`:
+
+```tsx
+import { transitionSlide } from "@/remotion/primitives/transition-slide";
+
+<TransitionSeries.Transition
+  {...transitionSlide({ direction: "from-left" })}
+/>
+```
+
 See the [Showcase](/docs/compositions/showcase) composition for a full multi-scene example.

@@ -16,3 +16,12 @@ description: Author and build custom RemotionUI registries.
 | `registry:ui` | `primitives/` | `src/remotion/primitives/` |
 | `registry:block` | `scenes/`, `compositions/` | `src/remotion/scenes/` or `src/compositions/` |
 | `registry:lib` | `lib/` | `src/remotion/lib/` |
+| `registry:hook` | `hooks/` | `src/remotion/hooks/` |
+
+## Custom registry (CLI)
+
+```bash
+npx remotion-ui build ./registry.json -o ./public/r
+```
+
+See [CLI Reference](/docs/cli) for `diff` and `update` workflows.

@@ -73,7 +73,7 @@
       "type": "registry:ui",
       "description": "Fade in animation primitive",
       "dependencies": ["remotion"],
-      "registryDependencies": [],
+      "registryDependencies": ["timing"],
       "files": [
         {
           "path": "registry/bases/default/primitives/fade-in.tsx",
@@ -86,7 +86,7 @@
       "type": "registry:ui",
       "description": "Fade out animation primitive",
       "dependencies": ["remotion"],
-      "registryDependencies": [],
+      "registryDependencies": ["timing"],
       "files": [
         {
           "path": "registry/bases/default/primitives/fade-out.tsx",
@@ -99,7 +99,7 @@
       "type": "registry:ui",
       "description": "Slide up with fade animation",
       "dependencies": ["remotion"],
-      "registryDependencies": [],
+      "registryDependencies": ["timing"],
       "files": [
         {
           "path": "registry/bases/default/primitives/slide-up.tsx",
@@ -112,7 +112,7 @@
       "type": "registry:ui",
       "description": "Slide left with fade animation",
       "dependencies": ["remotion"],
-      "registryDependencies": [],
+      "registryDependencies": ["timing"],
       "files": [
         {
           "path": "registry/bases/default/primitives/slide-left.tsx",
@@ -125,7 +125,7 @@
       "type": "registry:ui",
       "description": "Scale in with fade animation",
       "dependencies": ["remotion"],
-      "registryDependencies": [],
+      "registryDependencies": ["timing"],
       "files": [
         {
           "path": "registry/bases/default/primitives/scale-in.tsx",
@@ -164,7 +164,7 @@
       "type": "registry:ui",
       "description": "Blur in with fade animation",
       "dependencies": ["remotion"],
-      "registryDependencies": [],
+      "registryDependencies": ["timing"],
       "files": [
         {
           "path": "registry/bases/default/primitives/blur-in.tsx",
@@ -246,6 +246,19 @@
       "files": [
         {
           "path": "registry/bases/default/primitives/transition-fade.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "transition-slide",
+      "type": "registry:ui",
+      "description": "Slide transition helper for TransitionSeries",
+      "dependencies": ["remotion", "@remotion/transitions"],
+      "registryDependencies": ["springs"],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/transition-slide.tsx",
           "type": "registry:ui"
         }
       ]

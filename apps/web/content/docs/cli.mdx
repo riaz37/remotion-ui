@@ -1,0 +1,47 @@
+---
+title: CLI Reference
+description: remotion-ui commands for init, add, update, diff, and custom registries.
+---
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `init [name]` | Scaffold a new Remotion project |
+| `add <name...>` | Install components and dependencies |
+| `update <name...>` | Re-install from registry (overwrites files) |
+| `diff <name>` | Compare installed files vs registry |
+| `search -q <query>` | Search the registry |
+| `view <name>` | View registry item metadata |
+| `build [registry.json]` | Build a custom registry to `public/r/` |
+
+## Workflow: staying up to date
+
+```bash
+# Check if your local copy drifted
+npx remotion-ui diff fade-in
+
+# Pull latest from registry
+npx remotion-ui update fade-in
+```
+
+## Custom registry
+
+```bash
+npx remotion-ui build ./registry.json -o ./public/r
+```
+
+## Config: remotion-ui.json
+
+```json
+{
+  "preset": "default",
+  "aliases": {
+    "primitives": "@/remotion/primitives",
+    "scenes": "@/remotion/scenes",
+    "compositions": "@/compositions",
+    "lib": "@/remotion/lib",
+    "hooks": "@/remotion/hooks"
+  }
+}
+```
