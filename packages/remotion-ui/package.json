@@ -1,0 +1,47 @@
+{
+  "name": "remotion-ui",
+  "version": "0.0.0",
+  "description": "Add Remotion video components to your project — copy-paste, fully customisable.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "remotion-ui": "./dist/index.js"
+  },
+  "files": ["dist"],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./schema": {
+      "types": "./dist/schema/index.d.ts",
+      "default": "./dist/schema/index.js"
+    },
+    "./registry": {
+      "types": "./dist/registry/index.d.ts",
+      "default": "./dist/registry/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "tsc --noEmit",
+    "test": "echo \"Tests coming soon\""
+  },
+  "dependencies": {
+    "commander": "^13.1.0",
+    "cosmiconfig": "^9.0.0",
+    "fs-extra": "^11.3.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@remotionui/typescript-config": "workspace:*",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.13.4",
+    "tsup": "^8.3.6",
+    "typescript": "^5.7.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

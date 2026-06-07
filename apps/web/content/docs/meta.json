@@ -1,0 +1,11 @@
+{
+  "title": "Documentation",
+  "pages": [
+    "(root)",
+    "installation",
+    "primitives",
+    "scenes",
+    "compositions",
+    "registry"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://remotionui.dev/schema/registry.json",
+  "name": "remotionui",
+  "homepage": "https://remotionui.dev",
+  "items": [
+    {
+      "name": "fade-in",
+      "type": "registry:ui",
+      "description": "Fade in animation primitive",
+      "dependencies": ["remotion"],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/fade-in.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    }
+  ]
+}

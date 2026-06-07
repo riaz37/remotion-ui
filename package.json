@@ -1,0 +1,22 @@
+{
+  "name": "remotionui",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "registry:build": "turbo registry:build",
+    "remotion-ui:test": "turbo test --filter=remotion-ui",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
+    "changeset": "changeset",
+    "skills:sync": "bash scripts/sync-remotion-skills.sh && bash scripts/setup-cursor-skills.sh"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.12",
+    "prettier": "^3.5.1",
+    "turbo": "^2.4.2",
+    "typescript": "^5.7.3"
+  }
+}

@@ -1,0 +1,33 @@
+# dependencies
+node_modules
+.pnp
+.pnp.js
+
+# build outputs
+dist
+.next
+out
+.turbo
+
+# registry build artifacts
+apps/web/public/r/**/*.json
+
+# env
+.env
+.env*.local
+
+# debug
+npm-debug.log*
+pnpm-debug.log*
+
+# typescript
+*.tsbuildinfo
+
+# os
+.DS_Store
+Thumbs.db
+
+# ide
+.idea
+.vscode/*
+!.vscode/extensions.json

@@ -1,0 +1,8 @@
+{
+  "name": "remotion-app-fixture",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "remotion": "^4.0.473"
+  }
+}

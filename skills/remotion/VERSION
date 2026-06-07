@@ -1,0 +1,5 @@
+upstream: remotion-dev/remotion
+commit: d2f2ab39f506581b63e60fcf55c05ecc4cef6a70
+date: 2026-06-06 18:18:21 +0200
+path: packages/skills/skills/remotion
+docs: https://www.remotion.dev/docs/ai/skills

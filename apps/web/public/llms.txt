@@ -1,0 +1,22 @@
+# RemotionUI
+
+> Copy-paste production-ready Remotion video components into your projects.
+
+## Docs
+
+- Homepage: https://remotionui.dev
+- Registry: https://remotionui.dev/r/index.json
+
+## CLI
+
+```bash
+npx remotion-ui@latest init
+npx remotion-ui@latest add fade-in
+npx remotion-ui@latest search -q "fade"
+```
+
+## Philosophy
+
+- No black-box npm component package
+- You own the code, fully customisable
+- Components distributed via registry JSON + CLI

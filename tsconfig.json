@@ -1,0 +1,11 @@
+{
+  "extends": "@remotionui/typescript-config/base.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "references": [
+    { "path": "./apps/web" },
+    { "path": "./packages/remotion-ui" }
+  ],
+  "exclude": ["node_modules"]
+}

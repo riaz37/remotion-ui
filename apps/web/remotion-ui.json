@@ -1,0 +1,17 @@
+{
+  "$schema": "https://remotionui.dev/schema.json",
+  "preset": "default",
+  "tsx": true,
+  "remotion": {
+    "version": "4",
+    "config": "remotion.config.ts",
+    "root": "src/Root.tsx"
+  },
+  "aliases": {
+    "primitives": "@/remotion/primitives",
+    "scenes": "@/remotion/scenes",
+    "compositions": "@/compositions",
+    "lib": "@/remotion/lib",
+    "hooks": "@/remotion/hooks"
+  }
+}
