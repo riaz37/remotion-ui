@@ -25,6 +25,10 @@ const PAGES = [
   { slug: "player", mdx: "player/index.mdx" },
   { slug: "transitions/transitionseries", mdx: "transitions/transitionseries.mdx" },
   { slug: "transitions", mdx: "transitions/index.mdx" },
+  { slug: "captions", mdx: "captions/index.mdx" },
+  { slug: "layout-utils", mdx: "layout-utils/index.mdx" },
+  { slug: "media-utils", mdx: "media-utils/index.mdx" },
+  { slug: "paths", mdx: "paths/index.mdx" },
 ];
 
 function stripMdxFrontmatter(text) {

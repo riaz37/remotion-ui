@@ -8,12 +8,20 @@ type RegistryFile = {
   content?: string;
 };
 
+type AtlasMeta = {
+  lane: string;
+  drive: string;
+  tier: string;
+  tags?: string[];
+};
+
 type RegistryItem = {
   name: string;
   type: string;
   description?: string;
   dependencies?: string[];
   registryDependencies?: string[];
+  atlas?: AtlasMeta;
   composition?: Record<string, unknown>;
   files: RegistryFile[];
 };
@@ -56,7 +64,12 @@ export async function buildRegistry(
 
   await fs.mkdir(outputDir, { recursive: true });
 
-  const index: Array<{ name: string; type: string; description?: string }> = [];
+  const index: Array<{
+    name: string;
+    type: string;
+    description?: string;
+    atlas?: AtlasMeta;
+  }> = [];
 
   for (const item of registry.items) {
     const filesWithContent = [];
@@ -84,6 +97,7 @@ export async function buildRegistry(
       name: item.name,
       type: item.type,
       description: item.description,
+      ...(item.atlas ? { atlas: item.atlas } : {}),
     });
   }
 

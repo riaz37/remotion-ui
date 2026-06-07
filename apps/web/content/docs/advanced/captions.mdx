@@ -1,0 +1,34 @@
+---
+title: Captions
+description: Caption pipeline from JSON to TikTok-style pages.
+---
+
+# Captions
+
+RemotionUI caption components expect captions in Remotion's [`Caption`](https://www.remotion.dev/docs/captions/caption) format.
+
+## Install
+
+```bash
+npx remotion-ui add caption-scene
+```
+
+This installs `@remotion/captions` and `caption-utils`.
+
+## Pipeline
+
+1. Transcribe audio to captions JSON (Whisper, SRT import, or manual)
+2. Load captions with `useDelayRender` while fetching
+3. Group into pages with `groupCaptionsIntoPages()` from `caption-utils`
+4. Render with `CaptionScene` or `CaptionHighlight`
+
+## Example
+
+```tsx
+import { CaptionScene } from "@/remotion/scenes/caption-scene";
+import captions from "./captions.json";
+
+<CaptionScene captions={captions} />;
+```
+
+See [caption-scene](/docs/signals/caption-scene) for the full API.

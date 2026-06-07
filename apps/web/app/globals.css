@@ -3,46 +3,48 @@
 @import "fumadocs-ui/css/preset.css";
 
 @theme {
-  --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-plex), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 }
 
 :root {
-  --color-fd-background: oklch(0.985 0.006 85);
+  --brand-stage: #0c1222;
+  --color-fd-background: oklch(0.98 0.008 265);
   --color-fd-foreground: oklch(0.22 0.02 265);
-  --color-fd-card: oklch(1 0.004 85);
+  --color-fd-card: oklch(1 0.004 265);
   --color-fd-card-foreground: oklch(0.22 0.02 265);
-  --color-fd-popover: oklch(1 0.004 85);
+  --color-fd-popover: oklch(1 0.004 265);
   --color-fd-popover-foreground: oklch(0.22 0.02 265);
-  --color-fd-primary: oklch(0.58 0.17 38);
-  --color-fd-primary-foreground: oklch(0.99 0.004 85);
-  --color-fd-secondary: oklch(0.95 0.01 85);
+  --color-fd-primary: oklch(0.52 0.18 252);
+  --color-fd-primary-foreground: oklch(0.99 0.004 265);
+  --color-fd-secondary: oklch(0.95 0.012 265);
   --color-fd-secondary-foreground: oklch(0.28 0.02 265);
-  --color-fd-muted: oklch(0.95 0.008 85);
+  --color-fd-muted: oklch(0.95 0.01 265);
   --color-fd-muted-foreground: oklch(0.48 0.02 265);
-  --color-fd-accent: oklch(0.94 0.015 55);
+  --color-fd-accent: oklch(0.94 0.02 252);
   --color-fd-accent-foreground: oklch(0.28 0.02 265);
-  --color-fd-border: oklch(0.88 0.01 85);
-  --color-fd-ring: oklch(0.58 0.17 38);
+  --color-fd-border: oklch(0.88 0.012 265);
+  --color-fd-ring: oklch(0.52 0.18 252);
 }
 
 .dark {
-  --color-fd-background: oklch(0.14 0.015 265);
-  --color-fd-foreground: oklch(0.94 0.01 85);
-  --color-fd-card: oklch(0.17 0.015 265);
-  --color-fd-card-foreground: oklch(0.94 0.01 85);
-  --color-fd-popover: oklch(0.17 0.015 265);
-  --color-fd-popover-foreground: oklch(0.94 0.01 85);
-  --color-fd-primary: oklch(0.72 0.16 48);
-  --color-fd-primary-foreground: oklch(0.14 0.015 265);
-  --color-fd-secondary: oklch(0.2 0.015 265);
-  --color-fd-secondary-foreground: oklch(0.94 0.01 85);
-  --color-fd-muted: oklch(0.2 0.012 265);
-  --color-fd-muted-foreground: oklch(0.68 0.02 265);
-  --color-fd-accent: oklch(0.22 0.02 265);
-  --color-fd-accent-foreground: oklch(0.94 0.01 85);
-  --color-fd-border: oklch(0.26 0.015 265);
-  --color-fd-ring: oklch(0.72 0.16 48);
+  --color-fd-background: oklch(0.11 0.022 265);
+  --color-fd-foreground: oklch(0.93 0.01 265);
+  --color-fd-card: oklch(0.14 0.02 265);
+  --color-fd-card-foreground: oklch(0.93 0.01 265);
+  --color-fd-popover: oklch(0.14 0.02 265);
+  --color-fd-popover-foreground: oklch(0.93 0.01 265);
+  --color-fd-primary: oklch(0.68 0.14 252);
+  --color-fd-primary-foreground: oklch(0.11 0.022 265);
+  --color-fd-secondary: oklch(0.18 0.02 265);
+  --color-fd-secondary-foreground: oklch(0.93 0.01 265);
+  --color-fd-muted: oklch(0.18 0.018 265);
+  --color-fd-muted-foreground: oklch(0.62 0.02 265);
+  --color-fd-accent: oklch(0.2 0.025 265);
+  --color-fd-accent-foreground: oklch(0.93 0.01 265);
+  --color-fd-border: oklch(0.24 0.02 265);
+  --color-fd-ring: oklch(0.68 0.14 252);
 }
 
 body {
@@ -53,10 +55,10 @@ h1,
 h2,
 h3 {
   font-family: var(--font-display);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
 }
 
-/* Docs page polish */
+/* Docs prose */
 .prose h2 {
   margin-top: 2.5rem;
   padding-bottom: 0.35rem;
@@ -69,4 +71,19 @@ h3 {
   background: var(--color-fd-muted);
   padding: 0.1rem 0.35rem;
   font-size: 0.875em;
+  font-family: var(--font-mono);
+}
+
+/* Subtle UI motion */
+@media (prefers-reduced-motion: no-preference) {
+  .motion-hover {
+    transition:
+      border-color 180ms ease-out,
+      transform 180ms ease-out,
+      box-shadow 180ms ease-out;
+  }
+
+  .motion-hover:hover {
+    transform: translateY(-1px);
+  }
 }

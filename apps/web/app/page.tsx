@@ -1,33 +1,34 @@
 import { HomeLayout } from "fumadocs-ui/layouts/home";
 import Link from "next/link";
+import { AtlasBrowse } from "@/components/atlas-browse";
 import { HeroPreview } from "@/components/hero-preview";
 import { InitCommand } from "@/components/install-command";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteLogo } from "@/components/site-logo";
-import { getComponentSections } from "@/lib/docs-nav";
+import { getAtlasSections } from "@/lib/docs-nav";
 import { navLinks, siteConfig } from "@/lib/site-config";
 
-const features = [
+const steps = [
   {
-    title: "Own the source",
-    description:
-      "Components copy into your repo. No black-box dependency — edit, extend, and ship.",
+    step: "1",
+    title: "Initialize",
+    description: "Scaffold a Remotion project with registry aliases.",
   },
   {
-    title: "Live previews",
-    description:
-      "Every component page includes a Remotion Player demo so you see motion before you install.",
+    step: "2",
+    title: "Add components",
+    description: "Copy primitives, scenes, or compositions into your repo.",
   },
   {
-    title: "CLI workflow",
-    description:
-      "init, add, search, diff, and update — a registry workflow built for motion projects.",
+    step: "3",
+    title: "Compose",
+    description: "Import locally and render with Remotion Studio.",
   },
 ] as const;
 
 export default function HomePage() {
-  const sections = getComponentSections();
-  const totalComponents = sections.reduce(
+  const atlasSections = getAtlasSections();
+  const totalComponents = atlasSections.reduce(
     (count, section) => count + section.items.length,
     0,
   );
@@ -46,23 +47,18 @@ export default function HomePage() {
       }))}
       className="flex flex-1 flex-col"
     >
-      <section className="relative overflow-hidden border-b border-fd-border">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,oklch(0.72_0.14_48/0.18),transparent)]"
-        />
+      <section className="border-b border-fd-border">
         <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:py-24">
           <div>
-            <p className="mb-4 text-sm font-medium uppercase tracking-[0.2em] text-fd-primary">
-              Video components for Remotion
+            <p className="mb-4 font-[family-name:var(--font-mono)] text-xs font-medium uppercase tracking-[0.18em] text-fd-primary">
+              Programmatic video components
             </p>
             <h1 className="font-[family-name:var(--font-display)] text-4xl font-bold tracking-tight sm:text-5xl lg:text-[3.25rem] lg:leading-[1.05]">
               {siteConfig.tagline}
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-fd-muted-foreground">
-              Registry-first motion components for Remotion. {totalComponents}{" "}
-              primitives, scenes, and compositions — install with the CLI,
-              customize the source in your repo.
+              {totalComponents} registry components for Remotion — install with
+              the CLI, customize every line of source in your project.
             </p>
             <div className="mt-8 max-w-lg">
               <InitCommand />
@@ -75,10 +71,10 @@ export default function HomePage() {
                 Read the docs
               </Link>
               <Link
-                href="/docs/primitives/fade-in"
+                href="/docs/atlas"
                 className="rounded-lg border border-fd-border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-fd-muted"
               >
-                Browse components
+                Browse atlas
               </Link>
             </div>
           </div>
@@ -86,64 +82,33 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-6xl px-6 py-16">
-        <div className="grid gap-6 md:grid-cols-3">
-          {features.map((feature) => (
-            <div
-              key={feature.title}
-              className="rounded-2xl border border-fd-border bg-fd-card p-6 shadow-sm"
-            >
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-semibold">
-                {feature.title}
-              </h2>
-              <p className="mt-2 text-sm leading-relaxed text-fd-muted-foreground">
-                {feature.description}
-              </p>
-            </div>
-          ))}
+      <section className="border-b border-fd-border bg-fd-card/30">
+        <div className="mx-auto max-w-6xl px-6 py-14">
+          <h2 className="font-[family-name:var(--font-display)] text-lg font-semibold">
+            How it works
+          </h2>
+          <ol className="mt-8 grid gap-8 md:grid-cols-3">
+            {steps.map((item) => (
+              <li key={item.step} className="flex gap-4">
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-fd-border bg-fd-card font-[family-name:var(--font-mono)] text-sm font-medium text-fd-primary">
+                  {item.step}
+                </span>
+                <div>
+                  <p className="font-medium">{item.title}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-fd-muted-foreground">
+                    {item.description}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-6xl px-6 pb-20">
-        {sections.map((section) => (
-          <div key={section.title} className="mb-14 last:mb-0">
-            <div className="mb-5 flex items-end justify-between gap-4">
-              <div>
-                <h2 className="font-[family-name:var(--font-display)] text-2xl font-semibold tracking-tight">
-                  {section.title}
-                </h2>
-                <p className="mt-1 text-sm text-fd-muted-foreground">
-                  {section.items.length} components
-                </p>
-              </div>
-              <Link
-                href={section.basePath}
-                className="text-sm font-medium text-fd-primary hover:underline"
-              >
-                View all
-              </Link>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {section.items.map((item) => (
-                <Link
-                  key={item.slug}
-                  href={item.url}
-                  className="group rounded-xl border border-fd-border bg-fd-card p-4 transition-all hover:border-fd-primary/40 hover:shadow-md"
-                >
-                  <p className="font-medium group-hover:text-fd-primary">
-                    {item.name}
-                  </p>
-                  {item.description ? (
-                    <p className="mt-1 line-clamp-2 text-sm text-fd-muted-foreground">
-                      {item.description}
-                    </p>
-                  ) : null}
-                </Link>
-              ))}
-            </div>
-          </div>
-        ))}
-      </section>
+      <AtlasBrowse
+        sections={atlasSections}
+        totalComponents={totalComponents}
+      />
 
       <SiteFooter />
     </HomeLayout>

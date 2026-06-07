@@ -2,10 +2,18 @@ import fs from "fs-extra";
 import path from "node:path";
 import { DEFAULT_REGISTRY_URL } from "./fetch-item.js";
 
+export type RegistryIndexAtlas = {
+  lane: string;
+  drive: string;
+  tier: string;
+  tags?: string[];
+};
+
 export type RegistryIndexItem = {
   name: string;
   type: string;
   description?: string;
+  atlas?: RegistryIndexAtlas;
 };
 
 export type RegistryIndex = {

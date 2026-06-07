@@ -16,7 +16,7 @@ export function HeroPreview() {
   }, []);
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-fd-border shadow-2xl shadow-black/20">
+    <div className="overflow-hidden rounded-2xl border border-fd-border bg-[var(--brand-stage)] shadow-lg shadow-black/25">
       <Player
         ref={playerRef}
         component={IntroPreview}

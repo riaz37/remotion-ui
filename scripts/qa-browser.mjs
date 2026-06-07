@@ -10,7 +10,17 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DOCS_ROOT = path.join(ROOT, "apps/web/content/docs");
-const PREVIEW_CATEGORIES = ["primitives", "scenes", "compositions"];
+const PREVIEW_CATEGORIES = [
+  "primitives",
+  "signals",
+  "vectors",
+  "spatial",
+  "cuts",
+  "scenes",
+  "compositions",
+];
+
+const SKIP_PREVIEWS = new Set(["map-flight", "map-canvas", "map-route", "map-markers"]);
 
 const args = process.argv.slice(2);
 const baseArg = args.find((a) => !a.startsWith("--"));
@@ -30,7 +40,12 @@ function discoverPreviewPages() {
     for (const file of fs.readdirSync(dir)) {
       if (!file.endsWith(".mdx")) continue;
       const content = fs.readFileSync(path.join(dir, file), "utf-8");
-      if (!content.includes("<RemotionPreview")) continue;
+      if (
+        !content.includes("<RemotionPreview") &&
+        !content.includes("preview={")
+      ) {
+        continue;
+      }
       const name = file.replace(/\.mdx$/, "");
       pages.push({ name, category, path: `/docs/${category}/${name}` });
     }
@@ -39,7 +54,9 @@ function discoverPreviewPages() {
 }
 
 const only = onlyArg ? new Set(onlyArg.split(",").map((s) => s.trim())) : null;
-const PAGES = discoverPreviewPages().filter((p) => !only || only.has(p.name));
+const PAGES = discoverPreviewPages().filter(
+  (p) => (!only || only.has(p.name)) && !SKIP_PREVIEWS.has(p.name),
+);
 
 function ab(...args) {
   return execFileSync("agent-browser", ["--session", SESSION, ...args], {

@@ -1,5 +1,46 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- **DESIGN.md** — Remotion-adjacent design system (Studio Blue palette, typography, motion rules)
+- **docs/design/** — competitive audit and mockup specifications
+- **Component cards** — lane icon thumbnails and Atlas filter chips on homepage
+- **Sticky preview layout** — component docs use side-by-side preview on large screens
+
+### Changed
+
+- Docs site redesign: Outfit + IBM Plex + JetBrains Mono; cool blue primary; dark default theme
+- Homepage: single Atlas browse, “How it works” strip, removed duplicate folder grid
+- Preview/install panels: clean chrome without fake window dots
+- Logo: SVG frame mark replacing letter-in-square placeholder
+
+## 0.3.0
+
+### Added
+
+- **Component Atlas** — video-native taxonomy (atoms, signals, vectors, spatial, blocks, cuts, reels) with lane/tier metadata and `/docs/atlas`
+- **15 advanced components** — captions, audiograms, SVG path draw, MapLibre maps, extended transitions, auto-fit title, social-clip composition
+- **Shared libs** — `caption-utils`, `audio-viz-utils`, `map-utils`, `path-utils`
+- **Docs sections** — Signals, Vectors, Spatial, Cuts lanes; advanced guides for captions, maps, and audio viz
+- **CLI search** — `--lane` and `--tier` filters on registry index
+
+### Changed
+
+- Homepage shows Component Atlas lanes; transition docs moved to Cuts section
+- Registry index includes atlas metadata for all components
+- Docs previews use RemotionUI brand colors (`#60a5fa` / `#f8fafc`) instead of TikTok green
+- `social-clip` docs preview renders in native 9:16 aspect ratio
+- `map-flight` docs preview uses SVG stand-in (MapLibre tiles unavailable in embedded player)
+
+### Fixed
+
+- `caption-scene` sequence timing now covers full page duration on the last page
+- `caption-scene` docs preview uses centered placement so captions are visible in the player
+- `audiogram-bars` loading placeholder animates with clearer bar motion and glow
+- Demo logo path updated for `logo-reveal` / `path-draw` previews
+
 ## 0.2.3
 
 ### Added

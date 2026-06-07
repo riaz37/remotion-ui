@@ -19,6 +19,10 @@ Refresh: `pnpm docs:remotion`
 | player | [player.md](./player.md) | [https://www.remotion.dev/docs/player](https://www.remotion.dev/docs/player) |
 | transitions/transitionseries | [transitions-transitionseries.md](./transitions-transitionseries.md) | [https://www.remotion.dev/docs/transitions/transitionseries](https://www.remotion.dev/docs/transitions/transitionseries) |
 | transitions | [transitions.md](./transitions.md) | [https://www.remotion.dev/docs/transitions](https://www.remotion.dev/docs/transitions) |
+| captions | [captions.md](./captions.md) | [https://www.remotion.dev/docs/captions](https://www.remotion.dev/docs/captions) |
+| layout-utils | [layout-utils.md](./layout-utils.md) | [https://www.remotion.dev/docs/layout-utils](https://www.remotion.dev/docs/layout-utils) |
+| media-utils | [media-utils.md](./media-utils.md) | [https://www.remotion.dev/docs/media-utils](https://www.remotion.dev/docs/media-utils) |
+| paths | [paths.md](./paths.md) | [https://www.remotion.dev/docs/paths](https://www.remotion.dev/docs/paths) |
 
 ## Rules for RemotionUI components
 

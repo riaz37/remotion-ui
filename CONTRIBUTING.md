@@ -20,6 +20,8 @@ Docs site: `http://localhost:3000` (via `pnpm --filter web dev` or root `pnpm de
 - **CLI** — `packages/remotion-ui/`
 - **Docs** — `apps/web/content/docs/` and `apps/web/components/`
 
+Docs site visual design follows [DESIGN.md](DESIGN.md). See [docs/design/AUDIT.md](docs/design/AUDIT.md) for rationale.
+
 Browse [open issues](https://github.com/riaz37/remotionui/issues) or open a feature request first for larger changes.
 
 ## Pull requests

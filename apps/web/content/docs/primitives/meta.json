@@ -13,8 +13,6 @@
     "stagger-children",
     "word-highlight",
     "progress-bar",
-    "rotate-in",
-    "transition-fade",
-    "transition-slide"
+    "rotate-in"
   ]
 }
