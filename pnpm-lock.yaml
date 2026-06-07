@@ -35,6 +35,9 @@ importers:
       '@remotion/light-leaks':
         specifier: ^4.0.473
         version: 4.0.473(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@remotion/media':
+        specifier: ^4.0.473
+        version: 4.0.473(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@remotion/media-utils':
         specifier: ^4.0.473
         version: 4.0.473(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -1202,6 +1205,12 @@ packages:
 
   '@remotion/media-utils@4.0.473':
     resolution: {integrity: sha512-f4Ip10pkawlUBTunE++DZ6J/TrPtKalkxoTx7qQGBlhz3BcWRK7AbEGouZtcAmkLFVxq80hpH/1cBFOMF6FVfA==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+
+  '@remotion/media@4.0.473':
+    resolution: {integrity: sha512-YSrDyjmxzcSHTZwVbfwTqvoik9+dFFsLVauhPcroomaF+kXTgbP52zDNHbGpEWCwaXfBaEL05JxWrnbgVnLptw==}
     peerDependencies:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
@@ -4597,6 +4606,14 @@ snapshots:
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
       remotion: 4.0.473(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+
+  '@remotion/media@4.0.473(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+    dependencies:
+      mediabunny: 1.45.0
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
+      remotion: 4.0.473(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      zod: 4.3.6
 
   '@remotion/paths@4.0.473': {}
 

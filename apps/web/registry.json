@@ -7,7 +7,9 @@
       "name": "timing",
       "type": "registry:lib",
       "description": "Frame timing helpers and enter easing",
-      "dependencies": ["remotion"],
+      "dependencies": [
+        "remotion"
+      ],
       "registryDependencies": [],
       "files": [
         {
@@ -20,7 +22,9 @@
       "name": "springs",
       "type": "registry:lib",
       "description": "Default spring configurations",
-      "dependencies": ["remotion"],
+      "dependencies": [
+        "remotion"
+      ],
       "registryDependencies": [],
       "files": [
         {
@@ -33,8 +37,12 @@
       "name": "motion-tokens",
       "type": "registry:lib",
       "description": "Named motion duration and stagger tokens",
-      "dependencies": ["remotion"],
-      "registryDependencies": ["timing"],
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "timing"
+      ],
       "files": [
         {
           "path": "registry/bases/default/lib/motion-tokens.ts",
@@ -72,8 +80,12 @@
       "name": "use-stagger",
       "type": "registry:hook",
       "description": "Hook for staggered child delays",
-      "dependencies": ["remotion"],
-      "registryDependencies": ["timing"],
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "timing"
+      ],
       "files": [
         {
           "path": "registry/bases/default/hooks/use-stagger.ts",
@@ -85,8 +97,13 @@
       "name": "fade-in",
       "type": "registry:ui",
       "description": "Fade in animation primitive",
-      "dependencies": ["remotion"],
-      "registryDependencies": ["timing", "motion-wrapper"],
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "timing",
+        "motion-wrapper"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/fade-in.tsx",
@@ -98,8 +115,13 @@
       "name": "fade-out",
       "type": "registry:ui",
       "description": "Fade out animation primitive",
-      "dependencies": ["remotion"],
-      "registryDependencies": ["timing", "motion-wrapper"],
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "timing",
+        "motion-wrapper"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/fade-out.tsx",
@@ -111,8 +133,13 @@
       "name": "slide-up",
       "type": "registry:ui",
       "description": "Slide up with fade animation",
-      "dependencies": ["remotion"],
-      "registryDependencies": ["timing", "motion-wrapper"],
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "timing",
+        "motion-wrapper"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/slide-up.tsx",
@@ -124,8 +151,13 @@
       "name": "slide-left",
       "type": "registry:ui",
       "description": "Slide left with fade animation",
-      "dependencies": ["remotion"],
-      "registryDependencies": ["timing", "motion-wrapper"],
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "timing",
+        "motion-wrapper"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/slide-left.tsx",
@@ -137,8 +169,13 @@
       "name": "scale-in",
       "type": "registry:ui",
       "description": "Scale in with fade animation",
-      "dependencies": ["remotion"],
-      "registryDependencies": ["timing", "motion-wrapper"],
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "timing",
+        "motion-wrapper"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/scale-in.tsx",
@@ -150,7 +187,9 @@
       "name": "typewriter",
       "type": "registry:ui",
       "description": "Typewriter text reveal",
-      "dependencies": ["remotion"],
+      "dependencies": [
+        "remotion"
+      ],
       "registryDependencies": [],
       "files": [
         {
@@ -163,7 +202,9 @@
       "name": "counter",
       "type": "registry:ui",
       "description": "Animated number counter",
-      "dependencies": ["remotion"],
+      "dependencies": [
+        "remotion"
+      ],
       "registryDependencies": [],
       "files": [
         {
@@ -176,8 +217,13 @@
       "name": "blur-in",
       "type": "registry:ui",
       "description": "Blur in with fade animation",
-      "dependencies": ["remotion"],
-      "registryDependencies": ["timing", "motion-wrapper"],
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "timing",
+        "motion-wrapper"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/blur-in.tsx",
@@ -189,8 +235,13 @@
       "name": "spring-in",
       "type": "registry:ui",
       "description": "Spring scale-in animation",
-      "dependencies": ["remotion"],
-      "registryDependencies": ["springs", "motion-wrapper"],
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "springs",
+        "motion-wrapper"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/spring-in.tsx",
@@ -202,8 +253,12 @@
       "name": "stagger-children",
       "type": "registry:ui",
       "description": "Stagger delayInFrames across children",
-      "dependencies": ["remotion"],
-      "registryDependencies": ["timing"],
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "timing"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/stagger-children.tsx",
@@ -215,8 +270,12 @@
       "name": "word-highlight",
       "type": "registry:ui",
       "description": "Spring-animated highlighter wipe on a word",
-      "dependencies": ["remotion"],
-      "registryDependencies": ["springs"],
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "springs"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/word-highlight.tsx",
@@ -228,8 +287,12 @@
       "name": "progress-bar",
       "type": "registry:ui",
       "description": "Animated progress bar",
-      "dependencies": ["remotion"],
-      "registryDependencies": ["timing"],
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "timing"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/progress-bar.tsx",
@@ -241,8 +304,13 @@
       "name": "rotate-in",
       "type": "registry:ui",
       "description": "Rotate in with fade animation",
-      "dependencies": ["remotion"],
-      "registryDependencies": ["timing", "motion-wrapper"],
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "timing",
+        "motion-wrapper"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/rotate-in.tsx",
@@ -254,8 +322,13 @@
       "name": "transition-fade",
       "type": "registry:ui",
       "description": "Fade transition helper for TransitionSeries",
-      "dependencies": ["remotion", "@remotion/transitions"],
-      "registryDependencies": ["springs"],
+      "dependencies": [
+        "remotion",
+        "@remotion/transitions"
+      ],
+      "registryDependencies": [
+        "springs"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/transition-fade.tsx",
@@ -267,8 +340,13 @@
       "name": "transition-slide",
       "type": "registry:ui",
       "description": "Slide transition helper for TransitionSeries",
-      "dependencies": ["remotion", "@remotion/transitions"],
-      "registryDependencies": ["springs"],
+      "dependencies": [
+        "remotion",
+        "@remotion/transitions"
+      ],
+      "registryDependencies": [
+        "springs"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/transition-slide.tsx",
@@ -280,8 +358,13 @@
       "name": "lower-third",
       "type": "registry:block",
       "description": "Lower third name and subtitle overlay",
-      "dependencies": ["remotion"],
-      "registryDependencies": ["fade-in", "slide-left"],
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "fade-in",
+        "slide-left"
+      ],
       "files": [
         {
           "path": "registry/bases/default/scenes/lower-third/index.tsx",
@@ -293,8 +376,13 @@
       "name": "title-card",
       "type": "registry:block",
       "description": "Centered title card scene",
-      "dependencies": ["remotion"],
-      "registryDependencies": ["fade-in", "scale-in"],
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "fade-in",
+        "scale-in"
+      ],
       "files": [
         {
           "path": "registry/bases/default/scenes/title-card/index.tsx",
@@ -306,7 +394,9 @@
       "name": "feature-list",
       "type": "registry:block",
       "description": "Staggered feature bullet list",
-      "dependencies": ["remotion"],
+      "dependencies": [
+        "remotion"
+      ],
       "registryDependencies": [
         "stagger-children",
         "slide-left",
@@ -325,8 +415,14 @@
       "name": "stat-card",
       "type": "registry:block",
       "description": "Animated stat with counter",
-      "dependencies": ["remotion"],
-      "registryDependencies": ["counter", "spring-in", "layout"],
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "counter",
+        "spring-in",
+        "layout"
+      ],
       "files": [
         {
           "path": "registry/bases/default/scenes/stat-card/index.tsx",
@@ -338,8 +434,14 @@
       "name": "quote-card",
       "type": "registry:block",
       "description": "Quote with highlighted word",
-      "dependencies": ["remotion"],
-      "registryDependencies": ["word-highlight", "fade-in", "layout"],
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "word-highlight",
+        "fade-in",
+        "layout"
+      ],
       "files": [
         {
           "path": "registry/bases/default/scenes/quote-card/index.tsx",
@@ -351,8 +453,14 @@
       "name": "end-card",
       "type": "registry:block",
       "description": "End card with CTA",
-      "dependencies": ["remotion"],
-      "registryDependencies": ["scale-in", "fade-in", "layout"],
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "scale-in",
+        "fade-in",
+        "layout"
+      ],
       "files": [
         {
           "path": "registry/bases/default/scenes/end-card/index.tsx",
@@ -364,8 +472,13 @@
       "name": "intro",
       "type": "registry:block",
       "description": "5-second branded intro composition",
-      "dependencies": ["remotion"],
-      "registryDependencies": ["title-card", "fade-out"],
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "title-card",
+        "fade-out"
+      ],
       "composition": {
         "id": "Intro",
         "component": "Intro",
@@ -386,7 +499,10 @@
       "name": "showcase",
       "type": "registry:block",
       "description": "Full demo reel with TransitionSeries",
-      "dependencies": ["remotion", "@remotion/transitions"],
+      "dependencies": [
+        "remotion",
+        "@remotion/transitions"
+      ],
       "registryDependencies": [
         "transition-fade",
         "title-card",
@@ -414,7 +530,9 @@
       "name": "caption-utils",
       "type": "registry:lib",
       "description": "Caption page grouping and word-active helpers",
-      "dependencies": ["@remotion/captions"],
+      "dependencies": [
+        "@remotion/captions"
+      ],
       "registryDependencies": [],
       "files": [
         {
@@ -427,7 +545,10 @@
       "name": "audio-viz-utils",
       "type": "registry:lib",
       "description": "Windowed audio spectrum helpers",
-      "dependencies": ["@remotion/media-utils", "remotion"],
+      "dependencies": [
+        "@remotion/media-utils",
+        "remotion"
+      ],
       "registryDependencies": [],
       "files": [
         {
@@ -440,7 +561,10 @@
       "name": "map-utils",
       "type": "registry:lib",
       "description": "MapLibre and Turf geospatial helpers",
-      "dependencies": ["maplibre-gl", "@turf/turf"],
+      "dependencies": [
+        "maplibre-gl",
+        "@turf/turf"
+      ],
       "registryDependencies": [],
       "files": [
         {
@@ -453,7 +577,9 @@
       "name": "path-utils",
       "type": "registry:lib",
       "description": "SVG path draw-on helpers",
-      "dependencies": ["@remotion/paths"],
+      "dependencies": [
+        "@remotion/paths"
+      ],
       "registryDependencies": [],
       "files": [
         {
@@ -466,8 +592,13 @@
       "name": "caption-highlight",
       "type": "registry:ui",
       "description": "TikTok-style word-by-word caption highlight",
-      "dependencies": ["remotion", "@remotion/captions"],
-      "registryDependencies": ["caption-utils"],
+      "dependencies": [
+        "remotion",
+        "@remotion/captions"
+      ],
+      "registryDependencies": [
+        "caption-utils"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/caption-highlight.tsx",
@@ -479,8 +610,13 @@
       "name": "audiogram-bars",
       "type": "registry:ui",
       "description": "Audio-reactive spectrum bar visualization",
-      "dependencies": ["remotion", "@remotion/media-utils"],
-      "registryDependencies": ["audio-viz-utils"],
+      "dependencies": [
+        "remotion",
+        "@remotion/media-utils"
+      ],
+      "registryDependencies": [
+        "audio-viz-utils"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/audiogram-bars.tsx",
@@ -492,8 +628,13 @@
       "name": "path-draw",
       "type": "registry:ui",
       "description": "SVG stroke reveal along a path",
-      "dependencies": ["remotion", "@remotion/paths"],
-      "registryDependencies": ["path-utils"],
+      "dependencies": [
+        "remotion",
+        "@remotion/paths"
+      ],
+      "registryDependencies": [
+        "path-utils"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/path-draw.tsx",
@@ -505,8 +646,13 @@
       "name": "map-canvas",
       "type": "registry:ui",
       "description": "Deterministic MapLibre map mount",
-      "dependencies": ["remotion", "maplibre-gl"],
-      "registryDependencies": ["map-utils"],
+      "dependencies": [
+        "remotion",
+        "maplibre-gl"
+      ],
+      "registryDependencies": [
+        "map-utils"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/map-canvas.tsx",
@@ -518,8 +664,14 @@
       "name": "map-route",
       "type": "registry:ui",
       "description": "Animated GeoJSON route line on a map",
-      "dependencies": ["remotion", "maplibre-gl", "@turf/turf"],
-      "registryDependencies": ["map-utils"],
+      "dependencies": [
+        "remotion",
+        "maplibre-gl",
+        "@turf/turf"
+      ],
+      "registryDependencies": [
+        "map-utils"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/map-route.tsx",
@@ -531,8 +683,13 @@
       "name": "map-markers",
       "type": "registry:ui",
       "description": "GeoJSON circle and label markers on a map",
-      "dependencies": ["remotion", "maplibre-gl"],
-      "registryDependencies": ["map-utils"],
+      "dependencies": [
+        "remotion",
+        "maplibre-gl"
+      ],
+      "registryDependencies": [
+        "map-utils"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/map-markers.tsx",
@@ -544,8 +701,13 @@
       "name": "transition-wipe",
       "type": "registry:ui",
       "description": "Wipe transition helper for TransitionSeries",
-      "dependencies": ["remotion", "@remotion/transitions"],
-      "registryDependencies": ["springs"],
+      "dependencies": [
+        "remotion",
+        "@remotion/transitions"
+      ],
+      "registryDependencies": [
+        "springs"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/transition-wipe.tsx",
@@ -557,8 +719,13 @@
       "name": "transition-clock-wipe",
       "type": "registry:ui",
       "description": "Clock wipe transition helper for TransitionSeries",
-      "dependencies": ["remotion", "@remotion/transitions"],
-      "registryDependencies": ["springs"],
+      "dependencies": [
+        "remotion",
+        "@remotion/transitions"
+      ],
+      "registryDependencies": [
+        "springs"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/transition-clock-wipe.tsx",
@@ -570,7 +737,10 @@
       "name": "transition-light-leak",
       "type": "registry:ui",
       "description": "Light leak overlay for TransitionSeries",
-      "dependencies": ["remotion", "@remotion/light-leaks"],
+      "dependencies": [
+        "remotion",
+        "@remotion/light-leaks"
+      ],
       "registryDependencies": [],
       "files": [
         {
@@ -583,8 +753,15 @@
       "name": "caption-scene",
       "type": "registry:block",
       "description": "Lower-third TikTok-style captions synced to audio",
-      "dependencies": ["remotion", "@remotion/captions"],
-      "registryDependencies": ["caption-highlight", "caption-utils", "layout"],
+      "dependencies": [
+        "remotion",
+        "@remotion/captions"
+      ],
+      "registryDependencies": [
+        "caption-highlight",
+        "caption-utils",
+        "layout"
+      ],
       "files": [
         {
           "path": "registry/bases/default/scenes/caption-scene/index.tsx",
@@ -596,8 +773,15 @@
       "name": "audiogram-scene",
       "type": "registry:block",
       "description": "Podcast audiogram layout with spectrum bars",
-      "dependencies": ["remotion", "@remotion/media-utils"],
-      "registryDependencies": ["audiogram-bars", "fade-in", "layout"],
+      "dependencies": [
+        "remotion",
+        "@remotion/media-utils"
+      ],
+      "registryDependencies": [
+        "audiogram-bars",
+        "fade-in",
+        "layout"
+      ],
       "files": [
         {
           "path": "registry/bases/default/scenes/audiogram-scene/index.tsx",
@@ -609,8 +793,14 @@
       "name": "logo-reveal",
       "type": "registry:block",
       "description": "Brand logo SVG path draw-on reveal",
-      "dependencies": ["remotion"],
-      "registryDependencies": ["path-draw", "fade-in", "scale-in"],
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "path-draw",
+        "fade-in",
+        "scale-in"
+      ],
       "files": [
         {
           "path": "registry/bases/default/scenes/logo-reveal/index.tsx",
@@ -622,8 +812,16 @@
       "name": "map-flight",
       "type": "registry:block",
       "description": "Animated map flyover with route reveal and markers",
-      "dependencies": ["remotion", "maplibre-gl", "@turf/turf"],
-      "registryDependencies": ["map-route", "map-markers", "map-utils"],
+      "dependencies": [
+        "remotion",
+        "maplibre-gl",
+        "@turf/turf"
+      ],
+      "registryDependencies": [
+        "map-route",
+        "map-markers",
+        "map-utils"
+      ],
       "files": [
         {
           "path": "registry/bases/default/scenes/map-flight/index.tsx",
@@ -637,10 +835,13 @@
       "description": "Headline that auto-scales to fit safe area",
       "dependencies": [
         "remotion",
-        "@remotion/layout-utils",
         "@remotion/google-fonts"
       ],
-      "registryDependencies": ["fade-in", "layout"],
+      "registryDependencies": [
+        "fade-in",
+        "layout",
+        "text-fit-utils"
+      ],
       "files": [
         {
           "path": "registry/bases/default/scenes/auto-fit-title/index.tsx",
@@ -677,6 +878,402 @@
       "files": [
         {
           "path": "registry/bases/default/compositions/social-clip/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "media-utils",
+      "type": "registry:lib",
+      "description": "Media item timing and fit helpers",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/bases/default/lib/media-utils.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "chart-utils",
+      "type": "registry:lib",
+      "description": "Chart scaling and SVG path helpers",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/bases/default/lib/chart-utils.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "text-fit-utils",
+      "type": "registry:lib",
+      "description": "Safe headline fitting helpers",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/bases/default/lib/text-fit-utils.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "waveform-line",
+      "type": "registry:ui",
+      "description": "Audio waveform line visualization",
+      "dependencies": [
+        "remotion",
+        "@remotion/media-utils"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/waveform-line.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "audio-pulse",
+      "type": "registry:ui",
+      "description": "Audio-reactive pulse rings",
+      "dependencies": [
+        "remotion",
+        "@remotion/media-utils"
+      ],
+      "registryDependencies": [
+        "audio-viz-utils"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/audio-pulse.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "karaoke-captions",
+      "type": "registry:ui",
+      "description": "Active-word karaoke caption styling",
+      "dependencies": [
+        "remotion",
+        "@remotion/captions"
+      ],
+      "registryDependencies": [
+        "caption-utils"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/karaoke-captions.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "line-chart-draw",
+      "type": "registry:ui",
+      "description": "SVG line chart draw-on primitive",
+      "dependencies": [
+        "remotion",
+        "@remotion/paths"
+      ],
+      "registryDependencies": [
+        "chart-utils",
+        "path-utils"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/line-chart-draw.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "cursor-path",
+      "type": "registry:ui",
+      "description": "Animated cursor along a path",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/cursor-path.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "media-frame",
+      "type": "registry:block",
+      "description": "Safe framed image or video scene",
+      "dependencies": [
+        "remotion",
+        "@remotion/media"
+      ],
+      "registryDependencies": [
+        "media-utils",
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/media-frame/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "media-sequence",
+      "type": "registry:block",
+      "description": "Timed media slideshow with transitions",
+      "dependencies": [
+        "remotion",
+        "@remotion/media",
+        "@remotion/transitions"
+      ],
+      "registryDependencies": [
+        "media-frame",
+        "media-utils",
+        "transition-fade"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/media-sequence/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "split-screen",
+      "type": "registry:block",
+      "description": "Two-up media comparison layout",
+      "dependencies": [
+        "remotion",
+        "@remotion/media"
+      ],
+      "registryDependencies": [
+        "media-utils",
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/split-screen/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "b-roll-stack",
+      "type": "registry:block",
+      "description": "Layered b-roll media stack",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/b-roll-stack/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "caption-bumper",
+      "type": "registry:block",
+      "description": "Large quote or caption emphasis scene",
+      "dependencies": [
+        "remotion",
+        "@remotion/layout-utils"
+      ],
+      "registryDependencies": [
+        "layout",
+        "text-fit-utils"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/caption-bumper/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "animated-bar-chart",
+      "type": "registry:block",
+      "description": "Animated data bar chart scene",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "chart-utils",
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/animated-bar-chart/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "metric-ticker",
+      "type": "registry:block",
+      "description": "Animated KPI metric cards",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "chart-utils",
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/metric-ticker/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "timeline-steps",
+      "type": "registry:block",
+      "description": "Sequenced process timeline scene",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/timeline-steps/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "callout-spotlight",
+      "type": "registry:block",
+      "description": "Spotlight callout overlay for product demos",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/callout-spotlight/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "zoom-pan-frame",
+      "type": "registry:block",
+      "description": "Deterministic zoom and pan media frame",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/zoom-pan-frame/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "code-reveal",
+      "type": "registry:block",
+      "description": "Progressive code reveal with highlighted lines",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/code-reveal/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "tutorial-clip",
+      "type": "registry:block",
+      "description": "Tutorial clip composition for demos and explainers",
+      "dependencies": [
+        "remotion",
+        "@remotion/media",
+        "@remotion/transitions"
+      ],
+      "registryDependencies": [
+        "auto-fit-title",
+        "media-frame",
+        "callout-spotlight",
+        "code-reveal",
+        "end-card",
+        "transition-fade"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/compositions/tutorial-clip/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "data-story",
+      "type": "registry:block",
+      "description": "Data storytelling composition template",
+      "dependencies": [
+        "remotion",
+        "@remotion/transitions",
+        "@remotion/layout-utils"
+      ],
+      "registryDependencies": [
+        "auto-fit-title",
+        "animated-bar-chart",
+        "metric-ticker",
+        "timeline-steps",
+        "caption-bumper",
+        "end-card",
+        "transition-fade"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/compositions/data-story/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "podcast-clip",
+      "type": "registry:block",
+      "description": "Podcast clip composition with audio visuals and captions",
+      "dependencies": [
+        "remotion",
+        "@remotion/transitions",
+        "@remotion/media-utils",
+        "@remotion/captions"
+      ],
+      "registryDependencies": [
+        "audio-pulse",
+        "waveform-line",
+        "audiogram-scene",
+        "caption-scene",
+        "end-card",
+        "transition-fade"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/compositions/podcast-clip/index.tsx",
           "type": "registry:block"
         }
       ]

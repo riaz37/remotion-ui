@@ -683,6 +683,198 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     note: "Advanced — installs @remotion/layout-utils and @remotion/google-fonts.",
     related: ["title-card", "social-clip"],
   },
+  "waveform-line": {
+    category: "primitive",
+    usage: `import { WaveformLine } from "@/remotion/primitives/waveform-line";
+
+<WaveformLine src={staticFile("voice.wav")} mirror />`,
+    props: [
+      { name: "src", type: "string", required: true, description: "Audio source." },
+      { name: "height", type: "number", default: "120", description: "SVG waveform height." },
+      { name: "mirror", type: "boolean", default: "false", description: "Draw a reflected waveform." },
+    ],
+    note: "Advanced — installs @remotion/media-utils.",
+    related: ["audiogram-bars", "audio-pulse"],
+  },
+  "audio-pulse": {
+    category: "primitive",
+    usage: `import { AudioPulse } from "@/remotion/primitives/audio-pulse";
+
+<AudioPulse src={staticFile("voice.wav")} />`,
+    props: [
+      { name: "src", type: "string", required: true, description: "Audio source." },
+      { name: "size", type: "number", default: "240", description: "Pulse diameter in px." },
+      { name: "ringCount", type: "number", default: "3", description: "Number of reactive rings." },
+    ],
+    note: "Advanced — installs @remotion/media-utils.",
+    related: ["waveform-line", "audiogram-scene"],
+  },
+  "karaoke-captions": {
+    category: "primitive",
+    usage: `import { KaraokeCaptions } from "@/remotion/primitives/karaoke-captions";
+
+<KaraokeCaptions page={page} mode="scale" />`,
+    props: [
+      { name: "page", type: "TikTokPage", required: true, description: "Caption page from @remotion/captions." },
+      { name: "mode", type: '"scale" | "underline"', default: '"scale"', description: "Active word emphasis style." },
+      { name: "fontSize", type: "number", default: "56", description: "Caption size in px." },
+    ],
+    note: "Use with caption-utils groupCaptionsIntoPages().",
+    related: ["caption-highlight", "caption-scene"],
+  },
+  "line-chart-draw": {
+    category: "primitive",
+    usage: `import { LineChartDraw } from "@/remotion/primitives/line-chart-draw";
+
+<LineChartDraw points={[{ x: 0, y: 12 }, { x: 1, y: 24 }]} />`,
+    props: [
+      { name: "points", type: "{ x: number; y: number }[]", required: true, description: "Chart points." },
+      { name: "showDots", type: "boolean", default: "true", description: "Reveal dots along the line." },
+      { name: "durationInFrames", type: "number", default: "70", description: "Draw-on duration." },
+    ],
+    related: ["animated-bar-chart", "path-draw"],
+  },
+  "cursor-path": {
+    category: "primitive",
+    usage: `import { CursorPath } from "@/remotion/primitives/cursor-path";
+
+<CursorPath points={[{ x: 80, y: 120 }, { x: 320, y: 80 }]} />`,
+    props: [
+      { name: "points", type: "{ x: number; y: number }[]", required: true, description: "Cursor route points." },
+      { name: "durationInFrames", type: "number", default: "90", description: "Travel duration." },
+      { name: "size", type: "number", default: "34", description: "Cursor size." },
+    ],
+    related: ["callout-spotlight", "zoom-pan-frame"],
+  },
+  "media-frame": {
+    category: "scene",
+    usage: `import { MediaFrame } from "@/remotion/scenes/media-frame";
+
+<MediaFrame src={staticFile("demo.png")} title="Product demo" />`,
+    props: [
+      { name: "src", type: "string", required: true, description: "Image or video source." },
+      { name: "fit", type: '"cover" | "contain"', default: '"cover"', description: "Media object-fit behavior." },
+      { name: "caption", type: "string", description: "Optional supporting caption." },
+    ],
+    note: "Advanced — installs @remotion/media for video sources.",
+    related: ["media-sequence", "split-screen"],
+  },
+  "media-sequence": {
+    category: "scene",
+    usage: `import { MediaSequence } from "@/remotion/scenes/media-sequence";
+
+<MediaSequence items={[{ src: staticFile("one.png"), title: "Hook" }]} />`,
+    props: [
+      { name: "items", type: "MediaItem[]", required: true, description: "Timed media items." },
+      { name: "defaultDurationInFrames", type: "number", default: "90", description: "Fallback item duration." },
+      { name: "transitionDurationInFrames", type: "number", default: "12", description: "Fade overlap." },
+    ],
+    related: ["media-frame", "tutorial-clip"],
+  },
+  "split-screen": {
+    category: "scene",
+    usage: `import { SplitScreen } from "@/remotion/scenes/split-screen";
+
+<SplitScreen left={{ src: before }} right={{ src: after }} />`,
+    props: [
+      { name: "left", type: "SplitScreenPanel", required: true, description: "Left media panel." },
+      { name: "right", type: "SplitScreenPanel", required: true, description: "Right media panel." },
+      { name: "title", type: "string", description: "Optional comparison title." },
+    ],
+    related: ["media-frame", "b-roll-stack"],
+  },
+  "b-roll-stack": {
+    category: "scene",
+    usage: `import { BRollStack } from "@/remotion/scenes/b-roll-stack";
+
+<BRollStack items={[{ src: staticFile("shot.png"), title: "Proof" }]} />`,
+    props: [
+      { name: "items", type: "{ src: string; title?: string }[]", required: true, description: "Media cards to layer." },
+      { name: "title", type: "string", description: "Scene headline." },
+    ],
+    related: ["media-frame", "media-sequence"],
+  },
+  "caption-bumper": {
+    category: "scene",
+    usage: `import { CaptionBumper } from "@/remotion/scenes/caption-bumper";
+
+<CaptionBumper text="This is the key moment." />`,
+    props: [
+      { name: "text", type: "string", required: true, description: "Large quote or caption text." },
+      { name: "eyebrow", type: "string", default: '"Key moment"', description: "Small label above the text." },
+    ],
+    related: ["karaoke-captions", "data-story"],
+  },
+  "animated-bar-chart": {
+    category: "scene",
+    usage: `import { AnimatedBarChart } from "@/remotion/scenes/animated-bar-chart";
+
+<AnimatedBarChart data={[{ label: "Views", value: 120000 }]} />`,
+    props: [
+      { name: "data", type: "ChartDatum[]", required: true, description: "Bar labels and values." },
+      { name: "maxValue", type: "number", description: "Optional fixed max domain." },
+      { name: "valueFormatter", type: "(value: number) => string", description: "Value label formatter." },
+    ],
+    related: ["metric-ticker", "data-story"],
+  },
+  "metric-ticker": {
+    category: "scene",
+    usage: `import { MetricTicker } from "@/remotion/scenes/metric-ticker";
+
+<MetricTicker metrics={[{ label: "Views", value: 120000, delta: "+32%" }]} />`,
+    props: [
+      { name: "metrics", type: "MetricTickerItem[]", required: true, description: "Up to three metric cards." },
+      { name: "title", type: "string", description: "Scene title." },
+    ],
+    related: ["animated-bar-chart", "data-story"],
+  },
+  "timeline-steps": {
+    category: "scene",
+    usage: `import { TimelineSteps } from "@/remotion/scenes/timeline-steps";
+
+<TimelineSteps steps={[{ title: "Record" }, { title: "Render" }]} />`,
+    props: [
+      { name: "steps", type: "TimelineStep[]", required: true, description: "Up to four process steps." },
+      { name: "title", type: "string", description: "Timeline title." },
+    ],
+    related: ["data-story", "feature-list"],
+  },
+  "callout-spotlight": {
+    category: "scene",
+    usage: `import { CalloutSpotlight } from "@/remotion/scenes/callout-spotlight";
+
+<CalloutSpotlight title="Click export" target={{ x: 320, y: 180, width: 420, height: 180 }} />`,
+    props: [
+      { name: "title", type: "string", required: true, description: "Callout headline." },
+      { name: "target", type: "SpotlightTarget", required: true, description: "Highlighted rectangle." },
+      { name: "backgroundSrc", type: "string", description: "Optional screenshot or media background." },
+    ],
+    related: ["zoom-pan-frame", "tutorial-clip"],
+  },
+  "zoom-pan-frame": {
+    category: "scene",
+    usage: `import { ZoomPanFrame } from "@/remotion/scenes/zoom-pan-frame";
+
+<ZoomPanFrame src={staticFile("screenshot.png")} toScale={1.25} />`,
+    props: [
+      { name: "src", type: "string", required: true, description: "Image source." },
+      { name: "toScale", type: "number", default: "1.24", description: "Final zoom scale." },
+      { name: "durationInFrames", type: "number", default: "90", description: "Zoom duration." },
+    ],
+    related: ["callout-spotlight", "cursor-path"],
+  },
+  "code-reveal": {
+    category: "scene",
+    usage: `import { CodeReveal } from "@/remotion/scenes/code-reveal";
+
+<CodeReveal code={'npx remotion-ui add media-frame'} highlightedLines={[1]} />`,
+    props: [
+      { name: "code", type: "string", required: true, description: "Code or terminal text." },
+      { name: "highlightedLines", type: "number[]", description: "1-based highlighted line numbers." },
+      { name: "title", type: "string", description: "Scene title." },
+    ],
+    related: ["tutorial-clip"],
+  },
   "social-clip": {
     category: "composition",
     usage: `import { SocialClip } from "@/compositions/social-clip";
@@ -695,6 +887,42 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     ],
     note: "9:16 social template (1080×1920). Advanced tier.",
     related: ["caption-scene", "audiogram-scene", "auto-fit-title"],
+  },
+  "tutorial-clip": {
+    category: "composition",
+    usage: `import { TutorialClip } from "@/compositions/tutorial-clip";
+
+<TutorialClip mediaSrc={staticFile("demo.png")} />`,
+    props: [
+      { name: "mediaSrc", type: "string", required: true, description: "Screenshot or video source." },
+      { name: "title", type: "string", description: "Opening hook title." },
+      { name: "code", type: "string", description: "Code reveal content." },
+    ],
+    related: ["media-frame", "callout-spotlight", "code-reveal"],
+  },
+  "data-story": {
+    category: "composition",
+    usage: `import { DataStory } from "@/compositions/data-story";
+
+<DataStory barData={barData} metrics={metrics} steps={steps} />`,
+    props: [
+      { name: "barData", type: "ChartDatum[]", required: true, description: "Bar chart data." },
+      { name: "metrics", type: "MetricTickerItem[]", required: true, description: "Metric cards." },
+      { name: "steps", type: "TimelineStep[]", required: true, description: "Context steps." },
+    ],
+    related: ["animated-bar-chart", "metric-ticker", "timeline-steps"],
+  },
+  "podcast-clip": {
+    category: "composition",
+    usage: `import { PodcastClip } from "@/compositions/podcast-clip";
+
+<PodcastClip audioSrc={staticFile("podcast.wav")} captions={captions} />`,
+    props: [
+      { name: "audioSrc", type: "string", required: true, description: "Audio source." },
+      { name: "captions", type: "Caption[]", required: true, description: "Synced captions." },
+      { name: "title", type: "string", description: "Opening title." },
+    ],
+    related: ["audio-pulse", "waveform-line", "caption-scene"],
   },
 };
 

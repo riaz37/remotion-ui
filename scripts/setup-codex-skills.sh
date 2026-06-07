@@ -1,22 +1,22 @@
 #!/usr/bin/env bash
-# Link vendored skills to .cursor/skills/ for Cursor agent discovery
+# Link repo skills into .agents/skills/ for Codex discovery.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-CURSOR_SKILLS_DIR="$ROOT_DIR/.cursor/skills"
+CODEX_SKILLS_DIR="$ROOT_DIR/.agents/skills"
 
 link_skill() {
   local name="$1"
   local source="$ROOT_DIR/skills/$name"
-  local target="$CURSOR_SKILLS_DIR/$name"
+  local target="$CODEX_SKILLS_DIR/$name"
 
   if [ ! -d "$source" ]; then
     echo "Error: skills/$name/ not found. Run sync-remotion-skills.sh first." >&2
     exit 1
   fi
 
-  mkdir -p "$CURSOR_SKILLS_DIR"
+  mkdir -p "$CODEX_SKILLS_DIR"
 
   if [ -L "$target" ]; then
     rm "$target"
@@ -25,10 +25,10 @@ link_skill() {
   fi
 
   ln -s "../../skills/$name" "$target"
-  echo "Linked skills/$name/ → .cursor/skills/$name/"
+  echo "Linked skills/$name/ -> .agents/skills/$name/"
 }
 
 link_skill "remotion"
 link_skill "remotion-ui"
 
-echo "Cursor skills ready at .cursor/skills/"
+echo "Codex skills ready at .agents/skills/"
