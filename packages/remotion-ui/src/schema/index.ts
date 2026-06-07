@@ -34,12 +34,28 @@ export const compositionMetaSchema = z.object({
   importPath: z.string().optional(),
 });
 
+export const atlasMetaSchema = z.object({
+  lane: z.enum([
+    "atoms",
+    "signals",
+    "vectors",
+    "spatial",
+    "blocks",
+    "cuts",
+    "reels",
+  ]),
+  drive: z.enum(["time", "data", "media", "spatial"]),
+  tier: z.enum(["core", "advanced"]),
+  tags: z.array(z.string()).optional(),
+});
+
 export const registryItemSchema = z.object({
   name: z.string(),
   type: z.string(),
   description: z.string().optional(),
   dependencies: z.array(z.string()).optional(),
   registryDependencies: z.array(z.string()).optional(),
+  atlas: atlasMetaSchema.optional(),
   composition: compositionMetaSchema.optional(),
   files: z.array(
     z.object({

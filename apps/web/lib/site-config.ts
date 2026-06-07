@@ -3,6 +3,7 @@ export const siteConfig = {
   tagline: "Copy-paste Remotion video components you own.",
   description:
     "Registry-first motion components for Remotion. Install with the CLI, customize the source in your repo.",
+  url: "https://remotionui.vercel.app",
   githubUrl: "https://github.com/riaz37/remotionui",
   npmUrl: "https://www.npmjs.com/package/remotion-ui",
   docsUrl: "/docs",

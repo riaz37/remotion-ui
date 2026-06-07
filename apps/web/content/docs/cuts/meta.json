@@ -1,0 +1,10 @@
+{
+  "title": "Cuts",
+  "pages": [
+    "transition-fade",
+    "transition-slide",
+    "transition-wipe",
+    "transition-clock-wipe",
+    "transition-light-leak"
+  ]
+}

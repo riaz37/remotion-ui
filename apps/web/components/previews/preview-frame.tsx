@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { AbsoluteFill } from "remotion";
+import { BRAND_BG } from "@/lib/brand-tokens";
 
 export const previewTextStyle: React.CSSProperties = {
   color: "white",
@@ -9,12 +10,13 @@ export const previewTextStyle: React.CSSProperties = {
 };
 
 /** Full-frame scene root — primitives wrap only the label, not AbsoluteFill. */
-export const PreviewFrame: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => (
+export const PreviewFrame: React.FC<{
+  children: ReactNode;
+  backgroundColor?: string;
+}> = ({ children, backgroundColor = BRAND_BG }) => (
   <AbsoluteFill
     style={{
-      backgroundColor: "#0f172a",
+      backgroundColor,
       justifyContent: "center",
       alignItems: "center",
     }}

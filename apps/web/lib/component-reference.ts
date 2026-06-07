@@ -506,6 +506,196 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     note: "Demo reel using TransitionSeries across multiple scenes.",
     related: ["transition-fade", "feature-list"],
   },
+  "caption-highlight": {
+    category: "primitive",
+    usage: `import { CaptionHighlight } from "@/remotion/primitives/caption-highlight";
+
+<CaptionHighlight page={page} activeColor="#60a5fa" />`,
+    props: [
+      { name: "page", type: "TikTokPage", required: true, description: "Caption page from createTikTokStyleCaptions." },
+      { name: "activeColor", type: "string", default: '"#60a5fa"', description: "Highlight color for the active word." },
+      { name: "inactiveColor", type: "string", default: '"#f8fafc"', description: "Color for inactive words." },
+      { name: "fontSize", type: "number", default: "48", description: "Caption font size in pixels." },
+    ],
+    note: "Advanced — installs @remotion/captions.",
+    related: ["caption-scene", "caption-utils"],
+  },
+  "caption-scene": {
+    category: "scene",
+    usage: `import { CaptionScene } from "@/remotion/scenes/caption-scene";
+
+<CaptionScene captions={captions} />`,
+    props: [
+      { name: "captions", type: "Caption[]", required: true, description: "Remotion caption array." },
+      { name: "combineTokensWithinMilliseconds", type: "number", default: "1200", description: "Words per caption page." },
+      { name: "placement", type: '"lower-third" | "center"', default: '"lower-third"', description: "Caption vertical placement." },
+    ],
+    note: "Advanced — installs @remotion/captions.",
+    related: ["caption-highlight", "social-clip"],
+  },
+  "audiogram-bars": {
+    category: "primitive",
+    usage: `import { AudiogramBars } from "@/remotion/primitives/audiogram-bars";
+
+<AudiogramBars src={staticFile("podcast.wav")} height={120} />`,
+    props: [
+      { name: "src", type: "string", required: true, description: "Audio file URL or staticFile path." },
+      { name: "height", type: "number", default: "120", description: "Bar container height." },
+      { name: "barColor", type: "string", default: '"#3b82f6"', description: "Bar fill color." },
+    ],
+    note: "Advanced — installs @remotion/media-utils.",
+    related: ["audiogram-scene"],
+  },
+  "audiogram-scene": {
+    category: "scene",
+    usage: `import { AudiogramScene } from "@/remotion/scenes/audiogram-scene";
+
+<AudiogramScene src={staticFile("podcast.wav")} title="Episode 1" />`,
+    props: [
+      { name: "src", type: "string", required: true, description: "Audio file URL or staticFile path." },
+      { name: "title", type: "string", description: "Episode title." },
+      { name: "subtitle", type: "string", description: "Optional subtitle." },
+    ],
+    related: ["audiogram-bars", "social-clip"],
+  },
+  "path-draw": {
+    category: "primitive",
+    usage: `import { PathDraw } from "@/remotion/primitives/path-draw";
+
+<PathDraw d="M 10 10 L 190 190" durationInFrames={60} />`,
+    props: [
+      { name: "d", type: "string", required: true, description: "SVG path d attribute." },
+      { name: "durationInFrames", type: "number", default: "60", description: "Draw animation length." },
+      { name: "stroke", type: "string", default: '"#ffffff"', description: "Stroke color." },
+    ],
+    note: "Advanced — installs @remotion/paths.",
+    related: ["logo-reveal"],
+  },
+  "logo-reveal": {
+    category: "scene",
+    usage: `import { LogoReveal } from "@/remotion/scenes/logo-reveal";
+
+<LogoReveal pathD="M 100 20 L 180 180 L 20 180 Z" />`,
+    props: [
+      { name: "pathD", type: "string", required: true, description: "SVG path for the logo." },
+      { name: "width", type: "number", default: "200", description: "SVG width." },
+      { name: "height", type: "number", default: "200", description: "SVG height." },
+    ],
+    related: ["path-draw"],
+  },
+  "map-canvas": {
+    category: "primitive",
+    usage: `import { MapCanvas } from "@/remotion/primitives/map-canvas";
+
+<MapCanvas center={[8.54, 47.38]} zoom={7} onMapReady={setMap} />`,
+    props: [
+      { name: "center", type: "[number, number]", required: true, description: "Map center [lng, lat]." },
+      { name: "zoom", type: "number", default: "7", description: "Initial zoom level." },
+      { name: "onMapReady", type: "(map: Map) => void", description: "Called when map is idle." },
+    ],
+    note: "Advanced — installs maplibre-gl. Render with --gl=angle --concurrency=1.",
+    related: ["map-route", "map-flight"],
+  },
+  "map-route": {
+    category: "primitive",
+    usage: `import { MapRoute } from "@/remotion/primitives/map-route";
+
+<MapRoute map={map} route={targetRoute} progress={0.5} />`,
+    props: [
+      { name: "map", type: "Map | null", required: true, description: "MapLibre map instance." },
+      { name: "route", type: "Feature<LineString>", required: true, description: "GeoJSON line to animate." },
+      { name: "progress", type: "number", description: "Route reveal progress 0–1." },
+    ],
+    related: ["map-flight", "map-utils"],
+  },
+  "map-markers": {
+    category: "primitive",
+    usage: `import { MapMarkers } from "@/remotion/primitives/map-markers";
+
+<MapMarkers map={map} markers={markerCollection} />`,
+    props: [
+      { name: "map", type: "Map | null", required: true, description: "MapLibre map instance." },
+      { name: "markers", type: "FeatureCollection<Point>", required: true, description: "GeoJSON points with name property." },
+    ],
+    related: ["map-flight"],
+  },
+  "map-flight": {
+    category: "scene",
+    usage: `import { MapFlight } from "@/remotion/scenes/map-flight";
+
+<MapFlight from={[8.54, 47.38]} to={[-74, 40.71]} fromLabel="Zurich" toLabel="New York" />`,
+    props: [
+      { name: "from", type: "[number, number]", description: "Start coordinates [lng, lat]." },
+      { name: "to", type: "[number, number]", description: "End coordinates [lng, lat]." },
+      { name: "fromLabel", type: "string", description: "Start marker label." },
+      { name: "toLabel", type: "string", description: "End marker label." },
+    ],
+    note: "Render with npx remotion render --gl=angle --concurrency=1.",
+    related: ["map-canvas", "map-route", "map-markers"],
+  },
+  "transition-wipe": {
+    category: "primitive",
+    usage: `import { transitionWipe } from "@/remotion/primitives/transition-wipe";
+
+<TransitionSeries.Transition {...transitionWipe({ direction: "from-left" })} />`,
+    props: [
+      { name: "durationInFrames", type: "number", default: "20", description: "Transition overlap length." },
+      { name: "direction", type: "string", default: '"from-left"', description: "Wipe direction." },
+    ],
+    related: ["transition-fade", "transition-clock-wipe"],
+  },
+  "transition-clock-wipe": {
+    category: "primitive",
+    usage: `import { transitionClockWipe } from "@/remotion/primitives/transition-clock-wipe";
+
+<TransitionSeries.Transition {...transitionClockWipe({ width: 1920, height: 1080 })} />`,
+    props: [
+      { name: "durationInFrames", type: "number", default: "24", description: "Transition overlap length." },
+      { name: "width", type: "number", required: true, description: "Composition width." },
+      { name: "height", type: "number", required: true, description: "Composition height." },
+    ],
+    related: ["transition-wipe"],
+  },
+  "transition-light-leak": {
+    category: "primitive",
+    usage: `import { TransitionLightLeak } from "@/remotion/primitives/transition-light-leak";
+
+<TransitionSeries.Overlay durationInFrames={30}>
+  <TransitionLightLeak seed={2} hueShift={45} />
+</TransitionSeries.Overlay>`,
+    props: [
+      { name: "seed", type: "number", default: "0", description: "Light leak pattern seed." },
+      { name: "hueShift", type: "number", default: "0", description: "Hue rotation in degrees." },
+    ],
+    note: "Advanced — installs @remotion/light-leaks.",
+    related: ["transition-fade"],
+  },
+  "auto-fit-title": {
+    category: "scene",
+    usage: `import { AutoFitTitle } from "@/remotion/scenes/auto-fit-title";
+
+<AutoFitTitle title="Headlines that always fit" subtitle="Any resolution" />`,
+    props: [
+      { name: "title", type: "string", required: true, description: "Headline text." },
+      { name: "subtitle", type: "string", description: "Optional subtitle." },
+      { name: "maxFontSize", type: "number", default: "96", description: "Maximum title size in px." },
+    ],
+    note: "Advanced — installs @remotion/layout-utils and @remotion/google-fonts.",
+    related: ["title-card", "social-clip"],
+  },
+  "social-clip": {
+    category: "composition",
+    usage: `import { SocialClip } from "@/compositions/social-clip";
+
+<SocialClip audioSrc={staticFile("podcast.wav")} captions={captions} />`,
+    props: [
+      { name: "audioSrc", type: "string", required: true, description: "Podcast audio source." },
+      { name: "captions", type: "Caption[]", required: true, description: "Synced caption array." },
+      { name: "hookTitle", type: "string", description: "Opening hook headline." },
+    ],
+    note: "9:16 social template (1080×1920). Advanced tier.",
+    related: ["caption-scene", "audiogram-scene", "auto-fit-title"],
+  },
 };
 
 export function getComponentReference(name: string): ComponentReference | undefined {

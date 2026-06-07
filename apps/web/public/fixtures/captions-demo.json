@@ -1,0 +1,30 @@
+[
+  {
+    "text": " Welcome",
+    "startMs": 0,
+    "endMs": 400,
+    "timestampMs": 0,
+    "confidence": 1
+  },
+  {
+    "text": " to",
+    "startMs": 400,
+    "endMs": 600,
+    "timestampMs": 400,
+    "confidence": 1
+  },
+  {
+    "text": " RemotionUI",
+    "startMs": 600,
+    "endMs": 1200,
+    "timestampMs": 600,
+    "confidence": 1
+  },
+  {
+    "text": " captions",
+    "startMs": 1200,
+    "endMs": 1800,
+    "timestampMs": 1200,
+    "confidence": 1
+  }
+]

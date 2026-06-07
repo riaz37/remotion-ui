@@ -1,4 +1,11 @@
 {
   "title": "Advanced",
-  "pages": ["motion-tokens", "transitions", "authoring-scenes"]
+  "pages": [
+    "motion-tokens",
+    "transitions",
+    "authoring-scenes",
+    "captions",
+    "maps",
+    "audio-viz"
+  ]
 }

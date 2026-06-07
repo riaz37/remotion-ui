@@ -12,7 +12,7 @@ const program = new Command();
 program
   .name("remotion-ui")
   .description("Add Remotion video components to your project")
-  .version("0.2.0");
+  .version("0.3.0");
 
 program
   .command("init")
@@ -59,14 +59,24 @@ program
   .command("search")
   .description("Search the component registry")
   .option("-q, --query <query>", "search query")
+  .option("--lane <lane>", "filter by atlas lane (atoms, signals, spatial, …)")
+  .option("--tier <tier>", "filter by tier (core, advanced)")
   .option(
     "-r, --registry-url <url>",
     "Registry base URL or local path to public/r/",
   )
-  .action(async (options: { query?: string; registryUrl?: string }) => {
+  .action(
+    async (options: {
+      query?: string;
+      lane?: string;
+      tier?: string;
+      registryUrl?: string;
+    }) => {
     try {
       await searchCommand({
         query: options.query,
+        lane: options.lane,
+        tier: options.tier,
         registryUrl: options.registryUrl,
       });
     } catch (error) {
@@ -75,7 +85,8 @@ program
       );
       process.exit(1);
     }
-  });
+    },
+  );
 
 program
   .command("view")

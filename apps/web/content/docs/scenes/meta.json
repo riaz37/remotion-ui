@@ -6,6 +6,11 @@
     "feature-list",
     "stat-card",
     "quote-card",
-    "end-card"
+    "end-card",
+    "caption-scene",
+    "audiogram-scene",
+    "logo-reveal",
+    "map-flight",
+    "auto-fit-title"
   ]
 }

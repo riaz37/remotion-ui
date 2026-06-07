@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { REGISTRY_ATLAS } from "../registry/atlas.ts";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const appRoot = path.resolve(__dirname, "..");
@@ -13,12 +14,20 @@ type RegistryFile = {
   target?: string;
 };
 
+type AtlasMeta = {
+  lane: string;
+  drive: string;
+  tier: string;
+  tags?: string[];
+};
+
 type RegistryItem = {
   name: string;
   type: string;
   description?: string;
   dependencies?: string[];
   registryDependencies?: string[];
+  atlas?: AtlasMeta;
   files: RegistryFile[];
 };
 
@@ -38,6 +47,10 @@ async function readFileContent(relativePath: string): Promise<string | null> {
   }
 }
 
+function resolveAtlas(item: RegistryItem): AtlasMeta | undefined {
+  return item.atlas ?? REGISTRY_ATLAS[item.name];
+}
+
 async function buildRegistry(): Promise<void> {
   console.log("Building registry...");
 
@@ -46,9 +59,15 @@ async function buildRegistry(): Promise<void> {
 
   await fs.mkdir(outputDir, { recursive: true });
 
-  const index: Array<{ name: string; type: string; description?: string }> = [];
+  const index: Array<{
+    name: string;
+    type: string;
+    description?: string;
+    atlas?: AtlasMeta;
+  }> = [];
 
   for (const item of registry.items) {
+    const atlas = resolveAtlas(item);
     const filesWithContent = [];
 
     for (const file of item.files) {
@@ -61,6 +80,7 @@ async function buildRegistry(): Promise<void> {
 
     const output = {
       ...item,
+      ...(atlas ? { atlas } : {}),
       files: filesWithContent,
     };
 
@@ -72,6 +92,7 @@ async function buildRegistry(): Promise<void> {
       name: item.name,
       type: item.type,
       description: item.description,
+      ...(atlas ? { atlas } : {}),
     });
   }
 
