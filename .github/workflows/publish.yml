@@ -26,11 +26,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Test CLI
-        run: pnpm --filter remotion-ui test
-
       - name: Build CLI
         run: pnpm --filter remotion-ui build
+
+      - name: Test CLI
+        run: pnpm --filter remotion-ui test
 
       - name: Publish remotion-ui (dry run)
         if: inputs.dry_run
