@@ -30,6 +30,12 @@ jobs:
             NOTES="Release $GITHUB_REF_NAME. See CHANGELOG.md for details."
           fi
 
-          gh release create "$GITHUB_REF_NAME" \
-            --title "RemotionUI $GITHUB_REF_NAME" \
-            --notes "$NOTES"
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release edit "$GITHUB_REF_NAME" \
+              --title "RemotionUI $GITHUB_REF_NAME" \
+              --notes "$NOTES"
+          else
+            gh release create "$GITHUB_REF_NAME" \
+              --title "RemotionUI $GITHUB_REF_NAME" \
+              --notes "$NOTES"
+          fi
