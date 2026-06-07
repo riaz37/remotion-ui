@@ -1,0 +1,267 @@
+# interpolate
+
+> Official: [https://www.remotion.dev/docs/interpolate](https://www.remotion.dev/docs/interpolate)
+> Source MDX: [https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/interpolate.mdx](https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/interpolate.mdx)
+> Mirrored: 2026-06-07
+
+Allows you to map a range of values to another using a concise syntax.
+
+## Example: Fade-in effect
+
+In this example, we are fading in some content by calculating the opacity for a certain point of time.
+At frame 0 (the start of the video), we want the opacity to be 0.
+At frame 20, we want the opacity to be 1.
+
+Using the following snippet, we can calculate the current opacity for any frame:
+
+```ts twoslash
+
+const frame = useCurrentFrame(); // 10
+const opacity = interpolate(frame, [0, 20], [0, 1]); // 0.5
+```
+
+## Example: Fade in and out
+
+We keep our fade in effect but add a fade out effect at the end.
+20 frames before the video ends, the opacity should still be 1.
+At the end, the opacity should be 0.
+
+We can interpolate over multiple points in one go and use [`useVideoConfig()`](/docs/use-video-config) to determine the duration of the composition.
+
+```ts twoslash
+
+const frame = useCurrentFrame();
+const {durationInFrames} = useVideoConfig();
+const opacity = interpolate(
+  frame,
+  [0, 20, durationInFrames - 20, durationInFrames],
+  // v--v---v----------------------v
+  [0, 1, 1, 0],
+);
+```
+
+## Example: interpolate a spring animation
+
+We don't necessarily have to interpolate over time - we can use any value to drive an animation.
+Let's assume we want to animate an object on the X axis from 0 to 200 pixels and use a spring animation for it.
+
+Let's create a spring:
+
+```twoslash include example
+
+const frame = useCurrentFrame();
+const {fps} = useVideoConfig();
+const driver = spring({
+  frame,
+  fps
+});
+// - spring
+```
+
+```ts twoslash
+// @include: example-spring
+```
+
+A [`spring()`](/docs/spring) animation with it's default settings will animate from 0 to 1.
+Given that knowledge, we can interpolate the spring value to go from 0 to 200.
+
+```ts twoslash
+// @include: example-spring
+// ---cut---
+const marginLeft = interpolate(driver, [0, 1], [0, 200]);
+```
+
+We can then apply it to an HTML element.
+
+```tsx twoslash {1}
+// @include: example-spring
+const marginLeft = interpolate(driver, [0, 1], [0, 200]);
+// ---cut---
+const Component: React.FC = () => ;
+```
+
+## Example: Prevent the output from going outside the output range
+
+Consider the following interpolation which is supposed to animate the scale over 20 frames:
+
+```tsx twoslash
+const frame = useCurrentFrame();
+// ---cut---
+const scale = interpolate(frame, [0, 20], [0, 1]);
+```
+
+This works, but after 20 frames, the value keeps growing. For example, at frame 40, the scale will be `2`.
+To prevent this, this we can use the `extrapolateLeft` and `extrapolateRight` options and set them to `'clamp'` to prevent the result going outside the output range.
+
+```tsx twoslash
+const frame = useCurrentFrame();
+// ---cut---
+const scale = interpolate(frame, [0, 20], [0, 1], {
+  extrapolateRight: 'clamp',
+});
+```
+
+## Example: CSS transform values
+
+`outputRange` may contain scale, translate, or rotate strings.
+Each value may contain up to three components.
+
+```tsx twoslash title="MyComposition.tsx"
+
+export const MyComposition: React.FC = () => {
+  const frame = useCurrentFrame();
+
+  return (
+    
+  );
+};
+```
+
+Scale values use unitless numbers.
+Translate values use length or percentage units.
+Rotate values use `deg`, `rad`, `grad`, or `turn`.
+
+All values in one interpolation must have the same type.
+For each component, units must match.
+For missing dimensions, CSS defaults are used: scale defaults to `1`, translate and rotate default to `0`.
+
+## Example: Numeric tuples
+
+`outputRange` may contain numeric tuples.
+Each tuple must contain the same number of numbers.
+
+```tsx twoslash title="MyComposition.tsx"
+
+export const MyComposition: React.FC = () => {
+  const frame = useCurrentFrame();
+  const start: readonly [number, number] = interpolate(
+    frame,
+    [0, 60],
+    [
+      [0, 0.5],
+      [1, 0.5],
+    ],
+  );
+
+  return {start.join(', ')};
+};
+```
+
+## API
+
+Takes four arguments:
+
+1. The input value.
+2. The range of values that you expect the input to assume.
+3. The range of output values that you want the input to map to.
+4. Options object:
+
+`inputRange` and `outputRange` must have the same length and at least one value.
+With one value, `interpolate()` always returns the only output value.
+Single-value ranges are supported from .
+
+### extrapolateLeft?
+
+_Default_: `extend`
+
+What should happen if the input value is outside the left side of the input range:
+
+- `extend`: Interpolate nonetheless, even if outside output range.
+- `clamp`: Return the closest value inside the range instead
+- `wrap`: Loops the value change.
+- `identity`: Return the input value instead.
+
+### extrapolateRight?
+
+_Default_: `extend`
+
+Same as [extrapolateLeft](#extrapolateleft), except for values outside right the input range.
+
+Example:
+
+```tsx twoslash
+// ---cut---
+interpolate(1.5, [0, 1], [0, 2], {extrapolateRight: 'extend'}); // 3
+interpolate(1.5, [0, 1], [0, 2], {extrapolateRight: 'clamp'}); // 2
+interpolate(1.5, [0, 1], [0, 2], {extrapolateRight: 'identity'}); // 1.5
+interpolate(1.5, [0, 1], [0, 2], {extrapolateRight: 'wrap'}); // 1
+```
+
+### easing?
+
+_Default_: `(x) => x`
+
+Pass a single function to customize the normalized progress within the **active segment** (between two adjacent keyframes), for example to apply an easing curve.
+By default, the input is left unmodified, resulting in a pure linear interpolation. [Read the documentation for the built-in easing functions](/docs/easing).
+
+```ts twoslash
+const frame = useCurrentFrame();
+// ---cut---
+
+interpolate(frame, [0, 100], [0, 1], {
+  easing: Easing.bezier(0.8, 0.22, 0.96, 0.65),
+  extrapolateLeft: 'clamp',
+  extrapolateRight: 'clamp',
+});
+
+interpolate(frame, [0, 10, 40, 100], [0, 0.2, 0.6, 1], {
+  easing: Easing.bezier(0.8, 0.22, 0.96, 0.65),
+  extrapolateLeft: 'clamp',
+  extrapolateRight: 'clamp',
+});
+```
+
+#### Per-segment easing (array) {#per-segment-easing-array}
+
+You can pass an array of easing functions with one entry per segment between consecutive keyframes. Its length must be `inputRange.length - 1` (the same as `outputRange.length - 1`). The first easing applies between the first and second keyframe, the second easing between the second and third, and so on.
+For a single keyframe, pass an empty array.
+
+```ts twoslash
+const frame = useCurrentFrame();
+// ---cut---
+
+interpolate(frame, [0, 100, 200], [0, 1, 2], {
+  easing: [Easing.out(Easing.cubic), Easing.in(Easing.cubic)],
+});
+```
+
+### posterize
+
+_Default_: no posterization
+
+Quantizes the input value before interpolation. Use it to sample an animation every `n` frames instead of updating on every frame.
+
+```ts twoslash title="MyComposition.tsx"
+
+const frame = useCurrentFrame();
+const opacity = interpolate(frame, [0, 60], [0, 1], {
+  posterize: 3,
+});
+```
+
+With `posterize: 3`, frames `0`, `1`, and `2` use the value for frame `0`; frames `3`, `4`, and `5` use the value for frame `3`, and so on.
+`posterize` must be a positive finite number.
+
+## Types
+
+Since `v3.3.77`, types for the options are exported from Remotion.
+
+```tsx twoslash
+
+const extrapolate: ExtrapolateType = 'clamp';
+const option: InterpolateOptions = {
+  extrapolateLeft: extrapolate,
+  posterize: 3,
+};
+```
+
+## Compatibility
+
+
+
+## See also
+
+- [Source code for this function](https://github.com/remotion-dev/remotion/blob/main/packages/core/src/interpolate.ts)
+- [Easing](/docs/easing)
+- [spring()](/docs/spring)
+- [interpolateColors()](/docs/interpolate-colors)

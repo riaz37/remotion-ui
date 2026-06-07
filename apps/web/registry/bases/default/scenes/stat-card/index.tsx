@@ -8,6 +8,7 @@ export type StatCardProps = {
   label: string;
   suffix?: string;
   backgroundColor?: string;
+  accentColor?: string;
 };
 
 export const StatCard: React.FC<StatCardProps> = ({
@@ -15,6 +16,7 @@ export const StatCard: React.FC<StatCardProps> = ({
   label,
   suffix = "",
   backgroundColor = "#0f172a",
+  accentColor = "#3b82f6",
 }) => {
   const { width } = useVideoConfig();
 
@@ -26,20 +28,33 @@ export const StatCard: React.FC<StatCardProps> = ({
         alignItems: "center",
       }}
     >
+      <div
+        style={{
+          position: "absolute",
+          width: 280,
+          height: 280,
+          borderRadius: "50%",
+          border: `2px solid ${accentColor}44`,
+          opacity: 0.6,
+        }}
+      />
       <SpringIn durationInFrames={35}>
         <div style={{ textAlign: "center" }}>
           <Counter
             from={0}
             to={value}
             suffix={suffix}
-            durationInFrames={45}
+            durationInFrames={48}
+            style={{ fontSize: scaleFont(96, width), color: accentColor }}
           />
           <p
             style={{
               color: "#94a3b8",
-              fontSize: scaleFont(28, width),
+              fontSize: scaleFont(32, width),
               fontFamily: "system-ui, sans-serif",
               marginTop: 16,
+              marginBottom: 0,
+              fontWeight: 500,
             }}
           >
             {label}

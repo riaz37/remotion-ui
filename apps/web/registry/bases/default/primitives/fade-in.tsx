@@ -1,12 +1,11 @@
 import type { ReactNode } from "react";
-import { AbsoluteFill, useCurrentFrame } from "remotion";
+import { useCurrentFrame } from "remotion";
+import { MotionWrapper } from "@/remotion/lib/motion-wrapper";
 import { enterProgress } from "@/remotion/lib/timing";
 
 export type FadeInProps = {
   children: ReactNode;
-  /** Duration of the fade-in animation in frames */
   durationInFrames?: number;
-  /** Delay before the fade-in starts, in frames */
   delayInFrames?: number;
 };
 
@@ -18,9 +17,5 @@ export const FadeIn: React.FC<FadeInProps> = ({
   const frame = useCurrentFrame();
   const opacity = enterProgress(frame, delayInFrames, durationInFrames);
 
-  return (
-    <AbsoluteFill style={{ opacity }}>
-      {children}
-    </AbsoluteFill>
-  );
+  return <MotionWrapper style={{ opacity }}>{children}</MotionWrapper>;
 };

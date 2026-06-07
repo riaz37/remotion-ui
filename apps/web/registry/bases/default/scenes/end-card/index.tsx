@@ -8,6 +8,7 @@ export type EndCardProps = {
   cta?: string;
   url?: string;
   backgroundColor?: string;
+  accentColor?: string;
 };
 
 export const EndCard: React.FC<EndCardProps> = ({
@@ -15,6 +16,7 @@ export const EndCard: React.FC<EndCardProps> = ({
   cta = "Learn more",
   url,
   backgroundColor = "#0f172a",
+  accentColor = "#3b82f6",
 }) => {
   const { width, height } = useVideoConfig();
   const safeArea = getSafeAreaPadding({ width, height });
@@ -28,9 +30,17 @@ export const EndCard: React.FC<EndCardProps> = ({
         alignItems: "center",
       }}
     >
-      <ScaleIn durationInFrames={25}>
-        <FadeIn durationInFrames={20}>
-          <div style={{ textAlign: "center" }}>
+      <ScaleIn durationInFrames={28}>
+        <FadeIn durationInFrames={22}>
+          <div
+            style={{
+              textAlign: "center",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 20,
+            }}
+          >
             <h1
               style={{
                 color: "white",
@@ -43,23 +53,27 @@ export const EndCard: React.FC<EndCardProps> = ({
             >
               {title}
             </h1>
-            <p
+            <div
               style={{
-                color: "#3b82f6",
-                fontSize: scaleFont(44, width),
+                backgroundColor: accentColor,
+                color: "white",
+                fontSize: scaleFont(36, width),
                 fontFamily: "system-ui, sans-serif",
-                marginTop: 20,
+                fontWeight: 600,
+                padding: "14px 32px",
+                borderRadius: 999,
+                boxShadow: `0 8px 24px ${accentColor}55`,
               }}
             >
               {cta}
-            </p>
+            </div>
             {url ? (
               <p
                 style={{
                   color: "#64748b",
                   fontSize: scaleFont(32, width),
                   fontFamily: "system-ui, sans-serif",
-                  marginTop: 12,
+                  margin: 0,
                 }}
               >
                 {url}

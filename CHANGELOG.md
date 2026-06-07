@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.2.1
+
+### Fixed
+
+- **Overlap bug** — animation primitives no longer use `AbsoluteFill`; inline `MotionWrapper` keeps list items in flex layout
+- **`StaggerChildren`** — uses official `<Sequence layout="none" premountFor>` pattern
+- **Scenes** — `feature-list`, `lower-third`, `stat-card`, `title-card`, `end-card` rebuilt with reserved layout slots
+
+### Added
+
+- **`motion-wrapper`** registry lib (auto-installed with enter/exit primitives)
+- **Official docs mirror** — `skills/remotion/docs/` fetched from Remotion GitHub MDX (`pnpm docs:remotion`)
+- **Browser QA** — `pnpm qa:browser` auto-discovers preview pages from docs
+- **Typewriter** — blinking cursor, pause-after, per-character frames (Remotion skill pattern)
+
+### Changed
+
+- **Intro** composition uses `premountFor` on sequences per Remotion docs
+
 ## 0.2.0
 
 ### Added

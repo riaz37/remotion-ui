@@ -7,7 +7,21 @@ metadata:
 
 ## When to use
 
-Use this skills whenever you are dealing with Remotion code to obtain the domain-specific knowledge.
+Use this skill whenever you are dealing with Remotion code to obtain the domain-specific knowledge.
+
+## Official docs mirror (read first)
+
+Before building or changing components, read the mirrored official docs in **[docs/INDEX.md](docs/INDEX.md)**.
+They are fetched from `remotion-dev/remotion` MDX (same source as [remotion.dev/docs](https://www.remotion.dev/docs)).
+
+Refresh the mirror: `pnpm docs:remotion`
+
+Key pages for RemotionUI:
+
+- [docs/sequence.md](docs/sequence.md) — `layout="none"`, `premountFor`, timing children
+- [docs/absolute-fill.md](docs/absolute-fill.md) — full-frame layering only
+- [docs/animating-properties.md](docs/animating-properties.md) — `useCurrentFrame()` + `interpolate()`
+- [docs/transitions-transitionseries.md](docs/transitions-transitionseries.md) — scene transitions
 
 ## New project setup
 

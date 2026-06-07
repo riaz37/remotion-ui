@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
+import { interpolate, useCurrentFrame } from "remotion";
+import { MotionWrapper } from "@/remotion/lib/motion-wrapper";
 import { exitProgress } from "@/remotion/lib/timing";
 
 export type FadeOutProps = {
@@ -17,9 +18,5 @@ export const FadeOut: React.FC<FadeOutProps> = ({
   const progress = exitProgress(frame, delayInFrames, durationInFrames);
   const opacity = interpolate(progress, [0, 1], [1, 0]);
 
-  return (
-    <AbsoluteFill style={{ opacity }}>
-      {children}
-    </AbsoluteFill>
-  );
+  return <MotionWrapper style={{ opacity }}>{children}</MotionWrapper>;
 };

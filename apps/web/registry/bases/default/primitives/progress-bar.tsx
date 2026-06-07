@@ -1,4 +1,10 @@
-import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
+import {
+  AbsoluteFill,
+  interpolate,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
+import { scaleFont } from "@/remotion/lib/layout";
 import { enterProgress } from "@/remotion/lib/timing";
 
 export type ProgressBarProps = {
@@ -21,7 +27,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   label,
 }) => {
   const frame = useCurrentFrame();
-
+  const { width } = useVideoConfig();
   const eased = enterProgress(frame, delayInFrames, durationInFrames);
   const value = interpolate(eased, [0, 1], [0, progress]);
 
@@ -30,17 +36,18 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
       style={{
         justifyContent: "center",
         alignItems: "center",
-        padding: 40,
+        padding: 48,
       }}
     >
-      <div style={{ width: "80%" }}>
+      <div style={{ width: "72%", maxWidth: 720 }}>
         {label ? (
           <p
             style={{
               color: "#94a3b8",
-              fontSize: 14,
+              fontSize: scaleFont(32, width),
               fontFamily: "system-ui, sans-serif",
-              marginBottom: 8,
+              marginBottom: 12,
+              fontWeight: 500,
             }}
           >
             {label}
@@ -53,6 +60,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
             backgroundColor: trackColor,
             borderRadius: height,
             overflow: "hidden",
+            boxShadow: "inset 0 1px 2px rgba(0,0,0,0.25)",
           }}
         >
           <div
@@ -61,6 +69,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
               height: "100%",
               backgroundColor: color,
               borderRadius: height,
+              boxShadow: `0 0 12px ${color}66`,
             }}
           />
         </div>

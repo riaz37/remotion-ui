@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { AbsoluteFill, useCurrentFrame } from "remotion";
+import { useCurrentFrame } from "remotion";
+import { MotionWrapper } from "@/remotion/lib/motion-wrapper";
 import { enterProgress } from "@/remotion/lib/timing";
 
 export type SlideLeftProps = {
@@ -19,13 +20,13 @@ export const SlideLeft: React.FC<SlideLeftProps> = ({
   const progress = enterProgress(frame, delayInFrames, durationInFrames);
 
   return (
-    <AbsoluteFill
+    <MotionWrapper
       style={{
         opacity: progress,
-        transform: `translateX(${(1 - progress) * distance}px)`,
+        transform: `translateX(${(1 - progress) * -distance}px)`,
       }}
     >
       {children}
-    </AbsoluteFill>
+    </MotionWrapper>
   );
 };

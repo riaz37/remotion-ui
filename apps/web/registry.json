@@ -56,6 +56,19 @@
       ]
     },
     {
+      "name": "motion-wrapper",
+      "type": "registry:lib",
+      "description": "Inline wrapper for enter/exit animations (avoids AbsoluteFill overlap)",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/bases/default/lib/motion-wrapper.tsx",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "use-stagger",
       "type": "registry:hook",
       "description": "Hook for staggered child delays",
@@ -73,7 +86,7 @@
       "type": "registry:ui",
       "description": "Fade in animation primitive",
       "dependencies": ["remotion"],
-      "registryDependencies": ["timing"],
+      "registryDependencies": ["timing", "motion-wrapper"],
       "files": [
         {
           "path": "registry/bases/default/primitives/fade-in.tsx",
@@ -86,7 +99,7 @@
       "type": "registry:ui",
       "description": "Fade out animation primitive",
       "dependencies": ["remotion"],
-      "registryDependencies": ["timing"],
+      "registryDependencies": ["timing", "motion-wrapper"],
       "files": [
         {
           "path": "registry/bases/default/primitives/fade-out.tsx",
@@ -99,7 +112,7 @@
       "type": "registry:ui",
       "description": "Slide up with fade animation",
       "dependencies": ["remotion"],
-      "registryDependencies": ["timing"],
+      "registryDependencies": ["timing", "motion-wrapper"],
       "files": [
         {
           "path": "registry/bases/default/primitives/slide-up.tsx",
@@ -112,7 +125,7 @@
       "type": "registry:ui",
       "description": "Slide left with fade animation",
       "dependencies": ["remotion"],
-      "registryDependencies": ["timing"],
+      "registryDependencies": ["timing", "motion-wrapper"],
       "files": [
         {
           "path": "registry/bases/default/primitives/slide-left.tsx",
@@ -125,7 +138,7 @@
       "type": "registry:ui",
       "description": "Scale in with fade animation",
       "dependencies": ["remotion"],
-      "registryDependencies": ["timing"],
+      "registryDependencies": ["timing", "motion-wrapper"],
       "files": [
         {
           "path": "registry/bases/default/primitives/scale-in.tsx",
@@ -164,7 +177,7 @@
       "type": "registry:ui",
       "description": "Blur in with fade animation",
       "dependencies": ["remotion"],
-      "registryDependencies": ["timing"],
+      "registryDependencies": ["timing", "motion-wrapper"],
       "files": [
         {
           "path": "registry/bases/default/primitives/blur-in.tsx",
@@ -177,7 +190,7 @@
       "type": "registry:ui",
       "description": "Spring scale-in animation",
       "dependencies": ["remotion"],
-      "registryDependencies": ["springs"],
+      "registryDependencies": ["springs", "motion-wrapper"],
       "files": [
         {
           "path": "registry/bases/default/primitives/spring-in.tsx",
@@ -229,7 +242,7 @@
       "type": "registry:ui",
       "description": "Rotate in with fade animation",
       "dependencies": ["remotion"],
-      "registryDependencies": ["timing"],
+      "registryDependencies": ["timing", "motion-wrapper"],
       "files": [
         {
           "path": "registry/bases/default/primitives/rotate-in.tsx",

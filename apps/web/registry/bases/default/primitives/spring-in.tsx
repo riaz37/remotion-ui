@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { AbsoluteFill, spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { MotionWrapper } from "@/remotion/lib/motion-wrapper";
 import { springSnappy } from "@/remotion/lib/springs";
 
 export type SpringInProps = {
@@ -24,13 +25,14 @@ export const SpringIn: React.FC<SpringInProps> = ({
   });
 
   return (
-    <AbsoluteFill
+    <MotionWrapper
       style={{
         opacity: progress,
         transform: `scale(${progress})`,
+        transformOrigin: "center center",
       }}
     >
       {children}
-    </AbsoluteFill>
+    </MotionWrapper>
   );
 };

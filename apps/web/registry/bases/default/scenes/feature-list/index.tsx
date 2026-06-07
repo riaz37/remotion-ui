@@ -26,40 +26,51 @@ export const FeatureList: React.FC<FeatureListProps> = ({
       style={{
         backgroundColor,
         ...safeArea,
+        display: "flex",
+        flexDirection: "column",
         justifyContent: "center",
+        gap: 32,
       }}
     >
-      <h2
+      <FadeIn durationInFrames={18}>
+        <h2
+          style={{
+            color: "white",
+            fontSize: scaleFont(64, width),
+            fontFamily: "system-ui, sans-serif",
+            fontWeight: 700,
+            margin: 0,
+            lineHeight: 1.1,
+          }}
+        >
+          {title}
+        </h2>
+      </FadeIn>
+      <div
         style={{
-          color: "white",
-          fontSize: scaleFont(64, width),
-          fontFamily: "system-ui, sans-serif",
-          fontWeight: 700,
-          marginBottom: 32,
-          lineHeight: 1.1,
+          display: "flex",
+          flexDirection: "column",
+          gap: 20,
         }}
       >
-        {title}
-      </h2>
-      <StaggerChildren staggerInFrames={STAGGER.normal}>
-        {items.map((item) => (
-          <SlideLeft key={item} durationInFrames={20}>
-            <FadeIn durationInFrames={15}>
+        <StaggerChildren staggerInFrames={STAGGER.normal}>
+          {items.map((item) => (
+            <SlideLeft key={item} durationInFrames={22} distance={48}>
               <div
                 style={{
                   display: "flex",
                   alignItems: "center",
                   gap: 16,
-                  marginBottom: 20,
                 }}
               >
                 <div
                   style={{
-                    width: 10,
-                    height: 10,
+                    width: 12,
+                    height: 12,
                     borderRadius: "50%",
                     backgroundColor: accentColor,
                     flexShrink: 0,
+                    boxShadow: `0 0 12px ${accentColor}88`,
                   }}
                 />
                 <span
@@ -73,10 +84,10 @@ export const FeatureList: React.FC<FeatureListProps> = ({
                   {item}
                 </span>
               </div>
-            </FadeIn>
-          </SlideLeft>
-        ))}
-      </StaggerChildren>
+            </SlideLeft>
+          ))}
+        </StaggerChildren>
+      </div>
     </AbsoluteFill>
   );
 };

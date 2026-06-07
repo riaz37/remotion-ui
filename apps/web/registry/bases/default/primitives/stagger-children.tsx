@@ -1,4 +1,5 @@
-import { Children, cloneElement, isValidElement, type ReactNode } from "react";
+import { Children, isValidElement, type ReactNode } from "react";
+import { Sequence, useVideoConfig } from "remotion";
 import { staggerDelay } from "@/remotion/lib/timing";
 
 export type StaggerChildrenProps = {
@@ -7,11 +8,19 @@ export type StaggerChildrenProps = {
   baseDelayInFrames?: number;
 };
 
+/**
+ * Staggers children using Remotion Sequence with layout="none".
+ * Each child animates from local frame 0 when its slot begins.
+ * @see skills/remotion/rules/sequencing.md
+ */
 export const StaggerChildren: React.FC<StaggerChildrenProps> = ({
   children,
   staggerInFrames = 8,
   baseDelayInFrames = 0,
 }) => {
+  const { fps } = useVideoConfig();
+  const premountFor = Math.max(staggerInFrames, Math.round(fps * 0.5));
+
   return (
     <>
       {Children.map(children, (child, index) => {
@@ -19,22 +28,18 @@ export const StaggerChildren: React.FC<StaggerChildrenProps> = ({
           return child;
         }
 
-        const delayInFrames = staggerDelay(
-          index,
-          staggerInFrames,
-          baseDelayInFrames,
+        const from = staggerDelay(index, staggerInFrames, baseDelayInFrames);
+
+        return (
+          <Sequence
+            key={child.key ?? `stagger-${index}`}
+            from={from}
+            layout="none"
+            premountFor={premountFor}
+          >
+            {child}
+          </Sequence>
         );
-
-        const existingDelay =
-          typeof child.props === "object" &&
-          child.props !== null &&
-          "delayInFrames" in child.props
-            ? Number((child.props as { delayInFrames?: number }).delayInFrames)
-            : 0;
-
-        return cloneElement(child, {
-          delayInFrames: existingDelay + delayInFrames,
-        } as Record<string, unknown>);
       })}
     </>
   );

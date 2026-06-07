@@ -9,25 +9,32 @@ export const StaggerChildrenPreview: React.FC = () => (
       backgroundColor: "#0f172a",
       justifyContent: "center",
       alignItems: "center",
-      gap: 16,
     }}
   >
-    <StaggerChildren staggerInFrames={12}>
-      {["First", "Second", "Third"].map((label) => (
-        <FadeIn key={label} durationInFrames={20}>
-          <div
-            style={{
-              color: "white",
-              fontSize: 36,
-              fontFamily: "system-ui, sans-serif",
-              textAlign: "center",
-              marginBottom: 12,
-            }}
-          >
-            {label}
-          </div>
-        </FadeIn>
-      ))}
-    </StaggerChildren>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 16,
+        alignItems: "center",
+      }}
+    >
+      <StaggerChildren staggerInFrames={12}>
+        {["First", "Second", "Third"].map((label) => (
+          <FadeIn key={label} durationInFrames={20}>
+            <div
+              style={{
+                color: "white",
+                fontSize: 36,
+                fontFamily: "system-ui, sans-serif",
+                textAlign: "center",
+              }}
+            >
+              {label}
+            </div>
+          </FadeIn>
+        ))}
+      </StaggerChildren>
+    </div>
   </AbsoluteFill>
 );

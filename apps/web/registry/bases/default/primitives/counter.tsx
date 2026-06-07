@@ -1,4 +1,5 @@
-import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
+import { interpolate, useCurrentFrame } from "remotion";
+import { EASING_ENTER } from "@/remotion/lib/timing";
 
 export type CounterProps = {
   from?: number;
@@ -25,6 +26,7 @@ export const Counter: React.FC<CounterProps> = ({
       [delayInFrames, delayInFrames + durationInFrames],
       [from, to],
       {
+        easing: EASING_ENTER,
         extrapolateLeft: "clamp",
         extrapolateRight: "clamp",
       },
@@ -32,19 +34,18 @@ export const Counter: React.FC<CounterProps> = ({
   );
 
   return (
-    <AbsoluteFill
+    <span
       style={{
-        justifyContent: "center",
-        alignItems: "center",
         fontFamily: "system-ui, sans-serif",
         fontSize: 72,
         fontWeight: 700,
         color: "white",
+        fontVariantNumeric: "tabular-nums",
         ...style,
       }}
     >
       {value}
       {suffix}
-    </AbsoluteFill>
+    </span>
   );
 };

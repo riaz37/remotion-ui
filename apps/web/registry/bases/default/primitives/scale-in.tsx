@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
+import { interpolate, useCurrentFrame } from "remotion";
+import { MotionWrapper } from "@/remotion/lib/motion-wrapper";
 import { enterProgress } from "@/remotion/lib/timing";
 
 export type ScaleInProps = {
@@ -15,16 +16,17 @@ export const ScaleIn: React.FC<ScaleInProps> = ({
 }) => {
   const frame = useCurrentFrame();
   const progress = enterProgress(frame, delayInFrames, durationInFrames);
-  const scale = interpolate(progress, [0, 1], [0.8, 1]);
+  const scale = interpolate(progress, [0, 1], [0.85, 1]);
 
   return (
-    <AbsoluteFill
+    <MotionWrapper
       style={{
         opacity: progress,
         transform: `scale(${scale})`,
+        transformOrigin: "center center",
       }}
     >
       {children}
-    </AbsoluteFill>
+    </MotionWrapper>
   );
 };

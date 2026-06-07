@@ -37,6 +37,9 @@ apps/web/public/r/**/*.json
 # Fumadocs (generated on postinstall)
 apps/web/.source/
 
+# Browser QA artifacts
+.qa-screenshots/
+
 # Testing
 coverage/
 .nyc_output/
