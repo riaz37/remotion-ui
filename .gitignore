@@ -1,36 +1,73 @@
-# dependencies
-node_modules
+# Dependencies
+node_modules/
 .pnp
 .pnp.js
+.pnp.*
 
-# build outputs
-dist
-.next
-out
-.turbo
-
-# registry build artifacts
-apps/web/public/r/**/*.json
-
-# fumadocs generated
-apps/web/.source/
-
-# env
-.env
-.env*.local
-
-# debug
-npm-debug.log*
+# Package managers
 pnpm-debug.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
 
-# typescript
+# Build outputs
+dist/
+build/
+out/
+.next/
+.swc/
 *.tsbuildinfo
 
-# os
+# Turborepo
+.turbo/
+
+# Vercel
+.vercel/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Registry (built at deploy via `pnpm registry:build`)
+apps/web/public/r/**/*.json
+
+# Fumadocs (generated on postinstall)
+apps/web/.source/
+
+# Testing
+coverage/
+.nyc_output/
+**/node_modules/.vite/
+
+# Test fixture installs (keep fixture source, ignore local installs)
+packages/remotion-ui/test/fixtures/**/node_modules/
+
+# Logs & debug
+*.log
+logs/
+
+# OS
 .DS_Store
 Thumbs.db
+*.swp
+*~
 
-# ide
-.idea
+# IDE / editors
+.idea/
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
+*.sublime-project
+*.sublime-workspace
+
+# Cursor (commit mcp.json; ignore generated skill symlinks)
+.cursor/skills/
+
+# Misc
+*.tgz
+.cache/
+tmp/
+temp/
