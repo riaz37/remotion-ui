@@ -1,0 +1,8 @@
+# Default owner for the repository
+* @riaz37
+
+# CLI package
+/packages/remotion-ui/ @riaz37
+
+# Docs site, registry, and previews
+/apps/web/ @riaz37
