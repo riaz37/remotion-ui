@@ -44,7 +44,8 @@
     "prepublishOnly": "pnpm build",
     "dev": "tsup --watch",
     "lint": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "publish:npm": "npm publish --access public"
   },
   "dependencies": {
     "commander": "^13.1.0",

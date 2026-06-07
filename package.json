@@ -11,7 +11,8 @@
     "remotion-ui:test": "turbo test --filter=remotion-ui",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
     "changeset": "changeset",
-    "skills:sync": "bash scripts/sync-remotion-skills.sh && bash scripts/setup-cursor-skills.sh"
+    "skills:sync": "bash scripts/sync-remotion-skills.sh && bash scripts/setup-cursor-skills.sh",
+    "publish:cli": "bash scripts/publish-remotion-ui.sh"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.12",

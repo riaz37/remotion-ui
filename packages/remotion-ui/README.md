@@ -21,6 +21,20 @@ Components are copied into your project as source files. You own the code.
 | `remotion-ui add <name>` | Add component(s) from the registry |
 | `remotion-ui search -q <query>` | Search the registry |
 | `remotion-ui view <name>` | View registry item metadata |
+| `remotion-ui diff <name>` | Diff installed vs registry |
+| `remotion-ui update <name>` | Re-install from registry |
+| `remotion-ui build [registry.json]` | Build a custom registry |
+
+## Publishing (maintainers)
+
+From the monorepo root, with a granular npm token (read/write + bypass 2FA):
+
+```bash
+cp .env.example .env   # add NPM_TOKEN=...
+pnpm publish:cli
+```
+
+Or in GitHub Actions: add `NPM_TOKEN` as a repo secret and run the **Publish CLI** workflow.
 
 ## Configuration
 
