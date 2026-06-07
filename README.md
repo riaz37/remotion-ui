@@ -1,8 +1,8 @@
 # RemotionUI
 
-The [shadcn/ui](https://ui.shadcn.com) equivalent for Remotion video development.
+Copy-paste production-ready Remotion video components directly into your projects. Install with the CLI, own every line of source — no black-box runtime dependency.
 
-Copy-paste production-ready Remotion video components directly into your projects. No black-box npm package — you own the code, fully customisable.
+> Familiar with [shadcn/ui](https://ui.shadcn.com)? RemotionUI uses the same registry workflow: CLI install, JSON manifest, files in your repo.
 
 ## Quick start
 
@@ -12,7 +12,7 @@ cd my-video
 npx remotion-ui@latest add intro
 ```
 
-Docs: [remotionui.com](https://remotionui.com)
+Docs: [remotionui.vercel.app](https://remotionui.vercel.app)
 
 ## Monorepo Structure
 

@@ -21,7 +21,7 @@ const features = [
   {
     title: "CLI workflow",
     description:
-      "init, add, search, diff, and update — the same ergonomics you expect from modern UI kits.",
+      "init, add, search, diff, and update — a registry workflow built for motion projects.",
   },
 ] as const;
 
@@ -57,11 +57,12 @@ export default function HomePage() {
               Video components for Remotion
             </p>
             <h1 className="font-[family-name:var(--font-display)] text-4xl font-bold tracking-tight sm:text-5xl lg:text-[3.25rem] lg:leading-[1.05]">
-              Build motion graphics like you build UI.
+              {siteConfig.tagline}
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-fd-muted-foreground">
-              {siteConfig.tagline} {totalComponents} primitives, scenes, and
-              compositions — ready to paste into your project.
+              Registry-first motion components for Remotion. {totalComponents}{" "}
+              primitives, scenes, and compositions — install with the CLI,
+              customize the source in your repo.
             </p>
             <div className="mt-8 max-w-lg">
               <InitCommand />

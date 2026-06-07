@@ -1,17 +1,24 @@
 # Changelog
 
-## Unreleased
+## 0.2.3
 
 ### Added
 
 - **Docs site redesign** — custom theme, homepage hero with live preview, nav/footer, copy-to-clipboard install commands
 - **`ComponentPage`** — usage examples, props tables, and related links on all component reference pages
-- **Preview fixes** — correct primitive preview framing, muted autoplay, balanced preview sizing
+- **GitHub configuration** — issue/PR templates, Dependabot, `CONTRIBUTING.md`, `SECURITY.md`, release workflow
+
+### Changed
+
+- **Brand positioning** — lead with RemotionUI's own tagline; shadcn/ui referenced only as a familiar workflow comparison
+- **CI** — frozen lockfile, lint, and docs site build in pipeline
 
 ### Fixed
 
+- Doc preview text clipped off-screen; muted autoplay for Remotion Player
 - Nested anchor hydration error in docs nav (`SiteLogo`)
-- Doc preview text clipped off-screen on motion primitives
+- `pnpm-lock.yaml` sync for Remotion `^4.0.473`
+- Release workflow handles existing GitHub releases
 
 ## 0.2.2
 
