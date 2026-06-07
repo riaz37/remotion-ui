@@ -1,0 +1,21 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      remotion:
+        patterns:
+          - remotion
+          - "@remotion/*"
+      fumadocs:
+        patterns:
+          - fumadocs-*
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

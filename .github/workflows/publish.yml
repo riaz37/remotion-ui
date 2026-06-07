@@ -2,6 +2,12 @@ name: Publish CLI
 
 on:
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "npm publish --dry-run (no upload)"
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   publish:
@@ -10,8 +16,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - uses: actions/setup-node@v4
         with:
@@ -20,16 +24,24 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Test CLI
         run: pnpm --filter remotion-ui test
 
-      - name: Publish remotion-ui
+      - name: Build CLI
+        run: pnpm --filter remotion-ui build
+
+      - name: Publish remotion-ui (dry run)
+        if: inputs.dry_run
         working-directory: packages/remotion-ui
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          pnpm build
-          npm publish --access public
+        run: npm publish --access public --dry-run
+
+      - name: Publish remotion-ui
+        if: ${{ !inputs.dry_run }}
+        working-directory: packages/remotion-ui
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
