@@ -1,6 +1,8 @@
 # remotion-ui
 
-CLI for adding Remotion video components to your project — the [shadcn/ui](https://ui.shadcn.com) of Remotion.
+CLI for adding Remotion video components to your project — copy-paste source you own, not a runtime dependency.
+
+> Same registry workflow as [shadcn/ui](https://ui.shadcn.com): `npx add`, JSON manifest, files in your repo.
 
 ## Quick start
 
@@ -25,17 +27,6 @@ Components are copied into your project as source files. You own the code.
 | `remotion-ui update <name>` | Re-install from registry |
 | `remotion-ui build [registry.json]` | Build a custom registry |
 
-## Publishing (maintainers)
-
-From the monorepo root, with a granular npm token (read/write + bypass 2FA):
-
-```bash
-cp .env.example .env   # add NPM_TOKEN=...
-pnpm publish:cli
-```
-
-Or in GitHub Actions: add `NPM_TOKEN` as a repo secret and run the **Publish CLI** workflow.
-
 ## Configuration
 
 Create `remotion-ui.json` in your project root (included by `init`):
@@ -47,16 +38,11 @@ Create `remotion-ui.json` in your project root (included by `init`):
     "primitives": "@/remotion/primitives",
     "scenes": "@/remotion/scenes",
     "compositions": "@/compositions",
-    "lib": "@/remotion/lib"
+    "lib": "@/remotion/lib",
+    "hooks": "@/remotion/hooks"
   }
 }
 ```
-
-## Registry
-
-Default registry: `https://remotionui.com/r`
-
-Override with `--registry-url` or `REMOTION_UI_REGISTRY_URL`.
 
 ## Programmatic API
 
@@ -65,6 +51,10 @@ import { fetchRegistryItem } from "remotion-ui/registry";
 import { remotionUiConfigSchema } from "remotion-ui/schema";
 ```
 
-## Docs
+## Publishing (maintainers)
 
-https://remotionui.com/docs
+```bash
+pnpm publish:cli
+```
+
+Requires `NPM_TOKEN` in the repo root `.env`.

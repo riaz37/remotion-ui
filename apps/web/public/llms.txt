@@ -1,6 +1,6 @@
 # RemotionUI
 
-> Copy-paste production-ready Remotion video components into your projects.
+> Copy-paste Remotion video components you own. Registry-first CLI + live docs previews.
 
 ## Docs
 
