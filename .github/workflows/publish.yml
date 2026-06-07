@@ -36,6 +36,7 @@ jobs:
         if: inputs.dry_run
         working-directory: packages/remotion-ui
         env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --access public --dry-run
 
@@ -43,5 +44,6 @@ jobs:
         if: ${{ !inputs.dry_run }}
         working-directory: packages/remotion-ui
         env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --access public
