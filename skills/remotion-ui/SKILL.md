@@ -36,7 +36,7 @@ For Remotion framework best practices, read in order:
 ## Commands
 
 ```bash
-pnpm skills:sync             # Sync Remotion skills + wire Cursor
+pnpm skills:sync             # Sync Remotion skills + wire Codex
 pnpm registry:build          # Build registry JSON
 pnpm dev                     # Start docs site
 pnpm build                   # Build all packages

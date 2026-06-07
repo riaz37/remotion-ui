@@ -1,8 +1,8 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
-import { fitText } from "@remotion/layout-utils";
 import { AbsoluteFill, useVideoConfig } from "remotion";
 import { FadeIn } from "@/remotion/primitives/fade-in";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
+import { fitHeadline } from "@/remotion/lib/text-fit-utils";
 
 const interFont = loadFont("normal", {
   weights: ["700"],
@@ -23,18 +23,14 @@ function getTitleSize(
   maxFontSize: number,
   fallbackWidth: number,
 ) {
-  if (typeof document === "undefined") {
-    return Math.min(maxFontSize, scaleFont(48, fallbackWidth));
-  }
-
-  const { fontSize } = fitText({
+  return fitHeadline({
     text: title,
-    withinWidth: maxWidth,
+    maxWidth,
+    maxFontSize: Math.min(maxFontSize, scaleFont(96, fallbackWidth)),
+    minFontSize: scaleFont(42, fallbackWidth),
     fontFamily: interFont.fontFamily,
     fontWeight: "700",
   });
-
-  return Math.min(fontSize, maxFontSize);
 }
 
 export const AutoFitTitle: React.FC<AutoFitTitleProps> = ({

@@ -38,7 +38,7 @@ remotionui/
 
 ```bash
 pnpm install
-pnpm skills:sync    # Pull Remotion Agent Skills + wire Cursor
+pnpm skills:sync    # Pull Remotion Agent Skills + wire Codex
 pnpm dev
 ```
 
@@ -51,7 +51,7 @@ RemotionUI uses [Agent Skills](https://agentskills.io/home) to give AI agents do
 | `remotion` | `skills/remotion/` | Official [Remotion best practices](https://www.remotion.dev/docs/ai/skills) |
 | `remotion-ui` | `skills/remotion-ui/` | RemotionUI monorepo, CLI, and registry authoring |
 
-Run `pnpm skills:sync` to vendor the latest Remotion skills from upstream and link them to `.cursor/skills/` for Cursor discovery.
+Run `pnpm skills:sync` to vendor the latest Remotion skills from upstream and link them to `.agents/skills/` for Codex discovery.
 
 ## Scripts
 
@@ -60,7 +60,7 @@ Run `pnpm skills:sync` to vendor the latest Remotion skills from upstream and li
 | `pnpm dev` | Start all apps in development mode |
 | `pnpm build` | Build all packages and apps |
 | `pnpm registry:build` | Build registry JSON for CLI consumption |
-| `pnpm skills:sync` | Sync Remotion Agent Skills and wire Cursor |
+| `pnpm skills:sync` | Sync Remotion Agent Skills and wire Codex |
 | `pnpm lint` | Lint all packages |
 
 ## License

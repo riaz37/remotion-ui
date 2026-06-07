@@ -4,6 +4,11 @@
     "caption-highlight",
     "caption-scene",
     "audiogram-bars",
-    "audiogram-scene"
+    "audiogram-scene",
+    "karaoke-captions",
+    "waveform-line",
+    "audio-pulse",
+    "animated-bar-chart",
+    "metric-ticker"
   ]
 }

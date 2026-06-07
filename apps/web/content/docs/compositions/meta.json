@@ -1,4 +1,11 @@
 {
   "title": "Compositions",
-  "pages": ["intro", "showcase", "social-clip"]
+  "pages": [
+    "intro",
+    "showcase",
+    "social-clip",
+    "tutorial-clip",
+    "data-story",
+    "podcast-clip"
+  ]
 }

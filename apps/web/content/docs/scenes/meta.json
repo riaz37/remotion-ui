@@ -11,6 +11,15 @@
     "audiogram-scene",
     "logo-reveal",
     "map-flight",
-    "auto-fit-title"
+    "auto-fit-title",
+    "media-frame",
+    "media-sequence",
+    "split-screen",
+    "b-roll-stack",
+    "caption-bumper",
+    "timeline-steps",
+    "callout-spotlight",
+    "zoom-pan-frame",
+    "code-reveal"
   ]
 }

@@ -2,8 +2,13 @@
 
 ## Unreleased
 
+## 0.4.0
+
 ### Added
 
+- **Creator Essentials component pack** — media, captions, audio, charts, demos, and composition templates for common Remotion workflows
+- **19 new components** — media-frame, media-sequence, split-screen, b-roll-stack, karaoke-captions, waveform-line, audio-pulse, animated-bar-chart, line-chart-draw, metric-ticker, timeline-steps, callout-spotlight, zoom-pan-frame, cursor-path, code-reveal, tutorial-clip, data-story, podcast-clip, caption-bumper
+- **Shared utilities** — media-utils, chart-utils, and text-fit-utils registry helpers
 - **DESIGN.md** — Remotion-adjacent design system (Studio Blue palette, typography, motion rules)
 - **docs/design/** — competitive audit and mockup specifications
 - **Component cards** — lane icon thumbnails and Atlas filter chips on homepage
@@ -72,7 +77,7 @@
 
 ### Added
 
-- Agent rule for registry/preview authoring (`.cursor/rules/remotion.mdc`)
+- Codex guidance for registry/preview authoring (`AGENTS.md`, `.codex/`, `.agents/skills/`)
 - `scripts/patch-remotion-skill-docs.mjs` — preserve docs mirror after skill sync
 - `pnpm skills:sync` now refreshes official docs mirror automatically
 

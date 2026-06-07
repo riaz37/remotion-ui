@@ -1,4 +1,8 @@
 {
   "title": "Vectors",
-  "pages": ["path-draw"]
+  "pages": [
+    "path-draw",
+    "line-chart-draw",
+    "cursor-path"
+  ]
 }
