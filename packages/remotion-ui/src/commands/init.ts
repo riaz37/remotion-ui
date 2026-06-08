@@ -53,6 +53,6 @@ export async function initCommand(
   console.log(`\nProject created at ${targetDir}`);
   console.log(`\nNext steps:`);
   console.log(`  cd ${projectName}`);
-  console.log(`  npx remotion-ui add fade-in`);
   console.log(`  npm run dev`);
+  console.log(`  npx remotion-ui add intro`);
 }
