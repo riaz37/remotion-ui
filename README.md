@@ -12,7 +12,7 @@ cd my-video
 npx remotion-ui@latest add intro
 ```
 
-Docs: [remotionui.vercel.app](https://remotionui.vercel.app)
+Docs: [remotionui.com](https://remotionui.com)
 
 ## Monorepo Structure
 

@@ -12,6 +12,9 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    environment: npm-publish
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -47,3 +50,11 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --access public
+
+      - name: Verify published CLI version
+        if: ${{ !inputs.dry_run }}
+        run: npx --yes remotion-ui@latest --version
+
+      - name: Verify published registry search
+        if: ${{ !inputs.dry_run }}
+        run: npx --yes remotion-ui@latest search -q caption

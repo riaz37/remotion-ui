@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Documentation
-    url: https://remotionui.vercel.app/docs
+    url: https://remotionui.com/docs
     about: Guides, component reference, and CLI docs
   - name: Discussions
-    url: https://github.com/riaz37/remotionui/discussions
+    url: https://github.com/riaz37/remotion-ui/discussions
     about: Ask questions and share ideas

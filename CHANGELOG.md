@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+## 0.4.2
+
+### Changed
+
+- Updated npm package metadata to the canonical GitHub repository and public site URLs.
+- Hardened release workflow with manual environment-gated publishing and post-publish smoke checks.
+
+## 0.4.1
+
+### Fixed
+
+- Fixed the CLI default registry URL so `npx remotion-ui@latest search` and registry installs resolve against the live hosted registry.
+
 ## 0.4.0
 
 ### Added
