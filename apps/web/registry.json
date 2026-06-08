@@ -41,7 +41,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "timing"
+        "timing",
+        "layout"
       ],
       "files": [
         {
@@ -205,7 +206,9 @@
       "dependencies": [
         "remotion"
       ],
-      "registryDependencies": [],
+      "registryDependencies": [
+        "timing"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/counter.tsx",
@@ -257,7 +260,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "timing"
+        "timing",
+        "layout"
       ],
       "files": [
         {
@@ -291,7 +295,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "timing"
+        "timing",
+        "layout"
       ],
       "files": [
         {
@@ -363,7 +368,8 @@
       ],
       "registryDependencies": [
         "fade-in",
-        "slide-left"
+        "slide-left",
+        "layout"
       ],
       "files": [
         {
@@ -381,7 +387,8 @@
       ],
       "registryDependencies": [
         "fade-in",
-        "scale-in"
+        "scale-in",
+        "layout"
       ],
       "files": [
         {
@@ -1244,7 +1251,8 @@
         "timeline-steps",
         "caption-bumper",
         "end-card",
-        "transition-fade"
+        "transition-fade",
+        "chart-utils"
       ],
       "files": [
         {

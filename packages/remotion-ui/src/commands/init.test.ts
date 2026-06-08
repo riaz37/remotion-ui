@@ -31,6 +31,10 @@ describe("initCommand", () => {
       path.join(tempDir, "my-video", "src/Root.tsx"),
       "utf-8",
     );
+    const remotionConfig = await fs.readFile(
+      path.join(tempDir, "my-video", "remotion.config.ts"),
+      "utf-8",
+    );
     const composition = await fs.readFile(
       path.join(tempDir, "my-video", "src/compositions/welcome/index.tsx"),
       "utf-8",
@@ -39,6 +43,7 @@ describe("initCommand", () => {
     expect(root).toContain('id="Welcome"');
     expect(root).toContain("WelcomeComposition");
     expect(composition).toContain("Your first composition is ready.");
+    expect(remotionConfig).toContain('currentConfiguration.resolve.alias["@"]');
     expect(consoleSpy.mock.calls.flat().join("\n")).toContain(
       "npx remotion-ui add intro",
     );
