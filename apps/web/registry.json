@@ -1212,6 +1212,60 @@
       ]
     },
     {
+      "name": "hook-card",
+      "type": "registry:block",
+      "description": "Short-form opener scene for creator clips",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/hook-card/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "talking-head-layout",
+      "type": "registry:block",
+      "description": "Caption-safe creator layout for speaker clips",
+      "dependencies": [
+        "remotion",
+        "@remotion/media"
+      ],
+      "registryDependencies": [
+        "layout",
+        "media-utils",
+        "waveform-line"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/talking-head-layout/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "comment-callout",
+      "type": "registry:block",
+      "description": "Animated viewer comment or Q&A prompt scene",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/comment-callout/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "tutorial-clip",
       "type": "registry:block",
       "description": "Tutorial clip composition for demos and explainers",
@@ -1257,6 +1311,31 @@
       "files": [
         {
           "path": "registry/bases/default/compositions/data-story/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "creator-reel",
+      "type": "registry:block",
+      "description": "Vertical creator media composition template",
+      "dependencies": [
+        "remotion",
+        "@remotion/captions",
+        "@remotion/transitions"
+      ],
+      "registryDependencies": [
+        "hook-card",
+        "talking-head-layout",
+        "comment-callout",
+        "caption-scene",
+        "b-roll-stack",
+        "end-card",
+        "transition-fade"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/compositions/creator-reel/index.tsx",
           "type": "registry:block"
         }
       ]

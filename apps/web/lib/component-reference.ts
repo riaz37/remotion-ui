@@ -875,6 +875,61 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     ],
     related: ["tutorial-clip"],
   },
+  "hook-card": {
+    category: "scene",
+    usage: `import { HookCard } from "@/remotion/scenes/hook-card";
+
+<HookCard
+  kicker="Creator media"
+  headline="Make the first second count"
+  subtitle="A punchy opener for reels and shorts."
+/>`,
+    props: [
+      { name: "headline", type: "string", required: true, description: "Large hook text." },
+      { name: "kicker", type: "string", default: '"Creator insight"', description: "Small label above the headline." },
+      { name: "subtitle", type: "string", description: "Optional supporting line." },
+      { name: "accentColor", type: "string", default: '"#f97316"', description: "Accent sweep, label, and glow color." },
+      { name: "backgroundColor", type: "string", default: '"#09090b"', description: "Scene background color." },
+    ],
+    related: ["creator-reel", "title-card", "auto-fit-title"],
+  },
+  "talking-head-layout": {
+    category: "scene",
+    usage: `import { TalkingHeadLayout } from "@/remotion/scenes/talking-head-layout";
+
+<TalkingHeadLayout
+  mediaSrc={staticFile("speaker.mp4")}
+  audioSrc={staticFile("voice.wav")}
+  title="Put the speaker first"
+/>`,
+    props: [
+      { name: "mediaSrc", type: "string", description: "Optional image or video source for the speaker/media slot." },
+      { name: "audioSrc", type: "string", description: "Optional audio source for the waveform line." },
+      { name: "title", type: "string", description: "Primary title beside or below the media." },
+      { name: "subtitle", type: "string", description: "Supporting copy." },
+      { name: "fit", type: '"cover" | "contain"', default: '"cover"', description: "Media object-fit behavior." },
+    ],
+    note: "Advanced — installs @remotion/media and waveform-line for optional audio visuals.",
+    related: ["creator-reel", "caption-scene", "media-frame"],
+  },
+  "comment-callout": {
+    category: "scene",
+    usage: `import { CommentCallout } from "@/remotion/scenes/comment-callout";
+
+<CommentCallout
+  author="Mina Lee"
+  handle="@minamakes"
+  body="Can you turn this into a quick video breakdown?"
+/>`,
+    props: [
+      { name: "body", type: "string", required: true, description: "Comment, question, prompt, or testimonial text." },
+      { name: "author", type: "string", description: "Display name for the comment author." },
+      { name: "handle", type: "string", description: "Social handle or secondary author label." },
+      { name: "initials", type: "string", description: "Avatar initials." },
+      { name: "replyLabel", type: "string", description: "Optional response status label." },
+    ],
+    related: ["creator-reel", "quote-card", "caption-bumper"],
+  },
   "social-clip": {
     category: "composition",
     usage: `import { SocialClip } from "@/compositions/social-clip";
@@ -887,6 +942,26 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     ],
     note: "9:16 social template (1080×1920). Advanced tier.",
     related: ["caption-scene", "audiogram-scene", "auto-fit-title"],
+  },
+  "creator-reel": {
+    category: "composition",
+    usage: `import { CreatorReel } from "@/compositions/creator-reel";
+
+<CreatorReel
+  mediaSrc={staticFile("speaker.mp4")}
+  audioSrc={staticFile("voice.wav")}
+  captions={captions}
+/>`,
+    props: [
+      { name: "hookHeadline", type: "string", description: "Opening hook headline." },
+      { name: "mediaSrc", type: "string", description: "Speaker image or video source." },
+      { name: "mediaFit", type: '"cover" | "contain"', default: '"cover"', description: "Speaker media object-fit behavior." },
+      { name: "audioSrc", type: "string", description: "Optional audio source for waveform visuals." },
+      { name: "captions", type: "Caption[]", description: "Synced captions layered over the talking-head scene." },
+      { name: "bRollItems", type: "BRollItem[]", description: "Media cards for the proof/b-roll section." },
+    ],
+    note: "9:16 creator template. Advanced tier.",
+    related: ["hook-card", "talking-head-layout", "comment-callout"],
   },
   "tutorial-clip": {
     category: "composition",

@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+## 0.5.0
+
+### Added
+
+- **Creator Media component pack** — `hook-card`, `talking-head-layout`, `comment-callout`, and `creator-reel` for practical short-form creator videos.
+- **Creator docs previews** — live preview pages, Atlas metadata, component references, and AI install metadata for the new registry items.
+
+### Changed
+
+- Docs previews now scale native Remotion players into the preview panel, including 9:16 portrait compositions.
+- Portrait component docs reserve a usable preview width so vertical reels can be inspected before install.
+
+### Fixed
+
+- Fixed new animated previews appearing blank at frame 0 by offsetting docs-only preview wrappers to representative frames.
+- Improved creator preview media fitting and portrait typography to avoid clipped demo text.
+
 ## 0.4.2
 
 ### Changed

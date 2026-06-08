@@ -37,6 +37,7 @@ apps/web/public/ai/
 
 # Fumadocs (generated on postinstall)
 apps/web/.source/
+/docs/
 
 # Browser QA artifacts
 .qa-screenshots/

@@ -106,7 +106,12 @@ function guessComponentUrl(name: string): string {
       ? `/docs/scenes/${name}`
       : `/docs/vectors/${name}`;
   }
-  if (name === "social-clip" || name === "intro" || name === "showcase") {
+  if (
+    name === "social-clip" ||
+    name === "intro" ||
+    name === "showcase" ||
+    name === "creator-reel"
+  ) {
     return `/docs/compositions/${name}`;
   }
   if (
@@ -121,6 +126,9 @@ function guessComponentUrl(name: string): string {
       "caption-scene",
       "audiogram-scene",
       "map-flight",
+      "hook-card",
+      "talking-head-layout",
+      "comment-callout",
     ].includes(name)
   ) {
     return `/docs/scenes/${name}`;

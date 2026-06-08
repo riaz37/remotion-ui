@@ -13,13 +13,16 @@ import { CaptionBumperPreview } from "./previews/caption-bumper";
 import { CaptionHighlightPreview } from "./previews/caption-highlight";
 import { CaptionScenePreview } from "./previews/caption-scene";
 import { CodeRevealPreview } from "./previews/code-reveal";
+import { CommentCalloutPreview } from "./previews/comment-callout";
 import { CounterPreview } from "./previews/counter";
+import { CreatorReelPreview } from "./previews/creator-reel";
 import { CursorPathPreview } from "./previews/cursor-path";
 import { DataStoryPreview } from "./previews/data-story";
 import { EndCardPreview } from "./previews/end-card";
 import { FadeInPreview } from "./previews/fade-in";
 import { FadeOutPreview } from "./previews/fade-out";
 import { FeatureListPreview } from "./previews/feature-list";
+import { HookCardPreview } from "./previews/hook-card";
 import { IntroPreview } from "./previews/intro";
 import { KaraokeCaptionsPreview } from "./previews/karaoke-captions";
 import { LineChartDrawPreview } from "./previews/line-chart-draw";
@@ -45,6 +48,7 @@ import { StaggerChildrenPreview } from "./previews/stagger-children";
 import { StatCardPreview } from "./previews/stat-card";
 import { TimelineStepsPreview } from "./previews/timeline-steps";
 import { TitleCardPreview } from "./previews/title-card";
+import { TalkingHeadLayoutPreview } from "./previews/talking-head-layout";
 import { TutorialClipPreview } from "./previews/tutorial-clip";
 import { TypewriterPreview } from "./previews/typewriter";
 import { WaveformLinePreview } from "./previews/waveform-line";
@@ -71,13 +75,16 @@ const PREVIEWS: Record<string, PreviewConfig> = {
   "caption-highlight": { component: CaptionHighlightPreview },
   "caption-scene": { component: CaptionScenePreview, durationInFrames: 150 },
   "code-reveal": { component: CodeRevealPreview },
+  "comment-callout": { component: CommentCalloutPreview },
   counter: { component: CounterPreview },
+  "creator-reel": { component: CreatorReelPreview, durationInFrames: 180 },
   "cursor-path": { component: CursorPathPreview },
   "data-story": { component: DataStoryPreview, durationInFrames: 180 },
   "end-card": { component: EndCardPreview },
   "fade-in": { component: FadeInPreview },
   "fade-out": { component: FadeOutPreview },
   "feature-list": { component: FeatureListPreview },
+  "hook-card": { component: HookCardPreview },
   intro: { component: IntroPreview, durationInFrames: 150 },
   "karaoke-captions": { component: KaraokeCaptionsPreview },
   "line-chart-draw": { component: LineChartDrawPreview },
@@ -103,6 +110,7 @@ const PREVIEWS: Record<string, PreviewConfig> = {
   "stat-card": { component: StatCardPreview },
   "timeline-steps": { component: TimelineStepsPreview },
   "title-card": { component: TitleCardPreview },
+  "talking-head-layout": { component: TalkingHeadLayoutPreview },
   "tutorial-clip": { component: TutorialClipPreview, durationInFrames: 180 },
   typewriter: { component: TypewriterPreview },
   "waveform-line": { component: WaveformLinePreview },

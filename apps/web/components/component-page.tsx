@@ -85,7 +85,7 @@ export function ComponentPage({
           </div>
           <div
             className={`mb-8 lg:sticky lg:top-20 lg:order-2 lg:mb-0 ${
-              isPortrait ? "max-w-[16rem] lg:max-w-none lg:justify-self-end" : ""
+              isPortrait ? "w-64 max-w-full lg:justify-self-end" : ""
             }`}
           >
             {previewNode}

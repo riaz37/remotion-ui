@@ -2,7 +2,7 @@
 
 import { Player, type PlayerRef } from "@remotion/player";
 import type { ComponentType } from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type RemotionPreviewProps = {
   component: ComponentType<Record<string, unknown>>;
@@ -22,6 +22,8 @@ export function RemotionPreview({
   inputProps = {},
 }: RemotionPreviewProps) {
   const playerRef = useRef<PlayerRef>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
 
   useEffect(() => {
     const player = playerRef.current;
@@ -36,8 +38,23 @@ export function RemotionPreview({
     return () => window.cancelAnimationFrame(id);
   }, [component, durationInFrames]);
 
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const updateScale = () => {
+      setScale(container.getBoundingClientRect().width / width);
+    };
+
+    updateScale();
+    const observer = new ResizeObserver(updateScale);
+    observer.observe(container);
+
+    return () => observer.disconnect();
+  }, [width]);
+
   return (
-    <div className="h-full w-full overflow-hidden">
+    <div ref={containerRef} className="relative h-full w-full overflow-hidden">
       <Player
         ref={playerRef}
         component={component}
@@ -45,7 +62,16 @@ export function RemotionPreview({
         fps={fps}
         compositionWidth={width}
         compositionHeight={height}
-        style={{ width: "100%", height: "100%" }}
+        style={{
+          position: "absolute",
+          left: 0,
+          top: 0,
+          width,
+          height,
+          display: "block",
+          transform: `scale(${scale})`,
+          transformOrigin: "top left",
+        }}
         inputProps={inputProps}
         controls
         loop

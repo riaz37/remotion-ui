@@ -100,6 +100,24 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   "callout-spotlight": { lane: "blocks", drive: "time", tier: "core" },
   "zoom-pan-frame": { lane: "blocks", drive: "media", tier: "core" },
   "code-reveal": { lane: "blocks", drive: "time", tier: "core" },
+  "hook-card": {
+    lane: "blocks",
+    drive: "time",
+    tier: "advanced",
+    tags: ["creator"],
+  },
+  "talking-head-layout": {
+    lane: "blocks",
+    drive: "media",
+    tier: "advanced",
+    tags: ["creator", "captions"],
+  },
+  "comment-callout": {
+    lane: "blocks",
+    drive: "time",
+    tier: "advanced",
+    tags: ["creator", "social"],
+  },
   // Reels
   intro: { lane: "reels", drive: "time", tier: "core" },
   showcase: { lane: "reels", drive: "time", tier: "core" },
@@ -107,6 +125,12 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   "tutorial-clip": { lane: "reels", drive: "media", tier: "advanced" },
   "data-story": { lane: "reels", drive: "data", tier: "advanced" },
   "podcast-clip": { lane: "reels", drive: "media", tier: "advanced" },
+  "creator-reel": {
+    lane: "reels",
+    drive: "media",
+    tier: "advanced",
+    tags: ["creator", "social"],
+  },
   // Signals
   "caption-highlight": {
     lane: "signals",
