@@ -12,7 +12,7 @@ const program = new Command();
 program
   .name("remotion-ui")
   .description("Add Remotion video components to your project")
-  .version("0.4.2");
+  .version("0.4.4");
 
 program
   .command("init")
