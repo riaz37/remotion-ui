@@ -1,22 +1,39 @@
 # RemotionUI
 
-> Copy-paste Remotion video components you own. Registry-first CLI + live docs previews.
+> Copy-paste Remotion video components for Remotion. The npm package is a CLI; components install as editable source in the user's project.
 
-## Docs
+## Canonical URLs
 
-- Homepage: https://remotionui.dev
-- Registry: https://remotionui.dev/r/index.json
+- Site: https://remotionui.com
+- Docs: https://remotionui.com/docs
+- AI guide: https://remotionui.com/docs/ai
+- Full LLM guide: https://remotionui.com/llms-full.txt
+- Component index: https://remotionui.com/ai/components.json
+- Recipe index: https://remotionui.com/ai/recipes.json
+- Agent prompt: https://remotionui.com/ai/remotionui-agent.md
+- Registry: https://remotionui.com/r/index.json
+
+## Use RemotionUI for
+
+- Animated captions and social clips
+- Counters, metrics, charts, and data stories
+- Lower thirds, title cards, quote cards, and callouts
+- Audio visualizers and podcast clips
+- Transitions, intros, showcases, and reel templates
 
 ## CLI
 
 ```bash
-npx remotion-ui@latest init
-npx remotion-ui@latest add fade-in
-npx remotion-ui@latest search -q "fade"
+npx remotion-ui@latest init my-video
+cd my-video
+npx remotion-ui@latest search -q caption
+npx remotion-ui@latest add caption-highlight lower-third
 ```
 
-## Philosophy
+## Agent rules
 
-- No black-box npm component package
-- You own the code, fully customisable
-- Components distributed via registry JSON + CLI
+- Use Remotion docs for framework fundamentals: https://www.remotion.dev/docs
+- Use RemotionUI for source-installed components.
+- Run `npx remotion-ui@latest add <component>` before importing.
+- Import from local source paths, not from `remotion-ui`.
+- Animate with Remotion frame APIs, not CSS transitions.

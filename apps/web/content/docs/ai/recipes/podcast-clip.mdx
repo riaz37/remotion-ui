@@ -1,0 +1,29 @@
+---
+title: Podcast Clip
+description: AI recipe for audio-first clips with captions and waveform visuals.
+---
+
+# Podcast Clip
+
+Use this when the user wants a podcast or interview clip with audio visuals and captions.
+
+## Install
+
+```bash
+npx remotion-ui@latest add podcast-clip audio-pulse waveform-line audiogram-scene caption-scene
+```
+
+## Agent instructions
+
+- Use `PodcastClip` for a complete composition.
+- Use `AudioPulse`, `WaveformLine`, or `AudiogramScene` for custom audio visuals.
+- Require an audio source and caption data for a synced final result.
+- Keep captions readable and inside safe areas.
+
+## Typical imports
+
+```tsx
+import { PodcastClip } from "@/compositions/podcast-clip";
+import { AudioPulse } from "@/remotion/primitives/audio-pulse";
+import { WaveformLine } from "@/remotion/primitives/waveform-line";
+```

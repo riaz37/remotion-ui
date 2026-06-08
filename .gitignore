@@ -33,6 +33,7 @@ out/
 
 # Registry (built at deploy via `pnpm registry:build`)
 apps/web/public/r/**/*.json
+apps/web/public/ai/
 
 # Fumadocs (generated on postinstall)
 apps/web/.source/

@@ -1,0 +1,117 @@
+# RemotionUI full LLM guide
+
+RemotionUI is a copy-paste component registry for Remotion video projects. It helps coding agents build videos faster by installing production-ready source components into a user's project.
+
+Remotion is the framework. RemotionUI is the component layer.
+
+Use Remotion docs for project setup, Remotion Studio, Composition, Player, rendering, captions, media APIs, `useCurrentFrame()`, `interpolate()`, `spring()`, and `Sequence`: https://www.remotion.dev/docs
+
+Use RemotionUI when the user asks for ready-made captions, charts, transitions, scenes, intros, reels, podcast clips, data stories, or source-owned motion components.
+
+## Hard rules
+
+1. Do not import UI components from the `remotion-ui` npm package.
+2. The `remotion-ui` npm package is the CLI only.
+3. Install components first: `npx remotion-ui@latest add <component>`.
+4. Import installed source from local paths:
+   - `@/remotion/primitives/<component>`
+   - `@/remotion/scenes/<component>`
+   - `@/compositions/<component>`
+   - `@/remotion/lib/<utility>`
+5. Use Remotion frame APIs for render-time motion.
+6. Do not use CSS transitions or Tailwind animation classes for video motion.
+7. Customize copied files directly when the user asks for design changes.
+8. Prefer recipes before raw search when building a complete video.
+
+## Primary commands
+
+```bash
+npx remotion-ui@latest init my-video
+npx remotion-ui@latest search -q caption
+npx remotion-ui@latest view caption-highlight
+npx remotion-ui@latest add caption-highlight lower-third
+npx remotion-ui@latest diff caption-highlight
+npx remotion-ui@latest update caption-highlight
+```
+
+## Task-first component groups
+
+### Captions and social video
+
+Install:
+
+```bash
+npx remotion-ui@latest add caption-highlight caption-scene social-clip karaoke-captions
+```
+
+Use for word-by-word captions, vertical clips, synced caption scenes, and short-form video templates.
+
+### Data and charts
+
+Install:
+
+```bash
+npx remotion-ui@latest add data-story animated-bar-chart metric-ticker line-chart-draw timeline-steps
+```
+
+Use for metric videos, chart reveals, business updates, and data storytelling.
+
+### Audio and podcast clips
+
+Install:
+
+```bash
+npx remotion-ui@latest add podcast-clip audio-pulse waveform-line audiogram-scene audiogram-bars
+```
+
+Use for podcast snippets, waveform visuals, audiograms, and captioned audio clips.
+
+### Product intros and showcases
+
+Install:
+
+```bash
+npx remotion-ui@latest add intro showcase title-card feature-list logo-reveal end-card
+```
+
+Use for product openers, launch videos, feature lists, and branded endings.
+
+### Scene overlays
+
+Install:
+
+```bash
+npx remotion-ui@latest add lower-third title-card stat-card quote-card callout-spotlight
+```
+
+Use for lower thirds, speaker labels, stat callouts, title cards, and quote scenes.
+
+## Complete recipes
+
+Read machine-readable recipes at https://remotionui.com/ai/recipes.json.
+
+Recommended mapping:
+
+- Captioned social video: `social-clip`, `caption-scene`, `caption-highlight`, `audiogram-scene`, `end-card`
+- Data story: `data-story`, `animated-bar-chart`, `metric-ticker`, `timeline-steps`, `caption-bumper`
+- Podcast clip: `podcast-clip`, `audio-pulse`, `waveform-line`, `audiogram-scene`, `caption-scene`
+- Product intro: `intro`, `showcase`, `title-card`, `feature-list`, `logo-reveal`, `end-card`
+- Lower-third scene: `lower-third`, `title-card`, `stat-card`, `quote-card`, `callout-spotlight`
+
+## AI workflow
+
+1. Determine the user's video goal.
+2. Choose the closest recipe.
+3. Install the recipe components with `npx remotion-ui@latest add`.
+4. Import from local source paths.
+5. Compose scenes with Remotion `Composition`, `Sequence`, `useCurrentFrame()`, `interpolate()`, and `spring()`.
+6. Keep readable text inside safe areas.
+7. Customize copied source files for brand colors, typography, timing, layout, and props.
+
+## Useful files
+
+- Short LLM guide: https://remotionui.com/llms.txt
+- Component index: https://remotionui.com/ai/components.json
+- Recipe index: https://remotionui.com/ai/recipes.json
+- Reusable agent prompt: https://remotionui.com/ai/remotionui-agent.md
+- Registry index: https://remotionui.com/r/index.json
