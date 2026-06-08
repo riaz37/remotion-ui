@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "node:path";
+import { registryItemSchema } from "../schema/index.js";
 import type { RegistryItemJson } from "./index.js";
 
 export const DEFAULT_REGISTRY_URL = "https://remotionui.vercel.app/r";
@@ -32,7 +33,7 @@ export async function fetchRegistryItem(
     }
 
     const raw = await fs.readFile(filePath, "utf-8");
-    return JSON.parse(raw) as RegistryItemJson;
+    return parseRegistryItem(JSON.parse(raw), name);
   }
 
   const url = `${registryUrl.replace(/\/$/, "")}/presets/${preset}/${name}.json`;
@@ -42,7 +43,19 @@ export async function fetchRegistryItem(
     throw new Error(`Failed to fetch registry item "${name}" from ${url}`);
   }
 
-  return response.json() as Promise<RegistryItemJson>;
+  return parseRegistryItem(await response.json(), name);
+}
+
+function parseRegistryItem(value: unknown, name: string): RegistryItemJson {
+  const result = registryItemSchema.safeParse(value);
+  if (!result.success) {
+    throw new Error(
+      `Invalid registry item "${name}": ${result.error.issues
+        .map((issue) => issue.path.join(".") || issue.message)
+        .join(", ")}`,
+    );
+  }
+  return result.data;
 }
 
 function isLocalRegistry(registryUrl: string): boolean {

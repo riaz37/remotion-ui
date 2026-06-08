@@ -1,4 +1,4 @@
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { patchRootTsx } from "../remotion/composition-patch.js";
 import { fetchRegistryItem } from "../registry/fetch-item.js";
@@ -48,9 +48,9 @@ export async function addCommand(
 
   if (dependencies.size > 0) {
     const pm = await detectPackageManager(cwd);
-    const cmd = getInstallCommand(pm, [...dependencies]);
+    const { command, args } = getInstallCommand(pm, [...dependencies]);
     console.log(`Installing dependencies: ${[...dependencies].join(", ")}`);
-    execSync(cmd, { cwd, stdio: "inherit" });
+    execFileSync(command, args, { cwd, stdio: "inherit" });
   }
 
   console.log(`\nAdded ${components.length} component(s) successfully.`);
@@ -96,9 +96,7 @@ async function installComponent(
     const rootPath = path.resolve(ctx.cwd, ctx.config.remotion.root);
     await patchRootTsx(rootPath, {
       ...item.composition,
-      importPath:
-        item.composition.importPath ??
-        `@/compositions/${name}/index`,
+      importPath: item.composition.importPath ?? `@/compositions/${name}/index`,
     });
   }
 

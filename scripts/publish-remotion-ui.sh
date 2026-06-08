@@ -5,6 +5,8 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PKG="$ROOT/packages/remotion-ui"
 
 if [ -f "$ROOT/.env" ]; then
+  echo "Warning: loading NPM_TOKEN from .env is a legacy fallback."
+  echo "Prefer GitHub Actions Trusted Publishing with npm OIDC for releases."
   set -a
   # shellcheck source=/dev/null
   source "$ROOT/.env"
@@ -12,9 +14,10 @@ if [ -f "$ROOT/.env" ]; then
 fi
 
 if [ -z "${NPM_TOKEN:-}" ]; then
-  echo "Error: NPM_TOKEN is not set."
-  echo "Copy .env.example to .env and add your npm granular token."
-  exit 1
+  echo "NPM_TOKEN is not set; using the current npm CLI authentication."
+  echo "Prefer GitHub Actions Trusted Publishing for regular releases."
+else
+  export NODE_AUTH_TOKEN="${NODE_AUTH_TOKEN:-$NPM_TOKEN}"
 fi
 
 cd "$PKG"

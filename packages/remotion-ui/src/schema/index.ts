@@ -77,3 +77,22 @@ export const registrySchema = z.object({
 });
 
 export type Registry = z.infer<typeof registrySchema>;
+
+export const registryIndexItemSchema = registryItemSchema
+  .pick({
+    name: true,
+    type: true,
+    description: true,
+    atlas: true,
+  })
+  .strict();
+
+export const registryIndexSchema = z
+  .object({
+    name: z.string(),
+    homepage: z.string().optional(),
+    items: z.array(registryIndexItemSchema),
+  })
+  .strict();
+
+export type RegistryIndex = z.infer<typeof registryIndexSchema>;

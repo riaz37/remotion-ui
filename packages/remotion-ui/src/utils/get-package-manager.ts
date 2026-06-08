@@ -2,6 +2,10 @@ import fs from "fs-extra";
 import path from "node:path";
 
 export type PackageManager = "pnpm" | "npm" | "yarn" | "bun";
+export type InstallCommand = {
+  command: string;
+  args: string[];
+};
 
 export async function detectPackageManager(
   cwd: string,
@@ -28,17 +32,28 @@ export async function detectPackageManager(
 export function getInstallCommand(
   pm: PackageManager,
   packages: string[],
-): string {
-  const deps = packages.join(" ");
+): InstallCommand {
+  const deps = packages.map(validateDependencySpec);
 
   switch (pm) {
     case "pnpm":
-      return `pnpm add ${deps}`;
+      return { command: "pnpm", args: ["add", ...deps] };
     case "yarn":
-      return `yarn add ${deps}`;
+      return { command: "yarn", args: ["add", ...deps] };
     case "bun":
-      return `bun add ${deps}`;
+      return { command: "bun", args: ["add", ...deps] };
     default:
-      return `npm install ${deps}`;
+      return { command: "npm", args: ["install", ...deps] };
   }
+}
+
+function validateDependencySpec(spec: string): string {
+  const trimmed = spec.trim();
+  const safePackageSpec = /^(?:@[\w.-]+\/)?[\w.-]+(?:@[\w.~^*+-][\w.~^*+-]*)?$/;
+
+  if (trimmed !== spec || !safePackageSpec.test(spec)) {
+    throw new Error(`Invalid dependency spec: ${spec}`);
+  }
+
+  return spec;
 }

@@ -98,6 +98,25 @@ describe("resolveInstallPath", () => {
       }),
     ).toBe(path.join(cwd, "src/remotion/lib/timing.ts"));
   });
+
+  it("rejects explicit targets outside the project", () => {
+    expect(() =>
+      resolveInstallPath(cwd, config, {
+        path: "registry/bases/default/lib/timing.ts",
+        type: "registry:lib",
+        target: "../outside.ts",
+      }),
+    ).toThrow("outside the project");
+  });
+
+  it("rejects registry paths that escape alias directories", () => {
+    expect(() =>
+      resolveInstallPath(cwd, config, {
+        path: "registry/bases/default/lib/../../outside.ts",
+        type: "registry:lib",
+      }),
+    ).toThrow("outside the install directory");
+  });
 });
 
 describe("getAliasForType", () => {

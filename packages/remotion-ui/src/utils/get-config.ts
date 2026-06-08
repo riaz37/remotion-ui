@@ -6,11 +6,7 @@ import {
 } from "../schema/index.js";
 
 const explorer = cosmiconfig("remotion-ui", {
-  searchPlaces: [
-    "remotion-ui.json",
-    ".remotion-uirc",
-    ".remotion-uirc.json",
-  ],
+  searchPlaces: ["remotion-ui.json", ".remotion-uirc", ".remotion-uirc.json"],
 });
 
 const CATEGORY_SEGMENTS: Array<{
@@ -87,19 +83,41 @@ export function resolveAliasPath(cwd: string, alias: string): string {
   return path.join(cwd, alias);
 }
 
+function assertInsideDirectory(
+  baseDir: string,
+  targetPath: string,
+  label: string,
+): void {
+  const relative = path.relative(baseDir, targetPath);
+  if (
+    relative === ".." ||
+    relative.startsWith(`..${path.sep}`) ||
+    path.isAbsolute(relative)
+  ) {
+    throw new Error(
+      `Resolved install path is outside the ${label}: ${targetPath}`,
+    );
+  }
+}
+
 export function resolveInstallPath(
   cwd: string,
   config: RemotionUiConfig,
   file: { path: string; type: string; target?: string },
 ): string {
   if (file.target) {
-    return path.resolve(cwd, file.target);
+    const targetPath = path.resolve(cwd, file.target);
+    assertInsideDirectory(cwd, targetPath, "project");
+    return targetPath;
   }
 
   const category = getCategoryFromPath(file.path);
   if (category) {
     const baseDir = resolveAliasPath(cwd, config.aliases[category.key]);
-    return path.join(baseDir, category.relativePath);
+    const targetPath = path.resolve(baseDir, category.relativePath);
+    assertInsideDirectory(baseDir, targetPath, "install directory");
+    assertInsideDirectory(cwd, targetPath, "project");
+    return targetPath;
   }
 
   const alias = getAliasForType(config, file.type, file.path);
@@ -109,7 +127,10 @@ export function resolveInstallPath(
 
   const baseDir = resolveAliasPath(cwd, alias);
   const fileName = path.basename(file.path);
-  return path.join(baseDir, fileName);
+  const targetPath = path.resolve(baseDir, fileName);
+  assertInsideDirectory(baseDir, targetPath, "install directory");
+  assertInsideDirectory(cwd, targetPath, "project");
+  return targetPath;
 }
 
 export function isCompositionItem(files: Array<{ path: string }>): boolean {

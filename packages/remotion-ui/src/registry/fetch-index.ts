@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "node:path";
+import { registryIndexSchema, type RegistryIndex } from "../schema/index.js";
 import { DEFAULT_REGISTRY_URL } from "./fetch-item.js";
 
 export type RegistryIndexAtlas = {
@@ -16,12 +17,6 @@ export type RegistryIndexItem = {
   atlas?: RegistryIndexAtlas;
 };
 
-export type RegistryIndex = {
-  name: string;
-  homepage?: string;
-  items: RegistryIndexItem[];
-};
-
 export async function fetchRegistryIndex(
   registryUrl = process.env.REMOTION_UI_REGISTRY_URL ?? DEFAULT_REGISTRY_URL,
 ): Promise<RegistryIndex> {
@@ -31,7 +26,7 @@ export async function fetchRegistryIndex(
       throw new Error(`Registry index not found at ${filePath}`);
     }
     const raw = await fs.readFile(filePath, "utf-8");
-    return JSON.parse(raw) as RegistryIndex;
+    return parseRegistryIndex(JSON.parse(raw));
   }
 
   const url = `${registryUrl.replace(/\/$/, "")}/index.json`;
@@ -41,7 +36,19 @@ export async function fetchRegistryIndex(
     throw new Error(`Failed to fetch registry index from ${url}`);
   }
 
-  return response.json() as Promise<RegistryIndex>;
+  return parseRegistryIndex(await response.json());
+}
+
+function parseRegistryIndex(value: unknown): RegistryIndex {
+  const result = registryIndexSchema.safeParse(value);
+  if (!result.success) {
+    throw new Error(
+      `Invalid registry index: ${result.error.issues
+        .map((issue) => issue.path.join(".") || issue.message)
+        .join(", ")}`,
+    );
+  }
+  return result.data;
 }
 
 function isLocalRegistry(registryUrl: string): boolean {

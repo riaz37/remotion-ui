@@ -21,3 +21,15 @@ Include:
 - Impact assessment (CLI, registry install path, docs site, etc.)
 
 We aim to acknowledge reports within 72 hours.
+
+## Release credential handling
+
+Publish `remotion-ui` from the GitHub Actions `Publish CLI` workflow using npm
+Trusted Publishing whenever possible. Configure the npm package trusted publisher
+for repository `riaz37/remotion-ui`, workflow filename `publish.yml`, and the
+`npm-publish` environment.
+
+After a Trusted Publishing release succeeds, change the npm package publishing
+access setting to require 2FA and disallow tokens, then revoke any old automation
+tokens. If a token fallback is temporarily needed, use a short-lived,
+package-scoped granular token and revoke it immediately after publishing.
