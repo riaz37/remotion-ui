@@ -1,6 +1,6 @@
 {
   "name": "remotion-ui",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Copy-paste Remotion video components you own. Registry-first CLI — install source into your repo.",
   "homepage": "https://remotionui.com",
   "repository": {

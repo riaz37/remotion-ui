@@ -2,7 +2,7 @@ import fs from "fs-extra";
 import path from "node:path";
 import type { RegistryItemJson } from "./index.js";
 
-export const DEFAULT_REGISTRY_URL = "https://remotionui.com/r";
+export const DEFAULT_REGISTRY_URL = "https://remotionui.vercel.app/r";
 
 export type FetchRegistryOptions = {
   registryUrl?: string;

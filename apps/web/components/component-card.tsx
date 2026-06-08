@@ -1,11 +1,8 @@
 import Link from "next/link";
+import { AtlasMiniPreview } from "@/components/atlas-mini-preview";
 import { getAtlasMeta, type AtlasLane } from "@/lib/atlas";
-import {
-  LANE_VISUALS,
-  laneAccent,
-  laneAccentMuted,
-  type LaneVisual,
-} from "@/lib/lane-visuals";
+import { ATLAS_LANES } from "@/lib/atlas";
+import { laneAccent } from "@/lib/lane-visuals";
 
 type ComponentCardProps = {
   name: string;
@@ -14,39 +11,6 @@ type ComponentCardProps = {
   description?: string;
   lane?: AtlasLane;
 };
-
-function LaneThumbnail({ lane }: { lane: AtlasLane }) {
-  const visual = LANE_VISUALS[lane];
-  const accent = laneAccent(lane);
-  const bg = laneAccentMuted(lane);
-
-  return (
-    <div
-      className="flex size-12 shrink-0 items-center justify-center rounded-lg border border-fd-border"
-      style={{ background: bg }}
-    >
-      <LaneIcon visual={visual} color={accent} />
-    </div>
-  );
-}
-
-function LaneIcon({ visual, color }: { visual: LaneVisual; color: string }) {
-  return (
-    <svg
-      width="22"
-      height="22"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke={color}
-      strokeWidth="1.75"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <path d={visual.iconPath} />
-    </svg>
-  );
-}
 
 export function ComponentCard({
   name,
@@ -58,28 +22,44 @@ export function ComponentCard({
   const meta = getAtlasMeta(slug);
   const resolvedLane = lane ?? meta?.lane;
   const displayName = name.replace(/-/g, " ");
+  const accent = resolvedLane ? laneAccent(resolvedLane) : undefined;
 
   return (
     <Link
       href={url}
-      className="motion-hover group flex gap-3 rounded-xl border border-fd-border bg-fd-card p-4 hover:border-fd-primary/50 hover:shadow-sm"
+      className="motion-hover group overflow-hidden rounded-2xl border border-fd-border bg-fd-card p-3 hover:border-fd-primary/50 hover:shadow-md hover:shadow-black/10"
     >
-      {resolvedLane ? <LaneThumbnail lane={resolvedLane} /> : null}
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <p className="truncate font-medium capitalize group-hover:text-fd-primary">
+      {resolvedLane ? (
+        <AtlasMiniPreview slug={slug} lane={resolvedLane} />
+      ) : null}
+      <div className="mt-3 min-w-0">
+        <div className="flex items-start justify-between gap-3">
+          <p className="truncate text-sm font-semibold capitalize group-hover:text-fd-primary">
             {displayName}
           </p>
-          {meta?.tier === "advanced" ? (
-            <span
-              className="size-1.5 shrink-0 rounded-full bg-fd-primary"
-              title="Advanced"
-            />
-          ) : null}
+          <div className="flex shrink-0 gap-1.5">
+            {resolvedLane ? (
+              <span
+                className="rounded-full border px-2 py-0.5 font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.12em]"
+                style={{ borderColor: accent, color: accent }}
+              >
+                {ATLAS_LANES[resolvedLane].label}
+              </span>
+            ) : null}
+            {meta?.tier === "advanced" ? (
+              <span className="rounded-full border border-fd-border px-2 py-0.5 font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.12em] text-fd-muted-foreground">
+                Pro
+              </span>
+            ) : null}
+          </div>
         </div>
         {description ? (
           <p className="mt-1 line-clamp-2 text-sm text-fd-muted-foreground">
             {description}
+          </p>
+        ) : meta?.tags?.length ? (
+          <p className="mt-1 text-xs capitalize text-fd-muted-foreground">
+            {meta.tags.join(" · ")}
           </p>
         ) : null}
       </div>

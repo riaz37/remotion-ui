@@ -69,6 +69,10 @@ Thumbs.db
 # Cursor (commit mcp.json; ignore generated skill symlinks)
 .cursor/skills/
 
+# Local agent config
+.agents/
+.codex/
+
 # Misc
 *.tgz
 .cache/
