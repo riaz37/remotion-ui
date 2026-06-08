@@ -3,7 +3,7 @@ import path from "node:path";
 import { registryItemSchema } from "../schema/index.js";
 import type { RegistryItemJson } from "./index.js";
 
-export const DEFAULT_REGISTRY_URL = "https://remotionui.vercel.app/r";
+export const DEFAULT_REGISTRY_URL = "https://remotionui.com/r";
 
 export type FetchRegistryOptions = {
   registryUrl?: string;

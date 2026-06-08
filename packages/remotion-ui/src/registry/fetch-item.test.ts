@@ -16,7 +16,7 @@ describe("fetchRegistryItem", () => {
   });
 
   it("defaults to the hosted registry URL", () => {
-    expect(DEFAULT_REGISTRY_URL).toBe("https://remotionui.vercel.app/r");
+    expect(DEFAULT_REGISTRY_URL).toBe("https://remotionui.com/r");
   });
 
   it("rejects local registry items that do not match the runtime schema", async () => {
