@@ -86,6 +86,3 @@ Lane icon thumbnail (48×48), name, optional description, tier dot for advanced.
 - [x] Sticky component preview layout
 
 ## References
-
-- Audit: [`docs/design/AUDIT.md`](docs/design/AUDIT.md)
-- Mockup specs: [`docs/design/MOCKUPS.md`](docs/design/MOCKUPS.md)

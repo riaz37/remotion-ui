@@ -1,4 +1,20 @@
 {
   "title": "Documentation",
-  "pages": ["index", "installation", "cli", "atlas", "primitives", "signals", "vectors", "spatial", "cuts", "scenes", "compositions", "utilities", "advanced", "registry"]
+  "pages": [
+    "index",
+    "installation",
+    "cli",
+    "ai",
+    "atlas",
+    "primitives",
+    "signals",
+    "vectors",
+    "spatial",
+    "cuts",
+    "scenes",
+    "compositions",
+    "utilities",
+    "advanced",
+    "registry"
+  ]
 }

@@ -23,7 +23,6 @@
 - **19 new components** — media-frame, media-sequence, split-screen, b-roll-stack, karaoke-captions, waveform-line, audio-pulse, animated-bar-chart, line-chart-draw, metric-ticker, timeline-steps, callout-spotlight, zoom-pan-frame, cursor-path, code-reveal, tutorial-clip, data-story, podcast-clip, caption-bumper
 - **Shared utilities** — media-utils, chart-utils, and text-fit-utils registry helpers
 - **DESIGN.md** — Remotion-adjacent design system (Studio Blue palette, typography, motion rules)
-- **docs/design/** — competitive audit and mockup specifications
 - **Component cards** — lane icon thumbnails and Atlas filter chips on homepage
 - **Sticky preview layout** — component docs use side-by-side preview on large screens
 

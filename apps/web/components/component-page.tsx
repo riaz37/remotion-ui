@@ -108,6 +108,52 @@ export function ComponentPage({
 
       {reference ? (
         <>
+          <div className="not-prose my-8 rounded-2xl border border-fd-border bg-fd-card/70 p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="font-[family-name:var(--font-display)] text-lg font-semibold tracking-tight">
+                  AI usage
+                </h2>
+                <p className="mt-1 text-sm text-fd-muted-foreground">
+                  Install first, then import the copied source component locally.
+                </p>
+              </div>
+              <Link
+                href="/docs/ai"
+                className="rounded-lg border border-fd-border px-3 py-1.5 text-sm transition-colors hover:bg-fd-muted"
+              >
+                AI guide
+              </Link>
+            </div>
+            <div className="mt-4 grid gap-3 text-sm md:grid-cols-2">
+              <div className="rounded-xl border border-fd-border bg-fd-muted/30 p-3">
+                <p className="mb-2 font-medium">Install</p>
+                <code className="font-[family-name:var(--font-mono)] text-xs text-fd-muted-foreground">
+                  npx remotion-ui@latest add {name}
+                </code>
+              </div>
+              <div className="rounded-xl border border-fd-border bg-fd-muted/30 p-3">
+                <p className="mb-2 font-medium">Import after install</p>
+                <code className="font-[family-name:var(--font-mono)] text-xs text-fd-muted-foreground">
+                  {getAiImportPath(name)}
+                </code>
+              </div>
+            </div>
+            <ul className="mt-4 space-y-1.5 text-sm text-fd-muted-foreground">
+              <li>Use when: {getAiUseCase(name, reference.category, atlas?.lane)}.</li>
+              <li>
+                Customize: {getAiCustomizationKnobs(reference.props)}.
+              </li>
+              <li>
+                Rule: do not import this component from the{" "}
+                <code className="font-[family-name:var(--font-mono)]">
+                  remotion-ui
+                </code>{" "}
+                npm package; it is copied into your project.
+              </li>
+            </ul>
+          </div>
+
           <h2 className="mt-10 scroll-m-20 text-xl font-semibold tracking-tight">
             Usage
           </h2>
@@ -157,4 +203,77 @@ function guessCategory(slug: string): string {
   if (ref.category === "scene") return "scenes";
   if (ref.category === "composition") return "compositions";
   return "primitives";
+}
+
+function getAiImportPath(slug: string): string {
+  const ref = getComponentReference(slug);
+  const atlas = getAtlasMeta(slug);
+  if (atlas?.lane === "reels" || ref?.category === "composition") {
+    return `@/compositions/${slug}`;
+  }
+  if (ref?.category === "scene") {
+    return `@/remotion/scenes/${slug}`;
+  }
+  if (ref?.category === "utility") {
+    return `@/remotion/lib/${slug}`;
+  }
+  return `@/remotion/primitives/${slug}`;
+}
+
+function getAiUseCase(
+  slug: string,
+  category: ComponentReferenceCategory,
+  lane?: string,
+): string {
+  if (slug.includes("caption") || slug.includes("karaoke")) {
+    return "captioned videos, social clips, and synced text scenes";
+  }
+  if (
+    slug.includes("chart") ||
+    slug.includes("metric") ||
+    slug.includes("counter") ||
+    slug.includes("data")
+  ) {
+    return "data stories, metrics, charts, and numeric proof points";
+  }
+  if (
+    slug.includes("audio") ||
+    slug.includes("waveform") ||
+    slug.includes("audiogram") ||
+    slug.includes("podcast")
+  ) {
+    return "audio-first videos, podcast clips, and waveform visuals";
+  }
+  if (lane === "cuts" || slug.startsWith("transition-")) {
+    return "scene transitions and composition pacing";
+  }
+  if (lane === "spatial" || slug.startsWith("map-")) {
+    return "map scenes, routes, markers, and spatial storytelling";
+  }
+  if (category === "composition") {
+    return "complete video templates that can be customized as source";
+  }
+  if (category === "scene") {
+    return "full-frame scenes, overlays, cards, and reusable video sections";
+  }
+  return "frame-level motion primitives and reusable animation wrappers";
+}
+
+type ComponentReferenceCategory =
+  | "primitive"
+  | "scene"
+  | "composition"
+  | "utility";
+
+function getAiCustomizationKnobs(props: { name: string }[]): string {
+  const propNames = props
+    .map((prop) => prop.name)
+    .filter((propName) => propName !== "children")
+    .slice(0, 4);
+
+  if (propNames.length === 0) {
+    return "edit the copied source file for timing, layout, colors, and typography";
+  }
+
+  return `${propNames.join(", ")}, plus copied source for timing, layout, colors, and typography`;
 }
