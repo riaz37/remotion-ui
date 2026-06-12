@@ -534,6 +534,42 @@
       ]
     },
     {
+      "name": "hero-loop",
+      "type": "registry:block",
+      "description": "15-second looping website hero composition",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "blur-in",
+        "counter",
+        "fade-in",
+        "fade-out",
+        "rotate-in",
+        "scale-in",
+        "slide-up",
+        "spring-in",
+        "stagger-children",
+        "typewriter",
+        "word-highlight"
+      ],
+      "composition": {
+        "id": "HeroLoop",
+        "component": "HeroLoop",
+        "durationInFrames": 450,
+        "fps": 30,
+        "width": 1920,
+        "height": 1080,
+        "importPath": "@/compositions/hero-loop/index"
+      },
+      "files": [
+        {
+          "path": "registry/bases/default/compositions/hero-loop/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "caption-utils",
       "type": "registry:lib",
       "description": "Caption page grouping and word-active helpers",

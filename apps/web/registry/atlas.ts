@@ -121,6 +121,12 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   // Reels
   intro: { lane: "reels", drive: "time", tier: "core" },
   showcase: { lane: "reels", drive: "time", tier: "core" },
+  "hero-loop": {
+    lane: "reels",
+    drive: "time",
+    tier: "core",
+    tags: ["hero", "website"],
+  },
   "social-clip": { lane: "reels", drive: "media", tier: "advanced" },
   "tutorial-clip": { lane: "reels", drive: "media", tier: "advanced" },
   "data-story": { lane: "reels", drive: "data", tier: "advanced" },

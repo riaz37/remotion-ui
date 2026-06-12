@@ -9,3 +9,4 @@ export { BlurInPreview } from "./blur-in";
 export { LowerThirdPreview } from "./lower-third";
 export { TitleCardPreview } from "./title-card";
 export { IntroPreview } from "./intro";
+export { HeroLoopPreview } from "./hero-loop";

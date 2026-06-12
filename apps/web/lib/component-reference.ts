@@ -506,6 +506,15 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     note: "Demo reel using TransitionSeries across multiple scenes.",
     related: ["transition-fade", "feature-list"],
   },
+  "hero-loop": {
+    category: "composition",
+    usage: `import { HeroLoop } from "@/compositions/hero-loop";
+
+<HeroLoop />`,
+    props: [],
+    note: "15-second silent looping hero video for website embeds. Installs as source and demonstrates the primitives it uses.",
+    related: ["typewriter", "counter", "stagger-children"],
+  },
   "caption-highlight": {
     category: "primitive",
     usage: `import { CaptionHighlight } from "@/remotion/primitives/caption-highlight";

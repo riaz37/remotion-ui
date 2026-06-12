@@ -23,7 +23,7 @@ export default function HomePage() {
     >
       <section className="relative overflow-hidden border-b border-fd-border">
         <div className="absolute left-1/2 top-0 -z-10 h-96 w-[48rem] -translate-x-1/2 rounded-full bg-fd-primary/10 blur-3xl" />
-        <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:py-24">
+        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-12 lg:grid-cols-[0.78fr_1.22fr] lg:items-center lg:py-16">
           <div>
             <div className="mb-5 flex flex-wrap gap-2">
               <span className="rounded-full border border-fd-primary/30 bg-fd-primary/10 px-3 py-1 font-[family-name:var(--font-mono)] text-xs font-medium uppercase tracking-[0.16em] text-fd-primary">

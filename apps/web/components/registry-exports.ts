@@ -19,6 +19,7 @@ export { QuoteCard } from "../registry/bases/default/scenes/quote-card";
 export { EndCard } from "../registry/bases/default/scenes/end-card";
 export { Intro } from "../registry/bases/default/compositions/intro";
 export { Showcase } from "../registry/bases/default/compositions/showcase";
+export { HeroLoop } from "../registry/bases/default/compositions/hero-loop";
 export { SocialClip } from "../registry/bases/default/compositions/social-clip";
 export { CaptionHighlight } from "../registry/bases/default/primitives/caption-highlight";
 export { AudiogramBars } from "../registry/bases/default/primitives/audiogram-bars";

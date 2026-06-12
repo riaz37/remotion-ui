@@ -22,6 +22,7 @@ import { EndCardPreview } from "./previews/end-card";
 import { FadeInPreview } from "./previews/fade-in";
 import { FadeOutPreview } from "./previews/fade-out";
 import { FeatureListPreview } from "./previews/feature-list";
+import { HeroLoopPreview } from "./previews/hero-loop";
 import { HookCardPreview } from "./previews/hook-card";
 import { IntroPreview } from "./previews/intro";
 import { KaraokeCaptionsPreview } from "./previews/karaoke-captions";
@@ -84,6 +85,7 @@ const PREVIEWS: Record<string, PreviewConfig> = {
   "fade-in": { component: FadeInPreview },
   "fade-out": { component: FadeOutPreview },
   "feature-list": { component: FeatureListPreview },
+  "hero-loop": { component: HeroLoopPreview, durationInFrames: 180 },
   "hook-card": { component: HookCardPreview },
   intro: { component: IntroPreview, durationInFrames: 150 },
   "karaoke-captions": { component: KaraokeCaptionsPreview },

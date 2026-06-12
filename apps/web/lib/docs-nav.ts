@@ -110,6 +110,7 @@ function guessComponentUrl(name: string): string {
     name === "social-clip" ||
     name === "intro" ||
     name === "showcase" ||
+    name === "hero-loop" ||
     name === "creator-reel"
   ) {
     return `/docs/compositions/${name}`;
