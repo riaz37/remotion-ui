@@ -1,3 +1,5 @@
+> If RemotionUI saves you time, please ⭐ star the repo — it helps a lot!
+
 # remotion-ui
 
 Production-ready motion for Remotion. Source you own.

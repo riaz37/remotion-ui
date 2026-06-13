@@ -7,6 +7,7 @@ import {
   detectPackageManager,
 } from "../utils/get-package-manager.js";
 import { getTemplateDir } from "../utils/get-template-dir.js";
+import { printStarPrompt } from "../utils/star-prompt.js";
 
 export type InitStarter = "default" | "social" | "podcast";
 
@@ -36,6 +37,7 @@ export async function initCommand(
 
   if (options.existing) {
     await bootstrapExistingProject(cwd);
+    printStarPrompt();
     return;
   }
 
@@ -82,6 +84,7 @@ export async function initCommand(
       cwd: targetDir,
       recipe: recipeSlug,
       yes: options.yes ?? true,
+      showStarPrompt: false,
     });
   }
 
@@ -95,4 +98,6 @@ export async function initCommand(
   } else {
     console.log(`  npx remotion-ui add intro`);
   }
+
+  printStarPrompt();
 }
