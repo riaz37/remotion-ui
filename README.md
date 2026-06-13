@@ -1,8 +1,8 @@
 > If RemotionUI saves you time, please ⭐ star the repo — it helps a lot!
 
-# RemotionUI
-
 <div align="center">
+
+# RemotionUI
 
 <img src="apps/web/public/logo.svg" alt="RemotionUI" width="64" height="64" />
 
