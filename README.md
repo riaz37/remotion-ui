@@ -8,19 +8,24 @@
   <strong>Production-ready motion for Remotion. Source you own.</strong>
 </p>
 
+<p align="center">
+  Full compositions — social clips, creator reels, launch scenes — not just effects.<br />
+  Install with <code>npx remotion-ui add</code>, edit every frame in your repo.
+</p>
+
 [![Docs](https://img.shields.io/badge/docs-remotionui.com-60a5fa?style=flat-square)](https://remotionui.com/docs)
 [![npm](https://img.shields.io/npm/v/remotion-ui?style=flat-square)](https://www.npmjs.com/package/remotion-ui)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
-
-> Familiar with [shadcn/ui](https://ui.shadcn.com)? RemotionUI uses the same registry workflow: CLI install, JSON manifest, files in your repo.
 
 ## Quick start
 
 ```bash
 npx remotion-ui@latest init my-video
 cd my-video
-npx remotion-ui@latest add fade-in lower-third social-clip
+npx remotion-ui@latest add social-clip
 ```
+
+Same copy-paste workflow as [shadcn/ui](https://ui.shadcn.com) — built for Remotion with a dedicated CLI and agent indexes.
 
 Docs: [remotionui.com](https://remotionui.com)
 
@@ -28,7 +33,7 @@ Docs: [remotionui.com](https://remotionui.com)
 
 - **60+ components** — primitives, scenes, compositions (captions, charts, social clips, creator reels)
 - **Source you own** — components land in your repo; edit every frame
-- **CLI workflow** — `init`, `add`, `search`, `diff`, `update`
+- **CLI workflow** — `init`, `add`, `doctor`, `search`, `diff`, `update`, `list`
 - **AI-ready** — [agent index](https://remotionui.com/ai/components.json), [recipes](https://remotionui.com/ai/recipes.json), [llms.txt](https://remotionui.com/llms.txt)
 
 ## Monorepo Structure

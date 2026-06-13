@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { componentReference } from "../lib/component-reference.ts";
 import { REGISTRY_ATLAS } from "../registry/atlas.ts";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -48,94 +49,23 @@ type AiRecipe = {
   prompt: string;
 };
 
-const AI_RECIPES: AiRecipe[] = [
-  {
-    slug: "captioned-social-video",
-    title: "Captioned social video",
-    intent: "Build a vertical short-form video with hook text, synced captions, audio visuals, and CTA.",
-    components: [
-      "social-clip",
-      "caption-scene",
-      "caption-highlight",
-      "audiogram-scene",
-      "end-card",
-    ],
-    installCommand:
-      "npx remotion-ui@latest add social-clip caption-scene caption-highlight audiogram-scene end-card",
-    docsUrl: `${siteUrl}/docs/ai/recipes/captioned-social-video`,
-    prompt:
-      "Create a 9:16 captioned social clip using RemotionUI. Install the components first, import them from local source paths, and use Remotion Caption[] data for synced captions.",
-  },
-  {
-    slug: "data-story",
-    title: "Data story",
-    intent: "Build a chart-led explainer video with animated metrics and timeline context.",
-    components: [
-      "data-story",
-      "animated-bar-chart",
-      "metric-ticker",
-      "timeline-steps",
-      "caption-bumper",
-    ],
-    installCommand:
-      "npx remotion-ui@latest add data-story animated-bar-chart metric-ticker timeline-steps caption-bumper",
-    docsUrl: `${siteUrl}/docs/ai/recipes/data-story`,
-    prompt:
-      "Create a data-story Remotion video using RemotionUI. Convert the user's data into typed arrays and keep each scene focused on one readable insight.",
-  },
-  {
-    slug: "podcast-clip",
-    title: "Podcast clip",
-    intent: "Build an audio-first clip with waveform visuals and synced captions.",
-    components: [
-      "podcast-clip",
-      "audio-pulse",
-      "waveform-line",
-      "audiogram-scene",
-      "caption-scene",
-    ],
-    installCommand:
-      "npx remotion-ui@latest add podcast-clip audio-pulse waveform-line audiogram-scene caption-scene",
-    docsUrl: `${siteUrl}/docs/ai/recipes/podcast-clip`,
-    prompt:
-      "Create a podcast clip using RemotionUI. Ask for an audio source and captions, then use audio visuals and safe-area captions.",
-  },
-  {
-    slug: "product-intro",
-    title: "Product intro",
-    intent: "Build a polished product intro or feature showcase.",
-    components: [
-      "intro",
-      "showcase",
-      "title-card",
-      "feature-list",
-      "logo-reveal",
-      "end-card",
-    ],
-    installCommand:
-      "npx remotion-ui@latest add intro showcase title-card feature-list logo-reveal end-card",
-    docsUrl: `${siteUrl}/docs/ai/recipes/product-intro`,
-    prompt:
-      "Create a product intro using RemotionUI. Start with a short headline, reveal the product or logo, show key features, and end with a CTA.",
-  },
-  {
-    slug: "lower-third-scene",
-    title: "Lower-third scene",
-    intent: "Build a lower third, speaker label, title card, stat card, or quote overlay.",
-    components: [
-      "lower-third",
-      "title-card",
-      "stat-card",
-      "quote-card",
-      "callout-spotlight",
-    ],
-    installCommand:
-      "npx remotion-ui@latest add lower-third title-card stat-card quote-card callout-spotlight",
-    docsUrl: `${siteUrl}/docs/ai/recipes/lower-third-scene`,
-    prompt:
-      "Create a reusable scene overlay using RemotionUI. Reserve layout slots and keep text readable instead of manually stacking elements.",
-  },
-];
+type RecipeManifest = {
+  recipes: AiRecipe[];
+};
+
+async function loadRecipes(): Promise<AiRecipe[]> {
+  const manifestPath = path.join(
+    appRoot,
+    "content",
+    "docs",
+    "ai",
+    "recipes",
+    "manifest.json",
+  );
+  const raw = await fs.readFile(manifestPath, "utf-8");
+  const manifest = JSON.parse(raw) as RecipeManifest;
+  return manifest.recipes;
+}
 
 async function readFileContent(relativePath: string): Promise<string | null> {
   const absolutePath = path.join(appRoot, relativePath);
@@ -212,10 +142,12 @@ async function writeJson(filePath: string, data: unknown): Promise<void> {
 }
 
 async function buildAiFiles(registry: Registry): Promise<void> {
+  const recipes = await loadRecipes();
   const components = registry.items.map((item) => {
     const atlas = resolveAtlas(item);
     const firstFile = item.files[0];
     const docsCategory = getDocsCategory(item, atlas);
+    const reference = componentReference[item.name];
 
     return {
       name: item.name,
@@ -228,8 +160,19 @@ async function buildAiFiles(registry: Registry): Promise<void> {
       installCommand: `npx remotion-ui@latest add ${item.name}`,
       docsUrl: `${siteUrl}/docs/${docsCategory}/${item.name}`,
       registryUrl: `${siteUrl}/r/presets/default/${item.name}.json`,
+      detailUrl: `${siteUrl}/ai/components/${item.name}.json`,
       importPath: getImportPath(item, firstFile),
       installTarget: getInstallTarget(item, firstFile),
+      ...(reference
+        ? {
+            props: reference.props,
+            usage: reference.usage,
+            related: reference.related,
+            note: reference.note,
+            category: reference.category,
+          }
+        : {}),
+      ...(item.composition ? { composition: item.composition } : {}),
       aiRules: [
         "Install with the CLI before importing.",
         "Import from local source paths, not from the remotion-ui npm package.",
@@ -239,6 +182,15 @@ async function buildAiFiles(registry: Registry): Promise<void> {
   });
 
   const aiDir = path.join(appRoot, "public", "ai");
+  const componentsDir = path.join(aiDir, "components");
+  await fs.mkdir(componentsDir, { recursive: true });
+
+  for (const component of components) {
+    await writeJson(
+      path.join(componentsDir, `${component.name}.json`),
+      component,
+    );
+  }
 
   await writeJson(path.join(aiDir, "components.json"), {
     name: "remotionui-components",
@@ -254,7 +206,7 @@ async function buildAiFiles(registry: Registry): Promise<void> {
     homepage: siteUrl,
     guidance:
       "Choose a recipe first when the user asks for a complete video. Install all listed components before importing.",
-    recipes: AI_RECIPES,
+    recipes,
   });
 
   await fs.writeFile(

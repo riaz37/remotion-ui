@@ -5,6 +5,9 @@ import { useEffect, useMemo, useRef, type ComponentType } from "react";
 import type { AtlasLane } from "@/lib/atlas";
 import { laneAccent, laneAccentMuted, LANE_VISUALS } from "@/lib/lane-visuals";
 import { AnimatedBarChartPreview } from "./previews/animated-bar-chart";
+import { AudioPulsePreview } from "./previews/audio-pulse";
+import { AudiogramBarsPreview } from "./previews/audiogram-bars";
+import { AudiogramScenePreview } from "./previews/audiogram-scene";
 import { AutoFitTitlePreview } from "./previews/auto-fit-title";
 import { BRollStackPreview } from "./previews/b-roll-stack";
 import { BlurInPreview } from "./previews/blur-in";
@@ -80,6 +83,9 @@ type PreviewConfig = {
 
 const PREVIEWS: Record<string, PreviewConfig> = {
   "animated-bar-chart": { component: AnimatedBarChartPreview },
+  "audio-pulse": { component: AudioPulsePreview, durationInFrames: 120 },
+  "audiogram-bars": { component: AudiogramBarsPreview, durationInFrames: 120 },
+  "audiogram-scene": { component: AudiogramScenePreview, durationInFrames: 150 },
   "auto-fit-title": { component: AutoFitTitlePreview },
   "b-roll-stack": { component: BRollStackPreview },
   "blur-in": { component: BlurInPreview },

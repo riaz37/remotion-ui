@@ -19,13 +19,27 @@ export type AddOptions = {
   registryUrl?: string;
   preset?: string;
   yes?: boolean;
+  recipe?: string;
 };
 
 export async function addCommand(
   components: string[],
   options: AddOptions = {},
 ): Promise<void> {
-  if (components.length === 0) {
+  let names = components;
+
+  if (options.recipe) {
+    const { fetchRecipeBySlug } = await import("../registry/fetch-recipes.js");
+    const recipe = await fetchRecipeBySlug(options.recipe, options.registryUrl);
+    if (!recipe) {
+      throw new Error(`Recipe not found: ${options.recipe}`);
+    }
+    console.log(`Installing recipe: ${recipe.title}`);
+    console.log(`  ${recipe.intent}`);
+    names = recipe.components;
+  }
+
+  if (names.length === 0) {
     throw new Error("Please specify at least one component to add.");
   }
 
@@ -35,7 +49,7 @@ export async function addCommand(
   const installed = new Set<string>();
   const dependencies = new Set<string>();
 
-  for (const name of components) {
+  for (const name of names) {
     await installComponent(name, {
       cwd,
       config,
@@ -53,7 +67,7 @@ export async function addCommand(
     execFileSync(command, args, { cwd, stdio: "inherit" });
   }
 
-  console.log(`\nAdded ${components.length} component(s) successfully.`);
+  console.log(`\nAdded ${names.length} component(s) successfully.`);
 }
 
 async function installComponent(

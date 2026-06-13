@@ -1,7 +1,9 @@
 import { HomeLayout } from "fumadocs-ui/layouts/home";
 import Link from "next/link";
+import { FeaturedCompositions } from "@/components/featured-compositions";
 import { HeroPreview } from "@/components/hero-preview";
-import { InitCommand } from "@/components/install-command";
+import { InstallCommand } from "@/components/install-command";
+import { OnboardingSteps } from "@/components/onboarding-steps";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteLogo } from "@/components/site-logo";
 import { navLinks, siteConfig } from "@/lib/site-config";
@@ -27,7 +29,7 @@ export default function HomePage() {
           <div>
             <div className="mb-5 flex flex-wrap gap-2">
               <span className="rounded-full border border-fd-primary/30 bg-fd-primary/10 px-3 py-1 font-[family-name:var(--font-mono)] text-xs font-medium uppercase tracking-[0.16em] text-fd-primary">
-                Remotion component registry
+                Full compositions
               </span>
               <span className="rounded-full border border-fd-border bg-fd-card px-3 py-1 text-xs font-medium text-fd-muted-foreground">
                 Source you own
@@ -37,13 +39,14 @@ export default function HomePage() {
               Production-ready motion for Remotion.
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-fd-muted-foreground">
-              {siteConfig.explainer} Animated captions, counters, transitions,
-              charts, scenes, and reel templates — preview the motion, install
-              with the CLI, then tune every frame.
+              {siteConfig.explainer}
             </p>
             <div className="mt-8 max-w-lg">
-              <InitCommand />
+              <InstallCommand name="social-clip" label="Ship a social clip" />
             </div>
+            <p className="mt-3 font-[family-name:var(--font-mono)] text-xs text-fd-muted-foreground">
+              Hook, captions, audiogram, and CTA — one 9:16 composition.
+            </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href="/docs"
@@ -52,30 +55,30 @@ export default function HomePage() {
                 Start building
               </Link>
               <Link
-                href="/docs/atlas"
+                href="/docs/components"
                 className="rounded-lg border border-fd-border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-fd-muted"
               >
-                Watch the atlas
+                Browse compositions
               </Link>
             </div>
             <div className="mt-8 grid max-w-lg grid-cols-3 gap-3 text-sm">
               <div className="rounded-xl border border-fd-border bg-fd-card/70 p-3">
                 <p className="font-[family-name:var(--font-mono)] text-xs text-fd-primary">
-                  01
+                  9:16
                 </p>
-                <p className="mt-1 font-medium">Source-owned</p>
-              </div>
-              <div className="rounded-xl border border-fd-border bg-fd-card/70 p-3">
-                <p className="font-[family-name:var(--font-mono)] text-xs text-fd-primary">
-                  30fps
-                </p>
-                <p className="mt-1 font-medium">Frame-true</p>
+                <p className="mt-1 font-medium">Compositions</p>
               </div>
               <div className="rounded-xl border border-fd-border bg-fd-card/70 p-3">
                 <p className="font-[family-name:var(--font-mono)] text-xs text-fd-primary">
                   CLI
                 </p>
-                <p className="mt-1 font-medium">Registry</p>
+                <p className="mt-1 font-medium">Remotion-native</p>
+              </div>
+              <div className="rounded-xl border border-fd-border bg-fd-card/70 p-3">
+                <p className="font-[family-name:var(--font-mono)] text-xs text-fd-primary">
+                  AI
+                </p>
+                <p className="mt-1 font-medium">Agent index</p>
               </div>
             </div>
           </div>
@@ -83,6 +86,8 @@ export default function HomePage() {
         </div>
       </section>
 
+      <FeaturedCompositions />
+      <OnboardingSteps />
       <SiteFooter />
     </HomeLayout>
   );

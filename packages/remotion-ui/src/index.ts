@@ -2,7 +2,9 @@ import { Command } from "commander";
 import { addCommand } from "./commands/add.js";
 import { buildCommand } from "./commands/build.js";
 import { diffCommand } from "./commands/diff.js";
+import { doctorCommand } from "./commands/doctor.js";
 import { initCommand } from "./commands/init.js";
+import { listCommand } from "./commands/list.js";
 import { updateCommand } from "./commands/update.js";
 import { searchCommand } from "./commands/search.js";
 import { viewCommand } from "./commands/view.js";
@@ -19,16 +21,28 @@ program
   .description("Initialize a new Remotion project with RemotionUI")
   .argument("[project-name]", "project directory name", "my-video")
   .option("-y, --yes", "Skip confirmation prompts")
-  .action(async (projectName: string, options: { yes?: boolean }) => {
+  .option(
+    "--existing",
+    "Bootstrap remotion-ui.json in the current Remotion project",
+  )
+  .action(
+    async (
+      projectName: string,
+      options: { yes?: boolean; existing?: boolean },
+    ) => {
     try {
-      await initCommand(projectName, { yes: options.yes });
+      await initCommand(projectName, {
+        yes: options.yes,
+        existing: options.existing,
+      });
     } catch (error) {
       console.error(
         error instanceof Error ? error.message : "Failed to initialize project",
       );
       process.exit(1);
     }
-  });
+    },
+  );
 
 program
   .command("add")
@@ -39,6 +53,7 @@ program
     "Registry base URL or local path to public/r/",
   )
   .option("--preset <preset>", "Registry preset", "default")
+  .option("--recipe <slug>", "Install a task-first recipe by slug")
   .option("-y, --yes", "Skip confirmation prompts")
   .action(async (components: string[], options) => {
     try {
@@ -46,10 +61,48 @@ program
         registryUrl: options.registryUrl,
         preset: options.preset,
         yes: options.yes,
+        recipe: options.recipe,
       });
     } catch (error) {
       console.error(
         error instanceof Error ? error.message : "Failed to add components",
+      );
+      process.exit(1);
+    }
+  });
+
+program
+  .command("doctor")
+  .description("Diagnose remotion-ui.json, aliases, and Remotion setup")
+  .option("--json", "Output machine-readable JSON")
+  .action(async (options: { json?: boolean }) => {
+    try {
+      await doctorCommand({ json: options.json });
+    } catch (error) {
+      console.error(
+        error instanceof Error ? error.message : "Doctor failed",
+      );
+      process.exit(1);
+    }
+  });
+
+program
+  .command("list")
+  .description("List registry components and installed status")
+  .option(
+    "-r, --registry-url <url>",
+    "Registry base URL or local path to public/r/",
+  )
+  .option("--json", "Output machine-readable JSON")
+  .action(async (options: { registryUrl?: string; json?: boolean }) => {
+    try {
+      await listCommand({
+        registryUrl: options.registryUrl,
+        json: options.json,
+      });
+    } catch (error) {
+      console.error(
+        error instanceof Error ? error.message : "List failed",
       );
       process.exit(1);
     }
@@ -65,12 +118,14 @@ program
     "-r, --registry-url <url>",
     "Registry base URL or local path to public/r/",
   )
+  .option("--json", "Output machine-readable JSON")
   .action(
     async (options: {
       query?: string;
       lane?: string;
       tier?: string;
       registryUrl?: string;
+      json?: boolean;
     }) => {
     try {
       await searchCommand({
@@ -78,6 +133,7 @@ program
         lane: options.lane,
         tier: options.tier,
         registryUrl: options.registryUrl,
+        json: options.json,
       });
     } catch (error) {
       console.error(
@@ -97,11 +153,13 @@ program
     "Registry base URL or local path to public/r/",
   )
   .option("--preset <preset>", "Registry preset", "default")
+  .option("--json", "Output machine-readable JSON")
   .action(async (name: string, options) => {
     try {
       await viewCommand(name, {
         registryUrl: options.registryUrl,
         preset: options.preset,
+        json: options.json,
       });
     } catch (error) {
       console.error(

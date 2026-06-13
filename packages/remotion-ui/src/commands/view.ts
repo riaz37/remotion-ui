@@ -3,6 +3,7 @@ import { fetchRegistryItem } from "../registry/fetch-item.js";
 export type ViewOptions = {
   registryUrl?: string;
   preset?: string;
+  json?: boolean;
 };
 
 export async function viewCommand(
@@ -13,6 +14,11 @@ export async function viewCommand(
     registryUrl: options.registryUrl,
     preset: options.preset ?? "default",
   });
+
+  if (options.json) {
+    console.log(JSON.stringify(item, null, 2));
+    return;
+  }
 
   console.log(`Name: ${item.name}`);
   console.log(`Type: ${item.type}`);

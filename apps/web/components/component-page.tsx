@@ -2,6 +2,8 @@ import Link from "next/link";
 import type { ComponentType, ReactNode } from "react";
 import { getAtlasMeta } from "@/lib/atlas";
 import { getComponentReference } from "@/lib/component-reference";
+import { hasCompositionPlayground } from "@/lib/composition-playground";
+import { CompositionPlaygroundSection } from "./composition-playground-section";
 import { InstallCommand } from "./install-command";
 import { PreviewPanel } from "./preview-panel";
 import { PropsTable } from "./props-table";
@@ -56,6 +58,10 @@ export function ComponentPage({
     </PreviewPanel>
   ) : null;
 
+  const playgroundNode = hasCompositionPlayground(name) ? (
+    <CompositionPlaygroundSection name={name} />
+  ) : null;
+
   return (
     <>
       {metaLine.length > 0 ? (
@@ -75,7 +81,15 @@ export function ComponentPage({
         </p>
       ) : null}
 
-      {preview ? (
+      {playgroundNode ? (
+        <div className="not-prose mb-8 space-y-6">
+          <InstallCommand name={name} />
+          {playgroundNode}
+          {children ? (
+            <div className="text-fd-muted-foreground">{children}</div>
+          ) : null}
+        </div>
+      ) : preview ? (
         <div className="not-prose mb-8 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(320px,440px)] lg:items-start lg:gap-8">
           <div className="min-w-0 space-y-6 lg:order-1">
             <InstallCommand name={name} />

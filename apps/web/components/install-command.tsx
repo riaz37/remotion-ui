@@ -26,10 +26,16 @@ function CommandBlock({
   );
 }
 
-export function InstallCommand({ name }: { name: string }) {
+export function InstallCommand({
+  name,
+  label = "Install",
+}: {
+  name: string;
+  label?: string;
+}) {
   return (
     <CommandBlock
-      label="Install"
+      label={label}
       command={`npx remotion-ui@latest add ${name}`}
     />
   );
@@ -40,6 +46,20 @@ export function InitCommand() {
     <CommandBlock
       label="Quick start"
       command="npx remotion-ui@latest init my-video"
+      className=""
+    />
+  );
+}
+
+export function RenderCommand({
+  compositionId = "SocialClip",
+}: {
+  compositionId?: string;
+}) {
+  return (
+    <CommandBlock
+      label="Render"
+      command={`npx remotion render src/index.ts ${compositionId} out/${compositionId.toLowerCase()}.mp4`}
       className=""
     />
   );
