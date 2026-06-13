@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 0.5.2
+
+### Added
+
+- **Star prompts** at first-value touchpoints — README, CLI `add`/`init` success output, and installation docs.
+
+### Changed
+
+- **`update` no longer shows the star prompt** — avoids nagging on repeat maintenance runs.
+
 ## 0.5.1
 
 ### Added
