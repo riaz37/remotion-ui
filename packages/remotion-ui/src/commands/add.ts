@@ -13,6 +13,7 @@ import {
 } from "../utils/get-package-manager.js";
 import { preflightAdd } from "../preflights/preflight-add.js";
 import { writeFile } from "../utils/index.js";
+import { printStarPrompt } from "../utils/star-prompt.js";
 
 export type AddOptions = {
   cwd?: string;
@@ -20,6 +21,7 @@ export type AddOptions = {
   preset?: string;
   yes?: boolean;
   recipe?: string;
+  showStarPrompt?: boolean;
 };
 
 export async function addCommand(
@@ -68,6 +70,10 @@ export async function addCommand(
   }
 
   console.log(`\nAdded ${names.length} component(s) successfully.`);
+
+  if (options.showStarPrompt !== false) {
+    printStarPrompt();
+  }
 }
 
 async function installComponent(

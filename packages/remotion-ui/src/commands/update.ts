@@ -12,5 +12,5 @@ export async function updateCommand(
   }
 
   console.log(`Updating ${components.length} component(s) from registry…`);
-  await addCommand(components, options);
+  await addCommand(components, { ...options, showStarPrompt: false });
 }

@@ -111,4 +111,19 @@ describe("addCommand", () => {
       ),
     ).toBe(true);
   });
+
+  it("prints a star prompt after a successful add", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+    await addCommand(["fade-in"], {
+      cwd: tempDir,
+      registryUrl: registryDir,
+    });
+
+    expect(logSpy.mock.calls.flat().join("\n")).toContain(
+      "Enjoying RemotionUI? Star us on GitHub",
+    );
+
+    logSpy.mockRestore();
+  });
 });
