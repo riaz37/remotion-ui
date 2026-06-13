@@ -45,6 +45,7 @@ reports/
 
 # Marketing workspace (local playbooks + rendered demo videos)
 marketing/
+scripts/render-marketing-demo.sh
 
 
 # Testing
