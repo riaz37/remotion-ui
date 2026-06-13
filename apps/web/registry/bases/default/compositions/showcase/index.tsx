@@ -35,7 +35,7 @@ export const Showcase: React.FC<ShowcaseProps> = ({
           <FeatureList
             title="Built for developers"
             items={[
-              "Copy-paste components",
+              "Source you own",
               "Registry-driven CLI",
               "Live docs previews",
             ]}

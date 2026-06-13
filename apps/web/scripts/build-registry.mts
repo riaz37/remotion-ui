@@ -263,7 +263,7 @@ async function buildAiFiles(registry: Registry): Promise<void> {
 
 You are building Remotion videos with RemotionUI.
 
-Remotion is the framework. RemotionUI is the copy-paste component registry.
+Remotion is the framework. RemotionUI is the component registry — production-ready motion, source you own.
 
 ## Hard rules
 

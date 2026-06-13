@@ -4,7 +4,10 @@ Registry-first motion components for Remotion. The docs site should feel like a 
 
 ## Brand positioning
 
-RemotionUI is a copy-paste component registry for programmatic video. Developers install source they own; the CLI is the product interface. Visual language: studio workspace, not marketing site.
+RemotionUI is a registry-first component kit for programmatic video. Developers install source they own; the CLI is the product interface. Visual language: studio workspace, not marketing site.
+
+**Tagline:** Production-ready motion for Remotion. Source you own.  
+**Explainer:** Like shadcn/ui — install with the CLI, customize source in your repo.
 
 ## Color (OKLCH → Fumadocs `--color-fd-*`)
 
@@ -49,7 +52,9 @@ Scale: `text-sm` body, `text-lg` lead, `text-4xl`–`5xl` hero. Headings: `-0.02
 
 ### Logo mark
 
-SVG “frame” — rounded rect with play-triangle cutout. See [`apps/web/components/logo-mark.tsx`](apps/web/components/logo-mark.tsx).
+Offset video frames with play triangle — copy-paste layer metaphor. See [`apps/web/components/logo-mark.tsx`](apps/web/components/logo-mark.tsx).
+
+Brand assets: `public/logo.svg`, `public/og.png`, `public/icon-512.png`, `app/opengraph-image.png`.
 
 ### Preview panel
 

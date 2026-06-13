@@ -1,6 +1,8 @@
 export const siteConfig = {
   name: "RemotionUI",
-  tagline: "Copy-paste Remotion video components you own.",
+  tagline: "Production-ready motion for Remotion. Source you own.",
+  explainer:
+    "Like shadcn/ui — install with the CLI, customize source in your repo.",
   description:
     "Registry-first motion components for Remotion. Install with the CLI, customize the source in your repo.",
   url: "https://remotionui.com",

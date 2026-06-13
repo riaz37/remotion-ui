@@ -173,7 +173,7 @@ const SceneOneLeft: React.FC = () => (
               letterSpacing: -1.2,
             }}
           >
-            Copy-paste motion components for Remotion.
+            Production-ready motion for Remotion.
           </h1>
         </SlideUp>
         <FadeIn delayInFrames={75} durationInFrames={20}>

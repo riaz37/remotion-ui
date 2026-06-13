@@ -1,6 +1,6 @@
 # RemotionUI full LLM guide
 
-RemotionUI is a copy-paste component registry for Remotion video projects. It helps coding agents build videos faster by installing production-ready source components into a user's project.
+RemotionUI is a registry-first component kit for Remotion video projects. Production-ready motion, source you own. It helps coding agents build videos faster by installing components into a user's project.
 
 Remotion is the framework. RemotionUI is the component layer.
 

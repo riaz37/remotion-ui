@@ -1,6 +1,16 @@
 # RemotionUI
 
-Copy-paste production-ready Remotion video components directly into your projects. Install with the CLI, own every line of source — no black-box runtime dependency.
+<p align="center">
+  <img src="apps/web/public/logo.svg" alt="RemotionUI" width="64" height="64" />
+</p>
+
+<p align="center">
+  <strong>Production-ready motion for Remotion. Source you own.</strong>
+</p>
+
+[![Docs](https://img.shields.io/badge/docs-remotionui.com-60a5fa?style=flat-square)](https://remotionui.com/docs)
+[![npm](https://img.shields.io/npm/v/remotion-ui?style=flat-square)](https://www.npmjs.com/package/remotion-ui)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 
 > Familiar with [shadcn/ui](https://ui.shadcn.com)? RemotionUI uses the same registry workflow: CLI install, JSON manifest, files in your repo.
 
@@ -9,10 +19,17 @@ Copy-paste production-ready Remotion video components directly into your project
 ```bash
 npx remotion-ui@latest init my-video
 cd my-video
-npx remotion-ui@latest add intro
+npx remotion-ui@latest add fade-in lower-third social-clip
 ```
 
 Docs: [remotionui.com](https://remotionui.com)
+
+## What you get
+
+- **60+ components** — primitives, scenes, compositions (captions, charts, social clips, creator reels)
+- **Source you own** — components land in your repo; edit every frame
+- **CLI workflow** — `init`, `add`, `search`, `diff`, `update`
+- **AI-ready** — [agent index](https://remotionui.com/ai/components.json), [recipes](https://remotionui.com/ai/recipes.json), [llms.txt](https://remotionui.com/llms.txt)
 
 ## Monorepo Structure
 
