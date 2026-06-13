@@ -37,7 +37,7 @@ export function PropsTable({ props }: { props: PropDefinition[] }) {
                   {prop.type}
                 </td>
                 <td className="hidden px-4 py-3 align-top font-[family-name:var(--font-mono)] text-[0.8125rem] text-fd-muted-foreground sm:table-cell">
-                  {prop.default ?? "—"}
+                  {prop.default ?? "-"}
                 </td>
                 <td className="px-4 py-3 align-top text-fd-muted-foreground">
                   {prop.description}

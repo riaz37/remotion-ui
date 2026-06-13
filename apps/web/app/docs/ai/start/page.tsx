@@ -40,7 +40,7 @@ export default function RecipeWizardPage() {
         What are you building?
       </h1>
       <p className="mt-3 max-w-2xl text-fd-muted-foreground">
-        Pick a goal to get a task-first recipe — components, install command, and
+        Pick a goal to get a task-first recipe: components, install command, and
         docs in one place.
       </p>
 

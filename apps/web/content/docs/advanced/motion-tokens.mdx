@@ -11,11 +11,11 @@ Motion tokens centralize timing so primitives and scenes stay consistent across 
 import { DURATION, DELAY, STAGGER, EASING } from "@/remotion/lib/motion-tokens";
 import { enterProgress } from "@/remotion/lib/timing";
 
-// DURATION.fast    — ~12 frames at 30fps
-// DURATION.normal  — ~24 frames
-// DURATION.slow    — ~36 frames
-// STAGGER.normal   — 8 frames between children
-// EASING.enter     — crisp ease-out for entrances
+// DURATION.fast    ~12 frames at 30fps
+// DURATION.normal  ~24 frames
+// DURATION.slow    ~36 frames
+// STAGGER.normal   8 frames between children
+// EASING.enter     crisp ease-out for entrances
 
 const progress = enterProgress(frame, DELAY.short, DURATION.normal, EASING.enter);
 ```

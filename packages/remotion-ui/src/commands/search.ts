@@ -46,7 +46,7 @@ export async function searchCommand(
   }
 
   for (const item of results) {
-    const desc = item.description ? ` — ${item.description}` : "";
+    const desc = item.description ? `: ${item.description}` : "";
     const atlas = item.atlas
       ? ` [${item.atlas.lane}/${item.atlas.tier}]`
       : "";

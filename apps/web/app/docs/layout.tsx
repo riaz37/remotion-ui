@@ -3,7 +3,8 @@ import type { ReactNode } from "react";
 import { SidebarFooter } from "@/components/sidebar-footer";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteLogo } from "@/components/site-logo";
-import { navLinks, siteConfig } from "@/lib/site-config";
+import { githubStarNavLink } from "@/lib/github-nav-link";
+import { navLinks } from "@/lib/site-config";
 import { source } from "@/lib/source";
 
 export default function Layout({ children }: { children: ReactNode }) {
@@ -15,12 +16,14 @@ export default function Layout({ children }: { children: ReactNode }) {
           title: <SiteLogo />,
           url: "/",
         }}
-        githubUrl={siteConfig.githubUrl}
-        links={navLinks.map((link) => ({
-          text: link.text,
-          url: link.url,
-          active: link.active,
-        }))}
+        links={[
+          ...navLinks.map((link) => ({
+            text: link.text,
+            url: link.url,
+            active: link.active,
+          })),
+          githubStarNavLink,
+        ]}
         sidebar={{ footer: <SidebarFooter /> }}
       >
         {children}

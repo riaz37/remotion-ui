@@ -460,7 +460,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 <QuoteCard
   quote="The best way to ship motion graphics"
   highlightWord="motion"
-  author="— Team"
+  author="Team"
 />`,
     props: [
       { name: "quote", type: "string", required: true, description: "Quote body." },
@@ -527,7 +527,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       { name: "inactiveColor", type: "string", default: '"#f8fafc"', description: "Color for inactive words." },
       { name: "fontSize", type: "number", default: "48", description: "Caption font size in pixels." },
     ],
-    note: "Advanced — installs @remotion/captions.",
+    note: "Advanced. Installs @remotion/captions.",
     related: ["caption-scene", "caption-utils"],
   },
   "caption-scene": {
@@ -540,7 +540,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       { name: "combineTokensWithinMilliseconds", type: "number", default: "1200", description: "Words per caption page." },
       { name: "placement", type: '"lower-third" | "center"', default: '"lower-third"', description: "Caption vertical placement." },
     ],
-    note: "Advanced — installs @remotion/captions.",
+    note: "Advanced. Installs @remotion/captions.",
     related: ["caption-highlight", "social-clip"],
   },
   "audiogram-bars": {
@@ -553,7 +553,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       { name: "height", type: "number", default: "120", description: "Bar container height." },
       { name: "barColor", type: "string", default: '"#3b82f6"', description: "Bar fill color." },
     ],
-    note: "Advanced — installs @remotion/media-utils.",
+    note: "Advanced. Installs @remotion/media-utils.",
     related: ["audiogram-scene"],
   },
   "audiogram-scene": {
@@ -579,7 +579,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       { name: "durationInFrames", type: "number", default: "60", description: "Draw animation length." },
       { name: "stroke", type: "string", default: '"#ffffff"', description: "Stroke color." },
     ],
-    note: "Advanced — installs @remotion/paths.",
+    note: "Advanced. Installs @remotion/paths.",
     related: ["logo-reveal"],
   },
   "logo-reveal": {
@@ -604,7 +604,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       { name: "zoom", type: "number", default: "7", description: "Initial zoom level." },
       { name: "onMapReady", type: "(map: Map) => void", description: "Called when map is idle." },
     ],
-    note: "Advanced — installs maplibre-gl. Render with --gl=angle --concurrency=1.",
+    note: "Advanced. Installs maplibre-gl. Render with --gl=angle --concurrency=1.",
     related: ["map-route", "map-flight"],
   },
   "map-route": {
@@ -678,7 +678,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       { name: "seed", type: "number", default: "0", description: "Light leak pattern seed." },
       { name: "hueShift", type: "number", default: "0", description: "Hue rotation in degrees." },
     ],
-    note: "Advanced — installs @remotion/light-leaks.",
+    note: "Advanced. Installs @remotion/light-leaks.",
     related: ["transition-fade"],
   },
   "auto-fit-title": {
@@ -692,7 +692,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       { name: "logoSrc", type: "string", description: "Optional brand mark above the headline." },
       { name: "maxFontSize", type: "number", default: "96", description: "Maximum title size in px." },
     ],
-    note: "Advanced — installs @remotion/layout-utils and @remotion/google-fonts.",
+    note: "Advanced. Installs @remotion/layout-utils and @remotion/google-fonts.",
     related: ["title-card", "social-clip"],
   },
   "waveform-line": {
@@ -705,7 +705,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       { name: "height", type: "number", default: "120", description: "SVG waveform height." },
       { name: "mirror", type: "boolean", default: "false", description: "Draw a reflected waveform." },
     ],
-    note: "Advanced — installs @remotion/media-utils.",
+    note: "Advanced. Installs @remotion/media-utils.",
     related: ["audiogram-bars", "audio-pulse"],
   },
   "audio-pulse": {
@@ -718,7 +718,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       { name: "size", type: "number", default: "240", description: "Pulse diameter in px." },
       { name: "ringCount", type: "number", default: "3", description: "Number of reactive rings." },
     ],
-    note: "Advanced — installs @remotion/media-utils.",
+    note: "Advanced. Installs @remotion/media-utils.",
     related: ["waveform-line", "audiogram-scene"],
   },
   "karaoke-captions": {
@@ -768,7 +768,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       { name: "fit", type: '"cover" | "contain"', default: '"cover"', description: "Media object-fit behavior." },
       { name: "caption", type: "string", description: "Optional supporting caption." },
     ],
-    note: "Advanced — installs @remotion/media for video sources.",
+    note: "Advanced. Installs @remotion/media for video sources.",
     related: ["media-sequence", "split-screen"],
   },
   "media-sequence": {
@@ -921,7 +921,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       { name: "subtitle", type: "string", description: "Supporting copy." },
       { name: "fit", type: '"cover" | "contain"', default: '"cover"', description: "Media object-fit behavior." },
     ],
-    note: "Advanced — installs @remotion/media and waveform-line for optional audio visuals.",
+    note: "Advanced. Installs @remotion/media and waveform-line for optional audio visuals.",
     related: ["creator-reel", "caption-scene", "media-frame"],
   },
   "comment-callout": {

@@ -3,7 +3,7 @@
 import { Player, type PlayerRef } from "@remotion/player";
 import { useEffect, useMemo, useRef, type ComponentType } from "react";
 import type { AtlasLane } from "@/lib/atlas";
-import { laneAccent, laneAccentMuted, LANE_VISUALS } from "@/lib/lane-visuals";
+import { laneAccent, laneAccentMuted } from "@/lib/lane-visuals";
 import { AnimatedBarChartPreview } from "./previews/animated-bar-chart";
 import { AudioPulsePreview } from "./previews/audio-pulse";
 import { AudiogramBarsPreview } from "./previews/audiogram-bars";
@@ -153,18 +153,11 @@ export function AtlasMiniPreview({ slug, lane }: AtlasMiniPreviewProps) {
     return <DesignedFallback slug={slug} lane={lane} />;
   }
 
-  return <LivePreview preview={preview} lane={lane} />;
+  return <LivePreview preview={preview} />;
 }
 
-function LivePreview({
-  preview,
-  lane,
-}: {
-  preview: PreviewConfig;
-  lane: AtlasLane;
-}) {
+function LivePreview({ preview }: { preview: PreviewConfig }) {
   const playerRef = useRef<PlayerRef>(null);
-  const accent = laneAccent(lane);
   useEffect(() => {
     const player = playerRef.current;
     if (!player) return;
@@ -192,13 +185,6 @@ function LivePreview({
         acknowledgeRemotionLicense
       />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgb(255_255_255_/_0.10),transparent_34%),linear-gradient(to_top,rgb(0_0_0_/_0.22),transparent_45%)]" />
-      <div className="pointer-events-none absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-black/30 px-2 py-1 text-[10px] font-medium uppercase tracking-[0.14em] text-white/70 backdrop-blur">
-        <span
-          className="size-1.5 rounded-full"
-          style={{ background: accent }}
-        />
-        {LANE_VISUALS[lane].label}
-      </div>
     </div>
   );
 }
@@ -206,7 +192,6 @@ function LivePreview({
 function DesignedFallback({ slug, lane }: AtlasMiniPreviewProps) {
   const accent = laneAccent(lane);
   const muted = laneAccentMuted(lane);
-  const visual = LANE_VISUALS[lane];
   const label = useMemo(
     () =>
       slug
@@ -224,12 +209,6 @@ function DesignedFallback({ slug, lane }: AtlasMiniPreviewProps) {
         background: `radial-gradient(circle at 25% 20%, ${muted}, transparent 38%), linear-gradient(135deg, #08111f, #121827)`,
       }}
     >
-      <div
-        className="absolute left-4 top-4 rounded-full px-2 py-1 font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.16em]"
-        style={{ color: accent, background: "rgb(255 255 255 / 0.06)" }}
-      >
-        {visual.label}
-      </div>
       <div className="absolute inset-x-5 bottom-5 h-1.5 overflow-hidden rounded-full bg-white/10">
         <div
           className="h-full w-2/3 rounded-full"

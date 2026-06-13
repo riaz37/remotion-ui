@@ -50,7 +50,7 @@ export const QuoteCard: React.FC<QuoteCardProps> = ({
               marginTop: 24,
             }}
           >
-            — {author}
+            - {author}
           </p>
         </blockquote>
       </FadeIn>

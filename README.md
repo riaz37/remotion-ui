@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  Full compositions — social clips, creator reels, launch scenes — not just effects.<br />
+  Full compositions: social clips, creator reels, launch scenes, not just effects.<br />
   Install with <code>npx remotion-ui add</code>, edit every frame in your repo.
 </p>
 
@@ -25,16 +25,16 @@ cd my-video
 npx remotion-ui@latest add social-clip
 ```
 
-Same copy-paste workflow as [shadcn/ui](https://ui.shadcn.com) — built for Remotion with a dedicated CLI and agent indexes.
+Same copy-paste workflow as [shadcn/ui](https://ui.shadcn.com), built for Remotion with a dedicated CLI and agent indexes.
 
 Docs: [remotionui.com](https://remotionui.com)
 
 ## What you get
 
-- **60+ components** — primitives, scenes, compositions (captions, charts, social clips, creator reels)
-- **Source you own** — components land in your repo; edit every frame
-- **CLI workflow** — `init`, `add`, `doctor`, `search`, `diff`, `update`, `list`
-- **AI-ready** — [agent index](https://remotionui.com/ai/components.json), [recipes](https://remotionui.com/ai/recipes.json), [llms.txt](https://remotionui.com/llms.txt)
+- **60+ components**: primitives, scenes, compositions (captions, charts, social clips, creator reels)
+- **Source you own**: components land in your repo; edit every frame
+- **CLI workflow**: `init`, `add`, `doctor`, `search`, `diff`, `update`, `list`
+- **AI-ready**: [agent index](https://remotionui.com/ai/components.json), [recipes](https://remotionui.com/ai/recipes.json), [llms.txt](https://remotionui.com/llms.txt)
 
 ## Monorepo Structure
 

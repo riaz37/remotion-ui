@@ -1,5 +1,6 @@
 import type * as PageTree from "fumadocs-core/page-tree";
 import { ATLAS_LANES, getItemsByLane, type AtlasLane } from "./atlas";
+import { getComponentDocPath } from "./component-doc-path";
 import { source } from "./source";
 
 export type ComponentLink = {
@@ -86,53 +87,11 @@ export function getAtlasSections(): ComponentSection[] {
       items: items.map((name) => ({
         name,
         slug: name,
-        url: guessComponentUrl(name),
+        url: getComponentDocPath(name),
         lane,
       })),
     });
   }
 
   return sections;
-}
-
-function guessComponentUrl(name: string): string {
-  if (name.startsWith("transition-")) return `/docs/cuts/${name}`;
-  if (name.startsWith("map-")) return `/docs/spatial/${name}`;
-  if (name.startsWith("caption-") || name.startsWith("audiogram-")) {
-    return `/docs/signals/${name}`;
-  }
-  if (name === "path-draw" || name === "logo-reveal") {
-    return name === "logo-reveal"
-      ? `/docs/scenes/${name}`
-      : `/docs/vectors/${name}`;
-  }
-  if (
-    name === "social-clip" ||
-    name === "intro" ||
-    name === "showcase" ||
-    name === "hero-loop" ||
-    name === "creator-reel"
-  ) {
-    return `/docs/compositions/${name}`;
-  }
-  if (
-    [
-      "lower-third",
-      "title-card",
-      "feature-list",
-      "stat-card",
-      "quote-card",
-      "end-card",
-      "auto-fit-title",
-      "caption-scene",
-      "audiogram-scene",
-      "map-flight",
-      "hook-card",
-      "talking-head-layout",
-      "comment-callout",
-    ].includes(name)
-  ) {
-    return `/docs/scenes/${name}`;
-  }
-  return `/docs/primitives/${name}`;
 }

@@ -1,8 +1,10 @@
 import Link from "next/link";
 import type { ComponentType, ReactNode } from "react";
-import { getAtlasMeta } from "@/lib/atlas";
+import { ATLAS_LANES, getAtlasMeta } from "@/lib/atlas";
+import { getComponentDocPath } from "@/lib/component-doc-path";
 import { getComponentReference } from "@/lib/component-reference";
 import { hasCompositionPlayground } from "@/lib/composition-playground";
+import { laneAccent } from "@/lib/lane-visuals";
 import { CompositionPlaygroundSection } from "./composition-playground-section";
 import { InstallCommand } from "./install-command";
 import { PreviewPanel } from "./preview-panel";
@@ -40,11 +42,21 @@ export function ComponentPage({
   const reference = getComponentReference(name);
   const atlas = getAtlasMeta(name);
 
-  const metaLine = [
-    reference ? categoryLabels[reference.category] : null,
-    atlas?.lane,
-    atlas?.tier === "advanced" ? "Advanced" : null,
-  ].filter(Boolean);
+  const metaParts = [
+    reference
+      ? { key: "category", label: categoryLabels[reference.category] }
+      : null,
+    atlas?.lane
+      ? {
+          key: "lane",
+          label: ATLAS_LANES[atlas.lane].label,
+          lane: atlas.lane,
+        }
+      : null,
+    atlas?.tier === "advanced"
+      ? { key: "tier", label: "Advanced" }
+      : null,
+  ].filter((part): part is NonNullable<typeof part> => Boolean(part));
 
   const previewNode = preview ? (
     <PreviewPanel aspectRatio={previewAspect}>
@@ -64,17 +76,24 @@ export function ComponentPage({
 
   return (
     <>
-      {metaLine.length > 0 ? (
+      {metaParts.length > 0 ? (
         <p className="not-prose mb-6 text-sm text-fd-muted-foreground">
-          {metaLine.map((part, i) => (
-            <span key={part}>
+          {metaParts.map((part, i) => (
+            <span key={part.key}>
               {i > 0 ? (
                 <span className="mx-2 text-fd-border" aria-hidden>
                   ·
                 </span>
               ) : null}
-              <span className={part === "Advanced" ? "text-fd-primary" : ""}>
-                {part}
+              <span
+                className={part.key === "tier" ? "text-fd-primary" : ""}
+                style={
+                  part.key === "lane" && part.lane
+                    ? { color: laneAccent(part.lane) }
+                    : undefined
+                }
+              >
+                {part.label}
               </span>
             </span>
           ))}
@@ -191,7 +210,7 @@ export function ComponentPage({
                 {reference.related.map((slug) => (
                   <Link
                     key={slug}
-                    href={`/docs/${guessCategory(slug)}/${slug}`}
+                    href={getComponentDocPath(slug)}
                     className="rounded-lg border border-fd-border px-3 py-1.5 text-sm transition-colors hover:bg-fd-muted"
                   >
                     {slug}
@@ -204,19 +223,6 @@ export function ComponentPage({
       ) : null}
     </>
   );
-}
-
-function guessCategory(slug: string): string {
-  const ref = getComponentReference(slug);
-  const atlas = getAtlasMeta(slug);
-  if (atlas?.lane === "signals") return "signals";
-  if (atlas?.lane === "spatial") return "spatial";
-  if (atlas?.lane === "vectors") return "vectors";
-  if (atlas?.lane === "cuts") return "cuts";
-  if (!ref) return "primitives";
-  if (ref.category === "scene") return "scenes";
-  if (ref.category === "composition") return "compositions";
-  return "primitives";
 }
 
 function getAiImportPath(slug: string): string {

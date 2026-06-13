@@ -2,7 +2,7 @@
 
 Production-ready motion for Remotion. Source you own.
 
-CLI for adding Remotion video components to your project — not a runtime dependency.
+CLI for adding Remotion video components to your project, not a runtime dependency.
 
 > Same registry workflow as [shadcn/ui](https://ui.shadcn.com): `npx add`, JSON manifest, files in your repo.
 

@@ -33,7 +33,7 @@ export function FeaturedCompositions() {
               Featured compositions
             </h2>
             <p className="mt-1 text-sm text-fd-muted-foreground">
-              Full 9:16 and launch templates — install, edit source, render.
+              Full 9:16 and launch templates: install, edit source, render.
             </p>
           </div>
           <Link

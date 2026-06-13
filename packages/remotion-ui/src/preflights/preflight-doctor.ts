@@ -88,7 +88,7 @@ export async function runDoctor(cwd: string): Promise<DoctorReport> {
     checks.push({
       name: "tsconfig.paths",
       status: "warn",
-      message: "No tsconfig.json found — path aliases may not resolve.",
+      message: "No tsconfig.json found. Path aliases may not resolve.",
     });
   }
 
@@ -147,7 +147,7 @@ export async function runDoctor(cwd: string): Promise<DoctorReport> {
 }
 
 export function formatDoctorReport(report: DoctorReport): string {
-  const lines = [`RemotionUI doctor — ${report.cwd}`, ""];
+  const lines = [`RemotionUI doctor: ${report.cwd}`, ""];
   for (const check of report.checks) {
     const icon =
       check.status === "pass" ? "✓" : check.status === "warn" ? "⚠" : "✗";

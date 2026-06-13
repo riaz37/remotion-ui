@@ -24,14 +24,14 @@ export function AtlasBrowse({ sections, totalComponents }: AtlasBrowseProps) {
   const lanes = Object.keys(ATLAS_LANES) as AtlasLane[];
 
   return (
-    <section className="mx-auto w-full max-w-6xl px-6 pb-20">
+    <section className="not-prose mx-auto w-full max-w-6xl pb-20 pt-10">
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h2 className="font-[family-name:var(--font-display)] text-2xl font-semibold tracking-tight">
             Component Atlas
           </h2>
           <p className="mt-1 text-sm text-fd-muted-foreground">
-            Browse by motion role — {totalComponents} components
+            Browse by motion role: {totalComponents} components
           </p>
         </div>
         <Link

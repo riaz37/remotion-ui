@@ -47,7 +47,7 @@ export function OnboardingSteps() {
             From zero to mp4
           </h2>
           <p className="mt-2 text-fd-muted-foreground">
-            Remotion-native workflow — full compositions, not one-off effects.
+            Remotion-native workflow: full compositions, not one-off effects.
           </p>
         </div>
         <div className="grid gap-6 lg:grid-cols-2">

@@ -27,7 +27,7 @@ export async function bootstrapExistingProject(cwd: string): Promise<void> {
 
   if (!remotionVersion) {
     throw new Error(
-      "This does not look like a Remotion project — remotion is missing from package.json.",
+      "This does not look like a Remotion project. remotion is missing from package.json.",
     );
   }
 

@@ -15,7 +15,7 @@ export async function preflightAdd(cwd: string): Promise<void> {
   const pkgPath = path.join(cwd, "package.json");
 
   if (!(await fs.pathExists(pkgPath))) {
-    console.warn("  ⚠ No package.json found — npm dependencies won't be installed.");
+    console.warn("  ⚠ No package.json found. npm dependencies won't be installed.");
     return;
   }
 

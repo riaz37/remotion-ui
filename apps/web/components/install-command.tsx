@@ -41,6 +41,25 @@ export function InstallCommand({
   );
 }
 
+export function CompactInstallCommand({
+  command,
+  className = "",
+}: {
+  command: string;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`not-prose flex items-center justify-between gap-3 overflow-hidden rounded-lg border border-fd-border bg-fd-card/90 px-3 py-2 ${className}`}
+    >
+      <code className="min-w-0 truncate font-[family-name:var(--font-mono)] text-[0.8125rem] text-fd-foreground">
+        {command}
+      </code>
+      <CopyButton text={command} />
+    </div>
+  );
+}
+
 export function InitCommand() {
   return (
     <CommandBlock

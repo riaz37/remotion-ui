@@ -7,10 +7,8 @@ import { MapFlightPreview } from '@/components/previews/map-flight';
 
 <ComponentPage name="map-flight" preview={MapFlightPreview} durationInFrames={150}>
 
-The live preview uses a lightweight SVG stand-in (MapLibre tiles are unreliable in browser players). The installed component uses full MapLibre + Turf. Render with:
-
-```bash
-npx remotion render MapFlight out/map.mp4 --gl=angle --concurrency=1
-```
+<Callout type="info">
+  The docs preview is a stylized stand-in. The installed scene uses MapLibre + Turf with real tiles and camera flyover.
+</Callout>
 
 </ComponentPage>

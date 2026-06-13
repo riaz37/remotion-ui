@@ -1,7 +1,7 @@
 ---
 name: remotionui-agent
 description: >-
-  Build Remotion videos with RemotionUI — recipes, CLI install workflow,
+  Build Remotion videos with RemotionUI: recipes, CLI install workflow,
   composition registration, and agent indexes. Use when the user wants
   captioned social clips, creator reels, data stories, or programmatic video.
 metadata:
@@ -10,7 +10,7 @@ metadata:
 
 # RemotionUI Agent
 
-Use this skill when helping users build **full Remotion compositions** with RemotionUI — not one-off effects.
+Use this skill when helping users build **full Remotion compositions** with RemotionUI, not one-off effects.
 
 ## Hard rules
 
@@ -65,7 +65,7 @@ npm run dev
 | Goal | Recipe | Flagship composition |
 |------|--------|----------------------|
 | 9:16 social clip | `captioned-social-video` | `social-clip` |
-| Creator reel | — | `creator-reel` |
+| Creator reel | (none) | `creator-reel` |
 | Podcast clip | `podcast-clip` | `podcast-clip` |
 | Data explainer | `data-story` | `data-story` |
 | Product launch | `product-intro` | `intro` |
