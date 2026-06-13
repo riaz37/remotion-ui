@@ -1,21 +1,23 @@
 # RemotionUI
 
-<p align="center">
-  <img src="apps/web/public/logo.svg" alt="RemotionUI" width="64" height="64" />
-</p>
+<div align="center">
 
-<p align="center">
-  <strong>Production-ready motion for Remotion. Source you own.</strong>
-</p>
+<img src="apps/web/public/logo.svg" alt="RemotionUI" width="64" height="64" />
 
-<p align="center">
-  Full compositions: social clips, creator reels, launch scenes, not just effects.<br />
-  Install with <code>npx remotion-ui add</code>, edit every frame in your repo.
-</p>
+**Production-ready motion for Remotion. Source you own.**
 
-[![Docs](https://img.shields.io/badge/docs-remotionui.com-60a5fa?style=flat-square)](https://remotionui.com/docs)
-[![npm](https://img.shields.io/npm/v/remotion-ui?style=flat-square)](https://www.npmjs.com/package/remotion-ui)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
+<a href="https://remotionui.com/docs"><img src="https://img.shields.io/badge/docs-remotionui.com-60a5fa?style=flat-square" alt="Docs" /></a>
+&nbsp;
+<a href="https://www.npmjs.com/package/remotion-ui"><img src="https://img.shields.io/npm/v/remotion-ui?style=flat-square" alt="npm version" /></a>
+&nbsp;
+<a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" alt="MIT License" /></a>
+
+Same registry workflow as [shadcn/ui](https://ui.shadcn.com): CLI install, JSON manifest, files in your repo.
+
+Full compositions: social clips, creator reels, launch scenes—not just effects.<br />
+Install with <code>npx remotion-ui add</code>, edit every frame in your repo.
+
+</div>
 
 ## Quick start
 
