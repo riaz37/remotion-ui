@@ -1,6 +1,6 @@
 {
   "name": "remotion-ui",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Production-ready motion for Remotion. Source you own. Registry-first CLI — install components into your repo.",
   "homepage": "https://remotionui.com",
   "repository": {
