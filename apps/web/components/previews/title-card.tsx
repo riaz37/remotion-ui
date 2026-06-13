@@ -3,5 +3,5 @@
 import { TitleCard } from "../registry-exports";
 
 export const TitleCardPreview: React.FC = () => (
-  <TitleCard title="RemotionUI" subtitle="Copy-paste video components" />
+  <TitleCard title="RemotionUI" subtitle="Production-ready motion" />
 );

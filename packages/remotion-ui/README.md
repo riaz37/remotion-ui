@@ -1,6 +1,8 @@
 # remotion-ui
 
-CLI for adding Remotion video components to your project — copy-paste source you own, not a runtime dependency.
+Production-ready motion for Remotion. Source you own.
+
+CLI for adding Remotion video components to your project — not a runtime dependency.
 
 > Same registry workflow as [shadcn/ui](https://ui.shadcn.com): `npx add`, JSON manifest, files in your repo.
 
@@ -13,7 +15,7 @@ npx remotion-ui@latest add fade-in
 npx remotion-ui@latest add intro
 ```
 
-Components are copied into your project as source files. You own the code.
+Components are installed into your project as source files. You own the code.
 
 ## Commands
 

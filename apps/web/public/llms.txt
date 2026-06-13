@@ -1,6 +1,6 @@
 # RemotionUI
 
-> Copy-paste Remotion video components for Remotion. The npm package is a CLI; components install as editable source in the user's project.
+> Production-ready motion for Remotion. Source you own. The npm package is a CLI; components install as editable source in the user's project.
 
 ## Canonical URLs
 

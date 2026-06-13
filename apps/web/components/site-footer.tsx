@@ -10,7 +10,7 @@ export function SiteFooter() {
             {siteConfig.name}
           </p>
           <p className="mt-1 max-w-sm text-sm text-fd-muted-foreground">
-            Registry-first motion components for Remotion.
+            {siteConfig.tagline}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-4 text-sm text-fd-muted-foreground">

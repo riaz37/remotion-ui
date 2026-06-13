@@ -1,3 +1,4 @@
+/** RemotionUI mark — offset frames + play (source you own). */
 export function LogoMark({ className = "size-8" }: { className?: string }) {
   return (
     <svg
@@ -7,21 +8,31 @@ export function LogoMark({ className = "size-8" }: { className?: string }) {
       className={className}
       aria-hidden
     >
-      <rect width="32" height="32" rx="7" className="fill-fd-primary" />
+      <rect width="32" height="32" rx="8" className="fill-fd-primary" />
       <rect
         x="5"
-        y="7"
-        width="22"
-        height="18"
+        y="6"
+        width="18"
+        height="13"
         rx="3"
         className="stroke-fd-primary-foreground"
-        strokeWidth="1.5"
+        strokeWidth="1.25"
         fill="none"
-        opacity="0.9"
+        opacity="0.35"
+      />
+      <rect
+        x="9"
+        y="10"
+        width="18"
+        height="13"
+        rx="3"
+        className="fill-fd-background stroke-fd-primary-foreground"
+        strokeWidth="1.5"
+        opacity="0.95"
       />
       <path
-        d="M14 12.5v7l6-3.5-6-3.5z"
-        className="fill-fd-primary-foreground"
+        d="M15.5 14.5v5l4.5-2.5-4.5-2.5z"
+        className="fill-fd-primary"
       />
     </svg>
   );

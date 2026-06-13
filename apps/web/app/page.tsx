@@ -30,16 +30,16 @@ export default function HomePage() {
                 Remotion component registry
               </span>
               <span className="rounded-full border border-fd-border bg-fd-card px-3 py-1 text-xs font-medium text-fd-muted-foreground">
-                Copy-paste motion components
+                Source you own
               </span>
             </div>
             <h1 className="font-[family-name:var(--font-display)] text-4xl font-bold tracking-tight sm:text-5xl lg:text-[3.25rem] lg:leading-[1.05]">
-              Copy production-ready motion into your Remotion videos.
+              Production-ready motion for Remotion.
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-fd-muted-foreground">
-              Animated captions, counters, transitions, charts, scenes, and reel
-              templates that install as source you own. Preview the motion,
-              copy the component, then tune every frame.
+              {siteConfig.explainer} Animated captions, counters, transitions,
+              charts, scenes, and reel templates — preview the motion, install
+              with the CLI, then tune every frame.
             </p>
             <div className="mt-8 max-w-lg">
               <InitCommand />
@@ -75,7 +75,7 @@ export default function HomePage() {
                 <p className="font-[family-name:var(--font-mono)] text-xs text-fd-primary">
                   CLI
                 </p>
-                <p className="mt-1 font-medium">Copy-paste</p>
+                <p className="mt-1 font-medium">Registry</p>
               </div>
             </div>
           </div>
