@@ -12,11 +12,6 @@
 &nbsp;
 <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" alt="MIT License" /></a>
 
-Same registry workflow as [shadcn/ui](https://ui.shadcn.com): CLI install, JSON manifest, files in your repo.
-
-Full compositions: social clips, creator reels, launch scenes—not just effects.<br />
-Install with <code>npx remotion-ui add</code>, edit every frame in your repo.
-
 </div>
 
 ## Quick start
@@ -27,9 +22,7 @@ cd my-video
 npx remotion-ui@latest add social-clip
 ```
 
-Same copy-paste workflow as [shadcn/ui](https://ui.shadcn.com), built for Remotion with a dedicated CLI and agent indexes.
-
-Docs: [remotionui.com](https://remotionui.com)
+Production-ready motion for Remotion. Source you own. Docs: [remotionui.com](https://remotionui.com)
 
 ## What you get
 
@@ -55,7 +48,7 @@ remotionui/
 
 - **Registry-first**: Component source lives in `apps/web/registry/`
 - **CLI distribution**: Users run `npx remotion-ui add <component>`
-- **Copy-paste, not import**: Components land as source files in the user's project
+- **Source you own**: Components install as source files in your repo
 - **Only the CLI is published**: No `@remotionui/primitives` npm package
 
 ## Getting Started (development)
