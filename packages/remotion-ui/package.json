@@ -60,7 +60,7 @@
   "devDependencies": {
     "@remotionui/typescript-config": "workspace:*",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^22.13.4",
+    "@types/node": "^25.9.3",
     "tsup": "^8.3.6",
     "typescript": "^5.7.3",
     "vitest": "^3.0.5"
