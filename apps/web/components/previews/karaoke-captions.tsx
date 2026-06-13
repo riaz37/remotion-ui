@@ -8,7 +8,7 @@ import { PreviewFrame } from "./preview-frame";
 const [page] = groupCaptionsIntoPages(DEMO_CAPTIONS, 2200);
 
 export const KaraokeCaptionsPreview: React.FC = () => (
-  <PreviewFrame backgroundColor="#0f172a">
+  <PreviewFrame lane="signals">
     {page ? <KaraokeCaptions page={page} /> : null}
   </PreviewFrame>
 );

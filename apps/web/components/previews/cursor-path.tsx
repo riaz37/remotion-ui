@@ -4,7 +4,7 @@ import { CursorPath } from "../registry-exports";
 import { PreviewFrame } from "./preview-frame";
 
 export const CursorPathPreview: React.FC = () => (
-  <PreviewFrame backgroundColor="#0f172a">
+  <PreviewFrame lane="vectors">
     <div style={{ position: "relative", width: 720, height: 320 }}>
       <CursorPath
         points={[

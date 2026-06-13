@@ -1,12 +1,16 @@
 "use client";
 
 import { RotateIn } from "../registry-exports";
-import { PreviewFrame, PreviewLabel } from "./preview-frame";
+import { PreviewFrame, ProductCard } from "./preview-frame";
 
 export const RotateInPreview: React.FC = () => (
-  <PreviewFrame>
+  <PreviewFrame lane="atoms">
     <RotateIn durationInFrames={30} degrees={-15}>
-      <PreviewLabel>Rotate In</PreviewLabel>
+      <ProductCard
+        kicker="Accent motion"
+        title="Tilt into focus"
+        detail="Small rotation, big emphasis"
+      />
     </RotateIn>
   </PreviewFrame>
 );

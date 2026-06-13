@@ -1,22 +1,15 @@
 "use client";
 
-import { AbsoluteFill } from "remotion";
 import { Typewriter } from "../registry-exports";
+import { PreviewFrame } from "./preview-frame";
 
 export const TypewriterPreview: React.FC = () => (
-  <AbsoluteFill
-    style={{
-      backgroundColor: "#0f172a",
-      justifyContent: "center",
-      alignItems: "center",
-      padding: 48,
-    }}
-  >
+  <PreviewFrame lane="atoms" padding={96}>
     <Typewriter
-      text="From prompt to motion graphics. This is RemotionUI."
-      pauseAfter="From prompt to motion graphics."
+      text="Describe the scene. Render the video."
+      pauseAfter="Describe the scene."
       charFrames={2}
       pauseSeconds={0.8}
     />
-  </AbsoluteFill>
+  </PreviewFrame>
 );

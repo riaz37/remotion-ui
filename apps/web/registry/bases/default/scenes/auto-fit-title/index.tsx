@@ -1,5 +1,5 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
-import { AbsoluteFill, useVideoConfig } from "remotion";
+import { AbsoluteFill, Img, useVideoConfig } from "remotion";
 import { FadeIn } from "@/remotion/primitives/fade-in";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
 import { fitHeadline } from "@/remotion/lib/text-fit-utils";
@@ -12,6 +12,8 @@ const interFont = loadFont("normal", {
 export type AutoFitTitleProps = {
   title: string;
   subtitle?: string;
+  logoSrc?: string;
+  logoSize?: number;
   maxFontSize?: number;
   accentColor?: string;
   backgroundColor?: string;
@@ -36,8 +38,10 @@ function getTitleSize(
 export const AutoFitTitle: React.FC<AutoFitTitleProps> = ({
   title,
   subtitle,
+  logoSrc,
+  logoSize,
   maxFontSize = 96,
-  accentColor = "#3b82f6",
+  accentColor = "#60a5fa",
   backgroundColor = "#0f172a",
 }) => {
   const { width, height } = useVideoConfig();
@@ -60,6 +64,18 @@ export const AutoFitTitle: React.FC<AutoFitTitleProps> = ({
         gap: 16,
       }}
     >
+      {logoSrc ? (
+        <FadeIn durationInFrames={18}>
+          <Img
+            src={logoSrc}
+            style={{
+              width: logoSize ?? scaleFont(96, width),
+              height: logoSize ?? scaleFont(96, width),
+              borderRadius: scaleFont(20, width),
+            }}
+          />
+        </FadeIn>
+      ) : null}
       <FadeIn durationInFrames={24}>
         <h1
           style={{

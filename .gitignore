@@ -41,6 +41,11 @@ apps/web/.source/
 
 # Browser QA artifacts
 .qa-screenshots/
+reports/
+
+# Marketing workspace (local playbooks + rendered demo videos)
+marketing/
+
 
 # Testing
 coverage/
@@ -80,3 +85,5 @@ Thumbs.db
 .cache/
 tmp/
 temp/
+var/
+

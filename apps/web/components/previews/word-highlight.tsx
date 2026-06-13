@@ -1,21 +1,15 @@
 "use client";
 
-import { AbsoluteFill } from "remotion";
 import { WordHighlight } from "../registry-exports";
+import { PreviewFrame } from "./preview-frame";
 
 export const WordHighlightPreview: React.FC = () => (
-  <AbsoluteFill
-    style={{
-      backgroundColor: "#0f172a",
-      justifyContent: "center",
-      alignItems: "center",
-      padding: 40,
-    }}
-  >
+  <PreviewFrame lane="atoms" padding={96}>
     <WordHighlight
-      text="Motion should feel effortless"
-      highlightWord="effortless"
+      text="Make the key word memorable"
+      highlightWord="memorable"
       durationInFrames={45}
+      highlightColor="#a5b4fc"
     />
-  </AbsoluteFill>
+  </PreviewFrame>
 );

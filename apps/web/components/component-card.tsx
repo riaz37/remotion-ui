@@ -27,7 +27,7 @@ export function ComponentCard({
   return (
     <Link
       href={url}
-      className="motion-hover group overflow-hidden rounded-2xl border border-fd-border bg-fd-card p-3 hover:border-fd-primary/50 hover:shadow-md hover:shadow-black/10"
+      className="motion-hover group overflow-hidden rounded-xl border border-fd-border bg-fd-card p-3 hover:border-fd-primary/50 hover:shadow-md hover:shadow-black/10"
     >
       {resolvedLane ? (
         <AtlasMiniPreview slug={slug} lane={resolvedLane} />
@@ -40,14 +40,14 @@ export function ComponentCard({
           <div className="flex shrink-0 gap-1.5">
             {resolvedLane ? (
               <span
-                className="rounded-full border px-2 py-0.5 font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.12em]"
+                className="rounded-md border px-2 py-0.5 font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.12em]"
                 style={{ borderColor: accent, color: accent }}
               >
                 {ATLAS_LANES[resolvedLane].label}
               </span>
             ) : null}
             {meta?.tier === "advanced" ? (
-              <span className="rounded-full border border-fd-border px-2 py-0.5 font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.12em] text-fd-muted-foreground">
+              <span className="rounded-md border border-fd-border px-2 py-0.5 font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.12em] text-fd-muted-foreground">
                 Pro
               </span>
             ) : null}

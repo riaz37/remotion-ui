@@ -8,8 +8,8 @@ export type IntroProps = {
 };
 
 export const Intro: React.FC<IntroProps> = ({
-  title = "RemotionUI",
-  subtitle = "Production-ready motion",
+  title = "Launch Brief",
+  subtitle = "A clean opener for product videos",
 }) => {
   const { fps } = useVideoConfig();
   const premountFor = Math.round(fps * 0.5);

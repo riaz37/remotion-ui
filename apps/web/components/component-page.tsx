@@ -76,7 +76,7 @@ export function ComponentPage({
       ) : null}
 
       {preview ? (
-        <div className="not-prose mb-8 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(280px,380px)] lg:items-start lg:gap-8">
+        <div className="not-prose mb-8 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(320px,440px)] lg:items-start lg:gap-8">
           <div className="min-w-0 space-y-6 lg:order-1">
             <InstallCommand name={name} />
             {children ? (
@@ -85,7 +85,7 @@ export function ComponentPage({
           </div>
           <div
             className={`mb-8 lg:sticky lg:top-20 lg:order-2 lg:mb-0 ${
-              isPortrait ? "w-64 max-w-full lg:justify-self-end" : ""
+              isPortrait ? "w-72 max-w-full lg:justify-self-end" : ""
             }`}
           >
             {previewNode}

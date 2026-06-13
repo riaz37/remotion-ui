@@ -29,7 +29,7 @@ export const DataStory: React.FC<DataStoryProps> = ({
   metrics,
   steps,
   insight = "The strongest stories turn numbers into sequence.",
-  ctaTitle = "RemotionUI",
+  ctaTitle = "Data Cut",
   ctaLabel = "Build the next story",
 }) => (
   <AbsoluteFill style={{ backgroundColor: "#020617" }}>

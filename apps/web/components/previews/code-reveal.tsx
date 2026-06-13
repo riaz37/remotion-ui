@@ -4,11 +4,12 @@ import { CodeReveal } from "../registry-exports";
 
 export const CodeRevealPreview: React.FC = () => (
   <CodeReveal
-    code={`import { MediaFrame } from "@/remotion/scenes/media-frame";
+    title="Callout recipe"
+    code={`import { CalloutSpotlight } from "@/remotion/scenes/callout-spotlight";
 
-<MediaFrame
-  src={staticFile("demo.png")}
-  title="Product demo"
+<CalloutSpotlight
+  title="Explain the action"
+  target={{ x: 520, y: 260, width: 420, height: 220 }}
 />`}
     highlightedLines={[3, 4]}
   />

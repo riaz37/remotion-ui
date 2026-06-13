@@ -21,8 +21,8 @@ export type ShowcaseProps = {
 };
 
 export const Showcase: React.FC<ShowcaseProps> = ({
-  title = "RemotionUI",
-  subtitle = "Advanced video components",
+  title = "Launch Kit",
+  subtitle = "Scenes for product stories",
 }) => {
   return (
     <AbsoluteFill style={{ backgroundColor: "#000" }}>

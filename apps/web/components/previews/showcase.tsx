@@ -1,7 +1,10 @@
 "use client";
 
+import { Sequence } from "remotion";
 import { Showcase } from "../registry-exports";
 
 export const ShowcasePreview: React.FC = () => (
-  <Showcase title="RemotionUI" subtitle="Advanced video components" />
+  <Sequence from={-70}>
+    <Showcase title="Launch Kit" subtitle="Scenes for product stories" />
+  </Sequence>
 );

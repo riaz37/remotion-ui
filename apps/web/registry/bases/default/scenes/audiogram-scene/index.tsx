@@ -1,4 +1,4 @@
-import { AbsoluteFill, useVideoConfig } from "remotion";
+import { AbsoluteFill, Img, useVideoConfig } from "remotion";
 import { AudiogramBars } from "@/remotion/primitives/audiogram-bars";
 import { FadeIn } from "@/remotion/primitives/fade-in";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
@@ -7,6 +7,8 @@ export type AudiogramSceneProps = {
   src: string;
   title?: string;
   subtitle?: string;
+  logoSrc?: string;
+  logoSize?: number;
   accentColor?: string;
   backgroundColor?: string;
 };
@@ -15,7 +17,9 @@ export const AudiogramScene: React.FC<AudiogramSceneProps> = ({
   src,
   title = "Podcast Episode",
   subtitle,
-  accentColor = "#3b82f6",
+  logoSrc,
+  logoSize,
+  accentColor = "#60a5fa",
   backgroundColor = "#0f172a",
 }) => {
   const { width, height } = useVideoConfig();
@@ -35,7 +39,25 @@ export const AudiogramScene: React.FC<AudiogramSceneProps> = ({
       }}
     >
       <FadeIn durationInFrames={20}>
-        <div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: logoSrc ? "center" : "flex-start",
+            textAlign: logoSrc ? "center" : "left",
+            gap: logoSrc ? 20 : 0,
+          }}
+        >
+          {logoSrc ? (
+            <Img
+              src={logoSrc}
+              style={{
+                width: logoSize ?? scaleFont(80, width),
+                height: logoSize ?? scaleFont(80, width),
+                borderRadius: scaleFont(18, width),
+              }}
+            />
+          ) : null}
           <h1
             style={{
               color: "white",

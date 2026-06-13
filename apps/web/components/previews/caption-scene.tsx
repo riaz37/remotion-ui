@@ -5,7 +5,7 @@ import { DEMO_CAPTIONS } from "@/lib/demo-assets";
 import { PreviewFrame } from "./preview-frame";
 
 export const CaptionScenePreview: React.FC = () => (
-  <PreviewFrame backgroundColor="#0f172a">
+  <PreviewFrame lane="signals" padding={0}>
     <CaptionScene
       captions={DEMO_CAPTIONS}
       placement="center"

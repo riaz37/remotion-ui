@@ -101,7 +101,7 @@ function TransitionShell({
         overflow: "hidden",
       }}
     >
-      <DemoScene label="Scene A" kicker="Before" color="#38bdf8" />
+      <DemoScene label="Product tour" kicker="Before cut" color="#38bdf8" />
       <div
         style={{
           position: "absolute",
@@ -111,7 +111,7 @@ function TransitionShell({
           clipPath: clip,
         }}
       >
-        <DemoScene label="Scene B" kicker="After" color="#f59e0b" />
+        <DemoScene label="Pricing reveal" kicker="After cut" color="#f59e0b" />
       </div>
       {mode === "light" ? (
         <div

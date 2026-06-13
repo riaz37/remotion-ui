@@ -1,12 +1,16 @@
 "use client";
 
 import { FadeIn } from "../registry-exports";
-import { PreviewFrame, PreviewLabel } from "./preview-frame";
+import { PreviewFrame, ProductCard } from "./preview-frame";
 
 export const FadeInPreview: React.FC = () => (
-  <PreviewFrame>
+  <PreviewFrame lane="atoms">
     <FadeIn>
-      <PreviewLabel>Fade In</PreviewLabel>
+      <ProductCard
+        kicker="Launch beat"
+        title="Reveal the offer"
+        detail="Pure opacity, no layout shift"
+      />
     </FadeIn>
   </PreviewFrame>
 );

@@ -24,7 +24,7 @@ export const PodcastClip: React.FC<PodcastClipProps> = ({
   captions,
   title = "Podcast highlight",
   subtitle = "A clip ready for social",
-  ctaTitle = "RemotionUI",
+  ctaTitle = "Audio Cut",
   ctaLabel = "Make audio visual",
 }) => (
   <AbsoluteFill style={{ backgroundColor: "#020617" }}>

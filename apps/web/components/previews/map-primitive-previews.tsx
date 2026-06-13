@@ -5,9 +5,9 @@ import { Easing, interpolate, useCurrentFrame } from "remotion";
 
 const route = "M142 350 C260 230 370 430 510 300 C640 178 750 250 842 158";
 const points = [
-  { x: 142, y: 350, label: "Origin" },
+  { x: 142, y: 350, label: "Depot" },
   { x: 510, y: 300, label: "Hub" },
-  { x: 842, y: 158, label: "Arrival" },
+  { x: 842, y: 158, label: "Client" },
 ];
 
 function MapBase({ children, title }: { children?: ReactNode; title: string }) {
@@ -55,7 +55,7 @@ function MapBase({ children, title }: { children?: ReactNode; title: string }) {
       </svg>
       <div style={{ position: "absolute", left: 48, top: 40 }}>
         <div style={{ color: "#7dd3fc", fontSize: 24, fontWeight: 800 }}>
-          Spatial
+          Logistics
         </div>
         <div
           style={{ marginTop: 8, fontSize: 52, lineHeight: 1, fontWeight: 900 }}
@@ -68,7 +68,7 @@ function MapBase({ children, title }: { children?: ReactNode; title: string }) {
 }
 
 export const MapCanvasPreview: React.FC = () => (
-  <MapBase title="Map canvas">
+  <MapBase title="Regional view">
     <rect
       x="650"
       y="330"
@@ -86,7 +86,7 @@ export const MapCanvasPreview: React.FC = () => (
       fontFamily="system-ui"
       fontWeight="800"
     >
-      deterministic
+      tile-free
     </text>
   </MapBase>
 );
@@ -100,7 +100,7 @@ export const MapRoutePreview: React.FC = () => {
   });
 
   return (
-    <MapBase title="Route reveal">
+  <MapBase title="Delivery route">
       <path
         d={route}
         fill="none"
@@ -125,7 +125,7 @@ export const MapMarkersPreview: React.FC = () => {
   const frame = useCurrentFrame();
 
   return (
-    <MapBase title="Marker layers">
+    <MapBase title="Live stops">
       {points.map((point, index) => {
         const progress = interpolate(
           frame,

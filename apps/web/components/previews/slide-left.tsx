@@ -1,12 +1,16 @@
 "use client";
 
 import { SlideLeft } from "../registry-exports";
-import { PreviewFrame, PreviewLabel } from "./preview-frame";
+import { PreviewFrame, ProductCard } from "./preview-frame";
 
 export const SlideLeftPreview: React.FC = () => (
-  <PreviewFrame>
+  <PreviewFrame lane="atoms">
     <SlideLeft>
-      <PreviewLabel>Slide Left</PreviewLabel>
+      <ProductCard
+        kicker="Lower panel"
+        title="Guide attention"
+        detail="Slides in from a stable layout slot"
+      />
     </SlideLeft>
   </PreviewFrame>
 );

@@ -1,12 +1,16 @@
 "use client";
 
 import { SpringIn } from "../registry-exports";
-import { PreviewFrame, PreviewLabel } from "./preview-frame";
+import { PreviewFrame, ProductCard } from "./preview-frame";
 
 export const SpringInPreview: React.FC = () => (
-  <PreviewFrame>
+  <PreviewFrame lane="atoms">
     <SpringIn durationInFrames={40}>
-      <PreviewLabel>Spring In</PreviewLabel>
+      <ProductCard
+        kicker="Soft landing"
+        title="Settle the reveal"
+        detail="Spring motion without visual clutter"
+      />
     </SpringIn>
   </PreviewFrame>
 );

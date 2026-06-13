@@ -161,7 +161,7 @@ const SceneOneLeft: React.FC = () => (
     <FadeOut delayInFrames={94} durationInFrames={12}>
       <div style={{ maxWidth: 590 }}>
         <BlurIn delayInFrames={20} durationInFrames={25} maxBlur={12}>
-          <p style={eyebrowStyle}>RemotionUI</p>
+          <p style={eyebrowStyle}>Launch Kit</p>
         </BlurIn>
         <SlideUp delayInFrames={40} durationInFrames={30} distance={44}>
           <h1
@@ -170,7 +170,7 @@ const SceneOneLeft: React.FC = () => (
               fontSize: 66,
               lineHeight: 1.05,
               fontWeight: 900,
-              letterSpacing: -1.2,
+              letterSpacing: 0,
             }}
           >
             Production-ready motion for Remotion.
@@ -474,7 +474,7 @@ const SceneFour: React.FC = () => (
             letterSpacing: 4,
           }}
         >
-          RemotionUI
+          Launch Kit
         </p>
       </RotateIn>
       <FadeIn delayInFrames={20} durationInFrames={18}>
@@ -673,7 +673,7 @@ const largeLineStyle: CSSProperties = {
   fontSize: 74,
   lineHeight: 1,
   fontWeight: 900,
-  letterSpacing: -1.4,
+  letterSpacing: 0,
 };
 
 const terminalCardStyle: CSSProperties = {

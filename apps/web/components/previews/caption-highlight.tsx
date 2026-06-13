@@ -13,7 +13,7 @@ export const CaptionHighlightPreview: React.FC = () => {
   if (!page) return null;
 
   return (
-    <PreviewFrame backgroundColor="#0f172a">
+    <PreviewFrame lane="signals">
       <CaptionHighlight page={page} />
     </PreviewFrame>
   );

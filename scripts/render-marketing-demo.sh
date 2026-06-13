@@ -23,30 +23,38 @@ cd "$PROJECT"
 echo "→ add social-clip"
 $CLI add social-clip
 
+mkdir -p public
+cp "$ROOT/apps/web/public/logo.svg" public/logo.svg
+
 cat > src/remotion/demo-captions.ts <<'EOF'
 import type { Caption } from "@remotion/captions";
 
 export const DEMO_CAPTIONS: Caption[] = [
-  { text: " Welcome", startMs: 0, endMs: 400, timestampMs: 0, confidence: 1 },
-  { text: " to", startMs: 400, endMs: 600, timestampMs: 400, confidence: 1 },
-  { text: " RemotionUI", startMs: 600, endMs: 1200, timestampMs: 600, confidence: 1 },
-  { text: " signals", startMs: 1200, endMs: 2000, timestampMs: 1200, confidence: 1 },
+  { text: " Install", startMs: 0, endMs: 360, timestampMs: 0, confidence: 1 },
+  { text: " components", startMs: 360, endMs: 780, timestampMs: 360, confidence: 1 },
+  { text: " as", startMs: 780, endMs: 980, timestampMs: 780, confidence: 1 },
+  { text: " source", startMs: 980, endMs: 1800, timestampMs: 980, confidence: 1 },
 ];
 EOF
 
 cat > src/Root.tsx <<'EOF'
-import { Composition } from "remotion";
+import { Composition, staticFile } from "remotion";
 import { SocialClip } from "@/compositions/social-clip";
 import { DEMO_CAPTIONS } from "./remotion/demo-captions";
 
+const LOGO = staticFile("logo.svg");
+
 const SocialClipDemo: React.FC = () => (
   <SocialClip
-    hookTitle="Ship videos faster"
-    hookSubtitle="Production-ready motion for Remotion"
+    logoSrc={LOGO}
+    hookTitle="Production-ready motion"
+    hookSubtitle="for Remotion. Source you own."
     audioSrc="https://remotion.media/audio.wav"
     captions={DEMO_CAPTIONS}
+    podcastTitle="RemotionUI"
     ctaTitle="RemotionUI"
-    ctaLabel="remotionui.com"
+    ctaLabel="npx remotion-ui add"
+    ctaUrl="remotionui.com"
   />
 );
 

@@ -29,7 +29,7 @@ export const TutorialClip: React.FC<TutorialClipProps> = ({
   calloutSubtitle = "Guide attention without crowding the frame.",
   calloutTarget = { x: 520, y: 260, width: 520, height: 300 },
   code = `npx remotion-ui add media-frame\nnpx remotion-ui add callout-spotlight\nnpx remotion-ui add code-reveal`,
-  ctaTitle = "RemotionUI",
+  ctaTitle = "Tutorial Cut",
   ctaLabel = "Ship video components faster",
 }) => (
   <AbsoluteFill style={{ backgroundColor: "#020617" }}>
@@ -39,7 +39,7 @@ export const TutorialClip: React.FC<TutorialClipProps> = ({
       </TransitionSeries.Sequence>
       <TransitionSeries.Transition {...fade} />
       <TransitionSeries.Sequence durationInFrames={90}>
-        <MediaFrame src={mediaSrc} title="Demo frame" caption="Use your screenshot, product clip, or recording." />
+        <MediaFrame src={mediaSrc} title="Product walkthrough" caption="Use your screenshot, product clip, or recording." />
       </TransitionSeries.Sequence>
       <TransitionSeries.Transition {...fade} />
       <TransitionSeries.Sequence durationInFrames={80}>

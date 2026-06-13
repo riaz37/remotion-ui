@@ -147,22 +147,18 @@ export function AtlasMiniPreview({ slug, lane }: AtlasMiniPreviewProps) {
     return <DesignedFallback slug={slug} lane={lane} />;
   }
 
-  return <LivePreview preview={preview} slug={slug} lane={lane} />;
+  return <LivePreview preview={preview} lane={lane} />;
 }
 
 function LivePreview({
   preview,
-  slug,
   lane,
 }: {
   preview: PreviewConfig;
-  slug: string;
   lane: AtlasLane;
 }) {
   const playerRef = useRef<PlayerRef>(null);
   const accent = laneAccent(lane);
-  const label = slug.replace(/-/g, " ");
-
   useEffect(() => {
     const player = playerRef.current;
     if (!player) return;
@@ -190,24 +186,12 @@ function LivePreview({
         acknowledgeRemotionLicense
       />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgb(255_255_255_/_0.10),transparent_34%),linear-gradient(to_top,rgb(0_0_0_/_0.22),transparent_45%)]" />
-      <div className="pointer-events-none absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-black/35 px-2 py-1 text-[10px] font-medium uppercase tracking-[0.14em] text-white/80 backdrop-blur">
+      <div className="pointer-events-none absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-black/30 px-2 py-1 text-[10px] font-medium uppercase tracking-[0.14em] text-white/70 backdrop-blur">
         <span
           className="size-1.5 rounded-full"
           style={{ background: accent }}
         />
-        Live
-      </div>
-      <div className="pointer-events-none absolute bottom-3 left-3 right-3">
-        <div className="mb-2 flex items-center justify-between gap-3 text-[10px] font-medium uppercase tracking-[0.14em] text-white/65">
-          <span className="truncate">{label}</span>
-          <span>30fps</span>
-        </div>
-        <div className="h-1 overflow-hidden rounded-full bg-white/12">
-          <div
-            className="h-full w-2/3 rounded-full"
-            style={{ background: accent }}
-          />
-        </div>
+        {LANE_VISUALS[lane].label}
       </div>
     </div>
   );

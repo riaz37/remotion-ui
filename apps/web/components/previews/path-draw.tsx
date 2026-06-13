@@ -5,7 +5,7 @@ import { DEMO_LOGO_PATH } from "@/lib/demo-assets";
 import { PreviewFrame } from "./preview-frame";
 
 export const PathDrawPreview: React.FC = () => (
-  <PreviewFrame backgroundColor="#0f172a">
+  <PreviewFrame lane="vectors">
     <PathDraw
       d={DEMO_LOGO_PATH}
       width={220}

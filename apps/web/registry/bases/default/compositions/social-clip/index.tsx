@@ -18,21 +18,25 @@ const FADE = transitionFade({ durationInFrames: 12 });
 export type SocialClipProps = {
   hookTitle?: string;
   hookSubtitle?: string;
+  logoSrc?: string;
   audioSrc: string;
   captions: Caption[];
   podcastTitle?: string;
   ctaTitle?: string;
   ctaLabel?: string;
+  ctaUrl?: string;
 };
 
 export const SocialClip: React.FC<SocialClipProps> = ({
-  hookTitle = "Watch this",
-  hookSubtitle = "60 seconds of value",
+  hookTitle = "Clip the sharpest moment",
+  hookSubtitle = "A creator-ready social cut",
+  logoSrc,
   audioSrc,
   captions,
-  podcastTitle = "RemotionUI Podcast",
-  ctaTitle = "RemotionUI",
+  podcastTitle = "Founder Notes",
+  ctaTitle = "Creator Cut",
   ctaLabel = "Follow for more",
+  ctaUrl,
 }) => {
   return (
     <AbsoluteFill style={{ backgroundColor: "#000" }}>
@@ -41,6 +45,7 @@ export const SocialClip: React.FC<SocialClipProps> = ({
           <AutoFitTitle
             title={hookTitle}
             subtitle={hookSubtitle}
+            logoSrc={logoSrc}
             maxFontSize={72}
           />
         </TransitionSeries.Sequence>
@@ -50,6 +55,7 @@ export const SocialClip: React.FC<SocialClipProps> = ({
             <AudiogramScene
               src={audioSrc}
               title={podcastTitle}
+              logoSrc={logoSrc}
               backgroundColor="#0f172a"
             />
             <CaptionScene
@@ -61,7 +67,7 @@ export const SocialClip: React.FC<SocialClipProps> = ({
         </TransitionSeries.Sequence>
         <TransitionSeries.Transition {...FADE} />
         <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.end}>
-          <EndCard title={ctaTitle} cta={ctaLabel} />
+          <EndCard title={ctaTitle} cta={ctaLabel} logoSrc={logoSrc} url={ctaUrl} />
         </TransitionSeries.Sequence>
       </TransitionSeries>
     </AbsoluteFill>

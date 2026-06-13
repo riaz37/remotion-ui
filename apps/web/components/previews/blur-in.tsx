@@ -1,12 +1,16 @@
 "use client";
 
 import { BlurIn } from "../registry-exports";
-import { PreviewFrame, PreviewLabel } from "./preview-frame";
+import { PreviewFrame, ProductCard } from "./preview-frame";
 
 export const BlurInPreview: React.FC = () => (
-  <PreviewFrame>
+  <PreviewFrame lane="atoms">
     <BlurIn>
-      <PreviewLabel>Blur In</PreviewLabel>
+      <ProductCard
+        kicker="Focus shift"
+        title="Bring the message in"
+        detail="Soft blur resolves to crisp type"
+      />
     </BlurIn>
   </PreviewFrame>
 );

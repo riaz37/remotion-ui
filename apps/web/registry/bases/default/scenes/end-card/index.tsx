@@ -1,4 +1,4 @@
-import { AbsoluteFill, useVideoConfig } from "remotion";
+import { AbsoluteFill, Img, useVideoConfig } from "remotion";
 import { FadeIn } from "@/remotion/primitives/fade-in";
 import { ScaleIn } from "@/remotion/primitives/scale-in";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
@@ -7,6 +7,8 @@ export type EndCardProps = {
   title: string;
   cta?: string;
   url?: string;
+  logoSrc?: string;
+  logoSize?: number;
   backgroundColor?: string;
   accentColor?: string;
 };
@@ -15,8 +17,10 @@ export const EndCard: React.FC<EndCardProps> = ({
   title,
   cta = "Learn more",
   url,
+  logoSrc,
+  logoSize,
   backgroundColor = "#0f172a",
-  accentColor = "#3b82f6",
+  accentColor = "#60a5fa",
 }) => {
   const { width, height } = useVideoConfig();
   const safeArea = getSafeAreaPadding({ width, height });
@@ -51,8 +55,35 @@ export const EndCard: React.FC<EndCardProps> = ({
                 lineHeight: 1.1,
               }}
             >
-              {title}
+              {logoSrc ? (
+                <Img
+                  src={logoSrc}
+                  style={{
+                    width: logoSize ?? scaleFont(112, width),
+                    height: logoSize ?? scaleFont(112, width),
+                    borderRadius: scaleFont(24, width),
+                    display: "block",
+                    margin: "0 auto",
+                  }}
+                />
+              ) : (
+                title
+              )}
             </h1>
+            {!logoSrc ? null : (
+              <p
+                style={{
+                  color: "white",
+                  fontSize: scaleFont(52, width),
+                  fontFamily: "system-ui, sans-serif",
+                  fontWeight: 700,
+                  margin: 0,
+                  lineHeight: 1.1,
+                }}
+              >
+                {title}
+              </p>
+            )}
             <div
               style={{
                 backgroundColor: accentColor,
