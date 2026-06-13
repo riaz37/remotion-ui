@@ -9,10 +9,12 @@ import {
   DEMO_MEDIA_SRC,
   DEMO_MEDIA_THIRD_SRC,
 } from "@/lib/demo-assets";
+import { siteConfig } from "@/lib/site-config";
 
 export const CreatorReelPreview: React.FC = () => (
   <Sequence from={-32}>
     <CreatorReel
+      hookHeadline="Production-ready motion for Remotion"
       audioSrc={DEMO_AUDIO_SRC}
       mediaSrc={DEMO_MEDIA_ALT_SRC}
       mediaFit="contain"
@@ -20,7 +22,7 @@ export const CreatorReelPreview: React.FC = () => (
       bRollItems={[
         { src: DEMO_MEDIA_SRC, title: "Script" },
         { src: DEMO_MEDIA_ALT_SRC, title: "Record" },
-        { src: DEMO_MEDIA_THIRD_SRC, title: "Publish" },
+        { src: DEMO_MEDIA_THIRD_SRC, title: siteConfig.name },
       ]}
     />
   </Sequence>

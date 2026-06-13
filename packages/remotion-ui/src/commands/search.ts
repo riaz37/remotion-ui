@@ -7,6 +7,7 @@ export type SearchOptions = {
   lane?: string;
   tier?: string;
   registryUrl?: string;
+  json?: boolean;
 };
 
 export async function searchCommand(
@@ -33,6 +34,11 @@ export async function searchCommand(
       item.atlas?.tags?.some((tag) => tag.toLowerCase().includes(query))
     );
   });
+
+  if (options.json) {
+    console.log(JSON.stringify({ count: results.length, items: results }, null, 2));
+    return;
+  }
 
   if (results.length === 0) {
     console.log("No components found.");

@@ -2,14 +2,14 @@ import { siteConfig } from "@/lib/site-config";
 
 export const siteMetadata = {
   title: "RemotionUI – Production-ready motion for Remotion",
-  description: `${siteConfig.tagline} Registry + CLI for primitives, scenes, and compositions — captions, charts, social clips, and more.`,
+  description: `${siteConfig.tagline} ${siteConfig.description}`,
   keywords: [
     "Remotion",
-    "Remotion components",
+    "Remotion compositions",
+    "Remotion social clip",
     "programmatic video",
     "React video",
     "motion graphics",
-    "motion registry",
     "video CLI",
     "source-owned components",
   ],

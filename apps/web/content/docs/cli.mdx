@@ -1,6 +1,6 @@
 ---
 title: CLI Reference
-description: remotion-ui commands for init, add, update, diff, and custom registries.
+description: remotion-ui commands for init, add, doctor, recipes, and custom registries.
 ---
 
 ## Commands
@@ -8,12 +8,49 @@ description: remotion-ui commands for init, add, update, diff, and custom regist
 | Command | Description |
 |---------|-------------|
 | `init [name]` | Scaffold a new Remotion project |
+| `init --existing` | Bootstrap `remotion-ui.json` in an existing Remotion project |
 | `add <name...>` | Install components and dependencies |
+| `add --recipe <slug>` | Install a task-first recipe (components + deps) |
+| `doctor` | Diagnose config, aliases, and Remotion version |
+| `list` | List registry components and installed status |
 | `update <name...>` | Re-install from registry (overwrites files) |
 | `diff <name>` | Compare installed files vs registry |
 | `search -q <query>` | Search the registry |
 | `view <name>` | View registry item metadata |
 | `build [registry.json]` | Build a custom registry to `public/r/` |
+
+## Diagnose setup
+
+```bash
+npx remotion-ui doctor
+```
+
+Checks `remotion-ui.json`, `tsconfig` path aliases, install directories, and Remotion version alignment.
+
+## Existing Remotion project
+
+```bash
+cd your-remotion-app
+npx remotion-ui init --existing
+npx remotion-ui add social-clip
+```
+
+## Recipe install
+
+```bash
+npx remotion-ui add --recipe captioned-social-video
+```
+
+Recipes are defined in [`/ai/recipes.json`](/ai/recipes.json). Browse goals at [Recipe wizard](/docs/ai/start).
+
+## Agent / script output
+
+```bash
+npx remotion-ui doctor --json
+npx remotion-ui search -q social --json
+npx remotion-ui view social-clip --json
+npx remotion-ui list --json
+```
 
 ## Workflow: staying up to date
 

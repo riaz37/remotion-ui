@@ -1,6 +1,7 @@
 import { execSync } from "node:child_process";
 import fs from "fs-extra";
 import path from "node:path";
+import { bootstrapExistingProject } from "../preflights/preflight-init.js";
 import {
   detectPackageManager,
   getInstallCommand,
@@ -10,6 +11,7 @@ import { getTemplateDir } from "../utils/get-template-dir.js";
 export type InitOptions = {
   cwd?: string;
   yes?: boolean;
+  existing?: boolean;
 };
 
 export async function initCommand(
@@ -17,6 +19,12 @@ export async function initCommand(
   options: InitOptions = {},
 ): Promise<void> {
   const cwd = path.resolve(options.cwd ?? process.cwd());
+
+  if (options.existing) {
+    await bootstrapExistingProject(cwd);
+    return;
+  }
+
   const targetDir = path.join(cwd, projectName);
   const templateDir = getTemplateDir("remotion-app");
 

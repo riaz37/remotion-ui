@@ -6,6 +6,6 @@ import { PreviewFrame } from "./preview-frame";
 
 export const AudioPulsePreview: React.FC = () => (
   <PreviewFrame lane="signals">
-    <AudioPulse src={DEMO_AUDIO_SRC} />
+    <AudioPulse src={DEMO_AUDIO_SRC} size={220} color="#f9a8d4" />
   </PreviewFrame>
 );
