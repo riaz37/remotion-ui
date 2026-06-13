@@ -3,17 +3,22 @@
 import type { ComponentType } from "react";
 import {
   CreatorReel,
+  DataStory,
   Intro,
+  PodcastClip,
   SocialClip,
 } from "@/components/registry-exports";
 import {
   DEMO_AUDIO_SRC,
+  DEMO_BAR_DATA,
   DEMO_CAPTIONS,
   DEMO_LOGO_SRC,
   DEMO_MEDIA_ALT_SRC,
   DEMO_MEDIA_SRC,
   DEMO_MEDIA_THIRD_SRC,
+  DEMO_METRICS,
   DEMO_SOCIAL_CLIP_CAPTIONS,
+  DEMO_TIMELINE_STEPS,
 } from "@/lib/demo-assets";
 import { getComponentReference } from "@/lib/component-reference";
 import {
@@ -56,6 +61,9 @@ const PLAYGROUND_COMPONENTS: Record<
         { src: DEMO_MEDIA_ALT_SRC, title: "Record" },
         { src: DEMO_MEDIA_THIRD_SRC, title: "Publish" },
       ],
+      hookSubtitle: "Source you own. Install with the CLI.",
+      ctaLabel: "Build your next clip",
+      comment: "Can you turn this into a quick video breakdown?",
     },
   },
   intro: {
@@ -63,6 +71,30 @@ const PLAYGROUND_COMPONENTS: Record<
     baseProps: {
       title: "Launch Brief",
       subtitle: "A clean opener for product videos",
+    },
+  },
+  "podcast-clip": {
+    component: PodcastClip as ComponentType<Record<string, unknown>>,
+    baseProps: {
+      audioSrc: DEMO_AUDIO_SRC,
+      captions: DEMO_CAPTIONS,
+      title: "Podcast highlight",
+      subtitle: "A clip ready for social",
+      ctaTitle: "Audio Cut",
+      ctaLabel: "Make audio visual",
+    },
+  },
+  "data-story": {
+    component: DataStory as ComponentType<Record<string, unknown>>,
+    baseProps: {
+      title: "Data story",
+      subtitle: "Explain the trend in one minute",
+      insight: "The strongest stories turn numbers into sequence.",
+      ctaTitle: "Data Cut",
+      ctaLabel: "Build the next story",
+      barData: DEMO_BAR_DATA,
+      metrics: DEMO_METRICS,
+      steps: DEMO_TIMELINE_STEPS,
     },
   },
 };

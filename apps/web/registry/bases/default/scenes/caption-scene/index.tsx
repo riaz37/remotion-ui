@@ -2,6 +2,7 @@ import type { Caption } from "@remotion/captions";
 import { useMemo } from "react";
 import { AbsoluteFill, Sequence, useVideoConfig } from "remotion";
 import { CaptionHighlight } from "@/remotion/primitives/caption-highlight";
+import { KaraokeCaptions } from "@/remotion/primitives/karaoke-captions";
 import {
   DEFAULT_CAPTION_PAGE_MS,
   getPageSequenceTiming,
@@ -11,6 +12,11 @@ import { getSafeAreaPadding } from "@/remotion/lib/layout";
 
 export type CaptionPlacement = "lower-third" | "center";
 
+export type CaptionSceneMode =
+  | "highlight"
+  | "karaoke-scale"
+  | "karaoke-underline";
+
 export type CaptionSceneProps = {
   captions: Caption[];
   combineTokensWithinMilliseconds?: number;
@@ -18,6 +24,7 @@ export type CaptionSceneProps = {
   inactiveColor?: string;
   backgroundColor?: string;
   placement?: CaptionPlacement;
+  mode?: CaptionSceneMode;
 };
 
 export const CaptionScene: React.FC<CaptionSceneProps> = ({
@@ -27,6 +34,7 @@ export const CaptionScene: React.FC<CaptionSceneProps> = ({
   inactiveColor = "#f8fafc",
   backgroundColor = "transparent",
   placement = "lower-third",
+  mode = "karaoke-scale",
 }) => {
   const { fps, width, height } = useVideoConfig();
   const safeArea = getSafeAreaPadding({ width, height });
@@ -52,6 +60,42 @@ export const CaptionScene: React.FC<CaptionSceneProps> = ({
           paddingRight: safeArea.paddingRight,
           paddingBottom: safeArea.paddingBottom,
         };
+
+  const renderPage = (page: (typeof pages)[number]) => {
+    if (mode === "karaoke-scale") {
+      return (
+        <KaraokeCaptions
+          page={page}
+          activeColor={activeColor}
+          inactiveColor={inactiveColor}
+          fontSize={fontSize}
+          mode="scale"
+        />
+      );
+    }
+
+    if (mode === "karaoke-underline") {
+      return (
+        <KaraokeCaptions
+          page={page}
+          activeColor={activeColor}
+          inactiveColor={inactiveColor}
+          fontSize={fontSize}
+          mode="underline"
+        />
+      );
+    }
+
+    return (
+      <CaptionHighlight
+        page={page}
+        activeColor={activeColor}
+        inactiveColor={inactiveColor}
+        fontSize={fontSize}
+        activeScale={1.08}
+      />
+    );
+  };
 
   return (
     <AbsoluteFill style={{ backgroundColor }}>
@@ -83,14 +127,7 @@ export const CaptionScene: React.FC<CaptionSceneProps> = ({
             from={Math.round(startFrame)}
             durationInFrames={Math.round(durationInFrames)}
           >
-            <AbsoluteFill style={pageLayoutStyle}>
-              <CaptionHighlight
-                page={page}
-                activeColor={activeColor}
-                inactiveColor={inactiveColor}
-                fontSize={fontSize}
-              />
-            </AbsoluteFill>
+            <AbsoluteFill style={pageLayoutStyle}>{renderPage(page)}</AbsoluteFill>
           </Sequence>
         );
       })}

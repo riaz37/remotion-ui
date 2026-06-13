@@ -52,6 +52,8 @@ export type CreatorReelProps = {
   ctaTitle?: string;
   ctaLabel?: string;
   accentColor?: string;
+  talkingHeadTitle?: string;
+  talkingHeadSubtitle?: string;
 };
 
 export const CreatorReel: React.FC<CreatorReelProps> = ({
@@ -67,6 +69,8 @@ export const CreatorReel: React.FC<CreatorReelProps> = ({
   ctaTitle = "Creator Reel",
   ctaLabel = "Build your next clip",
   accentColor = "#f97316",
+  talkingHeadTitle = "Put the speaker first",
+  talkingHeadSubtitle = "The lower frame stays open for captions and social UI.",
 }) => (
   <AbsoluteFill style={{ backgroundColor: "#09090b" }}>
     <TransitionSeries>
@@ -86,13 +90,14 @@ export const CreatorReel: React.FC<CreatorReelProps> = ({
             fit={mediaFit}
             audioSrc={audioSrc}
             accentColor="#22c55e"
-            title="Put the speaker first"
-            subtitle="The lower frame stays open for captions and social UI."
+            title={talkingHeadTitle}
+            subtitle={talkingHeadSubtitle}
           />
           <CaptionScene
             captions={captions}
             placement="lower-third"
             activeColor="#22c55e"
+            mode="karaoke-scale"
           />
         </AbsoluteFill>
       </TransitionSeries.Sequence>

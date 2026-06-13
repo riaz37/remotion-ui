@@ -47,6 +47,9 @@ type AiRecipe = {
   installCommand: string;
   docsUrl: string;
   prompt: string;
+  flagshipComposition?: string;
+  compositionId?: string;
+  renderCommand?: string;
 };
 
 type RecipeManifest = {
@@ -251,6 +254,77 @@ Remotion is the framework. RemotionUI is the component registry: production-read
   console.log(`AI files built: public/ai/`);
 }
 
+async function writeLlmsTxt(registry: Registry, recipes: AiRecipe[]): Promise<void> {
+  const compositions = registry.items
+    .filter((item) => item.type === "registry:block" && item.files[0]?.path.includes("/compositions/"))
+    .map((item) => item.name);
+
+  const recipeLines = recipes
+    .map(
+      (recipe) =>
+        `- ${recipe.title} (\`${recipe.slug}\`): ${recipe.installCommand}`,
+    )
+    .join("\n");
+
+  const compositionLines = compositions
+    .slice(0, 12)
+    .map((name) => `- ${name}`)
+    .join("\n");
+
+  const llmsTxt = `# RemotionUI
+
+> Production-ready motion for Remotion. Source you own. The npm package is a CLI; components install as editable source in the user's project.
+
+## Canonical URLs
+
+- Site: ${siteUrl}
+- Docs: ${siteUrl}/docs
+- Component catalog: ${siteUrl}/docs/components
+- AI guide: ${siteUrl}/docs/ai
+- Full LLM guide: ${siteUrl}/llms-full.txt
+- Component index: ${siteUrl}/ai/components.json
+- Recipe index: ${siteUrl}/ai/recipes.json
+- Agent prompt: ${siteUrl}/ai/remotionui-agent.md
+- Registry: ${siteUrl}/r/index.json
+
+## Use RemotionUI for
+
+- Animated captions and social clips
+- Counters, metrics, charts, and data stories
+- Lower thirds, title cards, quote cards, and callouts
+- Audio visualizers and podcast clips
+- Transitions, intros, showcases, and reel templates
+
+## Recipes (${recipes.length})
+
+${recipeLines}
+
+## Flagship compositions
+
+${compositionLines}
+
+## CLI
+
+\`\`\`bash
+npx remotion-ui@latest init my-video
+cd my-video
+npx remotion-ui@latest search -q caption
+npx remotion-ui@latest add social-clip caption-highlight lower-third
+\`\`\`
+
+## Agent rules
+
+- Use Remotion docs for framework fundamentals: https://www.remotion.dev/docs
+- Use RemotionUI for source-installed components.
+- Run \`npx remotion-ui@latest add <component>\` before importing.
+- Import from local source paths, not from \`remotion-ui\`.
+- Animate with Remotion frame APIs, not CSS transitions.
+`;
+
+  await fs.writeFile(path.join(appRoot, "public", "llms.txt"), llmsTxt, "utf-8");
+  console.log("llms.txt generated: public/llms.txt");
+}
+
 async function buildRegistry(): Promise<void> {
   console.log("Building registry...");
 
@@ -316,6 +390,8 @@ async function buildRegistry(): Promise<void> {
   console.log(`Output: public/r/`);
 
   await buildAiFiles(registry);
+  const recipes = await loadRecipes();
+  await writeLlmsTxt(registry, recipes);
 }
 
 buildRegistry().catch((error) => {

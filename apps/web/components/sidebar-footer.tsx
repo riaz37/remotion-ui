@@ -12,6 +12,18 @@ export function SidebarFooter() {
           Install
         </Link>
         <Link
+          href="/docs/components"
+          className="rounded-md px-2 py-1 transition-colors hover:bg-fd-muted hover:text-fd-foreground"
+        >
+          Components
+        </Link>
+        <Link
+          href="/docs/ai/start"
+          className="rounded-md px-2 py-1 transition-colors hover:bg-fd-muted hover:text-fd-foreground"
+        >
+          Recipes
+        </Link>
+        <Link
           href="/docs/atlas"
           className="rounded-md px-2 py-1 transition-colors hover:bg-fd-muted hover:text-fd-foreground"
         >

@@ -6,6 +6,9 @@
       "slug": "captioned-social-video",
       "title": "Captioned social video",
       "intent": "Build a vertical short-form video with hook text, synced captions, audio visuals, and CTA.",
+      "flagshipComposition": "social-clip",
+      "compositionId": "SocialClip",
+      "renderCommand": "npx remotion render src/Root.tsx SocialClip out/social-clip.mp4",
       "components": [
         "social-clip",
         "caption-scene",
@@ -18,9 +21,32 @@
       "prompt": "Create a 9:16 captioned social clip using RemotionUI. Install the components first, import them from local source paths, and use Remotion Caption[] data for synced captions."
     },
     {
+      "slug": "creator-reel",
+      "title": "Creator reel",
+      "intent": "Build a vertical creator clip with hook, talking head, comment callout, B-roll, and CTA.",
+      "flagshipComposition": "creator-reel",
+      "compositionId": "CreatorReel",
+      "renderCommand": "npx remotion render src/Root.tsx CreatorReel out/creator-reel.mp4",
+      "components": [
+        "creator-reel",
+        "hook-card",
+        "talking-head-layout",
+        "comment-callout",
+        "caption-scene",
+        "b-roll-stack",
+        "end-card"
+      ],
+      "installCommand": "npx remotion-ui@latest add --recipe creator-reel",
+      "docsUrl": "https://remotionui.com/docs/ai/recipes/creator-reel",
+      "prompt": "Create a creator reel using RemotionUI. Use talking-head layout, synced captions, a comment callout, and B-roll proof cards."
+    },
+    {
       "slug": "data-story",
       "title": "Data story",
       "intent": "Build a chart-led explainer video with animated metrics and timeline context.",
+      "flagshipComposition": "data-story",
+      "compositionId": "DataStory",
+      "renderCommand": "npx remotion render src/Root.tsx DataStory out/data-story.mp4",
       "components": [
         "data-story",
         "animated-bar-chart",
@@ -36,6 +62,9 @@
       "slug": "podcast-clip",
       "title": "Podcast clip",
       "intent": "Build an audio-first clip with waveform visuals and synced captions.",
+      "flagshipComposition": "podcast-clip",
+      "compositionId": "PodcastClip",
+      "renderCommand": "npx remotion render src/Root.tsx PodcastClip out/podcast-clip.mp4",
       "components": [
         "podcast-clip",
         "audio-pulse",
@@ -51,6 +80,9 @@
       "slug": "product-intro",
       "title": "Product intro",
       "intent": "Build a polished product intro or feature showcase.",
+      "flagshipComposition": "intro",
+      "compositionId": "Intro",
+      "renderCommand": "npx remotion render src/Root.tsx Intro out/intro.mp4",
       "components": [
         "intro",
         "showcase",

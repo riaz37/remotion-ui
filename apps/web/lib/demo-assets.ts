@@ -94,6 +94,18 @@ export const DEMO_BAR_DATA = [
   { label: "Launch", value: 48000 },
 ];
 
+export const DEMO_METRICS = [
+  { label: "Views", value: 124000, suffix: "", delta: "+18%" },
+  { label: "Watch time", value: 48, suffix: "min", delta: "+6%" },
+  { label: "Shares", value: 3200, suffix: "", delta: "+24%" },
+];
+
+export const DEMO_TIMELINE_STEPS = [
+  { title: "Hook", description: "Lead with the sharpest insight." },
+  { title: "Proof", description: "Show the chart and metrics." },
+  { title: "CTA", description: "Close with one clear next step." },
+];
+
 export const DEMO_LINE_POINTS = [
   { x: 0, y: 12 },
   { x: 1, y: 18 },

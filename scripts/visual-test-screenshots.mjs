@@ -16,6 +16,10 @@ const PAGES = [
   ["/docs/primitives/fade-in", "fade-in"],
   ["/docs/signals/caption-scene", "caption-scene"],
   ["/docs/compositions/social-clip", "social-clip"],
+  ["/docs/compositions/creator-reel", "creator-reel"],
+  ["/docs/compositions/podcast-clip", "podcast-clip"],
+  ["/docs/signals/caption-highlight", "caption-highlight"],
+  ["/docs/compositions/data-story", "data-story"],
   ["/docs/spatial/map-flight", "map-flight"],
   ["/docs/atlas", "atlas-guide"],
 ];

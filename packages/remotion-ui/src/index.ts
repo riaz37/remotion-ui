@@ -14,7 +14,7 @@ const program = new Command();
 program
   .name("remotion-ui")
   .description("Add Remotion video components to your project")
-  .version("0.4.6");
+  .version("0.5.1");
 
 program
   .command("init")
@@ -25,15 +25,27 @@ program
     "--existing",
     "Bootstrap remotion-ui.json in the current Remotion project",
   )
+  .option(
+    "--starter <starter>",
+    "Project starter: default, social, or podcast",
+    "default",
+  )
   .action(
     async (
       projectName: string,
-      options: { yes?: boolean; existing?: boolean },
+      options: { yes?: boolean; existing?: boolean; starter?: string },
     ) => {
     try {
+      const starter = options.starter as "default" | "social" | "podcast";
+      if (!["default", "social", "podcast"].includes(starter)) {
+        throw new Error(
+          `Invalid starter "${options.starter}". Use default, social, or podcast.`,
+        );
+      }
       await initCommand(projectName, {
         yes: options.yes,
         existing: options.existing,
+        starter,
       });
     } catch (error) {
       console.error(

@@ -9,6 +9,12 @@ vi.mock("node:child_process", () => ({
   execSync: vi.fn(),
 }));
 
+vi.mock("./add.js", () => ({
+  addCommand: vi.fn().mockResolvedValue(undefined),
+}));
+
+import { addCommand } from "./add.js";
+
 describe("initCommand", () => {
   let tempDir: string;
   let consoleSpy: ReturnType<typeof vi.spyOn>;
@@ -46,6 +52,22 @@ describe("initCommand", () => {
     expect(remotionConfig).toContain('currentConfiguration.resolve.alias["@"]');
     expect(consoleSpy.mock.calls.flat().join("\n")).toContain(
       "npx remotion-ui add intro",
+    );
+  });
+
+  it("installs social starter recipe and prints render command", async () => {
+    await initCommand("my-reel", { cwd: tempDir, starter: "social" });
+
+    expect(addCommand).toHaveBeenCalledWith(
+      [],
+      expect.objectContaining({
+        cwd: path.join(tempDir, "my-reel"),
+        recipe: "captioned-social-video",
+        yes: true,
+      }),
+    );
+    expect(consoleSpy.mock.calls.flat().join("\n")).toContain(
+      "npx remotion render src/Root.tsx SocialClip out/social-clip.mp4",
     );
   });
 });

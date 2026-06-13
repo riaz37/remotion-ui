@@ -2,6 +2,29 @@
 
 ## Unreleased
 
+## 0.5.1
+
+### Added
+
+- **`init --starter`** — `npx remotion-ui init my-reel --starter social|podcast` scaffolds a project and installs the matching recipe, then prints the render command.
+- **Registry composition metadata** for `creator-reel`, `podcast-clip`, and `data-story` so `add --recipe` auto-registers compositions in `Root.tsx`.
+- **`creator-reel` AI recipe** with install command, render command, and docs page.
+- **CaptionScene `mode` prop** — `highlight`, `karaoke-scale`, and `karaoke-underline`; flagships default to karaoke-scale.
+- **Composition playground** for `podcast-clip` and `data-story`; expanded `creator-reel` editable props.
+- **Recipe render pipeline** — `flagshipComposition`, `compositionId`, and `renderCommand` in recipes manifest; `<RenderCommand>` blocks on recipe docs.
+- **Showcase render script** — `pnpm render:showcases` renders flagship MP4s into `public/showcases/`.
+
+### Changed
+
+- **Docs SEO** — stronger catalog/homepage metadata, sitemap coverage, FAQ JSON-LD on intro and captions pages; auto-generated `llms.txt`.
+- **Flagship polish** — `podcast-clip` hook uses `AutoFitTitle`; `creator-reel` exposes talking-head copy as props; homepage features `data-story`.
+- **Docs IA** — removed redundant guides section; shadcn comparison on intro; captions guide merged into advanced docs.
+- **Recipe wizard** — deep-links to composition playground when available.
+
+### Fixed
+
+- `ShowcaseVideo` no longer breaks static docs builds when showcase MP4s are missing.
+
 ## 0.5.0
 
 ### Added

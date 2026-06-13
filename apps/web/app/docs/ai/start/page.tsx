@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { InstallCommand } from "@/components/install-command";
 import manifest from "@/content/docs/ai/recipes/manifest.json";
+import { hasCompositionPlayground } from "@/lib/composition-playground";
 
 export const metadata = {
   title: "Recipe wizard",
@@ -9,6 +10,11 @@ export const metadata = {
 };
 
 const GOALS = [
+  {
+    label: "Creator reel",
+    recipeSlug: "creator-reel",
+    compositionHref: "/docs/compositions/creator-reel",
+  },
   {
     label: "Social clip",
     recipeSlug: "captioned-social-video",
@@ -48,6 +54,9 @@ export default function RecipeWizardPage() {
         {GOALS.map((goal) => {
           const recipe = recipes.find((entry) => entry.slug === goal.recipeSlug);
           if (!recipe) return null;
+          const hasPlayground = recipe.flagshipComposition
+            ? hasCompositionPlayground(recipe.flagshipComposition)
+            : false;
 
           return (
             <article
@@ -74,7 +83,7 @@ export default function RecipeWizardPage() {
                   href={goal.compositionHref}
                   className="font-medium text-fd-primary transition-opacity hover:opacity-80"
                 >
-                  Preview composition →
+                  {hasPlayground ? "Open playground →" : "Preview composition →"}
                 </Link>
                 <Link
                   href={`/docs/ai/recipes/${recipe.slug}`}

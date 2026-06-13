@@ -4,8 +4,8 @@ const STEPS = [
   {
     step: "1",
     title: "Create a Remotion project",
-    body: "Scaffold a new project or bootstrap an existing one.",
-    command: <InitCommand />,
+    body: "Scaffold with the social starter to get a shippable 9:16 clip on day one.",
+    command: <InitCommand starter="social" />,
   },
   {
     step: "2",

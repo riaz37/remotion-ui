@@ -20,7 +20,7 @@ If you've used [shadcn/ui](https://ui.shadcn.com), the workflow will feel famili
   <Card
     title="2. Add components"
     description="Copy primitives, scenes, or full compositions into src/remotion/."
-    href="/docs/primitives/fade-in"
+    href="/docs/components"
   />
   <Card
     title="3. Compose"
@@ -28,6 +28,19 @@ If you've used [shadcn/ui](https://ui.shadcn.com), the workflow will feel famili
     href="/docs/advanced/authoring-scenes"
   />
 </Cards>
+
+## shadcn for Remotion
+
+| | shadcn/ui | RemotionUI |
+|---|-----------|------------|
+| Install | `npx shadcn add button` | `npx remotion-ui add fade-in` |
+| Config | `components.json` | `remotion-ui.json` |
+| Output | React components in your repo | Remotion components in `src/remotion/` |
+| Runtime dep | None (copy-paste) | None (copy-paste) |
+| Motion | CSS / Radix | `useCurrentFrame()`, `interpolate()`, `spring()` |
+| Registry | `registry.json` on CDN | `remotionui.com/r/` |
+
+Both distribute **source**, not a black-box npm UI kit. Use `npx remotion-ui add` — not `npx shadcn add` — so dependencies resolve, compositions register in `Root.tsx`, and `remotion-ui.json` paths apply.
 
 ## Philosophy
 
@@ -37,5 +50,5 @@ If you've used [shadcn/ui](https://ui.shadcn.com), the workflow will feel famili
 - **CLI ergonomics**: `search`, `diff`, `update`, and custom `build` for your own registry
 
 <Callout type="info">
-  New to Remotion? Start with [Installation](/docs/installation), then browse [Primitives](/docs/primitives/fade-in) with live previews on every page.
+  New to Remotion? Start with [Installation](/docs/installation), then browse the [component catalog](/docs/components) with live previews on every page.
 </Callout>

@@ -6,6 +6,7 @@
 
 - Site: https://remotionui.com
 - Docs: https://remotionui.com/docs
+- Component catalog: https://remotionui.com/docs/components
 - AI guide: https://remotionui.com/docs/ai
 - Full LLM guide: https://remotionui.com/llms-full.txt
 - Component index: https://remotionui.com/ai/components.json
@@ -21,13 +22,33 @@
 - Audio visualizers and podcast clips
 - Transitions, intros, showcases, and reel templates
 
+## Recipes (6)
+
+- Captioned social video (`captioned-social-video`): npx remotion-ui@latest add --recipe captioned-social-video
+- Creator reel (`creator-reel`): npx remotion-ui@latest add --recipe creator-reel
+- Data story (`data-story`): npx remotion-ui@latest add --recipe data-story
+- Podcast clip (`podcast-clip`): npx remotion-ui@latest add --recipe podcast-clip
+- Product intro (`product-intro`): npx remotion-ui@latest add --recipe product-intro
+- Lower-third scene (`lower-third-scene`): npx remotion-ui@latest add --recipe lower-third-scene
+
+## Flagship compositions
+
+- intro
+- showcase
+- hero-loop
+- social-clip
+- tutorial-clip
+- data-story
+- creator-reel
+- podcast-clip
+
 ## CLI
 
 ```bash
 npx remotion-ui@latest init my-video
 cd my-video
 npx remotion-ui@latest search -q caption
-npx remotion-ui@latest add caption-highlight lower-third
+npx remotion-ui@latest add social-clip caption-highlight lower-third
 ```
 
 ## Agent rules

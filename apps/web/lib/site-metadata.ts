@@ -5,8 +5,13 @@ export const siteMetadata = {
   description: `${siteConfig.tagline} ${siteConfig.description}`,
   keywords: [
     "Remotion",
+    "Remotion components",
+    "Remotion component library",
+    "Remotion captions",
+    "shadcn for Remotion",
     "Remotion compositions",
     "Remotion social clip",
+    "Remotion CLI",
     "programmatic video",
     "React video",
     "motion graphics",
@@ -40,3 +45,86 @@ export function softwareApplicationJsonLd() {
     },
   };
 }
+
+const FLAGSHIP_COMPOSITION_URLS = [
+  "/docs/compositions/social-clip",
+  "/docs/compositions/creator-reel",
+  "/docs/compositions/podcast-clip",
+  "/docs/compositions/data-story",
+  "/docs/compositions/intro",
+  "/docs/compositions/showcase",
+  "/docs/compositions/tutorial-clip",
+  "/docs/compositions/hero-loop",
+  "/docs/scenes/lower-third",
+  "/docs/signals/caption-highlight",
+] as const;
+
+export function componentsItemListJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "RemotionUI Components",
+    description:
+      "Production-ready Remotion primitives, scenes, and compositions.",
+    numberOfItems: FLAGSHIP_COMPOSITION_URLS.length,
+    itemListElement: FLAGSHIP_COMPOSITION_URLS.map((path, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: `${siteConfig.url}${path}`,
+    })),
+  };
+}
+
+type FaqEntry = { question: string; answer: string };
+
+export function faqPageJsonLd(entries: FaqEntry[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: entries.map((entry) => ({
+      "@type": "Question",
+      name: entry.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: entry.answer,
+      },
+    })),
+  };
+}
+
+export const docsFaqJsonLdBySlug: Record<string, FaqEntry[]> = {
+  index: [
+    {
+      question: "Is RemotionUI a shadcn registry namespace?",
+      answer:
+        "RemotionUI uses a compatible registry schema but ships its own remotion-ui CLI tuned for Remotion project layout and composition registration.",
+    },
+    {
+      question: "Can I use npx shadcn add with RemotionUI?",
+      answer:
+        "Use npx remotion-ui add. It resolves dependencies, patches Root.tsx for compositions, and respects remotion-ui.json paths.",
+    },
+    {
+      question: "Is the installed source MIT licensed?",
+      answer:
+        "Yes. Installed components are yours to modify and ship in your videos.",
+    },
+  ],
+  "advanced/captions": [
+    {
+      question: "How do I get TikTok-style captions in Remotion?",
+      answer:
+        "Use CaptionScene with mode karaoke-scale, or install the social-clip composition which wires captions, audiogram, and CTA for 9:16 output.",
+    },
+    {
+      question: "Do I need a runtime dependency on RemotionUI?",
+      answer:
+        "No. After running remotion-ui add, you own the source files. Only the CLI is published to npm.",
+    },
+    {
+      question: "Can I customize timing per word?",
+      answer:
+        "Yes. Captions use Remotion Caption objects with startMs and endMs. Edit the JSON or regenerate from your transcript.",
+    },
+  ],
+};

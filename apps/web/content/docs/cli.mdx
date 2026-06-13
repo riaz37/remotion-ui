@@ -8,6 +8,8 @@ description: remotion-ui commands for init, add, doctor, recipes, and custom reg
 | Command | Description |
 |---------|-------------|
 | `init [name]` | Scaffold a new Remotion project |
+| `init --starter social` | New project + captioned social clip recipe pre-installed |
+| `init --starter podcast` | New project + podcast clip recipe pre-installed |
 | `init --existing` | Bootstrap `remotion-ui.json` in an existing Remotion project |
 | `add <name...>` | Install components and dependencies |
 | `add --recipe <slug>` | Install a task-first recipe (components + deps) |
@@ -34,6 +36,24 @@ cd your-remotion-app
 npx remotion-ui init --existing
 npx remotion-ui add social-clip
 ```
+
+## Starter projects
+
+Ship a social or podcast clip in one session:
+
+```bash
+npx remotion-ui init my-reel --starter social
+cd my-reel && npm run dev
+npx remotion render src/Root.tsx SocialClip out/social-clip.mp4
+```
+
+```bash
+npx remotion-ui init my-podcast --starter podcast
+cd my-podcast && npm run dev
+npx remotion render src/Root.tsx PodcastClip out/podcast-clip.mp4
+```
+
+Use `--starter default` (or omit) for the blank Welcome composition template.
 
 ## Recipe install
 
