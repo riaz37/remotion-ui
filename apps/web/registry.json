@@ -1344,6 +1344,15 @@
         "transition-fade",
         "chart-utils"
       ],
+      "composition": {
+        "id": "DataStory",
+        "component": "DataStory",
+        "durationInFrames": 452,
+        "fps": 30,
+        "width": 1920,
+        "height": 1080,
+        "importPath": "@/compositions/data-story/index"
+      },
       "files": [
         {
           "path": "registry/bases/default/compositions/data-story/index.tsx",
@@ -1369,6 +1378,15 @@
         "end-card",
         "transition-fade"
       ],
+      "composition": {
+        "id": "CreatorReel",
+        "component": "CreatorReel",
+        "durationInFrames": 398,
+        "fps": 30,
+        "width": 1080,
+        "height": 1920,
+        "importPath": "@/compositions/creator-reel/index"
+      },
       "files": [
         {
           "path": "registry/bases/default/compositions/creator-reel/index.tsx",
@@ -1390,10 +1408,20 @@
         "audio-pulse",
         "waveform-line",
         "audiogram-scene",
+        "auto-fit-title",
         "caption-scene",
         "end-card",
         "transition-fade"
       ],
+      "composition": {
+        "id": "PodcastClip",
+        "component": "PodcastClip",
+        "durationInFrames": 366,
+        "fps": 30,
+        "width": 1080,
+        "height": 1920,
+        "importPath": "@/compositions/podcast-clip/index"
+      },
       "files": [
         {
           "path": "registry/bases/default/compositions/podcast-clip/index.tsx",

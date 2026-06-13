@@ -5,6 +5,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 import { AudioPulse } from "@/remotion/primitives/audio-pulse";
 import { WaveformLine } from "@/remotion/primitives/waveform-line";
 import { AudiogramScene } from "@/remotion/scenes/audiogram-scene";
+import { AutoFitTitle } from "@/remotion/scenes/auto-fit-title";
 import { CaptionScene } from "@/remotion/scenes/caption-scene";
 import { EndCard } from "@/remotion/scenes/end-card";
 
@@ -30,10 +31,15 @@ export const PodcastClip: React.FC<PodcastClipProps> = ({
   <AbsoluteFill style={{ backgroundColor: "#020617" }}>
     <TransitionSeries>
       <TransitionSeries.Sequence durationInFrames={70}>
-        <AbsoluteFill style={{ backgroundColor: "#0f172a", alignItems: "center", justifyContent: "center", gap: 28 }}>
+        <AbsoluteFill style={{ backgroundColor: "#0f172a" }}>
           <AudioPulse src={audioSrc} />
-          <div style={{ color: "white", fontSize: 64, fontWeight: 900, fontFamily: "system-ui, sans-serif" }}>{title}</div>
-          <div style={{ color: "#60a5fa", fontSize: 34, fontFamily: "system-ui, sans-serif" }}>{subtitle}</div>
+          <AutoFitTitle
+            title={title}
+            subtitle={subtitle}
+            maxFontSize={64}
+            accentColor="#60a5fa"
+            backgroundColor="#0f172a"
+          />
         </AbsoluteFill>
       </TransitionSeries.Sequence>
       <TransitionSeries.Transition {...fade} />
@@ -47,7 +53,12 @@ export const PodcastClip: React.FC<PodcastClipProps> = ({
       </TransitionSeries.Sequence>
       <TransitionSeries.Transition {...fade} />
       <TransitionSeries.Sequence durationInFrames={90}>
-        <CaptionScene captions={captions} placement="center" backgroundColor="#020617" />
+        <CaptionScene
+          captions={captions}
+          placement="center"
+          backgroundColor="#020617"
+          mode="karaoke-scale"
+        />
       </TransitionSeries.Sequence>
       <TransitionSeries.Transition {...fade} />
       <TransitionSeries.Sequence durationInFrames={60}>

@@ -27,6 +27,8 @@
   ],
   "exclude": [
     "node_modules",
-    "source.config.ts"
+    "source.config.ts",
+    "remotion.config.ts",
+    "showcase/**"
   ]
 }

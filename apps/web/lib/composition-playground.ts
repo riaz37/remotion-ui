@@ -13,10 +13,28 @@ const PLAYGROUND_META: Record<string, CompositionPlaygroundMeta> = {
     previewHeight: 1920,
   },
   "creator-reel": {
-    editablePropNames: ["hookHeadline", "mediaSrc"],
+    editablePropNames: [
+      "hookHeadline",
+      "hookSubtitle",
+      "mediaSrc",
+      "ctaLabel",
+      "comment",
+    ],
     durationInFrames: 398,
     previewWidth: 1080,
     previewHeight: 1920,
+  },
+  "podcast-clip": {
+    editablePropNames: ["title", "subtitle", "ctaLabel"],
+    durationInFrames: 366,
+    previewWidth: 1080,
+    previewHeight: 1920,
+  },
+  "data-story": {
+    editablePropNames: ["title", "insight", "ctaLabel"],
+    durationInFrames: 452,
+    previewWidth: 1920,
+    previewHeight: 1080,
   },
   intro: {
     editablePropNames: ["title", "subtitle"],

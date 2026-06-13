@@ -60,14 +60,14 @@ export function CompactInstallCommand({
   );
 }
 
-export function InitCommand() {
-  return (
-    <CommandBlock
-      label="Quick start"
-      command="npx remotion-ui@latest init my-video"
-      className=""
-    />
-  );
+export function InitCommand({ starter }: { starter?: "social" | "podcast" }) {
+  const command =
+    starter === "social"
+      ? "npx remotion-ui@latest init my-reel --starter social"
+      : starter === "podcast"
+        ? "npx remotion-ui@latest init my-podcast --starter podcast"
+        : "npx remotion-ui@latest init my-video";
+  return <CommandBlock label="Quick start" command={command} className="" />;
 }
 
 export function RenderCommand({

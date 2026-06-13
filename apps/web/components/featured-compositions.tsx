@@ -5,9 +5,9 @@ import { getAtlasSections } from "@/lib/docs-nav";
 const FEATURED_SLUGS = [
   "social-clip",
   "creator-reel",
+  "data-story",
   "intro",
   "podcast-clip",
-  "tutorial-clip",
   "hero-loop",
 ] as const;
 

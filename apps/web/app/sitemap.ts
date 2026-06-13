@@ -12,6 +12,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: page.url === "/docs" ? 0.9 : 0.7,
   }));
 
+  const staticRoutes: MetadataRoute.Sitemap = [
+    {
+      url: `${siteConfig.url}/docs/components`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.85,
+    },
+    {
+      url: `${siteConfig.url}/docs/ai/start`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.75,
+    },
+  ];
+
   return [
     {
       url: siteConfig.url,
@@ -19,6 +34,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 1,
     },
+    ...staticRoutes,
     ...docsPages,
   ];
 }

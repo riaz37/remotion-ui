@@ -62,6 +62,7 @@ export const SocialClip: React.FC<SocialClipProps> = ({
               captions={captions}
               placement="lower-third"
               activeColor="#60a5fa"
+              mode="karaoke-scale"
             />
           </AbsoluteFill>
         </TransitionSeries.Sequence>

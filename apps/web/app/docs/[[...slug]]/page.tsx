@@ -10,6 +10,7 @@ import { notFound } from "next/navigation";
 import { getMDXComponents } from "@/mdx-components";
 import { source } from "@/lib/source";
 import { siteConfig } from "@/lib/site-config";
+import { faqPageJsonLd, docsFaqJsonLdBySlug } from "@/lib/site-metadata";
 
 export default async function Page(props: {
   params: Promise<{ slug?: string[] }>;
@@ -19,9 +20,18 @@ export default async function Page(props: {
   if (!page) notFound();
 
   const MDX = page.data.body;
+  const slugKey = (params.slug ?? []).join("/");
+  const faqEntries = docsFaqJsonLdBySlug[slugKey];
+  const faqJsonLd = faqEntries ? faqPageJsonLd(faqEntries) : null;
 
   return (
     <DocsPage toc={page.data.toc} full={page.data.full}>
+      {faqJsonLd ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      ) : null}
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
       <DocsBody>
