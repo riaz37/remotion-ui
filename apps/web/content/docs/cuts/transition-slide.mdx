@@ -3,7 +3,9 @@ title: Transition Slide
 description: Slide transition helper for TransitionSeries.
 ---
 
-<ComponentPage name="transition-slide">
+import { TransitionSlidePreview } from "@/components/previews/transition-previews";
+
+<ComponentPage name="transition-slide" preview={TransitionSlidePreview} durationInFrames={90}>
 
 Exports `transitionSlide()` and `getTransitionSlideDuration()` for use with `TransitionSeries.Transition`.
 

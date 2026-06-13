@@ -29,6 +29,11 @@ import { KaraokeCaptionsPreview } from "./previews/karaoke-captions";
 import { LineChartDrawPreview } from "./previews/line-chart-draw";
 import { LogoRevealPreview } from "./previews/logo-reveal";
 import { LowerThirdPreview } from "./previews/lower-third";
+import {
+  MapCanvasPreview,
+  MapMarkersPreview,
+  MapRoutePreview,
+} from "./previews/map-primitive-previews";
 import { MapFlightPreview } from "./previews/map-flight";
 import { MediaFramePreview } from "./previews/media-frame";
 import { MediaSequencePreview } from "./previews/media-sequence";
@@ -50,6 +55,13 @@ import { StatCardPreview } from "./previews/stat-card";
 import { TimelineStepsPreview } from "./previews/timeline-steps";
 import { TitleCardPreview } from "./previews/title-card";
 import { TalkingHeadLayoutPreview } from "./previews/talking-head-layout";
+import {
+  TransitionClockWipePreview,
+  TransitionFadePreview,
+  TransitionLightLeakPreview,
+  TransitionSlidePreview,
+  TransitionWipePreview,
+} from "./previews/transition-previews";
 import { TutorialClipPreview } from "./previews/tutorial-clip";
 import { TypewriterPreview } from "./previews/typewriter";
 import { WaveformLinePreview } from "./previews/waveform-line";
@@ -92,7 +104,10 @@ const PREVIEWS: Record<string, PreviewConfig> = {
   "line-chart-draw": { component: LineChartDrawPreview },
   "logo-reveal": { component: LogoRevealPreview },
   "lower-third": { component: LowerThirdPreview },
+  "map-canvas": { component: MapCanvasPreview },
   "map-flight": { component: MapFlightPreview, durationInFrames: 150 },
+  "map-markers": { component: MapMarkersPreview },
+  "map-route": { component: MapRoutePreview },
   "media-frame": { component: MediaFramePreview },
   "media-sequence": { component: MediaSequencePreview },
   "metric-ticker": { component: MetricTickerPreview },
@@ -113,6 +128,11 @@ const PREVIEWS: Record<string, PreviewConfig> = {
   "timeline-steps": { component: TimelineStepsPreview },
   "title-card": { component: TitleCardPreview },
   "talking-head-layout": { component: TalkingHeadLayoutPreview },
+  "transition-clock-wipe": { component: TransitionClockWipePreview },
+  "transition-fade": { component: TransitionFadePreview },
+  "transition-light-leak": { component: TransitionLightLeakPreview },
+  "transition-slide": { component: TransitionSlidePreview },
+  "transition-wipe": { component: TransitionWipePreview },
   "tutorial-clip": { component: TutorialClipPreview, durationInFrames: 180 },
   typewriter: { component: TypewriterPreview },
   "waveform-line": { component: WaveformLinePreview },

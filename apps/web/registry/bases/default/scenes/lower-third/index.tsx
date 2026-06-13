@@ -18,6 +18,10 @@ export const LowerThird: React.FC<LowerThirdProps> = ({
 }) => {
   const { width, height } = useVideoConfig();
   const safeArea = getSafeAreaPadding({ width, height });
+  const bottomSlot = Math.max(
+    safeArea.paddingBottom,
+    Math.round(height * 0.13),
+  );
 
   return (
     <AbsoluteFill style={{ backgroundColor }}>
@@ -36,11 +40,11 @@ export const LowerThird: React.FC<LowerThirdProps> = ({
         style={{
           position: "absolute",
           left: safeArea.paddingLeft,
-          bottom: safeArea.paddingBottom,
+          bottom: bottomSlot,
           display: "flex",
           flexDirection: "column",
           gap: 10,
-          maxWidth: width * 0.55,
+          maxWidth: width * 0.68,
         }}
       >
         <SlideLeft durationInFrames={22} distance={40}>

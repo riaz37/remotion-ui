@@ -3,7 +3,9 @@ title: Map Canvas
 description: Deterministic MapLibre map mount.
 ---
 
-<ComponentPage name="map-canvas">
+import { MapCanvasPreview } from "@/components/previews/map-primitive-previews";
+
+<ComponentPage name="map-canvas" preview={MapCanvasPreview} durationInFrames={90}>
 
 Low-level MapLibre mount with `delayRender` until the map is idle. Use as the foundation for custom map animations.
 

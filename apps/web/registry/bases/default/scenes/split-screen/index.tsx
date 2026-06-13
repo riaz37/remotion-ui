@@ -1,6 +1,10 @@
 import { Img, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { Video } from "@remotion/media";
-import { getMediaObjectFitStyle, isVideoSource, type MediaFit } from "@/remotion/lib/media-utils";
+import {
+  getMediaObjectFitStyle,
+  isVideoSource,
+  type MediaFit,
+} from "@/remotion/lib/media-utils";
 import { getSafePadding } from "@/remotion/lib/layout";
 
 export type SplitScreenPanel = {
@@ -49,7 +53,7 @@ function Panel({ panel, delay }: { panel: SplitScreenPanel; delay: number }) {
           style={{
             position: "absolute",
             left: 24,
-            bottom: 24,
+            top: 24,
             padding: "10px 16px",
             borderRadius: 999,
             background: "rgba(15,23,42,0.82)",
@@ -91,7 +95,13 @@ export const SplitScreen: React.FC<SplitScreenProps> = ({
       }}
     >
       {title ? (
-        <div style={{ fontSize: Math.round(width * 0.045), fontWeight: 800 }}>
+        <div
+          style={{
+            fontSize: Math.round(width * 0.044),
+            fontWeight: 800,
+            lineHeight: 1,
+          }}
+        >
           <span style={{ color: accentColor }}>Compare</span> {title}
         </div>
       ) : null}
