@@ -1,4 +1,0 @@
-# Keep generated demo videos out of git (large binaries)
-*.mp4
-*.mov
-!.gitkeep
