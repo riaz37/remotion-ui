@@ -1,7 +1,14 @@
+import { loadFont } from "@remotion/google-fonts/Inter";
 import { AbsoluteFill, useVideoConfig } from "remotion";
 import { FadeIn } from "@/remotion/primitives/fade-in";
 import { ScaleIn } from "@/remotion/primitives/scale-in";
-import { scaleFont } from "@/remotion/lib/layout";
+import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
+import { DURATION } from "@/remotion/lib/motion-tokens";
+
+const { fontFamily } = loadFont("normal", {
+  weights: ["500", "700", "800"],
+  subsets: ["latin"],
+});
 
 export type TitleCardProps = {
   title: string;
@@ -10,44 +17,72 @@ export type TitleCardProps = {
   accentColor?: string;
 };
 
+const COLORS = {
+  bg: "#080810",
+  title: "#fafafa",
+  subtitle: "#71717a",
+  accent: "#6366f1",
+  glow: "rgba(99,102,241,0.22)",
+} as const;
+
 export const TitleCard: React.FC<TitleCardProps> = ({
   title,
   subtitle,
-  backgroundColor = "#0f172a",
-  accentColor = "#3b82f6",
+  backgroundColor = COLORS.bg,
+  accentColor = COLORS.accent,
 }) => {
-  const { width } = useVideoConfig();
+  const { width, height } = useVideoConfig();
+  const safeArea = getSafeAreaPadding({ width, height });
 
   return (
     <AbsoluteFill
       style={{
         backgroundColor,
+        paddingLeft: safeArea.paddingLeft,
+        paddingRight: safeArea.paddingRight,
+        paddingTop: safeArea.paddingTop,
+        paddingBottom: safeArea.paddingBottom,
         justifyContent: "center",
         alignItems: "center",
+        fontFamily,
       }}
     >
       <div
         style={{
           position: "absolute",
-          width: "55%",
-          height: "55%",
+          width: "52%",
+          height: "52%",
           borderRadius: "50%",
-          background: `radial-gradient(circle, ${accentColor}33 0%, transparent 70%)`,
-          filter: "blur(40px)",
+          background: `radial-gradient(circle, ${COLORS.glow} 0%, transparent 72%)`,
+          filter: `blur(${scaleFont(48, width)}px)`,
+          pointerEvents: "none",
         }}
       />
-      <ScaleIn durationInFrames={28}>
-        <FadeIn durationInFrames={22}>
-          <div style={{ textAlign: "center", padding: 48, position: "relative" }}>
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: `linear-gradient(180deg, transparent 60%, ${accentColor}12 100%)`,
+          pointerEvents: "none",
+        }}
+      />
+      <ScaleIn durationInFrames={DURATION.normal}>
+        <FadeIn durationInFrames={DURATION.fast}>
+          <div
+            style={{
+              textAlign: "center",
+              position: "relative",
+              maxWidth: "88%",
+            }}
+          >
             <h1
               style={{
-                color: "white",
+                color: COLORS.title,
                 fontSize: scaleFont(84, width),
                 fontWeight: 800,
-                fontFamily: "system-ui, sans-serif",
                 margin: 0,
                 lineHeight: 1.05,
-                letterSpacing: "-0.02em",
+                letterSpacing: "-0.03em",
               }}
             >
               {title}
@@ -55,12 +90,12 @@ export const TitleCard: React.FC<TitleCardProps> = ({
             {subtitle ? (
               <p
                 style={{
-                  color: "#94a3b8",
+                  color: COLORS.subtitle,
                   fontSize: scaleFont(36, width),
-                  fontFamily: "system-ui, sans-serif",
-                  marginTop: 20,
+                  marginTop: scaleFont(20, width),
                   marginBottom: 0,
                   lineHeight: 1.35,
+                  fontWeight: 500,
                 }}
               >
                 {subtitle}

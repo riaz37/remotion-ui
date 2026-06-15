@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { InstallCommand } from "@/components/install-command";
-import manifest from "@/content/docs/ai/recipes/manifest.json";
+import manifest from "@/content/docs/recipes/manifest.json";
 import { hasCompositionPlayground } from "@/lib/composition-playground";
 
 export const metadata = {
@@ -42,7 +42,7 @@ export default function RecipeWizardPage() {
 
   return (
     <div className="not-prose">
-      <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
+      <h1 className="text-display-lg font-medium tracking-tight">
         What are you building?
       </h1>
       <p className="mt-3 max-w-2xl text-fd-muted-foreground">
@@ -61,14 +61,12 @@ export default function RecipeWizardPage() {
           return (
             <article
               key={goal.recipeSlug}
-              className="rounded-2xl border border-fd-border bg-fd-card/70 p-5"
+              className="rounded-md border border-[var(--bay-border)] bg-[var(--bay-surface)] p-5"
             >
-              <p className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.14em] text-fd-primary">
+              <p className="font-[family-name:var(--font-mono)] text-[0.6875rem] text-[var(--bay-phosphor)]">
                 {goal.label}
               </p>
-              <h2 className="mt-2 font-[family-name:var(--font-display)] text-xl font-semibold">
-                {recipe.title}
-              </h2>
+              <h2 className="mt-2 text-lg font-semibold">{recipe.title}</h2>
               <p className="mt-2 text-sm text-fd-muted-foreground">
                 {recipe.intent}
               </p>
@@ -81,12 +79,12 @@ export default function RecipeWizardPage() {
               <div className="mt-4 flex flex-wrap gap-3 text-sm">
                 <Link
                   href={goal.compositionHref}
-                  className="font-medium text-fd-primary transition-opacity hover:opacity-80"
+                  className="link-phosphor font-medium"
                 >
                   {hasPlayground ? "Open playground →" : "Preview composition →"}
                 </Link>
                 <Link
-                  href={`/docs/ai/recipes/${recipe.slug}`}
+                  href={`/docs/recipes/${recipe.slug}`}
                   className="text-fd-muted-foreground transition-colors hover:text-fd-foreground"
                 >
                   Recipe docs

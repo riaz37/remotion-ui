@@ -17,7 +17,7 @@ export const DataStoryPreview: React.FC = () => (
       ]}
       steps={[
         { title: "Collect", description: "Gather the signal." },
-        { title: "Compare", description: "Show the delta." },
+        { title: "Measure", description: "Show the delta." },
         { title: "Explain", description: "Name the insight." },
       ]}
       insight="The clearest trend gets the most screen time."

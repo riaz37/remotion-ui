@@ -3,6 +3,7 @@ import { LightLeak } from "@remotion/light-leaks";
 export type TransitionLightLeakProps = {
   durationInFrames?: number;
   seed?: number;
+  /** Hue rotation in degrees — warm amber by default */
   hueShift?: number;
 };
 
@@ -10,7 +11,7 @@ export type TransitionLightLeakProps = {
 export const TransitionLightLeak: React.FC<TransitionLightLeakProps> = ({
   durationInFrames,
   seed = 0,
-  hueShift = 0,
+  hueShift = 28,
 }) => {
   return (
     <LightLeak

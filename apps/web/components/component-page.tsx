@@ -7,9 +7,9 @@ import { hasCompositionPlayground } from "@/lib/composition-playground";
 import { laneAccent } from "@/lib/lane-visuals";
 import { CompositionPlaygroundSection } from "./composition-playground-section";
 import { InstallCommand } from "./install-command";
-import { PreviewPanel } from "./preview-panel";
 import { PropsTable } from "./props-table";
 import { RemotionPreview } from "./remotion-preview";
+import { StudioPanel } from "./studio/studio-panel";
 
 const categoryLabels = {
   primitive: "Primitive",
@@ -59,7 +59,14 @@ export function ComponentPage({
   ].filter((part): part is NonNullable<typeof part> => Boolean(part));
 
   const previewNode = preview ? (
-    <PreviewPanel aspectRatio={previewAspect}>
+    <StudioPanel
+      label={name}
+      aspectRatio={previewAspect}
+      fps={30}
+      width={previewWidth}
+      height={previewHeight}
+      durationInFrames={durationInFrames}
+    >
       <RemotionPreview
         component={preview}
         durationInFrames={durationInFrames}
@@ -67,7 +74,7 @@ export function ComponentPage({
         height={previewHeight}
         inputProps={inputProps}
       />
-    </PreviewPanel>
+    </StudioPanel>
   ) : null;
 
   const playgroundNode = hasCompositionPlayground(name) ? (
@@ -86,7 +93,7 @@ export function ComponentPage({
                 </span>
               ) : null}
               <span
-                className={part.key === "tier" ? "text-fd-primary" : ""}
+                className={part.key === "tier" ? "text-[var(--bay-phosphor)]" : ""}
                 style={
                   part.key === "lane" && part.lane
                     ? { color: laneAccent(part.lane) }
@@ -134,7 +141,7 @@ export function ComponentPage({
       )}
 
       {reference?.note ? (
-        <blockquote className="my-6 border-l-2 border-fd-primary pl-4 text-sm text-fd-muted-foreground">
+        <blockquote className="my-6 border-l-2 border-[var(--bay-phosphor)] pl-4 text-sm text-fd-muted-foreground">
           {reference.note}
         </blockquote>
       ) : null}

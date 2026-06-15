@@ -1,5 +1,12 @@
+import { loadFont } from "@remotion/google-fonts/Inter";
 import { interpolate, useCurrentFrame, useVideoConfig } from "remotion";
-import { getSafePadding } from "@/remotion/lib/layout";
+import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
+import { DELAY, DURATION } from "@/remotion/lib/motion-tokens";
+
+const { fontFamily } = loadFont("normal", {
+  weights: ["500", "700", "800"],
+  subsets: ["latin"],
+});
 
 export type CommentCalloutProps = {
   body: string;
@@ -11,38 +18,59 @@ export type CommentCalloutProps = {
   backgroundColor?: string;
 };
 
+const COLORS = {
+  bg: "#0f0d18",
+  card: "rgba(255,255,255,0.08)",
+  border: "rgba(255,255,255,0.14)",
+  text: "#fafafa",
+  muted: "#a1a1aa",
+  avatarFg: "#0f0d18",
+  accent: "#c4b5fd",
+} as const;
+
 export const CommentCallout: React.FC<CommentCalloutProps> = ({
   body,
-  author = "Avery Chen",
-  handle = "@averycreates",
-  initials = "AC",
-  replyLabel = "Replying with a clip",
-  accentColor = "#a78bfa",
-  backgroundColor = "#111827",
+  author,
+  handle,
+  initials,
+  replyLabel,
+  accentColor = COLORS.accent,
+  backgroundColor = COLORS.bg,
 }) => {
   const frame = useCurrentFrame();
   const { width, height } = useVideoConfig();
-  const padding = getSafePadding({ width, height, ratio: 0.09 });
-  const cardEnter = interpolate(frame, [0, 24], [0, 1], {
+  const safeArea = getSafeAreaPadding({ width, height });
+  const cardEnter = interpolate(frame, [0, DURATION.fast], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const replyEnter = interpolate(frame, [18, 42], [0, 1], {
+  const replyEnter = interpolate(
+    frame,
+    [DELAY.medium, DELAY.medium + DURATION.normal],
+    [0, 1],
+    {
     extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+      extrapolateRight: "clamp",
+    },
+  );
+  const showIdentity = Boolean(author || handle || initials);
+  const avatarText =
+    initials ?? (author ? author.slice(0, 2).toUpperCase() : undefined);
 
   return (
     <div
       style={{
         width,
         height,
-        padding,
+        paddingLeft: safeArea.paddingLeft,
+        paddingRight: safeArea.paddingRight,
+        paddingTop: safeArea.paddingTop,
+        paddingBottom: safeArea.paddingBottom,
         position: "relative",
         overflow: "hidden",
         background: backgroundColor,
-        color: "white",
-        fontFamily: "system-ui, sans-serif",
+        color: COLORS.text,
+        fontFamily,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -52,74 +80,91 @@ export const CommentCallout: React.FC<CommentCalloutProps> = ({
         style={{
           position: "absolute",
           inset: 0,
-          background: `radial-gradient(circle at 26% 18%, ${accentColor}35, transparent 34%), radial-gradient(circle at 78% 78%, ${accentColor}24, transparent 38%)`,
+          background: `radial-gradient(circle at 24% 16%, ${accentColor}30, transparent 36%)`,
+          pointerEvents: "none",
         }}
       />
       <div
         style={{
           position: "relative",
           width: "100%",
-          maxWidth: width * 0.82,
-          borderRadius: Math.round(width * 0.035),
-          padding: Math.round(width * 0.044),
-          background: "rgba(255,255,255,0.1)",
-          border: "2px solid rgba(255,255,255,0.16)",
-          boxShadow: "0 34px 100px rgba(0,0,0,0.28)",
+          maxWidth: width * 0.84,
+          borderRadius: scaleFont(20, width),
+          padding: scaleFont(32, width),
+          background: COLORS.card,
+          border: `1px solid ${COLORS.border}`,
+          boxShadow: `0 ${scaleFont(24, width)}px ${scaleFont(72, width)}px rgba(0,0,0,0.32)`,
           opacity: cardEnter,
-          transform: `translateY(${(1 - cardEnter) * 40}px) scale(${0.96 + cardEnter * 0.04})`,
+          transform: `translateY(${(1 - cardEnter) * 36}px) scale(${0.96 + cardEnter * 0.04})`,
         }}
       >
-        <div style={{ display: "flex", gap: Math.round(width * 0.024) }}>
-          <div
-            style={{
-              flex: "0 0 auto",
-              width: Math.round(width * 0.085),
-              height: Math.round(width * 0.085),
-              borderRadius: "50%",
-              background: accentColor,
-              color: "#111827",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: Math.round(width * 0.028),
-              fontWeight: 900,
-            }}
-          >
-            {initials}
-          </div>
-          <div style={{ minWidth: 0, flex: 1 }}>
+        <div
+          style={{
+            display: "flex",
+            gap: scaleFont(20, width),
+            alignItems: "flex-start",
+          }}
+        >
+          {showIdentity && avatarText ? (
             <div
               style={{
+                flex: "0 0 auto",
+                width: scaleFont(72, width),
+                height: scaleFont(72, width),
+                borderRadius: "50%",
+                background: accentColor,
+                color: COLORS.avatarFg,
                 display: "flex",
-                alignItems: "baseline",
-                gap: 14,
-                flexWrap: "wrap",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: scaleFont(26, width),
+                fontWeight: 800,
               }}
             >
-              <div
-                style={{
-                  fontSize: Math.round(width * 0.032),
-                  fontWeight: 850,
-                }}
-              >
-                {author}
-              </div>
-              <div
-                style={{
-                  color: "#9ca3af",
-                  fontSize: Math.round(width * 0.024),
-                }}
-              >
-                {handle}
-              </div>
+              {avatarText}
             </div>
+          ) : null}
+          <div style={{ minWidth: 0, flex: 1 }}>
+            {author || handle ? (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "baseline",
+                  gap: scaleFont(12, width),
+                  flexWrap: "wrap",
+                  marginBottom: scaleFont(14, width),
+                }}
+              >
+                {author ? (
+                  <div
+                    style={{
+                      fontSize: scaleFont(30, width),
+                      fontWeight: 700,
+                    }}
+                  >
+                    {author}
+                  </div>
+                ) : null}
+                {handle ? (
+                  <div
+                    style={{
+                      color: COLORS.muted,
+                      fontSize: scaleFont(24, width),
+                      fontWeight: 500,
+                    }}
+                  >
+                    {handle}
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
             <p
               style={{
-                margin: "18px 0 0",
-                fontSize: Math.round(width * 0.052),
-                lineHeight: 1.08,
-                fontWeight: 850,
-                letterSpacing: 0,
+                margin: 0,
+                fontSize: scaleFont(48, width),
+                lineHeight: 1.12,
+                fontWeight: 700,
+                letterSpacing: "-0.01em",
               }}
             >
               {body}
@@ -129,24 +174,24 @@ export const CommentCallout: React.FC<CommentCalloutProps> = ({
         {replyLabel ? (
           <div
             style={{
-              marginTop: Math.round(width * 0.038),
+              marginTop: scaleFont(28, width),
               display: "inline-flex",
               alignItems: "center",
-              gap: 12,
+              gap: scaleFont(10, width),
               borderRadius: 999,
-              padding: "14px 22px",
-              background: `${accentColor}24`,
+              padding: `${scaleFont(12, width)}px ${scaleFont(20, width)}px`,
+              background: `${accentColor}22`,
               color: accentColor,
-              fontSize: Math.round(width * 0.023),
-              fontWeight: 850,
+              fontSize: scaleFont(22, width),
+              fontWeight: 700,
               opacity: replyEnter,
-              transform: `translateX(${(1 - replyEnter) * -20}px)`,
+              transform: `translateX(${(1 - replyEnter) * -16}px)`,
             }}
           >
             <span
               style={{
-                width: 10,
-                height: 10,
+                width: scaleFont(8, width),
+                height: scaleFont(8, width),
                 borderRadius: "50%",
                 background: accentColor,
               }}

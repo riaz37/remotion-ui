@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "tsc --noEmit",
     "registry:build": "tsx scripts/build-registry.mts",
+    "brand:generate": "tsx scripts/generate-brand-assets.mts",
     "render:showcases": "remotion render showcase/src/index.ts SocialClip public/showcases/social-clip.mp4",
     "postinstall": "fumadocs-mdx"
   },
@@ -41,6 +42,7 @@
     "@types/node": "^22.13.4",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
+    "sharp": "^0.34.5",
     "tsx": "^4.19.3",
     "typescript": "^5.7.3"
   }

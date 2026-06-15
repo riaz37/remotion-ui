@@ -1,3 +1,4 @@
+import { loadFont } from "@remotion/google-fonts/Inter";
 import { Img, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { Video } from "@remotion/media";
 import {
@@ -5,7 +6,13 @@ import {
   isVideoSource,
   type MediaFit,
 } from "@/remotion/lib/media-utils";
-import { getSafePadding } from "@/remotion/lib/layout";
+import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
+import { DURATION, STAGGER } from "@/remotion/lib/motion-tokens";
+
+const { fontFamily } = loadFont("normal", {
+  weights: ["400", "700", "800"],
+  subsets: ["latin"],
+});
 
 export type SplitScreenPanel = {
   src: string;
@@ -21,9 +28,25 @@ export type SplitScreenProps = {
   accentColor?: string;
 };
 
-function Panel({ panel, delay }: { panel: SplitScreenPanel; delay: number }) {
+const COLORS = {
+  bg: "#0c1018",
+  panel: "#0a0e14",
+  labelBg: "rgba(8,12,20,0.85)",
+  text: "#ffffff",
+  accent: "#818cf8",
+} as const;
+
+function Panel({
+  panel,
+  delay,
+  labelSize,
+}: {
+  panel: SplitScreenPanel;
+  delay: number;
+  labelSize: number;
+}) {
   const frame = useCurrentFrame();
-  const progress = interpolate(frame, [delay, delay + 24], [0, 1], {
+  const progress = interpolate(frame, [delay, delay + DURATION.fast], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -36,10 +59,10 @@ function Panel({ panel, delay }: { panel: SplitScreenPanel; delay: number }) {
         minWidth: 0,
         height: "100%",
         overflow: "hidden",
-        borderRadius: 24,
-        background: "#020617",
+        borderRadius: 20,
+        background: COLORS.panel,
         opacity: progress,
-        transform: `translateY(${(1 - progress) * 24}px)`,
+        transform: `translateY(${(1 - progress) * 20}px)`,
         position: "relative",
       }}
     >
@@ -52,15 +75,15 @@ function Panel({ panel, delay }: { panel: SplitScreenPanel; delay: number }) {
         <div
           style={{
             position: "absolute",
-            left: 24,
-            top: 24,
-            padding: "10px 16px",
+            left: 20,
+            top: 20,
+            padding: "8px 14px",
             borderRadius: 999,
-            background: "rgba(15,23,42,0.82)",
-            color: "white",
-            fontSize: 28,
+            background: COLORS.labelBg,
+            color: COLORS.text,
+            fontSize: labelSize,
             fontWeight: 700,
-            fontFamily: "system-ui, sans-serif",
+            fontFamily,
           }}
         >
           {panel.label}
@@ -74,40 +97,55 @@ export const SplitScreen: React.FC<SplitScreenProps> = ({
   left,
   right,
   title,
-  backgroundColor = "#0f172a",
-  accentColor = "#60a5fa",
+  backgroundColor = COLORS.bg,
+  accentColor = COLORS.accent,
 }) => {
   const { width, height } = useVideoConfig();
-  const padding = getSafePadding({ width, height, ratio: 0.07 });
+  const safe = getSafeAreaPadding({ width, height });
+  const isPortrait = height > width;
+  const labelSize = scaleFont(26, width);
 
   return (
     <div
       style={{
         width,
         height,
-        padding,
+        paddingLeft: safe.paddingLeft,
+        paddingRight: safe.paddingRight,
+        paddingTop: safe.paddingTop,
+        paddingBottom: safe.paddingBottom,
         background: backgroundColor,
         color: "white",
-        fontFamily: "system-ui, sans-serif",
+        fontFamily,
         display: "flex",
         flexDirection: "column",
-        gap: Math.round(padding * 0.35),
+        gap: scaleFont(24, width),
       }}
     >
       {title ? (
         <div
           style={{
-            fontSize: Math.round(width * 0.044),
+            fontSize: scaleFont(64, width),
             fontWeight: 800,
-            lineHeight: 1,
+            lineHeight: 1.05,
+            letterSpacing: "-0.02em",
+            color: accentColor,
           }}
         >
-          <span style={{ color: accentColor }}>Compare</span> {title}
+          {title}
         </div>
       ) : null}
-      <div style={{ flex: 1, minHeight: 0, display: "flex", gap: 28 }}>
-        <Panel panel={left} delay={0} />
-        <Panel panel={right} delay={10} />
+      <div
+        style={{
+          flex: 1,
+          minHeight: 0,
+          display: "flex",
+          flexDirection: isPortrait ? "column" : "row",
+          gap: scaleFont(20, width),
+        }}
+      >
+        <Panel panel={left} delay={0} labelSize={labelSize} />
+        <Panel panel={right} delay={STAGGER.normal} labelSize={labelSize} />
       </div>
     </div>
   );

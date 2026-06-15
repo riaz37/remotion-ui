@@ -1,4 +1,5 @@
 import type { Caption } from "@remotion/captions";
+import { BRAND_MARK_SVG } from "./brand-mark-svg";
 
 export const DEMO_AUDIO_SRC =
   "https://remotion.media/audio.wav";
@@ -49,13 +50,7 @@ export const DEMO_MEDIA_THIRD_SRC = svgData(`
 </svg>`);
 
 /** RemotionUI logo mark — matches apps/web/public/logo.svg */
-export const DEMO_LOGO_SRC = svgData(`
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-  <rect width="32" height="32" rx="8" fill="#60a5fa"/>
-  <rect x="5" y="6" width="18" height="13" rx="3" stroke="#fff" stroke-width="1.25" fill="none" opacity="0.35"/>
-  <rect x="9" y="10" width="18" height="13" rx="3" fill="#0c1222" stroke="#fff" stroke-width="1.5" opacity="0.95"/>
-  <path d="M15.5 14.5v5l4.5-2.5-4.5-2.5z" fill="#60a5fa"/>
-</svg>`);
+export const DEMO_LOGO_SRC = svgData(BRAND_MARK_SVG);
 
 export const DEMO_SOCIAL_CLIP_CAPTIONS: Caption[] = [
   { text: " Install", startMs: 0, endMs: 360, timestampMs: 0, confidence: 1 },

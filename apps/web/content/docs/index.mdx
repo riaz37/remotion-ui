@@ -1,54 +1,26 @@
 ---
 title: Introduction
-description: Production-ready motion for Remotion. Source you own. Install primitives, scenes, and compositions with the CLI.
+description: Compositions you own, frame by frame. Install with the CLI, edit source in your repo.
 ---
 
-RemotionUI is a **registry-first component kit** for Remotion. Production-ready primitives, scenes, and compositions install as **source you own**. The `remotion-ui` npm package is the CLI, not a runtime dependency for your video code.
-
-If you've used [shadcn/ui](https://ui.shadcn.com), the workflow will feel familiar: search the registry, run `add`, and customize files in your project.
+RemotionUI is a **registry-first component kit** for Remotion. Install compositions with the CLI — every file copies into your repo as **source you own**.
 
 <InitCommand />
 
-## How it works
+## Quick paths
 
 <Cards>
-  <Card
-    title="1. Initialize"
-    description="Scaffold a Remotion project with registry aliases and remotion-ui.json."
-    href="/docs/installation"
-  />
-  <Card
-    title="2. Add components"
-    description="Copy primitives, scenes, or full compositions into src/remotion/."
-    href="/docs/components"
-  />
-  <Card
-    title="3. Compose"
-    description="Import locally and build videos with React, same mental model as UI components."
-    href="/docs/advanced/authoring-scenes"
-  />
+  <Card title="Storyboard" description="Browse 62 components with live previews." href="/docs/components" />
+  <Card title="Recipes" description="Task-first installs for social clips, data stories, and more." href="/docs/recipes" />
+  <Card title="Installation" description="Initialize a project and add your first composition." href="/docs/installation" />
 </Cards>
 
-## shadcn for Remotion
+## How it works
 
-| | shadcn/ui | RemotionUI |
-|---|-----------|------------|
-| Install | `npx shadcn add button` | `npx remotion-ui add fade-in` |
-| Config | `components.json` | `remotion-ui.json` |
-| Output | React components in your repo | Remotion components in `src/remotion/` |
-| Runtime dep | None (copy-paste) | None (copy-paste) |
-| Motion | CSS / Radix | `useCurrentFrame()`, `interpolate()`, `spring()` |
-| Registry | `registry.json` on CDN | `remotionui.com/r/` |
-
-Both distribute **source**, not a black-box npm UI kit. Use `npx remotion-ui add` — not `npx shadcn add` — so dependencies resolve, compositions register in `Root.tsx`, and `remotion-ui.json` paths apply.
-
-## Philosophy
-
-- **Registry-first**: components ship as JSON registry entries with resolved file trees
-- **Source you own, not import**: files land in your project; you control every line
-- **Motion primitives + scenes**: low-level enters/exits compose into full-frame layouts
-- **CLI ergonomics**: `search`, `diff`, `update`, and custom `build` for your own registry
+1. **Initialize** — `npx remotion-ui init` scaffolds aliases and `remotion-ui.json`
+2. **Add** — `npx remotion-ui add social-clip` copies source into `src/remotion/`
+3. **Render** — import locally and render with Remotion
 
 <Callout type="info">
-  New to Remotion? Start with [Installation](/docs/installation), then browse the [component catalog](/docs/components) with live previews on every page.
+  New here? Start with [Installation](/docs/installation), pick a [recipe](/docs/recipes), or open the [storyboard](/docs/components).
 </Callout>

@@ -1,4 +1,5 @@
-import { interpolate, useCurrentFrame } from "remotion";
+import { interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import { scaleFont } from "@/remotion/lib/layout";
 import { EASING_ENTER } from "@/remotion/lib/timing";
 
 export type CounterProps = {
@@ -7,6 +8,9 @@ export type CounterProps = {
   durationInFrames?: number;
   delayInFrames?: number;
   suffix?: string;
+  fontSize?: number;
+  color?: string;
+  fontFamily?: string;
   style?: React.CSSProperties;
 };
 
@@ -16,9 +20,14 @@ export const Counter: React.FC<CounterProps> = ({
   durationInFrames = 60,
   delayInFrames = 0,
   suffix = "",
+  fontSize: fontSizeProp,
+  color,
+  fontFamily,
   style,
 }) => {
   const frame = useCurrentFrame();
+  const { width } = useVideoConfig();
+  const fontSize = fontSizeProp ?? scaleFont(96, width);
 
   const value = Math.floor(
     interpolate(
@@ -36,11 +45,12 @@ export const Counter: React.FC<CounterProps> = ({
   return (
     <span
       style={{
-        fontFamily: "system-ui, sans-serif",
-        fontSize: 72,
+        fontSize,
         fontWeight: 700,
-        color: "white",
         fontVariantNumeric: "tabular-nums",
+        lineHeight: 1,
+        ...(color !== undefined ? { color } : {}),
+        ...(fontFamily !== undefined ? { fontFamily } : {}),
         ...style,
       }}
     >

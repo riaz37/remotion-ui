@@ -1,9 +1,9 @@
 "use client";
 
 import { Player, type PlayerRef } from "@remotion/player";
-import { useEffect, useMemo, useRef, type ComponentType } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { AtlasLane } from "@/lib/atlas";
-import { laneAccent, laneAccentMuted } from "@/lib/lane-visuals";
+import { laneAccentMuted } from "@/lib/lane-visuals";
 import { AnimatedBarChartPreview } from "./previews/animated-bar-chart";
 import { AudioPulsePreview } from "./previews/audio-pulse";
 import { AudiogramBarsPreview } from "./previews/audiogram-bars";
@@ -74,11 +74,16 @@ import { ZoomPanFramePreview } from "./previews/zoom-pan-frame";
 type AtlasMiniPreviewProps = {
   slug: string;
   lane: AtlasLane;
+  /** Enable hover scrub on filmstrip cards */
+  scrubOnHover?: boolean;
+  aspectRatio?: "16 / 9" | "9 / 16";
 };
 
 type PreviewConfig = {
-  component: ComponentType;
+  component: React.ComponentType;
   durationInFrames?: number;
+  width?: number;
+  height?: number;
 };
 
 const PREVIEWS: Record<string, PreviewConfig> = {
@@ -96,7 +101,12 @@ const PREVIEWS: Record<string, PreviewConfig> = {
   "code-reveal": { component: CodeRevealPreview },
   "comment-callout": { component: CommentCalloutPreview },
   counter: { component: CounterPreview },
-  "creator-reel": { component: CreatorReelPreview, durationInFrames: 180 },
+  "creator-reel": {
+    component: CreatorReelPreview,
+    durationInFrames: 180,
+    width: 1080,
+    height: 1920,
+  },
   "cursor-path": { component: CursorPathPreview },
   "data-story": { component: DataStoryPreview, durationInFrames: 180 },
   "end-card": { component: EndCardPreview },
@@ -118,7 +128,12 @@ const PREVIEWS: Record<string, PreviewConfig> = {
   "media-sequence": { component: MediaSequencePreview },
   "metric-ticker": { component: MetricTickerPreview },
   "path-draw": { component: PathDrawPreview },
-  "podcast-clip": { component: PodcastClipPreview, durationInFrames: 180 },
+  "podcast-clip": {
+    component: PodcastClipPreview,
+    durationInFrames: 180,
+    width: 1080,
+    height: 1920,
+  },
   "progress-bar": { component: ProgressBarPreview },
   "quote-card": { component: QuoteCardPreview },
   "rotate-in": { component: RotateInPreview },
@@ -126,7 +141,12 @@ const PREVIEWS: Record<string, PreviewConfig> = {
   showcase: { component: ShowcasePreview, durationInFrames: 150 },
   "slide-left": { component: SlideLeftPreview },
   "slide-up": { component: SlideUpPreview },
-  "social-clip": { component: SocialClipPreview, durationInFrames: 180 },
+  "social-clip": {
+    component: SocialClipPreview,
+    durationInFrames: 180,
+    width: 1080,
+    height: 1920,
+  },
   "split-screen": { component: SplitScreenPreview },
   "spring-in": { component: SpringInPreview },
   "stagger-children": { component: StaggerChildrenPreview },
@@ -139,25 +159,56 @@ const PREVIEWS: Record<string, PreviewConfig> = {
   "transition-light-leak": { component: TransitionLightLeakPreview },
   "transition-slide": { component: TransitionSlidePreview },
   "transition-wipe": { component: TransitionWipePreview },
-  "tutorial-clip": { component: TutorialClipPreview, durationInFrames: 180 },
+  "tutorial-clip": {
+    component: TutorialClipPreview,
+    durationInFrames: 180,
+    width: 1080,
+    height: 1920,
+  },
   typewriter: { component: TypewriterPreview },
   "waveform-line": { component: WaveformLinePreview },
   "word-highlight": { component: WordHighlightPreview },
   "zoom-pan-frame": { component: ZoomPanFramePreview },
 };
 
-export function AtlasMiniPreview({ slug, lane }: AtlasMiniPreviewProps) {
+export function AtlasMiniPreview({
+  slug,
+  lane,
+  scrubOnHover = false,
+  aspectRatio,
+}: AtlasMiniPreviewProps) {
   const preview = PREVIEWS[slug];
 
   if (!preview) {
-    return <DesignedFallback slug={slug} lane={lane} />;
+    return <DesignedFallback slug={slug} lane={lane} aspectRatio={aspectRatio} />;
   }
 
-  return <LivePreview preview={preview} />;
+  return (
+    <LivePreview
+      preview={preview}
+      scrubOnHover={scrubOnHover}
+      aspectRatio={aspectRatio}
+    />
+  );
 }
 
-function LivePreview({ preview }: { preview: PreviewConfig }) {
+function LivePreview({
+  preview,
+  scrubOnHover,
+  aspectRatio: aspectRatioProp,
+}: {
+  preview: PreviewConfig;
+  scrubOnHover: boolean;
+  aspectRatio?: "16 / 9" | "9 / 16";
+}) {
   const playerRef = useRef<PlayerRef>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const width = preview.width ?? 960;
+  const height = preview.height ?? 540;
+  const duration = preview.durationInFrames ?? 120;
+  const aspectRatio =
+    aspectRatioProp ?? (height > width ? "9 / 16" : "16 / 9");
+
   useEffect(() => {
     const player = playerRef.current;
     if (!player) return;
@@ -166,16 +217,43 @@ function LivePreview({ preview }: { preview: PreviewConfig }) {
     return () => window.cancelAnimationFrame(id);
   }, []);
 
+  const handleScrub = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      if (!scrubOnHover || !containerRef.current || !playerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const ratio = Math.min(
+        1,
+        Math.max(0, (event.clientX - rect.left) / rect.width),
+      );
+      const frame = Math.floor(ratio * (duration - 1));
+      playerRef.current.pause();
+      playerRef.current.seekTo(frame);
+    },
+    [scrubOnHover, duration],
+  );
+
+  const handleLeave = useCallback(() => {
+    if (!scrubOnHover || !playerRef.current) return;
+    playerRef.current.seekTo(0);
+    playerRef.current.play();
+  }, [scrubOnHover]);
+
   return (
-    <div className="relative aspect-video overflow-hidden rounded-lg border border-white/10 bg-[var(--brand-stage)]">
+    <div
+      ref={containerRef}
+      className="relative w-full overflow-hidden bg-[var(--bay-stage)]"
+      style={{ aspectRatio }}
+      onMouseMove={scrubOnHover ? handleScrub : undefined}
+      onMouseLeave={scrubOnHover ? handleLeave : undefined}
+    >
       <Player
         ref={playerRef}
         component={preview.component}
-        durationInFrames={preview.durationInFrames ?? 120}
+        durationInFrames={duration}
         fps={30}
-        compositionWidth={960}
-        compositionHeight={540}
-        style={{ width: "100%", display: "block" }}
+        compositionWidth={width}
+        compositionHeight={height}
+        style={{ width: "100%", height: "100%", display: "block" }}
         controls={false}
         loop
         autoPlay
@@ -184,45 +262,39 @@ function LivePreview({ preview }: { preview: PreviewConfig }) {
         showPosterWhenUnplayed={false}
         acknowledgeRemotionLicense
       />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgb(255_255_255_/_0.10),transparent_34%),linear-gradient(to_top,rgb(0_0_0_/_0.22),transparent_45%)]" />
     </div>
   );
 }
 
-function DesignedFallback({ slug, lane }: AtlasMiniPreviewProps) {
-  const accent = laneAccent(lane);
+function DesignedFallback({
+  slug,
+  lane,
+  aspectRatio = "16 / 9",
+}: {
+  slug: string;
+  lane: AtlasLane;
+  aspectRatio?: "16 / 9" | "9 / 16";
+}) {
   const muted = laneAccentMuted(lane);
-  const label = useMemo(
-    () =>
-      slug
-        .split("-")
-        .slice(0, 2)
-        .map((part) => part[0]?.toUpperCase() ?? "")
-        .join(""),
-    [slug],
-  );
+  const label = slug
+    .split("-")
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
 
   return (
     <div
-      className="relative aspect-video overflow-hidden rounded-lg border border-white/10"
-      style={{
-        background: `radial-gradient(circle at 25% 20%, ${muted}, transparent 38%), linear-gradient(135deg, #08111f, #121827)`,
-      }}
+      className="relative w-full overflow-hidden bg-[var(--bay-stage)]"
+      style={{ aspectRatio }}
     >
-      <div className="absolute inset-x-5 bottom-5 h-1.5 overflow-hidden rounded-full bg-white/10">
-        <div
-          className="h-full w-2/3 rounded-full"
-          style={{ background: accent }}
-        />
+      <div
+        className="absolute inset-x-5 bottom-5 h-1 overflow-hidden rounded-full bg-white/10"
+      >
+        <div className="h-full w-2/3 rounded-full bg-[var(--bay-phosphor)]" />
       </div>
       <div
-        className="absolute left-1/2 top-1/2 flex size-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-2xl border text-lg font-semibold"
-        style={{
-          borderColor: accent,
-          color: accent,
-          background: "rgb(255 255 255 / 0.05)",
-          boxShadow: `0 0 48px ${muted}`,
-        }}
+        className="absolute left-1/2 top-1/2 flex size-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-md border text-sm font-medium text-fd-muted-foreground"
+        style={{ borderColor: muted, background: "rgb(255 255 255 / 0.03)" }}
       >
         {label}
       </div>

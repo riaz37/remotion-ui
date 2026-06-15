@@ -1,15 +1,16 @@
 import Link from "next/link";
+import { ClipCard } from "@/components/studio/clip-card";
+import { getAtlasMeta } from "@/lib/atlas";
 import { AtlasMiniPreview } from "@/components/atlas-mini-preview";
-import { getAtlasMeta, type AtlasLane } from "@/lib/atlas";
-import { ATLAS_LANES } from "@/lib/atlas";
-import { laneAccent } from "@/lib/lane-visuals";
 
 type ComponentCardProps = {
   name: string;
   slug: string;
   url: string;
   description?: string;
-  lane?: AtlasLane;
+  lane?: import("@/lib/atlas").AtlasLane;
+  durationFrames?: number;
+  className?: string;
 };
 
 export function ComponentCard({
@@ -18,51 +19,37 @@ export function ComponentCard({
   url,
   description,
   lane,
+  durationFrames,
+  className,
 }: ComponentCardProps) {
   const meta = getAtlasMeta(slug);
   const resolvedLane = lane ?? meta?.lane;
-  const displayName = name.replace(/-/g, " ");
-  const accent = resolvedLane ? laneAccent(resolvedLane) : undefined;
+
+  if (!resolvedLane) {
+    return (
+      <Link
+        href={url}
+        className="motion-border block rounded-md border border-[var(--bay-border)] bg-[var(--bay-surface)] p-4 hover:border-[var(--bay-border-strong)]"
+      >
+        <p className="text-sm font-semibold capitalize">{name.replace(/-/g, " ")}</p>
+        {description ? (
+          <p className="mt-1 text-sm text-fd-muted-foreground">{description}</p>
+        ) : null}
+      </Link>
+    );
+  }
 
   return (
-    <Link
-      href={url}
-      className="motion-hover group overflow-hidden rounded-xl border border-fd-border bg-fd-card p-3 hover:border-fd-primary/50 hover:shadow-md hover:shadow-black/10"
-    >
-      {resolvedLane ? (
-        <AtlasMiniPreview slug={slug} lane={resolvedLane} />
-      ) : null}
-      <div className="mt-3 min-w-0">
-        <div className="flex items-start justify-between gap-3">
-          <p className="truncate text-sm font-semibold capitalize group-hover:text-fd-primary">
-            {displayName}
-          </p>
-          <div className="flex shrink-0 gap-1.5">
-            {resolvedLane ? (
-              <span
-                className="rounded-md border px-2 py-0.5 font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.12em]"
-                style={{ borderColor: accent, color: accent }}
-              >
-                {ATLAS_LANES[resolvedLane].label}
-              </span>
-            ) : null}
-            {meta?.tier === "advanced" ? (
-              <span className="rounded-md border border-fd-border px-2 py-0.5 font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.12em] text-fd-muted-foreground">
-                Pro
-              </span>
-            ) : null}
-          </div>
-        </div>
-        {description ? (
-          <p className="mt-1 line-clamp-2 text-sm text-fd-muted-foreground">
-            {description}
-          </p>
-        ) : meta?.tags?.length ? (
-          <p className="mt-1 text-xs capitalize text-fd-muted-foreground">
-            {meta.tags.join(" · ")}
-          </p>
-        ) : null}
-      </div>
-    </Link>
+    <ClipCard
+      name={slug}
+      url={url}
+      lane={resolvedLane}
+      durationFrames={durationFrames}
+      command={`npx remotion-ui add ${slug}`}
+      className={className}
+      thumbnail={
+        <AtlasMiniPreview slug={slug} lane={resolvedLane} scrubOnHover />
+      }
+    />
   );
 }

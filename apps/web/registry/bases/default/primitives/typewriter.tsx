@@ -1,4 +1,5 @@
 import { interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import { scaleFont } from "@/remotion/lib/layout";
 
 export type TypewriterProps = {
   text: string;
@@ -12,6 +13,9 @@ export type TypewriterProps = {
   pauseSeconds?: number;
   showCursor?: boolean;
   cursorBlinkFrames?: number;
+  fontSize?: number;
+  color?: string;
+  fontFamily?: string;
   className?: string;
   style?: React.CSSProperties;
 };
@@ -75,11 +79,15 @@ export const Typewriter: React.FC<TypewriterProps> = ({
   pauseSeconds = 0.6,
   showCursor = true,
   cursorBlinkFrames = 16,
+  fontSize: fontSizeProp,
+  color,
+  fontFamily,
   className,
   style,
 }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, width } = useVideoConfig();
+  const fontSize = fontSizeProp ?? scaleFont(84, width);
   const localFrame = Math.max(0, frame - delayInFrames);
   const resolvedCharFrames =
     charFrames ?? Math.max(1, Math.floor(durationInFrames / text.length));
@@ -97,10 +105,11 @@ export const Typewriter: React.FC<TypewriterProps> = ({
     <span
       className={className}
       style={{
-        fontFamily: "system-ui, sans-serif",
-        fontSize: 48,
+        fontSize,
         fontWeight: 600,
-        color: "white",
+        lineHeight: 1.2,
+        ...(color !== undefined ? { color } : {}),
+        ...(fontFamily !== undefined ? { fontFamily } : {}),
         ...style,
       }}
     >

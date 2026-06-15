@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { MotionWrapper } from "@/remotion/lib/motion-wrapper";
 import { springSnappy } from "@/remotion/lib/springs";
 
@@ -25,11 +25,13 @@ export const SpringIn: React.FC<SpringInProps> = ({
     durationInFrames,
   });
 
+  const scale = interpolate(progress, [0, 1], [0.88, 1]);
+
   return (
     <MotionWrapper
       style={{
         opacity: progress,
-        transform: `scale(${progress})`,
+        transform: `scale(${scale})`,
         transformOrigin: "center center",
       }}
     >

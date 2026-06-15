@@ -1,6 +1,13 @@
+import { loadFont } from "@remotion/google-fonts/Inter";
 import { interpolate, useCurrentFrame, useVideoConfig } from "remotion";
-import { getSafePadding } from "@/remotion/lib/layout";
+import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
+import { DURATION } from "@/remotion/lib/motion-tokens";
 import { fitHeadline } from "@/remotion/lib/text-fit-utils";
+
+const { fontFamily } = loadFont("normal", {
+  weights: ["600", "800", "900"],
+  subsets: ["latin"],
+});
 
 export type CaptionBumperProps = {
   text: string;
@@ -9,24 +16,34 @@ export type CaptionBumperProps = {
   accentColor?: string;
 };
 
+const COLORS = {
+  bg: "#09090b",
+  text: "#fafafa",
+  accent: "#f472b6",
+} as const;
+
 export const CaptionBumper: React.FC<CaptionBumperProps> = ({
   text,
-  eyebrow = "Key moment",
-  backgroundColor = "#020617",
-  accentColor = "#60a5fa",
+  eyebrow,
+  backgroundColor = COLORS.bg,
+  accentColor = COLORS.accent,
 }) => {
   const frame = useCurrentFrame();
   const { width, height } = useVideoConfig();
-  const padding = getSafePadding({ width, height, ratio: 0.1 });
-  const progress = interpolate(frame, [0, 24], [0, 1], {
+  const safeArea = getSafeAreaPadding({ width, height });
+  const contentWidth = width - safeArea.paddingLeft - safeArea.paddingRight;
+  const progress = interpolate(frame, [0, DURATION.fast], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
   const fontSize = fitHeadline({
     text,
-    maxWidth: width - padding * 2,
-    maxFontSize: Math.round(width * 0.09),
+    maxWidth: contentWidth,
+    maxFontSize: scaleFont(88, width),
+    minFontSize: scaleFont(42, width),
     fallbackWidth: width,
+    fontFamily,
+    fontWeight: "900",
   });
 
   return (
@@ -35,25 +52,42 @@ export const CaptionBumper: React.FC<CaptionBumperProps> = ({
         width,
         height,
         background: backgroundColor,
-        color: "white",
-        padding,
+        backgroundImage: `radial-gradient(circle at 12% 20%, ${accentColor}22, transparent 40%)`,
+        color: COLORS.text,
+        paddingLeft: safeArea.paddingLeft,
+        paddingRight: safeArea.paddingRight,
+        paddingTop: safeArea.paddingTop,
+        paddingBottom: safeArea.paddingBottom,
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        gap: 20,
-        fontFamily: "system-ui, sans-serif",
+        gap: scaleFont(20, width),
+        fontFamily,
       }}
     >
-      <div style={{ color: accentColor, fontSize: 34, fontWeight: 800, opacity: progress }}>
-        {eyebrow}
-      </div>
+      {eyebrow ? (
+        <div
+          style={{
+            color: accentColor,
+            fontSize: scaleFont(28, width),
+            fontWeight: 800,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            opacity: progress,
+          }}
+        >
+          {eyebrow}
+        </div>
+      ) : null}
       <div
         style={{
           fontSize,
           fontWeight: 900,
           lineHeight: 1.04,
+          letterSpacing: "-0.02em",
           opacity: progress,
-          transform: `translateY(${(1 - progress) * 28}px)`,
+          transform: `translateY(${(1 - progress) * 24}px)`,
+          maxWidth: contentWidth,
         }}
       >
         {text}

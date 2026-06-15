@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { useCurrentFrame } from "remotion";
+import { useCurrentFrame, useVideoConfig } from "remotion";
+import { scaleFont } from "@/remotion/lib/layout";
 import { MotionWrapper } from "@/remotion/lib/motion-wrapper";
 import { enterProgress } from "@/remotion/lib/timing";
 
@@ -14,9 +15,11 @@ export const SlideUp: React.FC<SlideUpProps> = ({
   children,
   durationInFrames = 30,
   delayInFrames = 0,
-  distance = 40,
+  distance: distanceProp,
 }) => {
   const frame = useCurrentFrame();
+  const { width } = useVideoConfig();
+  const distance = distanceProp ?? scaleFont(40, width);
   const progress = enterProgress(frame, delayInFrames, durationInFrames);
 
   return (
@@ -24,6 +27,7 @@ export const SlideUp: React.FC<SlideUpProps> = ({
       style={{
         opacity: progress,
         transform: `translateY(${(1 - progress) * distance}px)`,
+        transformOrigin: "center bottom",
       }}
     >
       {children}

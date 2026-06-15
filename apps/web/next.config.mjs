@@ -6,6 +6,15 @@ const withMDX = createMDX();
 const config = {
   reactStrictMode: true,
   transpilePackages: ["remotion", "@remotion/player"],
+  async redirects() {
+    return [
+      {
+        source: "/docs/ai/recipes/:slug*",
+        destination: "/docs/recipes/:slug*",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default withMDX(config);

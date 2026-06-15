@@ -3,7 +3,8 @@
 import type { ComponentType } from "react";
 import { useMemo, useState } from "react";
 import type { PropDefinition } from "@/lib/component-reference";
-import { PreviewPanel } from "./preview-panel";
+import { InspectorPanel } from "./studio/inspector-panel";
+import { StudioPanel } from "./studio/studio-panel";
 import { RemotionPreview } from "./remotion-preview";
 
 type PropsPlaygroundProps = {
@@ -83,61 +84,42 @@ ${propLines || "  {...yourProps}"}
   const previewAspect = `${previewWidth} / ${previewHeight}`;
   const isPortrait = previewHeight > previewWidth;
 
+  const fields = editableProps.map((prop) => ({
+    name: prop.name,
+    value: values[prop.name] ?? "",
+    onChange: (value: string) =>
+      setValues((current) => ({ ...current, [prop.name]: value })),
+    placeholder: prop.description,
+  }));
+
   return (
-    <div className="not-prose mb-8 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)] lg:items-start lg:gap-8">
-      <div className="min-w-0 space-y-6 lg:order-1">
-        <div className="rounded-2xl border border-fd-border bg-fd-card/70 p-5">
-          <h2 className="font-[family-name:var(--font-display)] text-lg font-semibold tracking-tight">
-            Live props
-          </h2>
-          <p className="mt-1 text-sm text-fd-muted-foreground">
-            Tweak values and watch the composition update in the preview.
-          </p>
-          <div className="mt-4 grid gap-4">
-            {editableProps.map((prop) => (
-              <label key={prop.name} className="grid gap-1.5 text-sm">
-                <span className="font-medium">{prop.name}</span>
-                <input
-                  type="text"
-                  value={values[prop.name] ?? ""}
-                  onChange={(event) =>
-                    setValues((current) => ({
-                      ...current,
-                      [prop.name]: event.target.value,
-                    }))
-                  }
-                  className="rounded-lg border border-fd-border bg-fd-background px-3 py-2 font-[family-name:var(--font-mono)] text-sm outline-none ring-fd-primary/30 focus:ring-2"
-                  placeholder={prop.description}
-                />
-              </label>
-            ))}
-          </div>
-        </div>
-        <div className="rounded-2xl border border-fd-border bg-fd-muted/30 p-4">
-          <p className="mb-2 text-sm font-medium">Generated usage</p>
-          <pre className="overflow-x-auto text-xs leading-relaxed">
-            <code className="font-[family-name:var(--font-mono)] text-fd-muted-foreground">
-              {usageSnippet}
-            </code>
-          </pre>
-        </div>
-      </div>
-      <div
-        className={`mb-8 lg:sticky lg:top-20 lg:order-2 lg:mb-0 ${
-          isPortrait ? "w-72 max-w-full lg:justify-self-end" : ""
-        }`}
-      >
-        <PreviewPanel aspectRatio={previewAspect}>
-          <RemotionPreview
-            component={component}
-            durationInFrames={durationInFrames}
+    <InspectorPanel
+      fields={fields}
+      usageSnippet={usageSnippet}
+      className={`mb-8 ${isPortrait ? "" : ""}`}
+      preview={
+        <div
+          className={`mb-8 lg:mb-0 ${isPortrait ? "w-72 max-w-full lg:justify-self-end" : ""}`}
+        >
+          <StudioPanel
+            label={name}
+            aspectRatio={previewAspect}
+            fps={30}
             width={previewWidth}
             height={previewHeight}
-            inputProps={inputProps}
-          />
-        </PreviewPanel>
-      </div>
-    </div>
+            durationInFrames={durationInFrames}
+          >
+            <RemotionPreview
+              component={component}
+              durationInFrames={durationInFrames}
+              width={previewWidth}
+              height={previewHeight}
+              inputProps={inputProps}
+            />
+          </StudioPanel>
+        </div>
+      }
+    />
   );
 }
 

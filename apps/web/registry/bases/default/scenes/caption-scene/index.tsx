@@ -1,3 +1,4 @@
+import { loadFont } from "@remotion/google-fonts/Inter";
 import type { Caption } from "@remotion/captions";
 import { useMemo } from "react";
 import { AbsoluteFill, Sequence, useVideoConfig } from "remotion";
@@ -8,7 +9,12 @@ import {
   getPageSequenceTiming,
   groupCaptionsIntoPages,
 } from "@/remotion/lib/caption-utils";
-import { getSafeAreaPadding } from "@/remotion/lib/layout";
+import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
+
+const { fontFamily } = loadFont("normal", {
+  weights: ["600", "700", "800"],
+  subsets: ["latin"],
+});
 
 export type CaptionPlacement = "lower-third" | "center";
 
@@ -27,18 +33,24 @@ export type CaptionSceneProps = {
   mode?: CaptionSceneMode;
 };
 
+const COLORS = {
+  active: "#fbbf24",
+  inactive: "#fafafa",
+  scrim: "rgba(8,10,16,0.88)",
+} as const;
+
 export const CaptionScene: React.FC<CaptionSceneProps> = ({
   captions,
   combineTokensWithinMilliseconds = DEFAULT_CAPTION_PAGE_MS,
-  activeColor = "#60a5fa",
-  inactiveColor = "#f8fafc",
+  activeColor = COLORS.active,
+  inactiveColor = COLORS.inactive,
   backgroundColor = "transparent",
   placement = "lower-third",
   mode = "karaoke-scale",
 }) => {
   const { fps, width, height } = useVideoConfig();
   const safeArea = getSafeAreaPadding({ width, height });
-  const fontSize = Math.round(width * (placement === "center" ? 0.045 : 0.038));
+  const fontSize = scaleFont(placement === "center" ? 48 : 40, width);
 
   const pages = useMemo(
     () => groupCaptionsIntoPages(captions, combineTokensWithinMilliseconds),
@@ -52,6 +64,7 @@ export const CaptionScene: React.FC<CaptionSceneProps> = ({
           alignItems: "center" as const,
           paddingLeft: safeArea.paddingLeft,
           paddingRight: safeArea.paddingRight,
+          fontFamily,
         }
       : {
           justifyContent: "flex-end" as const,
@@ -59,6 +72,7 @@ export const CaptionScene: React.FC<CaptionSceneProps> = ({
           paddingLeft: safeArea.paddingLeft,
           paddingRight: safeArea.paddingRight,
           paddingBottom: safeArea.paddingBottom,
+          fontFamily,
         };
 
   const renderPage = (page: (typeof pages)[number]) => {
@@ -103,8 +117,7 @@ export const CaptionScene: React.FC<CaptionSceneProps> = ({
         <AbsoluteFill
           style={{
             justifyContent: "flex-end",
-            background:
-              "linear-gradient(to top, rgba(15, 23, 42, 0.85) 0%, transparent 55%)",
+            background: `linear-gradient(to top, ${COLORS.scrim} 0%, transparent 58%)`,
             pointerEvents: "none",
           }}
         />

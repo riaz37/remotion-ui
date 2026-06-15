@@ -1,11 +1,13 @@
 /**
- * Brand tokens — synced with DESIGN.md and globals.css.
- * Used by registry demo compositions and docs previews.
+ * Edit Bay brand tokens — synced with STUDIO-DESIGN.md and globals.css.
  */
-export const BRAND_ACCENT = "#60a5fa";
-export const BRAND_ACCENT_RGB = "96 165 250";
-export const BRAND_CAPTION_ACTIVE = "#60a5fa";
+export const BRAND_STAGE = "#050505";
+export const BRAND_BG = "#050505";
+export const BRAND_INK = "#ececec";
+export const BRAND_MUTED = "#949494";
+export const BRAND_PHOSPHOR = "#e8b86d";
+export const BRAND_PHOSPHOR_RGB = "232 184 109";
+export const BRAND_CAPTION_ACTIVE = BRAND_PHOSPHOR;
 export const BRAND_CAPTION_INACTIVE = "#f8fafc";
-export const BRAND_BG = "#0c1222";
-export const BRAND_STAGE = "#0c1222";
-export const BRAND_PRIMARY_CSS = "oklch(0.68 0.14 252)";
+export const BRAND_ACCENT = BRAND_PHOSPHOR;
+export const BRAND_ACCENT_RGB = BRAND_PHOSPHOR_RGB;

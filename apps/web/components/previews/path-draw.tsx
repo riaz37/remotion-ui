@@ -11,7 +11,7 @@ export const PathDrawPreview: React.FC = () => (
       width={220}
       height={220}
       viewBox="0 0 200 200"
-      stroke="#60a5fa"
+      stroke="#6366f1"
       durationInFrames={75}
     />
   </PreviewFrame>

@@ -22,8 +22,8 @@ export const MapRoute: React.FC<MapRouteProps> = ({
   map,
   route,
   progress: progressProp,
-  lineColor = "#111111",
-  lineWidth = 7,
+  lineColor = "#6366f1",
+  lineWidth = 6,
   sourceId = "trace",
   layerId = "trace-line",
 }) => {
@@ -61,6 +61,8 @@ export const MapRoute: React.FC<MapRouteProps> = ({
         paint: {
           "line-color": lineColor,
           "line-width": lineWidth,
+          "line-blur": 0.6,
+          "line-opacity": 0.92,
         },
       });
     }

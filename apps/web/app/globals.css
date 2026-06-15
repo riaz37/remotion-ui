@@ -3,52 +3,80 @@
 @import "fumadocs-ui/css/preset.css";
 
 @theme {
-  --font-display: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-newsreader), ui-serif, Georgia, serif;
   --font-sans: var(--font-plex), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
 }
 
 :root {
-  --brand-stage: #0c1222;
-  --color-fd-background: oklch(0.98 0.008 265);
-  --color-fd-foreground: oklch(0.22 0.02 265);
-  --color-fd-card: oklch(1 0.004 265);
-  --color-fd-card-foreground: oklch(0.22 0.02 265);
-  --color-fd-popover: oklch(1 0.004 265);
-  --color-fd-popover-foreground: oklch(0.22 0.02 265);
-  --color-fd-primary: oklch(0.52 0.18 252);
-  --color-fd-primary-foreground: oklch(0.99 0.004 265);
-  --color-fd-secondary: oklch(0.95 0.012 265);
-  --color-fd-secondary-foreground: oklch(0.28 0.02 265);
-  --color-fd-muted: oklch(0.95 0.01 265);
-  --color-fd-muted-foreground: oklch(0.48 0.02 265);
-  --color-fd-accent: oklch(0.94 0.02 252);
-  --color-fd-accent-foreground: oklch(0.28 0.02 265);
-  --color-fd-border: oklch(0.88 0.012 265);
-  --color-fd-ring: oklch(0.52 0.18 252);
+  --bay-bg: oklch(0.97 0.006 75);
+  --bay-surface: oklch(1 0.004 75);
+  --bay-surface-raised: oklch(0.95 0.008 75);
+  --bay-stage: #050505;
+  --bay-ink: oklch(0.18 0.01 75);
+  --bay-muted: oklch(0.48 0.02 75);
+  --bay-border: oklch(0 0 0 / 0.08);
+  --bay-border-strong: oklch(0 0 0 / 0.14);
+  --bay-phosphor: oklch(0.55 0.12 75);
+  --bay-record: oklch(0.52 0.2 25);
+  --brand-stage: var(--bay-stage);
+
+  --color-fd-background: var(--bay-bg);
+  --color-fd-foreground: var(--bay-ink);
+  --color-fd-card: var(--bay-surface);
+  --color-fd-card-foreground: var(--bay-ink);
+  --color-fd-popover: var(--bay-surface);
+  --color-fd-popover-foreground: var(--bay-ink);
+  --color-fd-primary: var(--bay-ink);
+  --color-fd-primary-foreground: var(--bay-bg);
+  --color-fd-secondary: var(--bay-surface-raised);
+  --color-fd-secondary-foreground: var(--bay-ink);
+  --color-fd-muted: var(--bay-surface-raised);
+  --color-fd-muted-foreground: var(--bay-muted);
+  --color-fd-accent: var(--bay-surface-raised);
+  --color-fd-accent-foreground: var(--bay-ink);
+  --color-fd-border: var(--bay-border);
+  --color-fd-ring: var(--bay-phosphor);
 }
 
 .dark {
-  --color-fd-background: oklch(0.11 0.022 265);
-  --color-fd-foreground: oklch(0.93 0.01 265);
-  --color-fd-card: oklch(0.14 0.02 265);
-  --color-fd-card-foreground: oklch(0.93 0.01 265);
-  --color-fd-popover: oklch(0.14 0.02 265);
-  --color-fd-popover-foreground: oklch(0.93 0.01 265);
-  --color-fd-primary: oklch(0.68 0.14 252);
-  --color-fd-primary-foreground: oklch(0.11 0.022 265);
-  --color-fd-secondary: oklch(0.18 0.02 265);
-  --color-fd-secondary-foreground: oklch(0.93 0.01 265);
-  --color-fd-muted: oklch(0.18 0.018 265);
-  --color-fd-muted-foreground: oklch(0.62 0.02 265);
-  --color-fd-accent: oklch(0.2 0.025 265);
-  --color-fd-accent-foreground: oklch(0.93 0.01 265);
-  --color-fd-border: oklch(0.24 0.02 265);
-  --color-fd-ring: oklch(0.68 0.14 252);
+  --bay-bg: oklch(0.12 0.004 75);
+  --bay-surface: oklch(0.15 0.005 75);
+  --bay-surface-raised: oklch(0.18 0.006 75);
+  --bay-stage: #050505;
+  --bay-ink: oklch(0.93 0.005 75);
+  --bay-muted: oklch(0.58 0.01 75);
+  --bay-border: oklch(1 0 0 / 0.07);
+  --bay-border-strong: oklch(1 0 0 / 0.12);
+  --bay-phosphor: oklch(0.78 0.12 75);
+  --bay-record: oklch(0.62 0.2 25);
+  --brand-stage: var(--bay-stage);
+
+  --color-fd-background: var(--bay-bg);
+  --color-fd-foreground: var(--bay-ink);
+  --color-fd-card: var(--bay-surface);
+  --color-fd-card-foreground: var(--bay-ink);
+  --color-fd-popover: var(--bay-surface);
+  --color-fd-popover-foreground: var(--bay-ink);
+  --color-fd-primary: var(--bay-ink);
+  --color-fd-primary-foreground: var(--bay-bg);
+  --color-fd-secondary: var(--bay-surface-raised);
+  --color-fd-secondary-foreground: var(--bay-ink);
+  --color-fd-muted: var(--bay-surface-raised);
+  --color-fd-muted-foreground: var(--bay-muted);
+  --color-fd-accent: var(--bay-surface-raised);
+  --color-fd-accent-foreground: var(--bay-ink);
+  --color-fd-border: var(--bay-border);
+  --color-fd-ring: var(--bay-phosphor);
 }
 
 body {
   font-family: var(--font-sans);
+  font-size: 0.9375rem;
 }
 
 h1,
@@ -56,6 +84,7 @@ h2,
 h3 {
   font-family: var(--font-display);
   letter-spacing: -0.025em;
+  font-weight: 500;
 }
 
 /* Docs prose */
@@ -66,7 +95,7 @@ h3 {
 }
 
 .prose code:not(pre code) {
-  border-radius: 0.35rem;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--color-fd-border);
   background: var(--color-fd-muted);
   padding: 0.1rem 0.35rem;
@@ -74,16 +103,68 @@ h3 {
   font-family: var(--font-mono);
 }
 
-/* Subtle UI motion */
+/* Edit Bay utilities */
+.text-display-xl {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 3.75rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.text-display-lg {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+
+.text-mono-xs {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.perforation-rule {
+  height: 12px;
+  background-image: radial-gradient(
+    circle,
+    transparent 3px,
+    var(--bay-border) 3px
+  );
+  background-size: 24px 12px;
+  background-position: center;
+  opacity: 0.6;
+}
+
+.film-grain {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0.025;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.link-phosphor {
+  text-decoration: underline;
+  text-decoration-color: var(--bay-phosphor);
+  text-underline-offset: 3px;
+}
+
+.link-phosphor:hover {
+  color: var(--bay-phosphor);
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  .motion-hover {
-    transition:
-      border-color 180ms ease-out,
-      transform 180ms ease-out,
-      box-shadow 180ms ease-out;
+  .motion-border {
+    transition: border-color 150ms ease-out;
   }
 
-  .motion-hover:hover {
-    transform: translateY(-1px);
+  .motion-border:hover {
+    border-color: var(--bay-border-strong);
   }
 }
