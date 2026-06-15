@@ -9,6 +9,31 @@ const appRoot = path.resolve(__dirname, "..");
 const registryJsonPath = path.join(appRoot, "registry.json");
 const outputDir = path.join(appRoot, "public", "r", "presets", "default");
 const siteUrl = "https://remotionui.com";
+const docsComponentsDir = path.join(appRoot, "content", "docs", "components");
+const componentsMetaPath = path.join(docsComponentsDir, "meta.json");
+
+const LANE_ORDER = [
+  "atoms",
+  "signals",
+  "vectors",
+  "spatial",
+  "blocks",
+  "cuts",
+  "reels",
+] as const;
+
+const LIBRARY_SLUGS = new Set(["timing", "springs", "layout", "use-stagger"]);
+
+/** Plain-language sidebar group labels (Atlas lane names are internal). */
+const LANE_SIDEBAR_GROUP: Record<(typeof LANE_ORDER)[number], string> = {
+  atoms: "Motion primitives",
+  signals: "Captions & media",
+  vectors: "SVG & paths",
+  spatial: "Maps",
+  blocks: "Scenes",
+  cuts: "Transitions",
+  reels: "Templates",
+};
 
 type RegistryFile = {
   path: string;
@@ -61,7 +86,6 @@ async function loadRecipes(): Promise<AiRecipe[]> {
     appRoot,
     "content",
     "docs",
-    "ai",
     "recipes",
     "manifest.json",
   );
@@ -82,20 +106,6 @@ async function readFileContent(relativePath: string): Promise<string | null> {
 
 function resolveAtlas(item: RegistryItem): AtlasMeta | undefined {
   return item.atlas ?? REGISTRY_ATLAS[item.name];
-}
-
-function getDocsCategory(item: RegistryItem, atlas?: AtlasMeta): string {
-  if (atlas?.lane === "signals") return "signals";
-  if (atlas?.lane === "spatial") return "spatial";
-  if (atlas?.lane === "vectors") return "vectors";
-  if (atlas?.lane === "cuts") return "cuts";
-  if (item.type === "registry:block") {
-    return atlas?.lane === "reels" ? "compositions" : "scenes";
-  }
-  if (item.type === "registry:lib" || item.type === "registry:hook") {
-    return "utilities";
-  }
-  return "primitives";
 }
 
 function getInstallTarget(item: RegistryItem, firstFile?: RegistryFile): string {
@@ -149,7 +159,6 @@ async function buildAiFiles(registry: Registry): Promise<void> {
   const components = registry.items.map((item) => {
     const atlas = resolveAtlas(item);
     const firstFile = item.files[0];
-    const docsCategory = getDocsCategory(item, atlas);
     const reference = componentReference[item.name];
 
     return {
@@ -161,7 +170,7 @@ async function buildAiFiles(registry: Registry): Promise<void> {
       dependencies: item.dependencies ?? [],
       registryDependencies: item.registryDependencies ?? [],
       installCommand: `npx remotion-ui@latest add ${item.name}`,
-      docsUrl: `${siteUrl}/docs/${docsCategory}/${item.name}`,
+      docsUrl: `${siteUrl}/docs/components/${item.name}`,
       registryUrl: `${siteUrl}/r/presets/default/${item.name}.json`,
       detailUrl: `${siteUrl}/ai/components/${item.name}.json`,
       importPath: getImportPath(item, firstFile),
@@ -325,6 +334,60 @@ npx remotion-ui@latest add social-clip caption-highlight lower-third
   console.log("llms.txt generated: public/llms.txt");
 }
 
+async function buildComponentsMeta(registry: Registry): Promise<void> {
+  const entries = await fs.readdir(docsComponentsDir);
+  const mdxSlugs = entries
+    .filter(
+      (file) => file.endsWith(".mdx") && file !== "browse.mdx",
+    )
+    .map((file) => file.replace(/\.mdx$/, ""))
+    .sort();
+
+  const registryNames = new Set(registry.items.map((item) => item.name));
+  const orphans = mdxSlugs.filter((slug) => !registryNames.has(slug));
+  if (orphans.length > 0) {
+    throw new Error(
+      `Component MDX without registry entry: ${orphans.join(", ")}`,
+    );
+  }
+
+  const pages: string[] = [];
+
+  for (const lane of LANE_ORDER) {
+    const laneSlugs = mdxSlugs
+      .filter(
+        (slug) =>
+          !LIBRARY_SLUGS.has(slug) && REGISTRY_ATLAS[slug]?.lane === lane,
+      )
+      .sort();
+
+    if (laneSlugs.length === 0) continue;
+    pages.push(`---${LANE_SIDEBAR_GROUP[lane]}---`);
+    pages.push(...laneSlugs);
+  }
+
+  const librarySlugs = mdxSlugs.filter((slug) => LIBRARY_SLUGS.has(slug)).sort();
+  if (librarySlugs.length > 0) {
+    pages.push("---Helpers---");
+    pages.push(...librarySlugs);
+  }
+
+  const inMeta = new Set(pages.filter((entry) => !entry.startsWith("---")));
+  const missingFromMeta = mdxSlugs.filter((slug) => !inMeta.has(slug));
+  if (missingFromMeta.length > 0) {
+    throw new Error(
+      `Component MDX not assigned to sidebar meta: ${missingFromMeta.join(", ")}`,
+    );
+  }
+
+  await writeJson(componentsMetaPath, {
+    title: "Components",
+    pagesIndex: "browse",
+    pages,
+  });
+  console.log(`  ✓ components/meta.json (${mdxSlugs.length} items)`);
+}
+
 async function buildRegistry(): Promise<void> {
   console.log("Building registry...");
 
@@ -389,6 +452,7 @@ async function buildRegistry(): Promise<void> {
   console.log(`\nRegistry built: ${registry.items.length} item(s)`);
   console.log(`Output: public/r/`);
 
+  await buildComponentsMeta(registry);
   await buildAiFiles(registry);
   const recipes = await loadRecipes();
   await writeLlmsTxt(registry, recipes);

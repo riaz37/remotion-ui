@@ -6,7 +6,7 @@ export function EndSlateCta() {
     <section className="border-b border-[var(--bay-border)] bg-[var(--bay-surface)]">
       <PerforationRule />
       <div className="mx-auto max-w-[680px] px-6 py-[120px]">
-        <div className="border-l-2 border-[var(--bay-phosphor)] pl-5">
+        <div>
           <h2 className="text-display-lg">Own the source. Ship the clip.</h2>
           <p className="mt-4 max-w-md text-[0.9375rem] leading-relaxed text-fd-muted-foreground">
             No runtime dependency. Files land in your project. Render when ready.
@@ -22,7 +22,7 @@ export function EndSlateCta() {
               href="/docs/components"
               className="link-phosphor inline-flex items-center px-1 py-2.5 text-sm font-medium"
             >
-              Open storyboard
+              Open components
             </Link>
           </div>
         </div>

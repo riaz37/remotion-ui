@@ -14,12 +14,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const staticRoutes: MetadataRoute.Sitemap = [
     {
-      url: `${siteConfig.url}/docs/components`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.85,
-    },
-    {
       url: `${siteConfig.url}/docs/ai/start`,
       lastModified: now,
       changeFrequency: "weekly",

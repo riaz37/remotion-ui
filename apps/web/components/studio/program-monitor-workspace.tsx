@@ -3,6 +3,7 @@
 import type { PlayerRef } from "@remotion/player";
 import type { ComponentType } from "react";
 import { useCallback, useEffect, useRef } from "react";
+import { CodeSnippet } from "@/components/docs/code-snippet";
 import { useCurrentPlayerFrame } from "@/lib/use-current-player-frame";
 import { ScaledPlayerStage } from "./scaled-player-stage";
 import { TimecodeBar } from "./timecode-bar";
@@ -63,11 +64,6 @@ export function ProgramMonitorWorkspace({
   return (
     <div className="flex flex-col gap-4">
       <div className="relative flex flex-col overflow-hidden rounded-lg border border-[var(--bay-border-strong)] bg-[var(--bay-surface)] lg:flex-row lg:items-stretch">
-        <div
-          className="pointer-events-none absolute inset-y-0 left-0 z-10 w-0.5 bg-[var(--bay-phosphor)]"
-          aria-hidden
-        />
-
         <aside className="relative shrink-0 px-5 py-5 lg:w-[280px] lg:border-r lg:border-[var(--bay-border)]">
           <p className="font-[family-name:var(--font-mono)] text-[0.6875rem] text-fd-muted-foreground">
             Inspector
@@ -117,16 +113,7 @@ export function ProgramMonitorWorkspace({
       </div>
 
       {usageSnippet ? (
-        <details className="overflow-hidden rounded-lg border border-[var(--bay-border)] bg-[var(--bay-surface-raised)]">
-          <summary className="cursor-pointer px-5 py-3 font-[family-name:var(--font-mono)] text-[0.6875rem] text-fd-muted-foreground">
-            Export snippet
-          </summary>
-          <pre className="overflow-x-auto border-t border-[var(--bay-border)] px-5 py-3 text-xs leading-relaxed">
-            <code className="font-[family-name:var(--font-mono)] text-fd-muted-foreground">
-              {usageSnippet}
-            </code>
-          </pre>
-        </details>
+        <CodeSnippet label="Export snippet" code={usageSnippet} />
       ) : null}
     </div>
   );

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cliAddCommand } from "@/lib/docs-cli";
 import { ClipCard } from "@/components/studio/clip-card";
 import { getAtlasMeta } from "@/lib/atlas";
 import { AtlasMiniPreview } from "@/components/atlas-mini-preview";
@@ -45,7 +46,7 @@ export function ComponentCard({
       url={url}
       lane={resolvedLane}
       durationFrames={durationFrames}
-      command={`npx remotion-ui add ${slug}`}
+      command={cliAddCommand(slug)}
       className={className}
       thumbnail={
         <AtlasMiniPreview slug={slug} lane={resolvedLane} scrubOnHover />

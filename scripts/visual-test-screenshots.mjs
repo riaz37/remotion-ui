@@ -13,15 +13,15 @@ const BASE = process.argv[2] ?? "http://localhost:3000";
 const PAGES = [
   ["/", "homepage"],
   ["/docs", "docs-intro"],
-  ["/docs/primitives/fade-in", "fade-in"],
-  ["/docs/signals/caption-scene", "caption-scene"],
-  ["/docs/compositions/social-clip", "social-clip"],
-  ["/docs/compositions/creator-reel", "creator-reel"],
-  ["/docs/compositions/podcast-clip", "podcast-clip"],
-  ["/docs/signals/caption-highlight", "caption-highlight"],
-  ["/docs/compositions/data-story", "data-story"],
-  ["/docs/spatial/map-flight", "map-flight"],
-  ["/docs/atlas", "atlas-guide"],
+  ["/docs/components/fade-in", "fade-in"],
+  ["/docs/components/caption-scene", "caption-scene"],
+  ["/docs/components/social-clip", "social-clip"],
+  ["/docs/components/creator-reel", "creator-reel"],
+  ["/docs/components/podcast-clip", "podcast-clip"],
+  ["/docs/components/caption-highlight", "caption-highlight"],
+  ["/docs/components/data-story", "data-story"],
+  ["/docs/components/map-flight", "map-flight"],
+  ["/docs/components", "components-hub"],
 ];
 
 function ab(...args) {

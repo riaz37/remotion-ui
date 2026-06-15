@@ -47,16 +47,16 @@ export function softwareApplicationJsonLd() {
 }
 
 const FLAGSHIP_COMPOSITION_URLS = [
-  "/docs/compositions/social-clip",
-  "/docs/compositions/creator-reel",
-  "/docs/compositions/podcast-clip",
-  "/docs/compositions/data-story",
-  "/docs/compositions/intro",
-  "/docs/compositions/showcase",
-  "/docs/compositions/tutorial-clip",
-  "/docs/compositions/hero-loop",
-  "/docs/scenes/lower-third",
-  "/docs/signals/caption-highlight",
+  "/docs/components/social-clip",
+  "/docs/components/creator-reel",
+  "/docs/components/podcast-clip",
+  "/docs/components/data-story",
+  "/docs/components/intro",
+  "/docs/components/showcase",
+  "/docs/components/tutorial-clip",
+  "/docs/components/hero-loop",
+  "/docs/components/lower-third",
+  "/docs/components/caption-highlight",
 ] as const;
 
 export function componentsItemListJsonLd() {

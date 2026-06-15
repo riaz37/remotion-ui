@@ -1,0 +1,21 @@
+---
+title: Springs
+description: Shared spring configs for physics-based motion.
+---
+
+<InstallCommand name="springs" />
+
+<CodeSnippet label="Example" code={`import { springSmooth, springSnappy, springBouncy } from "@/remotion/lib/springs";
+
+const progress = spring({
+  frame,
+  fps,
+  config: springSnappy,
+  durationInFrames: 30,
+});`} />
+
+| Token | Feel |
+|-------|------|
+| `springSmooth` | Subtle, no overshoot; highlights, wipes |
+| `springSnappy` | Quick pop; `spring-in` |
+| `springBouncy` | Playful overshoot |

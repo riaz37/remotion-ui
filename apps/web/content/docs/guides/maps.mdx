@@ -1,0 +1,34 @@
+---
+title: Maps
+description: MapLibre determinism, render flags, and Turf patterns.
+---
+
+RemotionUI spatial components use **MapLibre GL JS** and **Turf** for deterministic map animations.
+
+## Install
+
+<InstallCommand name="map-flight" />
+
+## Determinism rules
+
+- `interactive: false`, `fadeDuration: 0`
+- `delayRender()` until map `idle` on load and per-frame updates
+- Turf for geodesic routes. Do not hand-roll coordinate math
+- Separate **target route** (line animation) from **camera route** (camera position)
+
+## Render flags
+
+WebGL maps require ANGLE and single concurrency:
+
+<CommandRail label="Render" command="npx remotion render src/Root.tsx MapFlight out/map.mp4 --gl=angle --concurrency=1" />
+
+## Components
+
+| Component | Role |
+|-----------|------|
+| `map-canvas` | Low-level MapLibre mount |
+| `map-route` | Animated line reveal |
+| `map-markers` | Circle + label layers |
+| `map-flight` | Full flyover scene |
+
+See [map-flight](/docs/components/map-flight) for the flagship example.

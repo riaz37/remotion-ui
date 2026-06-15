@@ -23,8 +23,8 @@ const STEPS = [
 export function InstallStrip() {
   return (
     <LandingSection
-      title="Ship your first clip"
-      lead="Three commands from empty repo to rendered MP4."
+      title="Render queue"
+      lead="Init a project, add a composition, export an MP4 — three CLI steps, no editor required."
       layout="narrow"
     >
       <RenderQueueStrip steps={STEPS} outputPath="out/social-clip.mp4" />

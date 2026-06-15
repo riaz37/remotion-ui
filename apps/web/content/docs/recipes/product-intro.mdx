@@ -1,31 +1,26 @@
 ---
 title: Product Intro
-description: AI recipe for product intro and showcase videos.
+description: Product intro or feature showcase with title cards and CTA.
 ---
 
-# Product Intro
-
-Use this when the user wants a polished intro, product demo opener, or feature showcase.
-
-## Install
-
-```bash
-npx remotion-ui@latest add --recipe product-intro
-```
+<InstallCommand name="product-intro" recipe />
 
 <RenderCommand compositionId="Intro" />
 
-## Agent instructions
+## Usage notes
 
 - Use `Intro` for a short branded opener.
-- Use `Showcase` when the user wants a multi-scene product sequence.
+- Use `Showcase` when you want a multi-scene product sequence.
 - Use `TitleCard`, `FeatureList`, `LogoReveal`, and `EndCard` when assembling a custom composition.
 - Keep the first message short and visually dominant.
+- Import installed components from local source paths, not from `remotion-ui`.
+
+## Agent notes
+
+- Prefer this recipe when the user asks for a product intro, demo opener, or feature showcase.
 
 ## Typical imports
 
-```tsx
-import { Intro } from "@/compositions/intro";
+<CodeSnippet label="Imports" code={`import { Intro } from "@/compositions/intro";
 import { Showcase } from "@/compositions/showcase";
-import { TitleCard } from "@/remotion/scenes/title-card";
-```
+import { TitleCard } from "@/remotion/scenes/title-card";`} />

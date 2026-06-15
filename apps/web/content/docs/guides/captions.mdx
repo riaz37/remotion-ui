@@ -1,0 +1,47 @@
+---
+title: Captions
+description: Build captioned Remotion videos with CaptionScene, karaoke modes, and social clip templates.
+---
+
+RemotionUI caption components work with Remotion's native [`Caption`](https://www.remotion.dev/docs/captions/caption) type — for TikTok-style word highlights, karaoke scale, or full caption scenes in vertical social clips.
+
+## Install
+
+<InstallCommand name="caption-scene caption-highlight" />
+
+This installs `@remotion/captions` and `caption-utils`.
+
+For a complete 9:16 template:
+
+<InstallCommand name="captioned-social-video" recipe label="Recipe" />
+
+## Pipeline
+
+1. **Transcribe** audio to captions JSON (Whisper, SRT import, or `@remotion/openai-whisper`)
+2. **Load** captions in your composition (fetch with `useDelayRender` if remote)
+3. **Group** into pages with `groupCaptionsIntoPages()` from `caption-utils`
+4. **Render** with `CaptionScene` or wire into `SocialClip` / `PodcastClip`
+
+## Caption components
+
+| Component | Use when |
+|-----------|----------|
+| [CaptionScene](/docs/components/caption-scene) | Full-frame synced caption layout |
+| [CaptionHighlight](/docs/components/caption-highlight) | Word-level color emphasis |
+| [KaraokeCaptions](/docs/components/karaoke-captions) | Scale or underline active word |
+| [CaptionBumper](/docs/components/caption-bumper) | Short insight text between scenes |
+
+`CaptionScene` supports `mode`: `highlight`, `karaoke-scale`, or `karaoke-underline`. Flagship compositions default to `karaoke-scale` for social-ready motion.
+
+## Example
+
+<CodeSnippet label="Example" code={`import { CaptionScene } from "@/remotion/scenes/caption-scene";
+import type { Caption } from "@remotion/captions";
+
+<CaptionScene
+  captions={captions}
+  mode="karaoke-scale"
+  pagesPerScene={1}
+/>;`} />
+
+See [caption-scene](/docs/components/caption-scene) for the full API and [Captioned social video](/docs/recipes/captioned-social-video) for a full template recipe.

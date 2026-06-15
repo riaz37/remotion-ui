@@ -5,18 +5,10 @@
     "installation",
     "cli",
     "recipes",
+    "[Recipe wizard](/docs/ai/start)",
     "components",
+    "guides",
     "ai",
-    "atlas",
-    "primitives",
-    "signals",
-    "vectors",
-    "spatial",
-    "cuts",
-    "scenes",
-    "compositions",
-    "utilities",
-    "advanced",
     "registry"
   ]
 }

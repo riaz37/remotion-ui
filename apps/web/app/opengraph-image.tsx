@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { BRAND_COLORS, brandMarkDataUrl } from "@/lib/brand-mark-svg";
 
 export const alt =
-  "RemotionUI — Compositions you own, frame by frame";
+  "RemotionUI — Production-ready motion for Remotion";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -51,7 +51,7 @@ export default function OpenGraphImage() {
                 maxWidth: 720,
               }}
             >
-              Compositions you own, frame by frame.
+              Production-ready motion for Remotion.
             </div>
             <div
               style={{

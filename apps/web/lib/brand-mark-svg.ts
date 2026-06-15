@@ -34,7 +34,7 @@ export const BRAND_OG_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="1200
     </g>
   </g>
   <text x="280" y="280" font-family="Georgia, 'Times New Roman', serif" font-size="88" font-weight="500" fill="${BRAND_COLORS.ink}">RemotionUI</text>
-  <text x="280" y="350" font-family="Georgia, 'Times New Roman', serif" font-size="36" font-weight="400" fill="${BRAND_COLORS.muted}">Compositions you own, frame by frame.</text>
+  <text x="280" y="350" font-family="Georgia, 'Times New Roman', serif" font-size="36" font-weight="400" fill="${BRAND_COLORS.muted}">Production-ready motion for Remotion.</text>
   <text x="280" y="410" font-family="ui-monospace, Menlo, monospace" font-size="22" fill="${BRAND_COLORS.phosphor}">remotion-ui · source you own</text>
 </svg>`;
 
