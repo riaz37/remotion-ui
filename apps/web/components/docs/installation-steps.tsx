@@ -1,17 +1,17 @@
 import { RenderQueueStrip } from "@/components/landing/render-queue-strip";
-import { InitCommand } from "@/components/install-command";
+import { CLI_PACKAGE, cliAddCommand } from "@/lib/docs-cli";
 
 const STEPS = [
   {
     step: 1,
     label: "Initialize",
-    command: "npx remotion-ui@latest init my-video --starter social",
+    command: `${CLI_PACKAGE} init my-video --starter social`,
     showPmTabs: true,
   },
   {
     step: 2,
-    label: "Add composition",
-    command: "npx remotion-ui@latest add fade-in",
+    label: "Add",
+    command: cliAddCommand("social-clip"),
   },
   {
     step: 3,
@@ -22,9 +22,8 @@ const STEPS = [
 
 export function InstallationSteps() {
   return (
-    <div className="not-prose my-8 space-y-8">
-      <InitCommand />
-      <RenderQueueStrip steps={STEPS} outputPath="out/social-clip.mp4" />
+    <div className="not-prose my-8">
+      <RenderQueueStrip steps={STEPS} outputPath="out/social-clip.mp4" layout="vertical" />
     </div>
   );
 }

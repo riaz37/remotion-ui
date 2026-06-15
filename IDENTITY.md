@@ -10,17 +10,22 @@
 
 ## vs remocn
 
+[remocn](https://www.remocn.dev/) is primitive-first (typewriter tweak, shadcn grid, light cinematic). RemotionUI is composition-first (edit bay, recipes, component filmstrip). **Do not mirror remocn’s landing section order or headings** — their flow is hero → tweak primitive → registry grid → ship in minutes → CTA.
+
 | | remocn | RemotionUI |
 |---|--------|------------|
 | Canvas | Light editorial | Dark edit bay |
 | Hero | Typewriter primitive | Full composition on monitor |
-| Catalog | Registry grid | Storyboard filmstrip |
-| Interactive | Tweak it live (primitive) | Tweak the clip (composition) |
+| Second section | Tweak it live (primitive props) | **Recipes** (task-first installs — we don't have this) |
+| Catalog | Registry grid | Component filmstrip |
+| Install | Ship your first frame | Render queue (CLI steps) |
 | Voice | Cinematic | Studio, technical, ship-focused |
 
-**Words we own:** storyboard, composition, recipe, frame, timeline, clip, render, source you own.
+**Landing section order (ours):** Hero → Recipes → Components → Render queue → CTA. No standalone “tweak it live” section — composition playgrounds live on component docs pages.
 
-**Words we avoid:** cinematic, shimmer, mesh gradient, launch kit, features grid.
+**Words we own:** components, composition, recipe, frame, timeline, clip, render, source you own.
+
+**Words we avoid:** cinematic, shimmer, mesh gradient, launch kit, features grid, “tweak it live”, “ship your first frame”, storyboard (use **components** in UI copy).
 
 ## Landing copy
 
@@ -28,37 +33,36 @@
 New · Composition registry for Remotion
 
 ### Hero H1
-Compositions you own,
-frame by frame.
+Production-ready motion
+for Remotion.
 
 ### Hero sub
-Install social clips, data stories, and reels with the CLI. Every component copies into your repo as source.
+Source you own. Install social clips, data stories, and reels with the CLI.
 
 ### Hero CTA primary
-Browse storyboard → `/docs/components`
+Browse components → `/docs/components`
 
 ### Hero CTA secondary
-Read docs → `/docs`
+Get started → `/docs/installation`
 
-### Section: Tweak the clip
-**H2:** Tweak the clip  
-**Lead:** Drag props on a real composition. Watch the monitor update frame by frame.
-
-### Section: Recipes
+### Section: Recipes (second — unique to us)
 **H2:** Start from a recipe  
 **Lead:** Task-first installs that pull the right scenes and compositions together.
 
-### Section: Storyboard
-**H2:** The storyboard  
-**Lead:** 62 compositions, scenes, and primitives — scrub before you install.
+### Section: Components
+**H2:** Components  
+**Lead:** Scrub clips before you install — compositions, scenes, and primitives in one catalog.
 
-### Section: Ship
-**H2:** Ship your first clip  
-**Lead:** Three commands from empty repo to rendered MP4.
+### Section: Render queue
+**H2:** Render queue  
+**Lead:** Init a project, add a composition, export an MP4 — three CLI steps, no editor required.
 
 ### Closing CTA
 **H2:** Own the source. Ship the clip.  
 **Body:** No runtime dependency. Files land in your project. Render when ready.
+
+### Not on landing
+- No “Tweak it live” section (remocn parallel). Use `/docs/compositions/social-clip` and the components catalog for live props.
 
 ## Do / Don't
 

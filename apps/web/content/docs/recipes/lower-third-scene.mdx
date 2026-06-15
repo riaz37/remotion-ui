@@ -1,30 +1,25 @@
 ---
 title: Lower Third Scene
-description: AI recipe for lower thirds, title cards, and scene overlays.
+description: Lower thirds, title cards, stat cards, and quote overlays.
 ---
 
-# Lower Third Scene
+<InstallCommand name="lower-third-scene" recipe />
 
-Use this when the user wants a reusable scene overlay: speaker name, topic label, title card, stat callout, or quote.
-
-## Install
-
-```bash
-npx remotion-ui@latest add lower-third title-card stat-card quote-card callout-spotlight
-```
-
-## Agent instructions
+## Usage notes
 
 - Use `LowerThird` for speaker or chapter identifiers.
 - Use `TitleCard` for scene openers.
 - Use `StatCard` for one numeric proof point.
 - Use `QuoteCard` or `CalloutSpotlight` when text is the focal point.
 - Reserve layout slots; do not manually stack readable text with arbitrary absolute positioning.
+- Import installed components from local source paths, not from `remotion-ui`.
+
+## Agent notes
+
+- Prefer this recipe when the user wants speaker labels, title cards, or quote overlays.
 
 ## Typical imports
 
-```tsx
-import { LowerThird } from "@/remotion/scenes/lower-third";
+<CodeSnippet label="Imports" code={`import { LowerThird } from "@/remotion/scenes/lower-third";
 import { TitleCard } from "@/remotion/scenes/title-card";
-import { StatCard } from "@/remotion/scenes/stat-card";
-```
+import { StatCard } from "@/remotion/scenes/stat-card";`} />

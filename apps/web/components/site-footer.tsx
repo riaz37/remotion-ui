@@ -17,8 +17,8 @@ export function SiteFooter() {
           <Link href="/docs" className="transition-colors hover:text-fd-foreground">
             Docs
           </Link>
-          <Link href="/docs/atlas" className="transition-colors hover:text-fd-foreground">
-            Atlas
+          <Link href="/docs/components" className="transition-colors hover:text-fd-foreground">
+            Components
           </Link>
           <Link href="/docs/cli" className="transition-colors hover:text-fd-foreground">
             CLI

@@ -1,0 +1,23 @@
+---
+title: Motion Tokens
+description: Shared durations, delays, stagger steps, and Bézier curves.
+---
+
+## Install
+
+<InstallCommand name="motion-tokens" />
+
+Motion tokens centralize timing so primitives and scenes stay consistent across compositions.
+
+<CodeSnippet label="Example" code={`import { DURATION, DELAY, STAGGER, EASING } from "@/remotion/lib/motion-tokens";
+import { enterProgress } from "@/remotion/lib/timing";
+
+// DURATION.fast    ~12 frames at 30fps
+// DURATION.normal  ~24 frames
+// DURATION.slow    ~36 frames
+// STAGGER.normal   8 frames between children
+// EASING.enter     crisp ease-out for entrances
+
+const progress = enterProgress(frame, DELAY.short, DURATION.normal, EASING.enter);`} />
+
+Pair tokens with `springs.ts` for physics-based motion (`spring-in`, `word-highlight`) and `timing.ts` for interpolate helpers.

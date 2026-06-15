@@ -1,0 +1,25 @@
+---
+title: Audio Visualization
+description: Audiogram setup with media-utils.
+---
+
+RemotionUI audiogram components use `@remotion/media-utils` for frame-accurate spectrum data.
+
+## Install
+
+<InstallCommand name="audiogram-scene" />
+
+## Usage
+
+<CodeSnippet label="Example" code={`import { AudiogramScene } from "@/remotion/scenes/audiogram-scene";
+import { staticFile } from "remotion";
+
+<AudiogramScene src={staticFile("podcast.wav")} title="Episode 1" />;`} />
+
+## Tips
+
+- Pass audio `src` as `staticFile()` or a remote URL
+- Use `useWindowedAudioData` via `audio-viz-utils` for custom visualizations
+- When nesting in `<Sequence>`, pass `frame` from parent. Do not call `useCurrentFrame()` in each bar child
+
+See [audiogram-bars](/docs/components/audiogram-bars) and [audiogram-scene](/docs/components/audiogram-scene).

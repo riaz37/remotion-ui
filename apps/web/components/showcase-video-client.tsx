@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getComponentDocPath } from "@/lib/component-doc-path";
 
 export function ShowcaseVideoClient({
   src,
@@ -12,7 +13,7 @@ export function ShowcaseVideoClient({
   mp4Exists: boolean;
 }) {
   const compositionHref = composition
-    ? `/docs/compositions/${composition}`
+    ? getComponentDocPath(composition)
     : undefined;
 
   return (

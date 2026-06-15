@@ -9,10 +9,9 @@ import type { AtlasLane } from "@/lib/atlas";
 
 type AtlasBrowseProps = {
   sections: ComponentSection[];
-  totalComponents: number;
 };
 
-export function AtlasBrowse({ sections, totalComponents }: AtlasBrowseProps) {
+export function AtlasBrowse({ sections }: AtlasBrowseProps) {
   const [filter, setFilter] = useState<AtlasLane | "all">("all");
 
   const visibleSections = useMemo(() => {
@@ -23,13 +22,7 @@ export function AtlasBrowse({ sections, totalComponents }: AtlasBrowseProps) {
   const lanes = Object.keys(ATLAS_LANES) as AtlasLane[];
 
   return (
-    <section className="not-prose mx-auto w-full max-w-[1120px] pb-20 pt-10">
-      <div className="mb-8">
-        <p className="text-sm text-fd-muted-foreground">
-          {totalComponents} clips · scroll to browse · hover to scrub
-        </p>
-      </div>
-
+    <section className="not-prose mx-auto w-full max-w-[1120px] pb-20 pt-6">
       <div className="mb-10 flex flex-wrap gap-4 border-b border-[var(--bay-border)] pb-4">
         <FilterTab
           active={filter === "all"}

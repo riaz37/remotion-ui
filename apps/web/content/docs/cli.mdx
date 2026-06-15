@@ -23,75 +23,56 @@ description: remotion-ui commands for init, add, doctor, recipes, and custom reg
 
 ## Diagnose setup
 
-```bash
-npx remotion-ui doctor
-```
+<CommandRail label="Doctor" command="npx remotion-ui@latest doctor" />
 
 Checks `remotion-ui.json`, `tsconfig` path aliases, install directories, and Remotion version alignment.
 
 ## Existing Remotion project
 
-```bash
-cd your-remotion-app
-npx remotion-ui init --existing
-npx remotion-ui add social-clip
-```
+<CodeSnippet label="Existing project" code={`cd your-remotion-app
+npx remotion-ui@latest init --existing
+npx remotion-ui@latest add social-clip`} />
 
 ## Starter projects
 
 Ship a social or podcast clip in one session:
 
-```bash
-npx remotion-ui init my-reel --starter social
+<CodeSnippet label="Social starter" code={`npx remotion-ui@latest init my-reel --starter social
 cd my-reel && npm run dev
-npx remotion render src/Root.tsx SocialClip out/social-clip.mp4
-```
+npx remotion render src/Root.tsx SocialClip out/social-clip.mp4`} />
 
-```bash
-npx remotion-ui init my-podcast --starter podcast
+<CodeSnippet label="Podcast starter" code={`npx remotion-ui@latest init my-podcast --starter podcast
 cd my-podcast && npm run dev
-npx remotion render src/Root.tsx PodcastClip out/podcast-clip.mp4
-```
+npx remotion render src/Root.tsx PodcastClip out/podcast-clip.mp4`} />
 
 Use `--starter default` (or omit) for the blank Welcome composition template.
 
 ## Recipe install
 
-```bash
-npx remotion-ui add --recipe captioned-social-video
-```
+<InstallCommand name="captioned-social-video" recipe />
 
 Recipes are defined in [`/ai/recipes.json`](/ai/recipes.json). Browse goals at [Recipe wizard](/docs/ai/start).
 
-## Agent / script output
+## Script output
 
-```bash
-npx remotion-ui doctor --json
-npx remotion-ui search -q social --json
-npx remotion-ui view social-clip --json
-npx remotion-ui list --json
-```
+<CodeSnippet label="JSON output" code={`npx remotion-ui@latest doctor --json
+npx remotion-ui@latest search -q social --json
+npx remotion-ui@latest view social-clip --json
+npx remotion-ui@latest list --json`} />
 
 ## Workflow: staying up to date
 
-```bash
-# Check if your local copy drifted
-npx remotion-ui diff fade-in
+<CommandRail label="Diff" command="npx remotion-ui@latest diff fade-in" />
 
-# Pull latest from registry
-npx remotion-ui update fade-in
-```
+<CommandRail label="Update" command="npx remotion-ui@latest update fade-in" />
 
 ## Custom registry
 
-```bash
-npx remotion-ui build ./registry.json -o ./public/r
-```
+<CommandRail label="Build registry" command="npx remotion-ui@latest build ./registry.json -o ./public/r" />
 
 ## Config: remotion-ui.json
 
-```json
-{
+<CodeSnippet label="Config" code={`{
   "preset": "default",
   "aliases": {
     "primitives": "@/remotion/primitives",
@@ -100,5 +81,4 @@ npx remotion-ui build ./registry.json -o ./public/r
     "lib": "@/remotion/lib",
     "hooks": "@/remotion/hooks"
   }
-}
-```
+}`} />

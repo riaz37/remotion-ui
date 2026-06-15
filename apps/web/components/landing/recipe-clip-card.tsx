@@ -64,7 +64,7 @@ export function RecipeClipCard({
         <p className="mt-2 line-clamp-2 font-[family-name:var(--font-mono)] text-[0.625rem] leading-relaxed text-fd-muted-foreground">
           {formatComponentChain(components)}
         </p>
-        <p className="mt-2 truncate font-[family-name:var(--font-mono)] text-[0.6875rem] text-[var(--bay-phosphor)]">
+        <p className="mt-1 truncate font-[family-name:var(--font-mono)] text-[0.6875rem] text-fd-muted-foreground">
           {installCommand}
         </p>
       </div>

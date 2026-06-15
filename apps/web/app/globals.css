@@ -245,13 +245,22 @@ h3 {
 }
 
 .prose pre {
-  border-radius: var(--radius-md);
-  border: 1px solid var(--bay-border-strong);
-  background: var(--bay-surface-raised);
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 0;
 }
 
 .prose blockquote {
-  border-left: 2px solid var(--bay-phosphor);
-  border-radius: 0;
-  background: transparent;
+  border: 1px solid var(--bay-border);
+  border-radius: var(--radius-md);
+  background: var(--bay-surface);
+}
+
+.docs-section-heading {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: -0.025em;
 }

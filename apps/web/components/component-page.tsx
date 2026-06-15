@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ComponentType, ReactNode } from "react";
+import { CodeSnippet } from "@/components/docs/code-snippet";
 import { SceneMonitorPreview } from "@/components/docs/scene-monitor-preview";
 import { ATLAS_LANES, getAtlasMeta } from "@/lib/atlas";
 import { getComponentDocPath } from "@/lib/component-doc-path";
@@ -122,76 +123,52 @@ export function ComponentPage({
       )}
 
       {reference?.note ? (
-        <blockquote className="my-6 border-l-2 border-[var(--bay-phosphor)] pl-4 text-sm text-fd-muted-foreground">
+        <blockquote className="my-6 rounded-md border border-[var(--bay-border)] bg-[var(--bay-surface)] px-4 py-3 text-sm text-fd-muted-foreground">
           {reference.note}
         </blockquote>
       ) : null}
 
       {reference ? (
         <>
-          <div className="not-prose my-8 overflow-hidden rounded-md border border-[var(--bay-border)] border-l-2 border-l-[var(--bay-phosphor)] bg-[var(--bay-surface)] p-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h2 className="font-[family-name:var(--font-display)] text-lg font-medium tracking-tight">
-                  AI usage
-                </h2>
-                <p className="mt-1 text-sm text-fd-muted-foreground">
-                  Install first, then import the copied source component locally.
-                </p>
-              </div>
-              <Link
-                href="/docs/ai"
-                className="rounded-md border border-[var(--bay-border)] px-3 py-1.5 text-sm transition-colors hover:border-[var(--bay-border-strong)]"
-              >
-                AI guide
-              </Link>
-            </div>
-            <div className="mt-4 grid gap-3 text-sm md:grid-cols-2">
-              <div className="rounded-md border border-[var(--bay-border)] bg-[var(--bay-surface-raised)] p-3">
-                <p className="mb-2 font-medium">Install</p>
-                <code className="font-[family-name:var(--font-mono)] text-xs text-fd-muted-foreground">
-                  npx remotion-ui@latest add {name}
-                </code>
-              </div>
-              <div className="rounded-md border border-[var(--bay-border)] bg-[var(--bay-surface-raised)] p-3">
-                <p className="mb-2 font-medium">Import after install</p>
-                <code className="font-[family-name:var(--font-mono)] text-xs text-fd-muted-foreground">
-                  {getAiImportPath(name)}
-                </code>
-              </div>
-            </div>
-            <ul className="mt-4 space-y-1.5 text-sm text-fd-muted-foreground">
-              <li>Use when: {getAiUseCase(name, reference.category, atlas?.lane)}.</li>
-              <li>
-                Customize: {getAiCustomizationKnobs(reference.props)}.
-              </li>
-              <li>
-                Rule: do not import this component from the{" "}
-                <code className="font-[family-name:var(--font-mono)]">
-                  remotion-ui
-                </code>{" "}
-                npm package; it is copied into your project.
-              </li>
-            </ul>
+          <h2 className="docs-section-heading mt-10 scroll-m-20">
+            Agent notes
+          </h2>
+          <p className="mt-2 text-sm text-fd-muted-foreground">
+            Install first, then import the copied source component locally.{" "}
+            <Link href="/docs/ai" className="link-phosphor">
+              AI guide →
+            </Link>
+          </p>
+          <div className="mt-4">
+            <CodeSnippet label="Import" code={getAiImportPath(name)} />
           </div>
+          <ul className="mt-4 space-y-1.5 text-sm text-fd-muted-foreground">
+            <li>Use when: {getAiUseCase(name, reference.category, atlas?.lane)}.</li>
+            <li>
+              Customize: {getAiCustomizationKnobs(reference.props)}.
+            </li>
+            <li>
+              Rule: do not import this component from the{" "}
+              <code className="font-[family-name:var(--font-mono)]">
+                remotion-ui
+              </code>{" "}
+              npm package; it is copied into your project.
+            </li>
+          </ul>
 
-          <h2 className="mt-10 scroll-m-20 text-xl font-semibold tracking-tight">
+          <h2 className="docs-section-heading mt-10 scroll-m-20">
             Usage
           </h2>
-          <pre className="overflow-x-auto rounded-md border border-[var(--bay-border-strong)] bg-[var(--bay-surface-raised)] p-4 text-sm">
-            <code className="font-[family-name:var(--font-mono)] leading-relaxed">
-              {reference.usage}
-            </code>
-          </pre>
+          <CodeSnippet label="Example" code={reference.usage} />
 
-          <h2 className="mt-10 scroll-m-20 text-xl font-semibold tracking-tight">
+          <h2 className="docs-section-heading mt-10 scroll-m-20">
             API Reference
           </h2>
           <PropsTable props={reference.props} />
 
           {reference.related && reference.related.length > 0 ? (
             <>
-              <h2 className="mt-10 scroll-m-20 text-xl font-semibold tracking-tight">
+              <h2 className="docs-section-heading mt-10 scroll-m-20">
                 Related
               </h2>
               <div className="not-prose flex flex-wrap gap-2">

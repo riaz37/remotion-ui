@@ -1,42 +1,17 @@
 import Link from "next/link";
 import { siteConfig } from "@/lib/site-config";
 
+/** Docs sidebar footer — external links only; navigation lives in the page tree. */
 export function SidebarFooter() {
   return (
     <div className="space-y-3 border-t border-[var(--bay-border)] px-2 py-4 text-xs text-fd-muted-foreground">
       <div className="flex flex-wrap gap-2">
         <Link
-          href="/docs/installation"
+          href="/"
           className="rounded-md px-2 py-1 transition-colors hover:bg-[var(--bay-surface-raised)] hover:text-fd-foreground"
         >
-          Install
+          Home
         </Link>
-        <Link
-          href="/docs/components"
-          className="rounded-md px-2 py-1 transition-colors hover:bg-[var(--bay-surface-raised)] hover:text-fd-foreground"
-        >
-          Storyboard
-        </Link>
-        <Link
-          href="/docs/recipes"
-          className="rounded-md px-2 py-1 transition-colors hover:bg-[var(--bay-surface-raised)] hover:text-fd-foreground"
-        >
-          Recipes
-        </Link>
-        <Link
-          href="/docs/atlas"
-          className="rounded-md px-2 py-1 transition-colors hover:bg-[var(--bay-surface-raised)] hover:text-fd-foreground"
-        >
-          Atlas
-        </Link>
-        <a
-          href={siteConfig.githubUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="rounded-md px-2 py-1 transition-colors hover:bg-[var(--bay-surface-raised)] hover:text-fd-foreground"
-        >
-          GitHub
-        </a>
       </div>
       <a
         href={siteConfig.npmUrl}

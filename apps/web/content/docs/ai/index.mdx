@@ -3,9 +3,7 @@ title: AI Usage
 description: How coding agents should use RemotionUI with Remotion.
 ---
 
-# AI Usage
-
-RemotionUI is the **component layer for Remotion**: production-ready source you install with the CLI. Use [Remotion](https://www.remotion.dev/docs) for framework fundamentals, rendering, Studio, Player, and APIs. Use RemotionUI when an agent needs ready-made components for captions, charts, scenes, transitions, and composition templates.
+RemotionUI is the **component layer for Remotion**: production-ready source you install with the CLI. Use [Remotion](https://www.remotion.dev/docs) for framework fundamentals, rendering, Studio, Player, and APIs. Use RemotionUI when you need ready-made components for captions, charts, scenes, transitions, and composition templates.
 
 ## Agent workflow
 
@@ -15,15 +13,12 @@ RemotionUI is the **component layer for Remotion**: production-ready source you 
 4. Customize the copied files directly.
 5. Use Remotion frame APIs for motion.
 
-```bash
-npx remotion-ui@latest search -q caption
-npx remotion-ui@latest add caption-highlight lower-third
-```
+<SearchCommand query="caption" />
 
-```tsx
-import { CaptionHighlight } from "@/remotion/primitives/caption-highlight";
-import { LowerThird } from "@/remotion/scenes/lower-third";
-```
+<InstallCommand name="caption-highlight lower-third" />
+
+<CodeSnippet code={`import { CaptionHighlight } from "@/remotion/primitives/caption-highlight";
+import { LowerThird } from "@/remotion/scenes/lower-third";`} />
 
 <Callout type="warn">
   Do not import RemotionUI components from the npm package. The npm package is the CLI only. Components are installed as source files into the user's project.
@@ -51,7 +46,7 @@ import { LowerThird } from "@/remotion/scenes/lower-third";
 Not sure which components to install? Use the [Recipe wizard](/docs/ai/start) to pick a goal and copy the install command.
 
 <Cards>
-  <Card title="Captioned social video" description="Build a vertical clip with captions, audio visuals, and CTA." href="/docs/recipes/captioned-social-video" />
-  <Card title="Data story" description="Build a chart-led video with metrics and timeline steps." href="/docs/recipes/data-story" />
-  <Card title="Podcast clip" description="Build an audio-first clip with waveform and synced captions." href="/docs/recipes/podcast-clip" />
+  <Card title="Captioned Social Video" description="Build a vertical clip with captions, audio visuals, and CTA." href="/docs/recipes/captioned-social-video" />
+  <Card title="Data Story" description="Build a chart-led video with metrics and timeline steps." href="/docs/recipes/data-story" />
+  <Card title="Podcast Clip" description="Build an audio-first clip with waveform and synced captions." href="/docs/recipes/podcast-clip" />
 </Cards>

@@ -1,33 +1,28 @@
 ---
 title: Captioned Social Video
-description: AI recipe for building a vertical captioned Remotion clip with RemotionUI.
+description: Vertical captioned clip with hook text, synced captions, audio visuals, and CTA.
 ---
 
-# Captioned Social Video
-
-Use this when the user wants a TikTok/Reels/Shorts style clip with hook text, synced captions, audio visuals, and an ending CTA.
-
-## Install
-
-```bash
-npx remotion-ui@latest add --recipe captioned-social-video
-```
+<InstallCommand name="captioned-social-video" recipe />
 
 <RenderCommand compositionId="SocialClip" />
 
 <ShowcaseVideo src="/showcases/social-clip.mp4" composition="social-clip" title="Social clip showcase" />
 
-## Agent instructions
+## Usage notes
 
-- Use `SocialClip` for the full 9:16 composition when the user wants a complete template.
+- Use `SocialClip` for the full 9:16 composition.
 - Use `CaptionScene` plus `CaptionHighlight` when composing a custom clip manually.
-- Ask for or generate Remotion `Caption[]` data before wiring synced captions.
+- Generate or import Remotion `Caption[]` data before wiring synced captions.
 - Import installed components from local source paths, not from `remotion-ui`.
+
+## Agent notes
+
+- Prefer this recipe when the user asks for a vertical social clip with captions.
+- Ask for or generate caption data before wiring synced captions.
 
 ## Typical imports
 
-```tsx
-import { SocialClip } from "@/compositions/social-clip";
+<CodeSnippet label="Imports" code={`import { SocialClip } from "@/compositions/social-clip";
 import { CaptionScene } from "@/remotion/scenes/caption-scene";
-import { CaptionHighlight } from "@/remotion/primitives/caption-highlight";
-```
+import { CaptionHighlight } from "@/remotion/primitives/caption-highlight";`} />

@@ -67,8 +67,8 @@ function StoryboardClip({ slug }: { slug: string }) {
 export function StoryboardShowcase() {
   return (
     <LandingSection
-      title="The storyboard"
-      lead="62 compositions, scenes, and primitives — scrub before you install."
+      title="Components"
+      lead="Scrub clips before you install — compositions, scenes, and primitives in one catalog."
       layout="wide"
       action={{ href: "/docs/components", label: "Browse all →" }}
     >

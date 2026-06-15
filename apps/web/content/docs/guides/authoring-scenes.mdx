@@ -1,0 +1,52 @@
+---
+title: Authoring Scenes
+description: Patterns for stagger, sequencing, and responsive layout.
+---
+
+<InstallCommand name="stagger-children layout motion-tokens" />
+
+## Stagger
+
+Use `stagger-children` to offset delays automatically:
+
+<CodeSnippet label="Stagger children" code={`import { STAGGER } from "@/remotion/lib/motion-tokens";
+
+<StaggerChildren staggerInFrames={STAGGER.normal}>
+  {items.map((item) => (
+    <FadeIn key={item} durationInFrames={20}>
+      <span>{item}</span>
+    </FadeIn>
+  ))}
+</StaggerChildren>`} />
+
+For per-item control in custom components, use the `use-stagger` hook:
+
+<CodeSnippet label="use-stagger" code={`import { useStagger } from "@/remotion/hooks/use-stagger";
+
+const delayInFrames = useStagger({ index, staggerInFrames: 8 });`} />
+
+## Responsive layout
+
+Scenes use `layout.ts` helpers aligned with video-layout guidance. Never hardcode 1920×1080:
+
+<CodeSnippet label="Layout helpers" code={`import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
+
+const safeArea = getSafeAreaPadding({ width, height });
+// 80px sides / 100px vertical at 1080p reference
+
+const headline = scaleFont(84, width);  // main message at 1080p baseline
+const supporting = scaleFont(44, width);`} />
+
+## Sequencing scenes
+
+Chain scenes in a composition with `TransitionSeries`, or use `<Sequence>` with `premountFor` so content is ready before it appears:
+
+<CodeSnippet label="Sequence" code={`import { Sequence, useVideoConfig } from "remotion";
+
+const { fps } = useVideoConfig();
+
+<Sequence from={fps} durationInFrames={2 * fps} premountFor={fps}>
+  <Title />
+</Sequence>`} />
+
+Reveal crowded content **over time** instead of fitting everything in one frame.

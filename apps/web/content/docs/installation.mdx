@@ -7,23 +7,17 @@ description: Initialize a Remotion project with RemotionUI.
 
 <InstallationSteps />
 
-```bash
-cd my-video
-npm run dev
-```
+<CommandRail label="Dev server" command="cd my-video && npm run dev" />
 
 Open the Remotion Studio URL from your terminal, then add your first component:
 
-```bash
-npx remotion-ui@latest add fade-in
-```
+<InstallCommand name="fade-in" />
 
 ## Existing project
 
 Add a `remotion-ui.json` to your project root:
 
-```json
-{
+<CodeSnippet label="Config" code={`{
   "preset": "default",
   "aliases": {
     "primitives": "@/remotion/primitives",
@@ -32,15 +26,13 @@ Add a `remotion-ui.json` to your project root:
     "lib": "@/remotion/lib",
     "hooks": "@/remotion/hooks"
   }
-}
-```
+}`} />
 
 Then add components:
 
-```bash
-npx remotion-ui@latest add fade-in
-npx remotion-ui@latest add lower-third
-```
+<InstallCommand name="fade-in" />
+
+<InstallCommand name="lower-third" label="Add another" />
 
 <Callout type="warn">
   Run `npx remotion-ui@latest add` from your project root so the CLI can read `remotion-ui.json` and resolve aliases.
@@ -49,7 +41,7 @@ npx remotion-ui@latest add lower-third
 ## Next steps
 
 - [CLI Reference](/docs/cli): `diff`, `update`, search, and custom registry `build`
-- [Authoring scenes](/docs/advanced/authoring-scenes): layout patterns for multi-element scenes
-- [Primitives](/docs/primitives/fade-in): browse all motion building blocks
+- [Authoring scenes](/docs/guides/authoring-scenes): layout patterns for multi-element scenes
+- [Components](/docs/components): browse all motion building blocks
 
 If RemotionUI saves you time, [star the repo on GitHub](https://github.com/riaz37/remotion-ui) — it helps a lot.

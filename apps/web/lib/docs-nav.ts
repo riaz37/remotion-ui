@@ -35,40 +35,23 @@ function folderChildren(folder: PageTree.Folder): ComponentLink[] {
     }));
 }
 
-const sectionFolders = [
-  "primitives",
-  "signals",
-  "spatial",
-  "vectors",
-  "cuts",
-  "scenes",
-  "compositions",
-] as const;
-
 export function getComponentSections(): ComponentSection[] {
-  const sections: ComponentSection[] = [];
-
   for (const child of source.pageTree.children) {
     if (!isFolder(child)) continue;
     const folderLabel =
       typeof child.name === "string" ? child.name : String(child.index ?? "");
-    const folderName = folderLabel.toLowerCase();
-    if (
-      !sectionFolders.includes(
-        folderName as (typeof sectionFolders)[number],
-      )
-    ) {
-      continue;
-    }
+    if (folderLabel.toLowerCase() !== "components") continue;
 
-    sections.push({
-      title: folderLabel,
-      basePath: `/docs/${folderName}`,
-      items: folderChildren(child),
-    });
+    return [
+      {
+        title: "Components",
+        basePath: "/docs/components",
+        items: folderChildren(child),
+      },
+    ];
   }
 
-  return sections;
+  return [];
 }
 
 export function getAtlasSections(): ComponentSection[] {
@@ -82,7 +65,7 @@ export function getAtlasSections(): ComponentSection[] {
     const meta = ATLAS_LANES[lane];
     sections.push({
       title: meta.label,
-      basePath: `/docs/atlas/${lane}`,
+      basePath: "/docs/components",
       lane,
       items: items.map((name) => ({
         name,

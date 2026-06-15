@@ -13,7 +13,7 @@ export function CopyButton({ text }: { text: string }) {
         setCopied(true);
         window.setTimeout(() => setCopied(false), 2000);
       }}
-      className="inline-flex items-center gap-1.5 rounded-md border border-fd-border bg-fd-background px-2.5 py-1 text-xs font-medium text-fd-muted-foreground transition-colors hover:bg-fd-muted hover:text-fd-foreground"
+      className="inline-flex items-center gap-1.5 rounded-md border border-[var(--bay-border)] bg-[var(--bay-surface-raised)] px-2.5 py-1 text-xs font-medium text-fd-muted-foreground transition-colors hover:bg-[var(--bay-surface)] hover:text-fd-foreground"
       aria-label="Copy to clipboard"
     >
       {copied ? (

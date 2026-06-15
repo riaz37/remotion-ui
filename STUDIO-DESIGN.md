@@ -86,7 +86,7 @@ Section divider between landing sections.
 
 ### FilmstripScroll
 
-Horizontal scroll rail for recipe cards, storyboard clips, and catalog lanes.
+Horizontal scroll rail for recipe cards, component clips, and catalog lanes.
 
 - Edge fades (48px) when content overflows left/right
 - Prev/next phosphor chevron buttons when scrollable
@@ -99,7 +99,7 @@ Horizontal scroll rail for recipe cards, storyboard clips, and catalog lanes.
 |---------|------------|
 | Docs intro (`/docs`) | `DocsIntro`, `DocsBinCard`, `RenderQueueStrip`, `InitCommand` |
 | Recipes hub | `RecipesHub`, `RecipeClipCard`, `FilmstripScroll` |
-| Storyboard (`/docs/components`) | `DocsPageHeader`, `AtlasBrowse`, `StoryboardTrackRow` |
+| Components (`/docs/components`) | `DocsPageHeader`, `AtlasBrowse`, `StoryboardTrackRow` |
 | Installation | `InstallationSteps`, `RenderQueueStrip` |
 | Composition reference | `ProgramMonitorWorkspace` via `PropsPlayground` |
 | Scene/primitive reference | `SceneMonitorPreview` (`ScaledPlayerStage`) |

@@ -5,7 +5,6 @@ import { HeroLoopPreview } from "@/components/previews/hero-loop";
 import { CompactCommandRail } from "@/components/studio/command-rail";
 import { EditBayBackdrop } from "@/components/studio/edit-bay-backdrop";
 import { InspectorBin } from "@/components/studio/inspector-bin";
-import { PerforationRule } from "@/components/studio/perforation-rule";
 import { StudioPlayerPanel } from "@/components/studio/studio-player-panel";
 
 const HERO_INSTALL = "npx remotion-ui@latest add social-clip";
@@ -16,7 +15,6 @@ export function StudioHero() {
   return (
     <section className="relative flex min-h-[85svh] flex-col overflow-hidden border-b border-[var(--bay-border)]">
       <EditBayBackdrop />
-      <PerforationRule />
 
       <div className="relative mx-auto flex w-full max-w-[1280px] flex-1 flex-col px-6 py-10 lg:py-14">
         <div className="flex flex-1 flex-col gap-8 lg:flex-row lg:items-center lg:gap-12">
@@ -37,14 +35,14 @@ export function StudioHero() {
           <div className="order-2 lg:order-1 lg:self-center">
             <InspectorBin label="Composition registry">
               <h1 className="text-display-xl">
-                Compositions you own,
+                Production-ready motion
                 <span className="block text-fd-muted-foreground">
-                  frame by frame.
+                  for Remotion.
                 </span>
               </h1>
               <p className="mt-5 text-[0.9375rem] leading-relaxed text-fd-muted-foreground">
-                Install social clips, data stories, and reels with the CLI. Every
-                component copies into your repo as source.
+                Source you own. Install social clips, data stories, and reels
+                with the CLI — every component copies into your repo.
               </p>
               <div className="mt-7">
                 <CompactCommandRail command={HERO_INSTALL} />
@@ -54,21 +52,19 @@ export function StudioHero() {
                   href="/docs/components"
                   className="inline-flex items-center rounded-sm border border-[var(--bay-border-strong)] bg-[var(--bay-surface-raised)] px-4 py-2.5 text-sm font-medium text-fd-foreground transition-colors hover:border-[var(--bay-phosphor)]"
                 >
-                  Browse storyboard
+                  Browse components
                 </Link>
                 <Link
-                  href="/docs"
+                  href="/docs/installation"
                   className="link-phosphor inline-flex items-center px-1 py-2.5 text-sm font-medium"
                 >
-                  Read docs
+                  Get started
                 </Link>
               </div>
             </InspectorBin>
           </div>
         </div>
       </div>
-
-      <PerforationRule />
     </section>
   );
 }
