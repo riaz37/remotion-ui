@@ -1,7 +1,6 @@
+import { DocsPageHeader } from "@/components/docs/docs-page-header";
 import {
-  DocsDescription,
   DocsPage,
-  DocsTitle,
 } from "fumadocs-ui/layouts/docs/page";
 import type { Metadata } from "next";
 import { AtlasBrowse } from "@/components/atlas-browse";
@@ -52,18 +51,21 @@ export default function ComponentsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
       />
-      <div className="not-prose -mx-4 border-b border-[var(--bay-border)] px-4 pb-10 md:-mx-6 md:px-6 xl:-mx-8 xl:px-8">
-        <DocsTitle className="text-display-lg font-medium tracking-tight">
-          Storyboard
-        </DocsTitle>
-        <DocsDescription className="mt-3 max-w-xl text-[0.9375rem]">
-          {totalComponents} compositions, scenes, and primitives — scrub before
-          you install with{" "}
-          <code className="font-[family-name:var(--font-mono)] text-sm">
-            npx remotion-ui add
-          </code>
-          .
-        </DocsDescription>
+      <div className="-mx-4 px-4 md:-mx-6 md:px-6 xl:-mx-8 xl:px-8">
+        <DocsPageHeader
+          title="Storyboard"
+          lead={
+            <>
+              {totalComponents} compositions, scenes, and primitives — scrub before
+              you install with{" "}
+              <code className="font-[family-name:var(--font-mono)] text-sm">
+                npx remotion-ui add
+              </code>
+              .
+            </>
+          }
+          action={{ href: "/docs/atlas", label: "Atlas guide →" }}
+        />
       </div>
       <AtlasBrowse sections={sections} totalComponents={totalComponents} />
     </DocsPage>

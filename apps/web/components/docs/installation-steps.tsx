@@ -1,5 +1,5 @@
-import { LandingSection } from "@/components/landing/landing-section";
 import { RenderQueueStrip } from "@/components/landing/render-queue-strip";
+import { InitCommand } from "@/components/install-command";
 
 const STEPS = [
   {
@@ -11,7 +11,7 @@ const STEPS = [
   {
     step: 2,
     label: "Add composition",
-    command: "npx remotion-ui@latest add social-clip",
+    command: "npx remotion-ui@latest add fade-in",
   },
   {
     step: 3,
@@ -20,14 +20,11 @@ const STEPS = [
   },
 ] as const;
 
-export function InstallStrip() {
+export function InstallationSteps() {
   return (
-    <LandingSection
-      title="Ship your first clip"
-      lead="Three commands from empty repo to rendered MP4."
-      layout="narrow"
-    >
+    <div className="not-prose my-8 space-y-8">
+      <InitCommand />
       <RenderQueueStrip steps={STEPS} outputPath="out/social-clip.mp4" />
-    </LandingSection>
+    </div>
   );
 }

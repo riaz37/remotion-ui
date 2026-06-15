@@ -93,6 +93,20 @@ Horizontal scroll rail for recipe cards, storyboard clips, and catalog lanes.
 - Keyboard: focus rail, use arrow keys
 - Negative margin breaks out of content column; track padding aligns first card with headline
 
+## Docs surfaces
+
+| Surface | Components |
+|---------|------------|
+| Docs intro (`/docs`) | `DocsIntro`, `DocsBinCard`, `RenderQueueStrip`, `InitCommand` |
+| Recipes hub | `RecipesHub`, `RecipeClipCard`, `FilmstripScroll` |
+| Storyboard (`/docs/components`) | `DocsPageHeader`, `AtlasBrowse`, `StoryboardTrackRow` |
+| Installation | `InstallationSteps`, `RenderQueueStrip` |
+| Composition reference | `ProgramMonitorWorkspace` via `PropsPlayground` |
+| Scene/primitive reference | `SceneMonitorPreview` (`ScaledPlayerStage`) |
+| Shared chrome | `DocsPageHeader`, `DocsBinCard`, bay tokens in `globals.css` |
+
+Hub pages use React wrappers in MDX — no mass MDX edits. Sidebar IA unchanged; visual polish only via Fumadocs CSS overrides.
+
 ## Lane color rules
 
 - `laneAccent`: `oklch(0.55 0.06 ${hue})` — stripe and icon only

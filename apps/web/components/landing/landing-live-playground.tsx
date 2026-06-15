@@ -11,10 +11,8 @@ import {
 import { getComponentReference } from "@/lib/component-reference";
 import { getCompositionPlaygroundMeta } from "@/lib/composition-playground";
 import { siteConfig } from "@/lib/site-config";
-import { InspectorPanel } from "@/components/studio/inspector-panel";
-import { StudioPanel } from "@/components/studio/studio-panel";
-import { RemotionPreview } from "@/components/remotion-preview";
-import { PerforationRule } from "@/components/studio/perforation-rule";
+import { ProgramMonitorWorkspace } from "@/components/studio/program-monitor-workspace";
+import { LandingSection } from "@/components/landing/landing-section";
 
 const BASE_PROPS = {
   audioSrc: DEMO_AUDIO_SRC,
@@ -76,43 +74,23 @@ ${propLines}
   });
 
   return (
-    <section className="border-b border-[var(--bay-border)] py-[120px]">
-      <div className="mx-auto max-w-[1120px] px-6">
-        <PerforationRule className="mb-16" />
-        <div className="max-w-xl">
-          <h2 className="text-display-lg">Tweak the clip</h2>
-          <p className="mt-3 text-[0.9375rem] leading-relaxed text-fd-muted-foreground">
-            Drag props on a real composition. Watch the monitor update frame by
-            frame.
-          </p>
-        </div>
-        <div className="mt-12">
-          <InspectorPanel
-            fields={fields}
-            usageSnippet={usageSnippet}
-            preview={
-              <StudioPanel
-                label="social-clip"
-                aspectRatio="9 / 16"
-                fps={30}
-                width={meta.previewWidth}
-                height={meta.previewHeight}
-                durationInFrames={meta.durationInFrames}
-              >
-                <RemotionPreview
-                  component={
-                    SocialClip as ComponentType<Record<string, unknown>>
-                  }
-                  durationInFrames={meta.durationInFrames}
-                  width={meta.previewWidth}
-                  height={meta.previewHeight}
-                  inputProps={inputProps}
-                />
-              </StudioPanel>
-            }
-          />
-        </div>
-      </div>
-    </section>
+    <LandingSection
+      title="Tweak the clip"
+      lead="Drag props on a real composition. Watch the monitor update frame by frame."
+      layout="wide"
+      showTopPerforation={false}
+    >
+      <ProgramMonitorWorkspace
+        label="social-clip"
+        component={SocialClip as ComponentType<Record<string, unknown>>}
+        durationInFrames={meta.durationInFrames}
+        fps={30}
+        width={meta.previewWidth}
+        height={meta.previewHeight}
+        inputProps={inputProps}
+        fields={fields}
+        usageSnippet={usageSnippet}
+      />
+    </LandingSection>
   );
 }
