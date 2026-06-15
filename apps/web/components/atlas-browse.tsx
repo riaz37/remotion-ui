@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useMemo, useState } from "react";
 import { ComponentCard } from "@/components/component-card";
 import { FilmstripScroll } from "@/components/studio/filmstrip-scroll";
@@ -25,18 +24,10 @@ export function AtlasBrowse({ sections, totalComponents }: AtlasBrowseProps) {
 
   return (
     <section className="not-prose mx-auto w-full max-w-[1120px] pb-20 pt-10">
-      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-sm text-fd-muted-foreground">
-            {totalComponents} clips · scroll to browse · hover to scrub
-          </p>
-        </div>
-        <Link
-          href="/docs/atlas"
-          className="link-phosphor text-sm font-medium"
-        >
-          Atlas guide →
-        </Link>
+      <div className="mb-8">
+        <p className="text-sm text-fd-muted-foreground">
+          {totalComponents} clips · scroll to browse · hover to scrub
+        </p>
       </div>
 
       <div className="mb-10 flex flex-wrap gap-4 border-b border-[var(--bay-border)] pb-4">
@@ -61,10 +52,12 @@ export function AtlasBrowse({ sections, totalComponents }: AtlasBrowseProps) {
             <h3 className="font-[family-name:var(--font-display)] text-xl font-medium tracking-tight">
               {section.title}
             </h3>
-            <p className="mt-1 text-sm text-fd-muted-foreground">
-              {ATLAS_LANES[section.lane!].description} ·{" "}
-              {section.items.length} components
-            </p>
+            {section.lane ? (
+              <p className="mt-1 text-sm text-fd-muted-foreground">
+                {ATLAS_LANES[section.lane].description} ·{" "}
+                {section.items.length} components
+              </p>
+            ) : null}
           </div>
           <FilmstripScroll>
             {section.items.map((item) => (

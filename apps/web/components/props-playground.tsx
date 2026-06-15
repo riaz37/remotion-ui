@@ -3,9 +3,10 @@
 import type { ComponentType } from "react";
 import { useMemo, useState } from "react";
 import type { PropDefinition } from "@/lib/component-reference";
-import { InspectorPanel } from "./studio/inspector-panel";
-import { StudioPanel } from "./studio/studio-panel";
-import { RemotionPreview } from "./remotion-preview";
+import {
+  ProgramMonitorWorkspace,
+  type InspectorField,
+} from "./studio/program-monitor-workspace";
 
 type PropsPlaygroundProps = {
   name: string;
@@ -81,10 +82,7 @@ ${propLines || "  {...yourProps}"}
 />`;
   }, [editablePropNames, name, values]);
 
-  const previewAspect = `${previewWidth} / ${previewHeight}`;
-  const isPortrait = previewHeight > previewWidth;
-
-  const fields = editableProps.map((prop) => ({
+  const fields: InspectorField[] = editableProps.map((prop) => ({
     name: prop.name,
     value: values[prop.name] ?? "",
     onChange: (value: string) =>
@@ -93,32 +91,16 @@ ${propLines || "  {...yourProps}"}
   }));
 
   return (
-    <InspectorPanel
+    <ProgramMonitorWorkspace
+      label={name}
+      component={component}
+      durationInFrames={durationInFrames}
+      fps={30}
+      width={previewWidth}
+      height={previewHeight}
+      inputProps={inputProps}
       fields={fields}
       usageSnippet={usageSnippet}
-      className={`mb-8 ${isPortrait ? "" : ""}`}
-      preview={
-        <div
-          className={`mb-8 lg:mb-0 ${isPortrait ? "w-72 max-w-full lg:justify-self-end" : ""}`}
-        >
-          <StudioPanel
-            label={name}
-            aspectRatio={previewAspect}
-            fps={30}
-            width={previewWidth}
-            height={previewHeight}
-            durationInFrames={durationInFrames}
-          >
-            <RemotionPreview
-              component={component}
-              durationInFrames={durationInFrames}
-              width={previewWidth}
-              height={previewHeight}
-              inputProps={inputProps}
-            />
-          </StudioPanel>
-        </div>
-      }
     />
   );
 }

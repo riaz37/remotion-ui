@@ -9,6 +9,7 @@ type StudioPanelProps = {
   height?: number;
   durationInFrames?: number;
   showTimecode?: boolean;
+  interactiveTimecode?: boolean;
   currentFrame?: number;
   onSeek?: (frame: number) => void;
   markers?: number[];
@@ -24,6 +25,7 @@ export function StudioPanel({
   height,
   durationInFrames,
   showTimecode = false,
+  interactiveTimecode = false,
   currentFrame,
   onSeek,
   markers,
@@ -56,6 +58,7 @@ export function StudioPanel({
           currentFrame={currentFrame}
           onSeek={onSeek}
           markers={markers}
+          interactive={interactiveTimecode}
         />
       ) : null}
     </div>

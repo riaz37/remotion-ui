@@ -16,7 +16,7 @@ export function ShowcaseVideoClient({
     : undefined;
 
   return (
-    <div className="not-prose my-6 overflow-hidden rounded-xl border border-fd-border bg-fd-card">
+    <div className="not-prose my-6 overflow-hidden rounded-md border border-[var(--bay-border)] bg-[var(--bay-surface)]">
       <div className="border-b border-fd-border px-4 py-2.5 text-sm font-medium text-fd-foreground">
         {title}
       </div>

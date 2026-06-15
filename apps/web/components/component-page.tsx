@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ComponentType, ReactNode } from "react";
+import { SceneMonitorPreview } from "@/components/docs/scene-monitor-preview";
 import { ATLAS_LANES, getAtlasMeta } from "@/lib/atlas";
 import { getComponentDocPath } from "@/lib/component-doc-path";
 import { getComponentReference } from "@/lib/component-reference";
@@ -8,8 +9,6 @@ import { laneAccent } from "@/lib/lane-visuals";
 import { CompositionPlaygroundSection } from "./composition-playground-section";
 import { InstallCommand } from "./install-command";
 import { PropsTable } from "./props-table";
-import { RemotionPreview } from "./remotion-preview";
-import { StudioPanel } from "./studio/studio-panel";
 
 const categoryLabels = {
   primitive: "Primitive",
@@ -37,8 +36,17 @@ export function ComponentPage({
   inputProps,
   children,
 }: ComponentPageProps) {
-  const previewAspect = `${previewWidth} / ${previewHeight}`;
-  const isPortrait = previewHeight > previewWidth;
+  const previewNode = preview ? (
+    <SceneMonitorPreview
+      name={name}
+      component={preview}
+      durationInFrames={durationInFrames}
+      previewWidth={previewWidth}
+      previewHeight={previewHeight}
+      inputProps={inputProps}
+    />
+  ) : null;
+
   const reference = getComponentReference(name);
   const atlas = getAtlasMeta(name);
 
@@ -57,25 +65,6 @@ export function ComponentPage({
       ? { key: "tier", label: "Advanced" }
       : null,
   ].filter((part): part is NonNullable<typeof part> => Boolean(part));
-
-  const previewNode = preview ? (
-    <StudioPanel
-      label={name}
-      aspectRatio={previewAspect}
-      fps={30}
-      width={previewWidth}
-      height={previewHeight}
-      durationInFrames={durationInFrames}
-    >
-      <RemotionPreview
-        component={preview}
-        durationInFrames={durationInFrames}
-        width={previewWidth}
-        height={previewHeight}
-        inputProps={inputProps}
-      />
-    </StudioPanel>
-  ) : null;
 
   const playgroundNode = hasCompositionPlayground(name) ? (
     <CompositionPlaygroundSection name={name} />
@@ -116,20 +105,12 @@ export function ComponentPage({
           ) : null}
         </div>
       ) : preview ? (
-        <div className="not-prose mb-8 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(320px,440px)] lg:items-start lg:gap-8">
-          <div className="min-w-0 space-y-6 lg:order-1">
-            <InstallCommand name={name} />
-            {children ? (
-              <div className="text-fd-muted-foreground">{children}</div>
-            ) : null}
-          </div>
-          <div
-            className={`mb-8 lg:sticky lg:top-20 lg:order-2 lg:mb-0 ${
-              isPortrait ? "w-72 max-w-full lg:justify-self-end" : ""
-            }`}
-          >
-            {previewNode}
-          </div>
+        <div className="not-prose mb-8 space-y-6">
+          {previewNode}
+          <InstallCommand name={name} />
+          {children ? (
+            <div className="text-fd-muted-foreground">{children}</div>
+          ) : null}
         </div>
       ) : (
         <>
@@ -148,10 +129,10 @@ export function ComponentPage({
 
       {reference ? (
         <>
-          <div className="not-prose my-8 rounded-2xl border border-fd-border bg-fd-card/70 p-5">
+          <div className="not-prose my-8 overflow-hidden rounded-md border border-[var(--bay-border)] border-l-2 border-l-[var(--bay-phosphor)] bg-[var(--bay-surface)] p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="font-[family-name:var(--font-display)] text-lg font-semibold tracking-tight">
+                <h2 className="font-[family-name:var(--font-display)] text-lg font-medium tracking-tight">
                   AI usage
                 </h2>
                 <p className="mt-1 text-sm text-fd-muted-foreground">
@@ -160,19 +141,19 @@ export function ComponentPage({
               </div>
               <Link
                 href="/docs/ai"
-                className="rounded-lg border border-fd-border px-3 py-1.5 text-sm transition-colors hover:bg-fd-muted"
+                className="rounded-md border border-[var(--bay-border)] px-3 py-1.5 text-sm transition-colors hover:border-[var(--bay-border-strong)]"
               >
                 AI guide
               </Link>
             </div>
             <div className="mt-4 grid gap-3 text-sm md:grid-cols-2">
-              <div className="rounded-xl border border-fd-border bg-fd-muted/30 p-3">
+              <div className="rounded-md border border-[var(--bay-border)] bg-[var(--bay-surface-raised)] p-3">
                 <p className="mb-2 font-medium">Install</p>
                 <code className="font-[family-name:var(--font-mono)] text-xs text-fd-muted-foreground">
                   npx remotion-ui@latest add {name}
                 </code>
               </div>
-              <div className="rounded-xl border border-fd-border bg-fd-muted/30 p-3">
+              <div className="rounded-md border border-[var(--bay-border)] bg-[var(--bay-surface-raised)] p-3">
                 <p className="mb-2 font-medium">Import after install</p>
                 <code className="font-[family-name:var(--font-mono)] text-xs text-fd-muted-foreground">
                   {getAiImportPath(name)}
@@ -197,7 +178,7 @@ export function ComponentPage({
           <h2 className="mt-10 scroll-m-20 text-xl font-semibold tracking-tight">
             Usage
           </h2>
-          <pre className="overflow-x-auto rounded-xl border border-fd-border bg-fd-muted/40 p-4 text-sm">
+          <pre className="overflow-x-auto rounded-md border border-[var(--bay-border-strong)] bg-[var(--bay-surface-raised)] p-4 text-sm">
             <code className="font-[family-name:var(--font-mono)] leading-relaxed">
               {reference.usage}
             </code>
@@ -218,7 +199,7 @@ export function ComponentPage({
                   <Link
                     key={slug}
                     href={getComponentDocPath(slug)}
-                    className="rounded-lg border border-fd-border px-3 py-1.5 text-sm transition-colors hover:bg-fd-muted"
+                    className="rounded-md border border-[var(--bay-border)] px-3 py-1.5 text-sm transition-colors hover:border-[var(--bay-border-strong)]"
                   >
                     {slug}
                   </Link>

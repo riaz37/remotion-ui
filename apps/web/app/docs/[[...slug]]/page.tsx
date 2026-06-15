@@ -32,7 +32,9 @@ export default async function Page(props: {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
         />
       ) : null}
-      <DocsTitle>{page.data.title}</DocsTitle>
+      <DocsTitle className="text-display-lg font-medium tracking-tight">
+        {page.data.title}
+      </DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
       <DocsBody>
         <MDX

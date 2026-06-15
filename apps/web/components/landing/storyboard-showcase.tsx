@@ -1,19 +1,9 @@
-import Link from "next/link";
 import { AtlasMiniPreview } from "@/components/atlas-mini-preview";
 import { ClipCard } from "@/components/studio/clip-card";
-import { FilmstripScroll } from "@/components/studio/filmstrip-scroll";
-import { PerforationRule } from "@/components/studio/perforation-rule";
+import { LandingSection } from "@/components/landing/landing-section";
+import { StoryboardTrackRow } from "@/components/landing/storyboard-track-row";
 import { getComponentDocPath } from "@/lib/component-doc-path";
-import { getAtlasMeta } from "@/lib/atlas";
-
-const SHOWCASE_SLUGS = [
-  "social-clip",
-  "creator-reel",
-  "data-story",
-  "podcast-clip",
-  "hero-loop",
-  "showcase",
-] as const;
+import { getAtlasMeta, type AtlasLane } from "@/lib/atlas";
 
 const DURATIONS: Record<string, number> = {
   "social-clip": 228,
@@ -24,58 +14,77 @@ const DURATIONS: Record<string, number> = {
   showcase: 150,
 };
 
+const TRACKS: {
+  trackLabel: string;
+  lane: AtlasLane;
+  slugs: string[];
+}[] = [
+  {
+    trackLabel: "Reels",
+    lane: "reels",
+    slugs: ["social-clip", "creator-reel", "podcast-clip"],
+  },
+  {
+    trackLabel: "Explainers",
+    lane: "blocks",
+    slugs: ["data-story", "showcase"],
+  },
+  {
+    trackLabel: "Openers",
+    lane: "atoms",
+    slugs: ["hero-loop"],
+  },
+];
+
+function StoryboardClip({ slug }: { slug: string }) {
+  const meta = getAtlasMeta(slug);
+  const lane = meta?.lane ?? "reels";
+  const isPortrait =
+    slug === "social-clip" ||
+    slug === "creator-reel" ||
+    slug === "podcast-clip";
+
+  return (
+    <ClipCard
+      name={slug}
+      url={getComponentDocPath(slug)}
+      durationFrames={DURATIONS[slug]}
+      lane={lane}
+      command={`npx remotion-ui add ${slug}`}
+      className="w-[240px] shrink-0 snap-start"
+      thumbnail={
+        <AtlasMiniPreview
+          slug={slug}
+          lane={lane}
+          scrubOnHover
+          aspectRatio={isPortrait ? "9 / 16" : "16 / 9"}
+        />
+      }
+    />
+  );
+}
+
 export function StoryboardShowcase() {
   return (
-    <section className="border-b border-[var(--bay-border)] py-[120px]">
-      <div className="mx-auto max-w-[1120px] px-6">
-        <PerforationRule className="mb-16" />
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div className="max-w-xl">
-            <h2 className="text-display-lg">The storyboard</h2>
-            <p className="mt-3 text-[0.9375rem] leading-relaxed text-fd-muted-foreground">
-              62 compositions, scenes, and primitives — scrub before you install.
-            </p>
-          </div>
-          <Link
-            href="/docs/components"
-            className="link-phosphor text-sm font-medium"
+    <LandingSection
+      title="The storyboard"
+      lead="62 compositions, scenes, and primitives — scrub before you install."
+      layout="wide"
+      action={{ href: "/docs/components", label: "Browse all →" }}
+    >
+      <div className="grid gap-8">
+        {TRACKS.map((track) => (
+          <StoryboardTrackRow
+            key={track.trackLabel}
+            trackLabel={track.trackLabel}
+            lane={track.lane}
           >
-            Browse all →
-          </Link>
-        </div>
-        <div className="mt-10">
-          <FilmstripScroll>
-            {SHOWCASE_SLUGS.map((slug) => {
-              const meta = getAtlasMeta(slug);
-              const lane = meta?.lane ?? "reels";
-              const isPortrait =
-                slug === "social-clip" ||
-                slug === "creator-reel" ||
-                slug === "podcast-clip";
-
-              return (
-                <ClipCard
-                  key={slug}
-                  name={slug}
-                  url={getComponentDocPath(slug)}
-                  durationFrames={DURATIONS[slug]}
-                  lane={lane}
-                  command={`npx remotion-ui add ${slug}`}
-                  className="w-[240px] shrink-0 snap-start"
-                  thumbnail={
-                    <AtlasMiniPreview
-                      slug={slug}
-                      lane={lane}
-                      scrubOnHover
-                      aspectRatio={isPortrait ? "9 / 16" : "16 / 9"}
-                    />
-                  }
-                />
-              );
-            })}
-          </FilmstripScroll>
-        </div>
+            {track.slugs.map((slug) => (
+              <StoryboardClip key={slug} slug={slug} />
+            ))}
+          </StoryboardTrackRow>
+        ))}
       </div>
-    </section>
+    </LandingSection>
   );
 }

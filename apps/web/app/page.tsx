@@ -1,7 +1,7 @@
 import { HomeLayout } from "fumadocs-ui/layouts/home";
 import type { Metadata } from "next";
 import { InstallStrip } from "@/components/landing/install-strip";
-import { LandingCta } from "@/components/landing/landing-cta";
+import { EndSlateCta } from "@/components/landing/end-slate-cta";
 import { LandingLivePlayground } from "@/components/landing/landing-live-playground";
 import { RecipeRail } from "@/components/landing/recipe-rail";
 import { StoryboardShowcase } from "@/components/landing/storyboard-showcase";
@@ -50,7 +50,7 @@ export default function HomePage() {
       <RecipeRail />
       <StoryboardShowcase />
       <InstallStrip />
-      <LandingCta />
+      <EndSlateCta />
       <SiteFooter />
     </HomeLayout>
   );
