@@ -1,5 +1,6 @@
 import type { TikTokPage } from "@remotion/captions";
 import { spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { scaleFont } from "@/remotion/lib/layout";
 import {
   getAbsoluteTimeMs,
   isTokenActive,
@@ -17,14 +18,15 @@ export type CaptionHighlightProps = {
 
 export const CaptionHighlight: React.FC<CaptionHighlightProps> = ({
   page,
-  activeColor = "#60a5fa",
+  activeColor = "#fbbf24",
   inactiveColor = "#f8fafc",
-  fontSize = 48,
+  fontSize: fontSizeProp,
   fontWeight = "bold",
   activeScale = 1,
 }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, width } = useVideoConfig();
+  const fontSize = fontSizeProp ?? scaleFont(56, width);
   const absoluteTimeMs = getAbsoluteTimeMs(page, frame, fps);
 
   return (
@@ -33,7 +35,6 @@ export const CaptionHighlight: React.FC<CaptionHighlightProps> = ({
         fontSize,
         fontWeight,
         whiteSpace: "pre",
-        fontFamily: "system-ui, sans-serif",
         textAlign: "center",
         lineHeight: 1.25,
         textShadow: "0 2px 16px rgba(0, 0, 0, 0.65)",

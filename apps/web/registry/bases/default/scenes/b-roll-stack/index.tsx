@@ -1,5 +1,12 @@
+import { loadFont } from "@remotion/google-fonts/Inter";
 import { Img, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
-import { getSafePadding } from "@/remotion/lib/layout";
+import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
+import { DURATION, STAGGER } from "@/remotion/lib/motion-tokens";
+
+const { fontFamily } = loadFont("normal", {
+  weights: ["400", "700", "800"],
+  subsets: ["latin"],
+});
 
 export type BRollItem = {
   src: string;
@@ -9,19 +16,36 @@ export type BRollItem = {
 export type BRollStackProps = {
   items: BRollItem[];
   title?: string;
+  kicker?: string;
   backgroundColor?: string;
   accentColor?: string;
 };
 
+const COLORS = {
+  bg: "#0e0c12",
+  cardBg: "#18141f",
+  accent: "#ec4899",
+} as const;
+
+const CARD_OFFSETS = [
+  { top: 0, left: 0, rotate: -6, zIndex: 4 },
+  { top: 28, left: 36, rotate: 4, zIndex: 3 },
+  { top: 56, left: 72, rotate: -2, zIndex: 2 },
+  { top: 84, left: 108, rotate: 7, zIndex: 1 },
+] as const;
+
 export const BRollStack: React.FC<BRollStackProps> = ({
   items,
-  title = "Build the story",
-  backgroundColor = "#0f172a",
-  accentColor = "#60a5fa",
+  title,
+  kicker,
+  backgroundColor = COLORS.bg,
+  accentColor = COLORS.accent,
 }) => {
   const frame = useCurrentFrame();
   const { width, height } = useVideoConfig();
-  const padding = getSafePadding({ width, height, ratio: 0.08 });
+  const safe = getSafeAreaPadding({ width, height });
+  const isPortrait = height > width;
+  const stackHeight = Math.round(height * (isPortrait ? 0.42 : 0.58));
 
   return (
     <div
@@ -30,53 +54,80 @@ export const BRollStack: React.FC<BRollStackProps> = ({
         height,
         background: backgroundColor,
         color: "white",
-        padding,
-        fontFamily: "system-ui, sans-serif",
-        display: "grid",
-        gridTemplateColumns: "0.9fr 1.2fr",
-        gap: 48,
-        alignItems: "center",
+        paddingLeft: safe.paddingLeft,
+        paddingRight: safe.paddingRight,
+        paddingTop: safe.paddingTop,
+        paddingBottom: safe.paddingBottom,
+        fontFamily,
+        display: "flex",
+        flexDirection: isPortrait ? "column" : "row",
+        gap: scaleFont(40, width),
+        alignItems: isPortrait ? "stretch" : "center",
       }}
     >
-      <div>
-        <div style={{ color: accentColor, fontSize: 30, fontWeight: 800 }}>
-          B-roll
-        </div>
-        <h2
-          style={{
-            fontSize: Math.round(width * 0.055),
-            lineHeight: 1,
-            margin: "10px 0 0",
-          }}
-        >
-          {title}
-        </h2>
+      <div style={{ flex: isPortrait ? undefined : "0 0 38%" }}>
+        {kicker ? (
+          <div
+            style={{
+              color: accentColor,
+              fontSize: scaleFont(32, width),
+              fontWeight: 800,
+              letterSpacing: "0.04em",
+              textTransform: "uppercase",
+            }}
+          >
+            {kicker}
+          </div>
+        ) : null}
+        {title ? (
+          <h2
+            style={{
+              fontSize: scaleFont(84, width),
+              lineHeight: 1.05,
+              margin: kicker ? `${scaleFont(12, width)}px 0 0` : 0,
+              fontWeight: 800,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            {title}
+          </h2>
+        ) : null}
       </div>
-      <div style={{ position: "relative", height: Math.round(height * 0.62) }}>
+      <div
+        style={{
+          position: "relative",
+          flex: 1,
+          height: stackHeight,
+          minHeight: stackHeight,
+        }}
+      >
         {items.slice(0, 4).map((item, index) => {
+          const offset = CARD_OFFSETS[index] ?? CARD_OFFSETS[0];
+          const delay = index * STAGGER.relaxed;
           const progress = interpolate(
             frame,
-            [index * 12, index * 12 + 24],
+            [delay, delay + DURATION.fast],
             [0, 1],
-            {
-              extrapolateLeft: "clamp",
-              extrapolateRight: "clamp",
-            },
+            { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
           );
-          const rotate = [-7, 5, -3, 8][index] ?? 0;
+
           return (
             <div
               key={`${item.src}-${index}`}
               style={{
                 position: "absolute",
-                inset: `${index * 7}% ${Math.max(0, 18 - index * 5)}% ${Math.max(0, 18 - index * 5)}% ${index * 8}%`,
-                borderRadius: 24,
+                top: offset.top,
+                left: offset.left,
+                right: offset.left,
+                bottom: offset.top,
+                zIndex: offset.zIndex,
+                borderRadius: 20,
                 overflow: "hidden",
-                border: "3px solid rgba(248,250,252,0.12)",
-                background: "#020617",
-                boxShadow: "0 28px 80px rgba(0,0,0,0.32)",
+                border: "2px solid rgba(248,250,252,0.1)",
+                background: COLORS.cardBg,
+                boxShadow: "0 24px 64px rgba(0,0,0,0.4)",
                 opacity: progress,
-                transform: `translateY(${(1 - progress) * 46}px) rotate(${rotate * progress}deg)`,
+                transform: `translateY(${(1 - progress) * 40}px) rotate(${offset.rotate * progress}deg)`,
               }}
             >
               <Img
@@ -87,13 +138,12 @@ export const BRollStack: React.FC<BRollStackProps> = ({
                 <div
                   style={{
                     position: "absolute",
-                    left: 18,
-                    right: 18,
-                    top: 18,
-                    color: "white",
-                    fontSize: 26,
+                    left: scaleFont(18, width),
+                    right: scaleFont(18, width),
+                    top: scaleFont(18, width),
+                    fontSize: scaleFont(26, width),
                     fontWeight: 700,
-                    textShadow: "0 2px 12px rgba(0,0,0,0.8)",
+                    textShadow: "0 2px 12px rgba(0,0,0,0.85)",
                   }}
                 >
                   {item.title}

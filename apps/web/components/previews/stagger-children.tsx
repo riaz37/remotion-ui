@@ -1,7 +1,7 @@
 "use client";
 
 import { FadeIn, StaggerChildren } from "../registry-exports";
-import { PreviewFrame } from "./preview-frame";
+import { PreviewFrame, ProductCard } from "./preview-frame";
 
 export const StaggerChildrenPreview: React.FC = () => (
   <PreviewFrame lane="atoms">
@@ -14,24 +14,17 @@ export const StaggerChildrenPreview: React.FC = () => (
       }}
     >
       <StaggerChildren staggerInFrames={12}>
-        {["Hook", "Proof", "Action"].map((label) => (
-          <FadeIn key={label} durationInFrames={20}>
-            <div
-              style={{
-                color: "white",
-                fontSize: 46,
-                minWidth: 360,
-                borderRadius: 24,
-                padding: "18px 28px",
-                background: "rgba(255,255,255,0.09)",
-                border: "1px solid rgba(255,255,255,0.15)",
-                fontFamily: "system-ui, sans-serif",
-                textAlign: "center",
-                fontWeight: 900,
-              }}
-            >
-              {label}
-            </div>
+        {[
+          { kicker: "Beat 1", title: "Open the hook", detail: "First card enters" },
+          { kicker: "Beat 2", title: "Show the proof", detail: "Staggered by 12 frames" },
+          { kicker: "Beat 3", title: "Land the CTA", detail: "Each child animates in" },
+        ].map((beat) => (
+          <FadeIn key={beat.title} durationInFrames={20}>
+            <ProductCard
+              kicker={beat.kicker}
+              title={beat.title}
+              detail={beat.detail}
+            />
           </FadeIn>
         ))}
       </StaggerChildren>

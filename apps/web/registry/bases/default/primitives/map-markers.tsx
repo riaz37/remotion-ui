@@ -14,9 +14,9 @@ export type MapMarkersProps = {
 export const MapMarkers: React.FC<MapMarkersProps> = ({
   map,
   markers,
-  dotColor = "#f03b20",
-  dotRadius = 12,
-  labelSize = 28,
+  dotColor = "#6366f1",
+  dotRadius = 10,
+  labelSize = 26,
   sourceId = "city-markers",
 }) => {
   useEffect(() => {
@@ -35,8 +35,9 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
         paint: {
           "circle-color": dotColor,
           "circle-radius": dotRadius,
-          "circle-stroke-color": "#ffffff",
-          "circle-stroke-width": 4,
+          "circle-stroke-color": "#f8fafc",
+          "circle-stroke-width": 3,
+          "circle-blur": 0.2,
         },
       });
 
@@ -52,9 +53,9 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
           "text-size": labelSize,
         },
         paint: {
-          "text-color": "#111111",
-          "text-halo-color": "#ffffff",
-          "text-halo-width": 3,
+          "text-color": "#f8fafc",
+          "text-halo-color": "#0c1220",
+          "text-halo-width": 2.5,
         },
       });
     } else {

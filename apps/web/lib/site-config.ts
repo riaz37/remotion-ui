@@ -12,7 +12,8 @@ export const siteConfig = {
 } as const;
 
 export const navLinks = [
-  { text: "Documentation", url: "/docs", active: "nested-url" as const },
-  { text: "Components", url: "/docs/components", active: "nested-url" as const },
+  { text: "Storyboard", url: "/docs/components", active: "nested-url" as const },
+  { text: "Recipes", url: "/docs/recipes", active: "nested-url" as const },
+  { text: "Docs", url: "/docs", active: "nested-url" as const },
   { text: "CLI", url: "/docs/cli", active: "url" as const },
 ] as const;

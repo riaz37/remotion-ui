@@ -47,9 +47,9 @@ function PlaceholderBars({
             style={{
               flex: 1,
               height: `${Math.max(12, wave * 100)}%`,
-              background: `linear-gradient(to top, ${barColor} 0%, ${barColor}99 100%)`,
+              background: `linear-gradient(to top, ${barColor} 0%, ${barColor}55 100%)`,
               borderRadius: 3,
-              boxShadow: wave > 0.55 ? `0 0 10px ${barColor}44` : undefined,
+              boxShadow: wave > 0.55 ? `0 0 12px ${barColor}44` : undefined,
             }}
           />
         );
@@ -61,7 +61,7 @@ function PlaceholderBars({
 export const AudiogramBars: React.FC<AudiogramBarsProps> = ({
   src,
   height = 120,
-  barColor = "#3b82f6",
+  barColor = "#67e8f9",
   barGap = 2,
   numberOfSamples = 64,
   maxBarCount = 48,
@@ -99,9 +99,9 @@ export const AudiogramBars: React.FC<AudiogramBarsProps> = ({
           style={{
             flex: 1,
             height: `${Math.max(6, value * 100)}%`,
-            background: `linear-gradient(to top, ${barColor} 0%, ${barColor}cc 100%)`,
+            background: `linear-gradient(to top, ${barColor} 0%, ${barColor}88 55%, ${barColor}33 100%)`,
             borderRadius: 3,
-            boxShadow: value > 0.35 ? `0 0 12px ${barColor}55` : undefined,
+            boxShadow: value > 0.35 ? `0 0 14px ${barColor}55` : undefined,
           }}
         />
       ))}

@@ -16,7 +16,7 @@ export const ScaleIn: React.FC<ScaleInProps> = ({
 }) => {
   const frame = useCurrentFrame();
   const progress = enterProgress(frame, delayInFrames, durationInFrames);
-  const scale = interpolate(progress, [0, 1], [0.85, 1]);
+  const scale = interpolate(progress, [0, 1], [0.92, 1]);
 
   return (
     <MotionWrapper

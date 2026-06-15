@@ -1,9 +1,15 @@
+import { loadFont } from "@remotion/google-fonts/Inter";
 import { AbsoluteFill, useVideoConfig } from "remotion";
 import { FadeIn } from "@/remotion/primitives/fade-in";
 import { SlideLeft } from "@/remotion/primitives/slide-left";
 import { StaggerChildren } from "@/remotion/primitives/stagger-children";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
-import { STAGGER } from "@/remotion/lib/motion-tokens";
+import { DURATION, STAGGER } from "@/remotion/lib/motion-tokens";
+
+const { fontFamily } = loadFont("normal", {
+  weights: ["500", "700", "800"],
+  subsets: ["latin"],
+});
 
 export type FeatureListProps = {
   title?: string;
@@ -12,11 +18,18 @@ export type FeatureListProps = {
   backgroundColor?: string;
 };
 
+const COLORS = {
+  bg: "#0c0f14",
+  text: "#f4f4f5",
+  item: "#d4d4d8",
+  accent: "#f59e0b",
+} as const;
+
 export const FeatureList: React.FC<FeatureListProps> = ({
-  title = "Features",
+  title,
   items,
-  accentColor = "#3b82f6",
-  backgroundColor = "#0f172a",
+  accentColor = COLORS.accent,
+  backgroundColor = COLORS.bg,
 }) => {
   const { width, height } = useVideoConfig();
   const safeArea = getSafeAreaPadding({ width, height });
@@ -29,56 +42,61 @@ export const FeatureList: React.FC<FeatureListProps> = ({
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        gap: 32,
+        gap: scaleFont(36, width),
+        fontFamily,
       }}
     >
-      <FadeIn durationInFrames={18}>
-        <h2
-          style={{
-            color: "white",
-            fontSize: scaleFont(64, width),
-            fontFamily: "system-ui, sans-serif",
-            fontWeight: 700,
-            margin: 0,
-            lineHeight: 1.1,
-          }}
-        >
-          {title}
-        </h2>
-      </FadeIn>
+      {title ? (
+        <FadeIn durationInFrames={DURATION.fast}>
+          <h2
+            style={{
+              color: COLORS.text,
+              fontSize: scaleFont(84, width),
+              fontWeight: 800,
+              margin: 0,
+              lineHeight: 1.05,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            {title}
+          </h2>
+        </FadeIn>
+      ) : null}
       <div
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: 20,
+          gap: scaleFont(22, width),
         }}
       >
         <StaggerChildren staggerInFrames={STAGGER.normal}>
           {items.map((item) => (
-            <SlideLeft key={item} durationInFrames={22} distance={48}>
+            <SlideLeft key={item} durationInFrames={DURATION.fast} distance={48}>
               <div
                 style={{
                   display: "flex",
-                  alignItems: "center",
-                  gap: 16,
+                  alignItems: "flex-start",
+                  gap: scaleFont(18, width),
                 }}
               >
                 <div
                   style={{
-                    width: 12,
-                    height: 12,
-                    borderRadius: "50%",
+                    width: scaleFont(14, width),
+                    height: scaleFont(14, width),
+                    marginTop: scaleFont(14, width),
+                    borderRadius: 4,
                     backgroundColor: accentColor,
                     flexShrink: 0,
-                    boxShadow: `0 0 12px ${accentColor}88`,
+                    boxShadow: `0 0 16px ${accentColor}66`,
+                    transform: "rotate(45deg)",
                   }}
                 />
                 <span
                   style={{
-                    color: "#e2e8f0",
+                    color: COLORS.item,
                     fontSize: scaleFont(44, width),
-                    fontFamily: "system-ui, sans-serif",
-                    lineHeight: 1.3,
+                    lineHeight: 1.35,
+                    fontWeight: 500,
                   }}
                 >
                   {item}

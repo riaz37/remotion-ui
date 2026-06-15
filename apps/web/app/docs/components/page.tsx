@@ -9,18 +9,18 @@ import { getAtlasSections } from "@/lib/docs-nav";
 import { componentsItemListJsonLd } from "@/lib/site-metadata";
 import { siteConfig } from "@/lib/site-config";
 
-const title = "Remotion Components — Live Preview Catalog";
+const title = "Storyboard — Remotion component catalog";
 const description =
-  "Browse and install production-ready Remotion components with live previews. Primitives, scenes, and compositions via the RemotionUI CLI.";
+  "Browse and install Remotion compositions with live previews. Scrub clips, install source with the CLI.";
 
 export const metadata: Metadata = {
   title,
   description,
   keywords: [
     "Remotion components",
-    "Remotion component library",
     "Remotion compositions",
     "RemotionUI registry",
+    "Remotion storyboard",
   ],
   openGraph: {
     title,
@@ -52,13 +52,13 @@ export default function ComponentsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
       />
-      <div className="not-prose -mx-4 border-b border-fd-border px-4 pb-10 md:-mx-6 md:px-6 xl:-mx-8 xl:px-8">
-        <DocsTitle className="font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight">
-          Remotion Components
+      <div className="not-prose -mx-4 border-b border-[var(--bay-border)] px-4 pb-10 md:-mx-6 md:px-6 xl:-mx-8 xl:px-8">
+        <DocsTitle className="text-display-lg font-medium tracking-tight">
+          Storyboard
         </DocsTitle>
-        <DocsDescription className="mt-3 max-w-2xl text-base">
-          Browse {totalComponents} production-ready components with live
-          previews. Filter by motion role, then install with{" "}
+        <DocsDescription className="mt-3 max-w-xl text-[0.9375rem]">
+          {totalComponents} compositions, scenes, and primitives — scrub before
+          you install with{" "}
           <code className="font-[family-name:var(--font-mono)] text-sm">
             npx remotion-ui add
           </code>

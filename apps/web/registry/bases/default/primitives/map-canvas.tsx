@@ -8,6 +8,7 @@ import type { Map } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {
   createMapInstance,
+  DEFAULT_MAP_STYLE,
   type LngLat,
   type MapInitOptions,
 } from "@/remotion/lib/map-utils";
@@ -25,7 +26,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   zoom = 7,
   style,
   onMapReady,
-  backgroundColor = "#e8eef3",
+  backgroundColor = "#0c1220",
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { delayRender, continueRender } = useDelayRender();
@@ -38,7 +39,11 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       return;
     }
 
-    const options: MapInitOptions = { center, zoom, style };
+    const options: MapInitOptions = {
+      center,
+      zoom,
+      style: style ?? DEFAULT_MAP_STYLE,
+    };
     const mapInstance = createMapInstance(
       containerRef.current,
       width,
@@ -69,9 +74,15 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     <AbsoluteFill style={{ backgroundColor }}>
       <div
         ref={containerRef}
-        style={{ width, height, position: "absolute" }}
+        style={{
+          width,
+          height,
+          position: "absolute",
+          borderRadius: 12,
+          overflow: "hidden",
+          boxShadow: "inset 0 0 0 1px rgba(255, 255, 255, 0.08)",
+        }}
       />
-      {map ? null : null}
     </AbsoluteFill>
   );
 };

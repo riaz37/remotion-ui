@@ -1,7 +1,14 @@
+import { loadFont } from "@remotion/google-fonts/Inter";
 import { AbsoluteFill, Img, useVideoConfig } from "remotion";
 import { AudiogramBars } from "@/remotion/primitives/audiogram-bars";
 import { FadeIn } from "@/remotion/primitives/fade-in";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
+import { DURATION } from "@/remotion/lib/motion-tokens";
+
+const { fontFamily } = loadFont("normal", {
+  weights: ["400", "600", "800"],
+  subsets: ["latin"],
+});
 
 export type AudiogramSceneProps = {
   src: string;
@@ -13,77 +20,92 @@ export type AudiogramSceneProps = {
   backgroundColor?: string;
 };
 
+const COLORS = {
+  bg: "#0a0812",
+  title: "#faf5ff",
+  subtitle: "#c4b5fd",
+  glow: "rgba(124,58,237,0.2)",
+  accent: "#7c3aed",
+} as const;
+
 export const AudiogramScene: React.FC<AudiogramSceneProps> = ({
   src,
-  title = "Podcast Episode",
+  title,
   subtitle,
   logoSrc,
   logoSize,
-  accentColor = "#60a5fa",
-  backgroundColor = "#0f172a",
+  accentColor = COLORS.accent,
+  backgroundColor = COLORS.bg,
 }) => {
   const { width, height } = useVideoConfig();
   const safeArea = getSafeAreaPadding({ width, height });
+  const hasHeader = Boolean(title || subtitle || logoSrc);
 
   return (
     <AbsoluteFill
       style={{
         backgroundColor,
-        backgroundImage:
-          "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(59, 130, 246, 0.12), transparent)",
+        backgroundImage: `radial-gradient(ellipse 90% 55% at 50% 0%, ${COLORS.glow}, transparent)`,
         ...safeArea,
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        gap: 32,
+        gap: scaleFont(36, width),
+        fontFamily,
       }}
     >
-      <FadeIn durationInFrames={20}>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: logoSrc ? "center" : "flex-start",
-            textAlign: logoSrc ? "center" : "left",
-            gap: logoSrc ? 20 : 0,
-          }}
-        >
-          {logoSrc ? (
-            <Img
-              src={logoSrc}
-              style={{
-                width: logoSize ?? scaleFont(80, width),
-                height: logoSize ?? scaleFont(80, width),
-                borderRadius: scaleFont(18, width),
-              }}
-            />
-          ) : null}
-          <h1
+      {hasHeader ? (
+        <FadeIn durationInFrames={DURATION.fast}>
+          <div
             style={{
-              color: "white",
-              fontSize: scaleFont(48, width),
-              fontWeight: 700,
-              margin: 0,
-              fontFamily: "system-ui, sans-serif",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: logoSrc ? "center" : "flex-start",
+              textAlign: logoSrc ? "center" : "left",
+              gap: logoSrc ? scaleFont(20, width) : 0,
             }}
           >
-            {title}
-          </h1>
-          {subtitle ? (
-            <p
-              style={{
-                color: "#94a3b8",
-                fontSize: scaleFont(28, width),
-                margin: "8px 0 0",
-                fontFamily: "system-ui, sans-serif",
-              }}
-            >
-              {subtitle}
-            </p>
-          ) : null}
-        </div>
-      </FadeIn>
-      <FadeIn durationInFrames={24} delayInFrames={8}>
+            {logoSrc ? (
+              <Img
+                src={logoSrc}
+                style={{
+                  width: logoSize ?? scaleFont(80, width),
+                  height: logoSize ?? scaleFont(80, width),
+                  borderRadius: scaleFont(18, width),
+                }}
+              />
+            ) : null}
+            {title ? (
+              <h1
+                style={{
+                  color: COLORS.title,
+                  fontSize: scaleFont(64, width),
+                  fontWeight: 800,
+                  margin: 0,
+                  lineHeight: 1.05,
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                {title}
+              </h1>
+            ) : null}
+            {subtitle ? (
+              <p
+                style={{
+                  color: COLORS.subtitle,
+                  fontSize: scaleFont(32, width),
+                  margin: title ? `${scaleFont(10, width)}px 0 0` : 0,
+                  lineHeight: 1.35,
+                  fontWeight: 500,
+                }}
+              >
+                {subtitle}
+              </p>
+            ) : null}
+          </div>
+        </FadeIn>
+      ) : null}
+      <FadeIn durationInFrames={DURATION.normal} delayInFrames={8}>
         <AudiogramBars
           src={src}
           barColor={accentColor}

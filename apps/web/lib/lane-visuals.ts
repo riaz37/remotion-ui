@@ -48,10 +48,10 @@ export const LANE_VISUALS: Record<AtlasLane, LaneVisual> = {
 
 export function laneAccent(lane: AtlasLane): string {
   const { hue } = LANE_VISUALS[lane];
-  return `oklch(0.62 0.14 ${hue})`;
+  return `oklch(0.55 0.06 ${hue})`;
 }
 
 export function laneAccentMuted(lane: AtlasLane): string {
   const { hue } = LANE_VISUALS[lane];
-  return `oklch(0.22 0.04 ${hue})`;
+  return `oklch(0.22 0.03 ${hue})`;
 }

@@ -1,4 +1,5 @@
 import { spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { scaleFont } from "@/remotion/lib/layout";
 import { springSmooth } from "@/remotion/lib/springs";
 
 export type WordHighlightProps = {
@@ -10,6 +11,7 @@ export type WordHighlightProps = {
   highlightColor?: string;
   fontSize?: number;
   fontWeight?: number;
+  fontFamily?: string;
 };
 
 const HighlightWipe: React.FC<{
@@ -56,26 +58,26 @@ export const WordHighlight: React.FC<WordHighlightProps> = ({
   highlightWord,
   durationInFrames = 18,
   delayInFrames = 0,
-  color = "white",
+  color = "#f8fafc",
   highlightColor = "#fbbf24",
-  fontSize = 48,
+  fontSize: fontSizeProp,
   fontWeight = 600,
+  fontFamily,
 }) => {
+  const { width } = useVideoConfig();
+  const fontSize = fontSizeProp ?? scaleFont(84, width);
   const index = text.toLowerCase().indexOf(highlightWord.toLowerCase());
 
+  const baseStyle: React.CSSProperties = {
+    color,
+    fontSize,
+    fontWeight,
+    lineHeight: 1.3,
+    ...(fontFamily !== undefined ? { fontFamily } : {}),
+  };
+
   if (index === -1) {
-    return (
-      <span
-        style={{
-          color,
-          fontSize,
-          fontWeight,
-          fontFamily: "system-ui, sans-serif",
-        }}
-      >
-        {text}
-      </span>
-    );
+    return <span style={baseStyle}>{text}</span>;
   }
 
   const before = text.slice(0, index);
@@ -83,15 +85,7 @@ export const WordHighlight: React.FC<WordHighlightProps> = ({
   const after = text.slice(index + highlightWord.length);
 
   return (
-    <span
-      style={{
-        color,
-        fontSize,
-        fontWeight,
-        fontFamily: "system-ui, sans-serif",
-        lineHeight: 1.3,
-      }}
-    >
+    <span style={baseStyle}>
       {before}
       <HighlightWipe
         word={word}

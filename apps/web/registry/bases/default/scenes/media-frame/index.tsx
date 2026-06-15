@@ -1,7 +1,18 @@
-import { Img, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
+import { loadFont } from "@remotion/google-fonts/Inter";
+import { Img, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { Video } from "@remotion/media";
-import { getMediaObjectFitStyle, isVideoSource, type MediaFit } from "@/remotion/lib/media-utils";
-import { getSafePadding } from "@/remotion/lib/layout";
+import {
+  getMediaObjectFitStyle,
+  isVideoSource,
+  type MediaFit,
+} from "@/remotion/lib/media-utils";
+import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
+import { DURATION } from "@/remotion/lib/motion-tokens";
+
+const { fontFamily } = loadFont("normal", {
+  weights: ["600", "700", "800"],
+  subsets: ["latin"],
+});
 
 export type MediaFrameProps = {
   src: string;
@@ -13,19 +24,28 @@ export type MediaFrameProps = {
   radius?: number;
 };
 
+const COLORS = {
+  bg: "#0a0e16",
+  frame: "#050810",
+  title: "#f8fafc",
+  caption: "#cbd5e1",
+  accent: "#38bdf8",
+} as const;
+
 export const MediaFrame: React.FC<MediaFrameProps> = ({
   src,
   title,
   caption,
   fit = "cover",
-  backgroundColor = "#0f172a",
-  accentColor = "#60a5fa",
-  radius = 28,
+  backgroundColor = COLORS.bg,
+  accentColor = COLORS.accent,
+  radius,
 }) => {
   const frame = useCurrentFrame();
   const { width, height } = useVideoConfig();
-  const padding = getSafePadding({ width, height, ratio: 0.08 });
-  const enter = interpolate(frame, [0, 24], [0, 1], {
+  const safeArea = getSafeAreaPadding({ width, height });
+  const cornerRadius = radius ?? scaleFont(20, width);
+  const enter = interpolate(frame, [0, DURATION.fast], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -37,22 +57,26 @@ export const MediaFrame: React.FC<MediaFrameProps> = ({
         width,
         height,
         background: backgroundColor,
-        padding,
+        paddingLeft: safeArea.paddingLeft,
+        paddingRight: safeArea.paddingRight,
+        paddingTop: safeArea.paddingTop,
+        paddingBottom: safeArea.paddingBottom,
         display: "flex",
         flexDirection: "column",
-        gap: Math.round(padding * 0.28),
-        color: "white",
-        fontFamily: "system-ui, sans-serif",
+        gap: scaleFont(16, width),
+        color: COLORS.title,
+        fontFamily,
       }}
     >
       {title ? (
         <div
           style={{
-            fontSize: Math.round(width * 0.045),
+            fontSize: scaleFont(44, width),
             fontWeight: 800,
             lineHeight: 1.05,
+            letterSpacing: "-0.02em",
             opacity: enter,
-            transform: `translateY(${(1 - enter) * 18}px)`,
+            transform: `translateY(${(1 - enter) * 16}px)`,
           }}
         >
           {title}
@@ -62,13 +86,13 @@ export const MediaFrame: React.FC<MediaFrameProps> = ({
         style={{
           flex: 1,
           minHeight: 0,
-          borderRadius: radius,
+          borderRadius: cornerRadius,
           overflow: "hidden",
-          border: `3px solid ${accentColor}55`,
-          boxShadow: `0 24px 80px ${accentColor}22`,
+          border: `${scaleFont(2, width)}px solid ${accentColor}44`,
+          boxShadow: `0 ${scaleFont(20, width)}px ${scaleFont(64, width)}px ${accentColor}18`,
           opacity: enter,
-          transform: `scale(${0.96 + enter * 0.04})`,
-          background: "#020617",
+          transform: `scale(${0.97 + enter * 0.03})`,
+          background: COLORS.frame,
         }}
       >
         {isVideoSource(src) ? (
@@ -80,8 +104,9 @@ export const MediaFrame: React.FC<MediaFrameProps> = ({
       {caption ? (
         <div
           style={{
-            fontSize: Math.round(width * 0.026),
-            color: "#cbd5e1",
+            fontSize: scaleFont(26, width),
+            color: COLORS.caption,
+            fontWeight: 500,
             opacity: enter,
           }}
         >

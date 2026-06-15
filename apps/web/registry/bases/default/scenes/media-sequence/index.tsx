@@ -12,11 +12,15 @@ export type MediaSequenceProps = {
   backgroundColor?: string;
 };
 
+const COLORS = {
+  bg: "#06080f",
+} as const;
+
 export const MediaSequence: React.FC<MediaSequenceProps> = ({
   items,
   defaultDurationInFrames = 90,
   transitionDurationInFrames = 12,
-  backgroundColor = "#020617",
+  backgroundColor = COLORS.bg,
 }) => {
   const windows = resolveMediaWindows(items, defaultDurationInFrames);
   const fade = transitionFade({ durationInFrames: transitionDurationInFrames });

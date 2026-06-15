@@ -1,6 +1,6 @@
 import { RootProvider } from "fumadocs-ui/provider/next";
 import type { Metadata } from "next";
-import { IBM_Plex_Sans, JetBrains_Mono, Outfit } from "next/font/google";
+import { IBM_Plex_Sans, JetBrains_Mono, Newsreader } from "next/font/google";
 import type { ReactNode } from "react";
 import {
   siteMetadata,
@@ -9,9 +9,10 @@ import {
 import { siteConfig } from "@/lib/site-config";
 import "./globals.css";
 
-const outfit = Outfit({
+const newsreader = Newsreader({
   subsets: ["latin"],
-  variable: "--font-outfit",
+  weight: ["400", "500", "600"],
+  variable: "--font-newsreader",
   display: "swap",
 });
 
@@ -90,7 +91,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${outfit.variable} ${plex.variable} ${jetbrains.variable} flex min-h-screen flex-col font-sans antialiased`}
+        className={`${newsreader.variable} ${plex.variable} ${jetbrains.variable} flex min-h-screen flex-col font-sans antialiased`}
       >
         <script
           type="application/ld+json"

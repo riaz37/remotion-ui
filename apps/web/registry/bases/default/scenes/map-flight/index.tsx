@@ -1,3 +1,4 @@
+import { loadFont } from "@remotion/google-fonts/Inter";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AbsoluteFill,
@@ -19,6 +20,12 @@ import {
   greatCircleLine,
   type LngLat,
 } from "@/remotion/lib/map-utils";
+import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
+
+const { fontFamily } = loadFont("normal", {
+  weights: ["600", "700"],
+  subsets: ["latin"],
+});
 
 export type MapFlightProps = {
   from?: LngLat;
@@ -28,12 +35,19 @@ export type MapFlightProps = {
   backgroundColor?: string;
 };
 
+const COLORS = {
+  bg: "#0a1420",
+  label: "#e4e4e7",
+  muted: "#a1a1aa",
+  pill: "rgba(8,12,20,0.82)",
+} as const;
+
 export const MapFlight: React.FC<MapFlightProps> = ({
   from = DEMO_ROUTE.from,
   to = DEMO_ROUTE.to,
-  fromLabel = "Zurich",
-  toLabel = "New York",
-  backgroundColor = "#0c1929",
+  fromLabel,
+  toLabel,
+  backgroundColor = COLORS.bg,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const frame = useCurrentFrame();
@@ -47,8 +61,8 @@ export const MapFlight: React.FC<MapFlightProps> = ({
   const markers = useMemo(
     () =>
       createMarkerCollection([
-        { position: from, name: fromLabel },
-        { position: to, name: toLabel },
+        { position: from, name: fromLabel ?? "" },
+        { position: to, name: toLabel ?? "" },
       ]),
     [from, fromLabel, to, toLabel],
   );
@@ -152,6 +166,8 @@ export const MapFlight: React.FC<MapFlightProps> = ({
     extrapolateRight: "clamp",
     easing: Easing.inOut(Easing.cubic),
   });
+  const safe = getSafeAreaPadding({ width, height });
+  const showLabels = Boolean(fromLabel || toLabel);
 
   return (
     <AbsoluteFill style={{ backgroundColor }}>
@@ -161,6 +177,50 @@ export const MapFlight: React.FC<MapFlightProps> = ({
       />
       <MapRoute map={map} route={targetRoute} progress={routeProgress} />
       <MapMarkers map={map} markers={markers} />
+      {showLabels ? (
+        <div
+          style={{
+            position: "absolute",
+            left: safe.paddingLeft,
+            right: safe.paddingRight,
+            bottom: safe.paddingBottom,
+            display: "flex",
+            justifyContent: "space-between",
+            gap: 16,
+            fontFamily,
+            pointerEvents: "none",
+          }}
+        >
+          {fromLabel ? (
+            <div
+              style={{
+                padding: `${scaleFont(10, width)}px ${scaleFont(18, width)}px`,
+                borderRadius: 999,
+                background: COLORS.pill,
+                color: COLORS.label,
+                fontSize: scaleFont(26, width),
+                fontWeight: 700,
+              }}
+            >
+              {fromLabel}
+            </div>
+          ) : null}
+          {toLabel ? (
+            <div
+              style={{
+                padding: `${scaleFont(10, width)}px ${scaleFont(18, width)}px`,
+                borderRadius: 999,
+                background: COLORS.pill,
+                color: COLORS.label,
+                fontSize: scaleFont(26, width),
+                fontWeight: 700,
+              }}
+            >
+              {toLabel}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
     </AbsoluteFill>
   );
 };

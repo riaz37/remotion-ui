@@ -2,10 +2,11 @@ import { loadFont } from "@remotion/google-fonts/Inter";
 import { AbsoluteFill, Img, useVideoConfig } from "remotion";
 import { FadeIn } from "@/remotion/primitives/fade-in";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
+import { DURATION } from "@/remotion/lib/motion-tokens";
 import { fitHeadline } from "@/remotion/lib/text-fit-utils";
 
-const interFont = loadFont("normal", {
-  weights: ["700"],
+const { fontFamily } = loadFont("normal", {
+  weights: ["600", "700", "800"],
   subsets: ["latin"],
 });
 
@@ -19,6 +20,12 @@ export type AutoFitTitleProps = {
   backgroundColor?: string;
 };
 
+const COLORS = {
+  bg: "#0c0e14",
+  title: "#fafafa",
+  accent: "#a78bfa",
+} as const;
+
 function getTitleSize(
   title: string,
   maxWidth: number,
@@ -30,8 +37,8 @@ function getTitleSize(
     maxWidth,
     maxFontSize: Math.min(maxFontSize, scaleFont(96, fallbackWidth)),
     minFontSize: scaleFont(42, fallbackWidth),
-    fontFamily: interFont.fontFamily,
-    fontWeight: "700",
+    fontFamily,
+    fontWeight: "800",
   });
 }
 
@@ -41,31 +48,35 @@ export const AutoFitTitle: React.FC<AutoFitTitleProps> = ({
   logoSrc,
   logoSize,
   maxFontSize = 96,
-  accentColor = "#60a5fa",
-  backgroundColor = "#0f172a",
+  accentColor = COLORS.accent,
+  backgroundColor = COLORS.bg,
 }) => {
   const { width, height } = useVideoConfig();
   const safeArea = getSafeAreaPadding({ width, height });
   const maxWidth = width - safeArea.paddingLeft - safeArea.paddingRight;
   const titleSize = getTitleSize(title, maxWidth, maxFontSize, width);
-  const subtitleSize = Math.min(titleSize * 0.45, 48);
+  const subtitleSize = Math.min(scaleFont(40, width), titleSize * 0.42);
 
   return (
     <AbsoluteFill
       style={{
         backgroundColor,
+        backgroundImage: `radial-gradient(circle at 50% 30%, ${accentColor}18, transparent 50%)`,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
         paddingLeft: safeArea.paddingLeft,
         paddingRight: safeArea.paddingRight,
+        paddingTop: safeArea.paddingTop,
+        paddingBottom: safeArea.paddingBottom,
         textAlign: "center",
-        gap: 16,
+        gap: scaleFont(16, width),
+        fontFamily,
       }}
     >
       {logoSrc ? (
-        <FadeIn durationInFrames={18}>
+        <FadeIn durationInFrames={DURATION.fast}>
           <Img
             src={logoSrc}
             style={{
@@ -76,29 +87,30 @@ export const AutoFitTitle: React.FC<AutoFitTitleProps> = ({
           />
         </FadeIn>
       ) : null}
-      <FadeIn durationInFrames={24}>
+      <FadeIn durationInFrames={DURATION.normal}>
         <h1
           style={{
-            color: "white",
+            color: COLORS.title,
             fontSize: titleSize,
-            fontWeight: 700,
-            fontFamily: interFont.fontFamily,
+            fontWeight: 800,
             margin: 0,
-            lineHeight: 1.1,
+            lineHeight: 1.08,
+            letterSpacing: "-0.03em",
+            maxWidth,
           }}
         >
           {title}
         </h1>
       </FadeIn>
       {subtitle ? (
-        <FadeIn durationInFrames={20} delayInFrames={10}>
+        <FadeIn durationInFrames={DURATION.fast} delayInFrames={10}>
           <p
             style={{
               color: accentColor,
               fontSize: subtitleSize,
-              fontFamily: interFont.fontFamily,
               margin: 0,
-              fontWeight: 500,
+              fontWeight: 600,
+              maxWidth,
             }}
           >
             {subtitle}

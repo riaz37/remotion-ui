@@ -17,7 +17,7 @@ export const PathDraw: React.FC<PathDrawProps> = ({
   d,
   durationInFrames = 60,
   delayInFrames = 0,
-  stroke = "#ffffff",
+  stroke = "#a5b4fc",
   strokeWidth = 4,
   width = 200,
   height = 200,
@@ -35,6 +35,15 @@ export const PathDraw: React.FC<PathDrawProps> = ({
 
   return (
     <svg width={width} height={height} viewBox={viewBox}>
+      <defs>
+        <filter id="path-draw-glow">
+          <feGaussianBlur stdDeviation="1.5" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
       <path
         d={d}
         fill={fill}
@@ -44,6 +53,8 @@ export const PathDraw: React.FC<PathDrawProps> = ({
         strokeLinejoin="round"
         strokeDasharray={strokeDasharray}
         strokeDashoffset={strokeDashoffset}
+        filter="url(#path-draw-glow)"
+        opacity={0.95}
       />
     </svg>
   );

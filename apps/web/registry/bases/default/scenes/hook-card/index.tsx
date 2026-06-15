@@ -1,5 +1,12 @@
-import { Easing, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { getSafePadding } from "@/remotion/lib/layout";
+import { loadFont } from "@remotion/google-fonts/Inter";
+import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
+import { DELAY, DURATION, EASING } from "@/remotion/lib/motion-tokens";
+
+const { fontFamily } = loadFont("normal", {
+  weights: ["600", "800", "900"],
+  subsets: ["latin"],
+});
 
 export type HookCardProps = {
   headline: string;
@@ -9,30 +16,42 @@ export type HookCardProps = {
   backgroundColor?: string;
 };
 
+const COLORS = {
+  bg: "#0c0a09",
+  text: "#fafaf9",
+  muted: "#d6d3d1",
+  accent: "#fb923c",
+} as const;
+
 export const HookCard: React.FC<HookCardProps> = ({
   headline,
-  kicker = "Creator insight",
+  kicker,
   subtitle,
-  accentColor = "#f97316",
-  backgroundColor = "#09090b",
+  accentColor = COLORS.accent,
+  backgroundColor = COLORS.bg,
 }) => {
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
-  const padding = getSafePadding({ width, height, ratio: 0.085 });
+  const safeArea = getSafeAreaPadding({ width, height });
   const enter = spring({
     frame,
     fps,
     config: { damping: 16, stiffness: 110, mass: 0.85 },
   });
-  const subtitleEnter = interpolate(frame, [14, 32], [0, 1], {
+  const subtitleEnter = interpolate(
+    frame,
+    [DELAY.short, DELAY.short + DURATION.fast],
+    [0, 1],
+    {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+      easing: EASING.enter,
+    },
+  );
+  const sweep = interpolate(frame, [DELAY.short, DURATION.slow], [-18, 112], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
-    easing: Easing.bezier(0.16, 1, 0.3, 1),
-  });
-  const sweep = interpolate(frame, [8, 54], [-18, 112], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: Easing.bezier(0.16, 1, 0.3, 1),
+    easing: EASING.enter,
   });
 
   return (
@@ -40,13 +59,15 @@ export const HookCard: React.FC<HookCardProps> = ({
       style={{
         width,
         height,
-        padding,
+        paddingLeft: safeArea.paddingLeft,
+        paddingRight: safeArea.paddingRight,
+        paddingTop: safeArea.paddingTop,
+        paddingBottom: safeArea.paddingBottom,
         position: "relative",
         overflow: "hidden",
-        background:
-          backgroundColor,
-        color: "white",
-        fontFamily: "system-ui, sans-serif",
+        background: backgroundColor,
+        color: COLORS.text,
+        fontFamily,
         display: "flex",
         alignItems: "center",
       }}
@@ -55,7 +76,8 @@ export const HookCard: React.FC<HookCardProps> = ({
         style={{
           position: "absolute",
           inset: 0,
-          background: `radial-gradient(circle at 18% 18%, ${accentColor}44, transparent 34%), radial-gradient(circle at 88% 78%, ${accentColor}26, transparent 32%)`,
+          background: `radial-gradient(circle at 16% 16%, ${accentColor}38, transparent 36%)`,
+          pointerEvents: "none",
         }}
       />
       <div
@@ -63,11 +85,12 @@ export const HookCard: React.FC<HookCardProps> = ({
           position: "absolute",
           left: `${sweep}%`,
           top: "-18%",
-          width: width * 0.22,
-          height: height * 1.35,
-          transform: "rotate(14deg)",
-          background: "rgba(255,255,255,0.09)",
+          width: width * 0.2,
+          height: height * 1.3,
+          transform: "rotate(12deg)",
+          background: "rgba(255,255,255,0.06)",
           filter: "blur(4px)",
+          pointerEvents: "none",
         }}
       />
       <div
@@ -75,48 +98,50 @@ export const HookCard: React.FC<HookCardProps> = ({
           position: "relative",
           display: "flex",
           flexDirection: "column",
-          gap: Math.round(width * 0.03),
-          maxWidth: width * 0.82,
+          gap: scaleFont(20, width),
+          maxWidth: width * 0.84,
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 16,
-            opacity: subtitleEnter,
-            transform: `translateY(${(1 - subtitleEnter) * 16}px)`,
-          }}
-        >
+        {kicker ? (
           <div
             style={{
-              width: Math.round(width * 0.085),
-              height: 5,
-              borderRadius: 999,
-              background: accentColor,
-            }}
-          />
-          <div
-            style={{
-              color: accentColor,
-              fontSize: Math.round(width * 0.028),
-              fontWeight: 800,
-              letterSpacing: 0,
-              textTransform: "uppercase",
+              display: "flex",
+              alignItems: "center",
+              gap: scaleFont(14, width),
+              opacity: subtitleEnter,
+              transform: `translateY(${(1 - subtitleEnter) * 14}px)`,
             }}
           >
-            {kicker}
+            <div
+              style={{
+                width: scaleFont(48, width),
+                height: scaleFont(4, width),
+                borderRadius: 999,
+                background: accentColor,
+              }}
+            />
+            <div
+              style={{
+                color: accentColor,
+                fontSize: scaleFont(26, width),
+                fontWeight: 800,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+              }}
+            >
+              {kicker}
+            </div>
           </div>
-        </div>
+        ) : null}
         <h1
           style={{
             margin: 0,
-            fontSize: Math.round(width * 0.092),
-            lineHeight: 0.96,
-            letterSpacing: 0,
-            fontWeight: 950,
+            fontSize: scaleFont(88, width),
+            lineHeight: 0.98,
+            letterSpacing: "-0.03em",
+            fontWeight: 900,
             opacity: Math.min(1, enter),
-            transform: `translateY(${(1 - enter) * 42}px) scale(${0.94 + enter * 0.06})`,
+            transform: `translateY(${(1 - enter) * 36}px) scale(${0.94 + enter * 0.06})`,
             transformOrigin: "left center",
           }}
         >
@@ -126,12 +151,13 @@ export const HookCard: React.FC<HookCardProps> = ({
           <p
             style={{
               margin: 0,
-              maxWidth: width * 0.68,
-              color: "#d4d4d8",
-              fontSize: Math.round(width * 0.036),
-              lineHeight: 1.18,
+              maxWidth: "72%",
+              color: COLORS.muted,
+              fontSize: scaleFont(34, width),
+              lineHeight: 1.2,
+              fontWeight: 500,
               opacity: subtitleEnter,
-              transform: `translateY(${(1 - subtitleEnter) * 18}px)`,
+              transform: `translateY(${(1 - subtitleEnter) * 16}px)`,
             }}
           >
             {subtitle}

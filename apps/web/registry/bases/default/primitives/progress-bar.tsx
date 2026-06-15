@@ -21,9 +21,9 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   progress = 1,
   durationInFrames = 60,
   delayInFrames = 0,
-  color = "#3b82f6",
-  trackColor = "#1e293b",
-  height = 12,
+  color = "#6366f1",
+  trackColor = "rgba(255, 255, 255, 0.08)",
+  height = 10,
   label,
 }) => {
   const frame = useCurrentFrame();
@@ -43,11 +43,11 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
         {label ? (
           <p
             style={{
-              color: "#94a3b8",
+              color: "rgba(248, 250, 252, 0.55)",
               fontSize: scaleFont(32, width),
-              fontFamily: "system-ui, sans-serif",
               marginBottom: 12,
               fontWeight: 500,
+              letterSpacing: "0.02em",
             }}
           >
             {label}
@@ -60,16 +60,17 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
             backgroundColor: trackColor,
             borderRadius: height,
             overflow: "hidden",
-            boxShadow: "inset 0 1px 2px rgba(0,0,0,0.25)",
+            border: "1px solid rgba(255, 255, 255, 0.06)",
+            boxShadow: "inset 0 1px 3px rgba(0, 0, 0, 0.35)",
           }}
         >
           <div
             style={{
               width: `${value * 100}%`,
               height: "100%",
-              backgroundColor: color,
+              background: `linear-gradient(90deg, ${color} 0%, ${color}dd 100%)`,
               borderRadius: height,
-              boxShadow: `0 0 12px ${color}66`,
+              boxShadow: `0 0 16px ${color}55`,
             }}
           />
         </div>

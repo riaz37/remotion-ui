@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from "react";
 import { AbsoluteFill } from "remotion";
+import { BRAND_STAGE } from "@/lib/brand-tokens";
 
 type PreviewLane =
   | "atoms"
@@ -10,65 +11,19 @@ type PreviewLane =
   | "blocks"
   | "reels";
 
-const laneStyles: Record<
-  PreviewLane,
-  { background: string; accent: string; muted: string }
-> = {
-  atoms: {
-    background:
-      "radial-gradient(circle at 18% 18%, rgba(129,140,248,0.30), transparent 32%), linear-gradient(135deg, #101322, #050712)",
-    accent: "#a5b4fc",
-    muted: "#6366f1",
-  },
-  signals: {
-    background:
-      "radial-gradient(circle at 76% 18%, rgba(236,72,153,0.26), transparent 34%), linear-gradient(145deg, #18091b, #07111f)",
-    accent: "#f9a8d4",
-    muted: "#db2777",
-  },
-  vectors: {
-    background:
-      "radial-gradient(circle at 72% 28%, rgba(34,211,238,0.22), transparent 34%), linear-gradient(145deg, #06131b, #08111f)",
-    accent: "#67e8f9",
-    muted: "#0891b2",
-  },
-  spatial: {
-    background:
-      "radial-gradient(circle at 68% 24%, rgba(52,211,153,0.22), transparent 34%), linear-gradient(150deg, #062018, #07111f)",
-    accent: "#6ee7b7",
-    muted: "#059669",
-  },
-  cuts: {
-    background:
-      "radial-gradient(circle at 24% 22%, rgba(251,146,60,0.24), transparent 32%), linear-gradient(140deg, #1e1008, #07111f)",
-    accent: "#fdba74",
-    muted: "#f97316",
-  },
-  blocks: {
-    background:
-      "radial-gradient(circle at 76% 20%, rgba(250,204,21,0.20), transparent 34%), linear-gradient(145deg, #191405, #07111f)",
-    accent: "#fde68a",
-    muted: "#ca8a04",
-  },
-  reels: {
-    background:
-      "radial-gradient(circle at 20% 20%, rgba(244,114,182,0.26), transparent 35%), linear-gradient(145deg, #1d0b17, #070812)",
-    accent: "#f9a8d4",
-    muted: "#db2777",
-  },
-};
+const STAGE = BRAND_STAGE;
 
 export const previewTextStyle: CSSProperties = {
-  color: "white",
+  color: "#ececec",
   fontSize: 52,
   fontFamily: "system-ui, sans-serif",
   textAlign: "center",
   lineHeight: 1,
-  fontWeight: 900,
+  fontWeight: 600,
   letterSpacing: 0,
 };
 
-/** Full-frame scene root — primitives wrap only the label, not AbsoluteFill. */
+/** Full-frame scene root — neutral studio stage. */
 export const PreviewFrame: React.FC<{
   children: ReactNode;
   lane?: PreviewLane;
@@ -78,7 +33,6 @@ export const PreviewFrame: React.FC<{
   padding?: number;
 }> = ({
   children,
-  lane = "atoms",
   backgroundColor,
   justifyContent = "center",
   alignItems = "center",
@@ -86,48 +40,38 @@ export const PreviewFrame: React.FC<{
 }) => (
   <AbsoluteFill
     style={{
-      background: backgroundColor ?? laneStyles[lane].background,
+      background: backgroundColor ?? STAGE,
       justifyContent,
       alignItems,
       padding,
-      color: "white",
+      color: "#ececec",
       fontFamily: "system-ui, sans-serif",
       overflow: "hidden",
     }}
   >
-    <div
-      style={{
-        position: "absolute",
-        inset: 0,
-        background:
-          "linear-gradient(180deg, rgba(255,255,255,0.05), transparent 38%, rgba(0,0,0,0.18))",
-        pointerEvents: "none",
-      }}
-    />
     {children}
   </AbsoluteFill>
 );
 
 export const PreviewLabel: React.FC<{ children: ReactNode; tone?: string }> = ({
   children,
-  tone = "white",
+  tone = "#ececec",
 }) => <div style={{ ...previewTextStyle, color: tone }}>{children}</div>;
 
-export function laneAccent(lane: PreviewLane): string {
-  return laneStyles[lane].accent;
+export function laneAccent(_lane: PreviewLane): string {
+  return "#ececec";
 }
 
 export const PreviewKicker: React.FC<{
   children: ReactNode;
   lane?: PreviewLane;
-}> = ({ children, lane = "atoms" }) => (
+}> = ({ children }) => (
   <div
     style={{
-      color: laneStyles[lane].accent,
+      color: "rgba(236,236,236,0.55)",
       fontSize: 24,
-      fontWeight: 900,
-      textTransform: "uppercase",
-      letterSpacing: "0.14em",
+      fontWeight: 500,
+      letterSpacing: "0.02em",
     }}
   >
     {children}
@@ -141,10 +85,10 @@ export const PreviewHeadline: React.FC<{
   <div
     style={{
       maxWidth: 720,
-      color: "white",
+      color: "#ececec",
       fontSize: size,
       lineHeight: 0.94,
-      fontWeight: 950,
+      fontWeight: 600,
       letterSpacing: 0,
       textAlign: "center",
     }}
@@ -158,7 +102,7 @@ export const ProductCard: React.FC<{
   title: string;
   detail?: string;
   lane?: PreviewLane;
-}> = ({ kicker, title, detail, lane = "atoms" }) => (
+}> = ({ kicker, title, detail }) => (
   <div
     style={{
       width: 590,
@@ -166,24 +110,22 @@ export const ProductCard: React.FC<{
       display: "grid",
       alignContent: "center",
       gap: 16,
-      borderRadius: 30,
+      borderRadius: 8,
       padding: "40px 48px",
-      background: "rgba(255,255,255,0.09)",
-      border: "1px solid rgba(255,255,255,0.17)",
-      boxShadow: `0 34px 100px ${laneStyles[lane].muted}44`,
+      background: "rgba(255,255,255,0.04)",
+      border: "1px solid rgba(255,255,255,0.1)",
       textAlign: "center",
-      backdropFilter: "blur(12px)",
     }}
   >
-    <PreviewKicker lane={lane}>{kicker}</PreviewKicker>
+    <PreviewKicker>{kicker}</PreviewKicker>
     <PreviewHeadline>{title}</PreviewHeadline>
     {detail ? (
       <div
         style={{
-          color: "rgba(255,255,255,0.68)",
+          color: "rgba(236,236,236,0.55)",
           fontSize: 28,
           lineHeight: 1.15,
-          fontWeight: 700,
+          fontWeight: 500,
         }}
       >
         {detail}
@@ -197,24 +139,23 @@ export const MetricPanel: React.FC<{
   value: ReactNode;
   delta: string;
   lane?: PreviewLane;
-}> = ({ label, value, delta, lane = "signals" }) => (
+}> = ({ label, value, delta }) => (
   <div
     style={{
       width: 520,
-      borderRadius: 32,
+      borderRadius: 8,
       padding: "42px 46px",
-      background: "rgba(2,6,23,0.62)",
-      border: "1px solid rgba(255,255,255,0.16)",
-      boxShadow: `0 34px 100px ${laneStyles[lane].muted}38`,
+      background: "rgba(255,255,255,0.04)",
+      border: "1px solid rgba(255,255,255,0.1)",
     }}
   >
-    <PreviewKicker lane={lane}>{label}</PreviewKicker>
+    <PreviewKicker>{label}</PreviewKicker>
     <div
       style={{
         marginTop: 18,
         fontSize: 92,
         lineHeight: 0.9,
-        fontWeight: 950,
+        fontWeight: 600,
         letterSpacing: 0,
       }}
     >
@@ -223,9 +164,9 @@ export const MetricPanel: React.FC<{
     <div
       style={{
         marginTop: 20,
-        color: laneStyles[lane].accent,
+        color: "rgba(236,236,236,0.65)",
         fontSize: 34,
-        fontWeight: 900,
+        fontWeight: 500,
       }}
     >
       {delta}
@@ -236,15 +177,14 @@ export const MetricPanel: React.FC<{
 export const CodePanel: React.FC<{
   lines: string[];
   lane?: PreviewLane;
-}> = ({ lines, lane = "blocks" }) => (
+}> = ({ lines }) => (
   <div
     style={{
       width: 650,
-      borderRadius: 28,
+      borderRadius: 8,
       overflow: "hidden",
-      background: "rgba(2,6,23,0.74)",
-      border: "1px solid rgba(255,255,255,0.16)",
-      boxShadow: `0 34px 100px ${laneStyles[lane].muted}30`,
+      background: "rgba(255,255,255,0.04)",
+      border: "1px solid rgba(255,255,255,0.1)",
       fontFamily: "SFMono-Regular, Menlo, Consolas, monospace",
     }}
   >
@@ -255,12 +195,12 @@ export const CodePanel: React.FC<{
         alignItems: "center",
         gap: 9,
         padding: "0 20px",
-        borderBottom: "1px solid rgba(255,255,255,0.12)",
+        borderBottom: "1px solid rgba(255,255,255,0.08)",
       }}
     >
-      {["#fb7185", "#facc15", "#34d399"].map((color) => (
+      {["#737373", "#737373", "#737373"].map((color, i) => (
         <span
-          key={color}
+          key={i}
           style={{ width: 12, height: 12, borderRadius: 999, background: color }}
         />
       ))}
@@ -270,7 +210,7 @@ export const CodePanel: React.FC<{
         <div
           key={`${line}-${index}`}
           style={{
-            color: index === 1 ? laneStyles[lane].accent : "#e5e7eb",
+            color: index === 1 ? "#e8b86d" : "#e5e7eb",
             fontSize: 25,
             lineHeight: 1.25,
             whiteSpace: "pre",
@@ -287,7 +227,7 @@ export const MediaTile: React.FC<{
   title: string;
   subtitle: string;
   lane?: PreviewLane;
-}> = ({ title, subtitle, lane = "blocks" }) => (
+}> = ({ title, subtitle }) => (
   <div
     style={{
       width: 620,
@@ -295,14 +235,13 @@ export const MediaTile: React.FC<{
       display: "grid",
       alignContent: "end",
       gap: 12,
-      borderRadius: 34,
+      borderRadius: 8,
       padding: 36,
-      background: `radial-gradient(circle at 72% 20%, ${laneStyles[lane].muted}80, transparent 34%), rgba(255,255,255,0.08)`,
-      border: "1px solid rgba(255,255,255,0.16)",
-      boxShadow: `0 34px 100px ${laneStyles[lane].muted}36`,
+      background: "rgba(255,255,255,0.04)",
+      border: "1px solid rgba(255,255,255,0.1)",
     }}
   >
-    <PreviewKicker lane={lane}>{subtitle}</PreviewKicker>
+    <PreviewKicker>{subtitle}</PreviewKicker>
     <PreviewHeadline size={62}>{title}</PreviewHeadline>
   </div>
 );

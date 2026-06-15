@@ -499,7 +499,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     category: "composition",
     usage: `import { Showcase } from "@/remotion/compositions/showcase";
 
-<Showcase title="Demo Reel" subtitle="Transitions & scenes" />`,
+<Showcase title="Product story" subtitle="Install source, compose scenes, render on your timeline" />`,
     props: [
       { name: "title", type: "string", description: "Opening title." },
       { name: "subtitle", type: "string", description: "Opening subtitle." },
@@ -800,9 +800,10 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     category: "scene",
     usage: `import { BRollStack } from "@/remotion/scenes/b-roll-stack";
 
-<BRollStack items={[{ src: staticFile("shot.png"), title: "Proof" }]} />`,
+<BRollStack kicker="Cutaway" items={[{ src: staticFile("shot.png"), title: "Proof" }]} />`,
     props: [
       { name: "items", type: "{ src: string; title?: string }[]", required: true, description: "Media cards to layer." },
+      { name: "kicker", type: "string", description: "Optional uppercase label above the headline." },
       { name: "title", type: "string", description: "Scene headline." },
     ],
     related: ["media-frame", "media-sequence"],
@@ -856,9 +857,11 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     category: "scene",
     usage: `import { CalloutSpotlight } from "@/remotion/scenes/callout-spotlight";
 
-<CalloutSpotlight title="Click export" target={{ x: 320, y: 180, width: 420, height: 180 }} />`,
+<CalloutSpotlight kicker="Tutorial" title="Click export" target={{ x: 320, y: 180, width: 420, height: 180 }} />`,
     props: [
       { name: "title", type: "string", required: true, description: "Callout headline." },
+      { name: "kicker", type: "string", description: "Optional uppercase label above the headline." },
+      { name: "subtitle", type: "string", description: "Supporting line below the headline." },
       { name: "target", type: "SpotlightTarget", required: true, description: "Highlighted rectangle." },
       { name: "backgroundSrc", type: "string", description: "Optional screenshot or media background." },
     ],

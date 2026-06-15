@@ -1,3 +1,4 @@
+import { loadFont } from "@remotion/google-fonts/Inter";
 import type { CSSProperties, ReactNode } from "react";
 import {
   AbsoluteFill,
@@ -20,6 +21,11 @@ import { StaggerChildren } from "@/remotion/primitives/stagger-children";
 import { Typewriter } from "@/remotion/primitives/typewriter";
 import { WordHighlight } from "@/remotion/primitives/word-highlight";
 
+const { fontFamily: interFamily } = loadFont("normal", {
+  weights: ["400", "500", "600", "700", "800"],
+  subsets: ["latin"],
+});
+
 const COLORS = {
   bg: "#080808",
   stage: "#0d0d0d",
@@ -41,7 +47,7 @@ const COLORS = {
 } as const;
 
 const font = {
-  sans: "Inter, ui-sans-serif, system-ui, sans-serif",
+  sans: interFamily,
   mono: '"JetBrains Mono", "SFMono-Regular", Consolas, monospace',
 };
 
@@ -161,7 +167,7 @@ const SceneOneLeft: React.FC = () => (
     <FadeOut delayInFrames={94} durationInFrames={12}>
       <div style={{ maxWidth: 590 }}>
         <BlurIn delayInFrames={20} durationInFrames={25} maxBlur={12}>
-          <p style={eyebrowStyle}>Launch Kit</p>
+          <p style={eyebrowStyle}>RemotionUI</p>
         </BlurIn>
         <SlideUp delayInFrames={40} durationInFrames={30} distance={44}>
           <h1
@@ -474,7 +480,7 @@ const SceneFour: React.FC = () => (
             letterSpacing: 4,
           }}
         >
-          Launch Kit
+          RemotionUI
         </p>
       </RotateIn>
       <FadeIn delayInFrames={20} durationInFrames={18}>
@@ -486,7 +492,7 @@ const SceneFour: React.FC = () => (
             lineHeight: 1.25,
           }}
         >
-          Registry-first motion components for Remotion.
+          Copy-paste motion primitives for Remotion.
         </p>
       </FadeIn>
       <ScaleIn delayInFrames={40} durationInFrames={20}>

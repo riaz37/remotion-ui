@@ -18,7 +18,7 @@ export type WaveformLineProps = {
 export const WaveformLine: React.FC<WaveformLineProps> = ({
   src,
   height = 120,
-  strokeColor = "#60a5fa",
+  strokeColor = "#c084fc",
   strokeWidth = 3,
   samples = 256,
   mirror = false,
@@ -45,7 +45,23 @@ export const WaveformLine: React.FC<WaveformLineProps> = ({
       .join(" ");
     return (
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
-        <path d={placeholder} fill="none" stroke={strokeColor} strokeWidth={strokeWidth} />
+        <defs>
+          <filter id="waveform-glow">
+            <feGaussianBlur stdDeviation="2" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+        <path
+          d={placeholder}
+          fill="none"
+          stroke={strokeColor}
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          filter="url(#waveform-glow)"
+        />
       </svg>
     );
   }
@@ -75,19 +91,29 @@ export const WaveformLine: React.FC<WaveformLineProps> = ({
 
   return (
     <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
+      <defs>
+        <filter id="waveform-glow">
+          <feGaussianBlur stdDeviation="2" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
       <path
         d={path}
         fill="none"
         stroke={strokeColor}
         strokeWidth={strokeWidth}
         strokeLinecap="round"
+        filter="url(#waveform-glow)"
       />
       {mirroredPath ? (
         <path
           d={mirroredPath}
           fill="none"
           stroke={strokeColor}
-          strokeOpacity={0.45}
+          strokeOpacity={0.4}
           strokeWidth={strokeWidth}
           strokeLinecap="round"
         />

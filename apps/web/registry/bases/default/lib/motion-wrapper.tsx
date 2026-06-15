@@ -16,7 +16,14 @@ export const MotionWrapper: React.FC<MotionWrapperProps> = ({
   style,
   className,
 }) => (
-  <div className={className} style={style}>
+  <div
+    className={className}
+    style={{
+      display: "inline-block",
+      verticalAlign: "top",
+      ...style,
+    }}
+  >
     {children}
   </div>
 );

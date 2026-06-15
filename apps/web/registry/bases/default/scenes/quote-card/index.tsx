@@ -1,20 +1,36 @@
+import { loadFont } from "@remotion/google-fonts/Inter";
 import { AbsoluteFill, useVideoConfig } from "remotion";
 import { FadeIn } from "@/remotion/primitives/fade-in";
 import { WordHighlight } from "@/remotion/primitives/word-highlight";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
+import { DURATION } from "@/remotion/lib/motion-tokens";
+
+const { fontFamily } = loadFont("normal", {
+  weights: ["500", "600", "700"],
+  subsets: ["latin"],
+});
 
 export type QuoteCardProps = {
   quote: string;
   highlightWord: string;
-  author: string;
+  author?: string;
   backgroundColor?: string;
+  accentColor?: string;
 };
+
+const COLORS = {
+  bg: "#0d0b14",
+  author: "#a1a1aa",
+  accent: "#e879f9",
+  mark: "rgba(232,121,249,0.35)",
+} as const;
 
 export const QuoteCard: React.FC<QuoteCardProps> = ({
   quote,
   highlightWord,
   author,
-  backgroundColor = "#0f172a",
+  backgroundColor = COLORS.bg,
+  accentColor = COLORS.accent,
 }) => {
   const { width, height } = useVideoConfig();
   const safeArea = getSafeAreaPadding({ width, height });
@@ -23,15 +39,17 @@ export const QuoteCard: React.FC<QuoteCardProps> = ({
     <AbsoluteFill
       style={{
         backgroundColor,
+        backgroundImage: `radial-gradient(circle at 50% 40%, ${COLORS.mark}, transparent 55%)`,
         ...safeArea,
         justifyContent: "center",
         alignItems: "center",
+        fontFamily,
       }}
     >
-      <FadeIn durationInFrames={25}>
+      <FadeIn durationInFrames={DURATION.normal}>
         <blockquote
           style={{
-            maxWidth: "85%",
+            maxWidth: "86%",
             textAlign: "center",
             margin: 0,
           }}
@@ -40,18 +58,22 @@ export const QuoteCard: React.FC<QuoteCardProps> = ({
             text={quote}
             highlightWord={highlightWord}
             fontSize={scaleFont(64, width)}
-            durationInFrames={18}
+            durationInFrames={DURATION.fast}
+            highlightColor={accentColor}
           />
-          <p
-            style={{
-              color: "#94a3b8",
-              fontSize: scaleFont(32, width),
-              fontFamily: "system-ui, sans-serif",
-              marginTop: 24,
-            }}
-          >
-            - {author}
-          </p>
+          {author ? (
+            <p
+              style={{
+                color: COLORS.author,
+                fontSize: scaleFont(32, width),
+                marginTop: scaleFont(24, width),
+                marginBottom: 0,
+                fontWeight: 500,
+              }}
+            >
+              — {author}
+            </p>
+          ) : null}
         </blockquote>
       </FadeIn>
     </AbsoluteFill>

@@ -12,7 +12,7 @@ export type AudioPulseProps = {
 export const AudioPulse: React.FC<AudioPulseProps> = ({
   src,
   size = 240,
-  color = "#60a5fa",
+  color = "#f472b6",
   ringCount = 3,
   sensitivity = 1,
 }) => {
@@ -36,10 +36,10 @@ export const AudioPulse: React.FC<AudioPulseProps> = ({
               position: "absolute",
               inset: 0,
               borderRadius: "50%",
-              border: `3px solid ${color}`,
-              opacity: Math.max(0.18, 0.72 - index * 0.18),
+              border: `2px solid ${color}`,
+              opacity: Math.max(0.15, 0.7 - index * 0.2),
               transform: `scale(${scale})`,
-              boxShadow: `0 0 ${Math.round(28 * intensity)}px ${color}66`,
+              boxShadow: `0 0 ${Math.round(32 * intensity)}px ${color}55`,
             }}
           />
         );
@@ -49,10 +49,10 @@ export const AudioPulse: React.FC<AudioPulseProps> = ({
           position: "absolute",
           inset: "32%",
           borderRadius: "50%",
-          background: color,
-          opacity: 0.9,
+          background: `radial-gradient(circle at 35% 35%, ${color} 0%, ${color}cc 100%)`,
+          opacity: 0.92,
           transform: `scale(${0.82 + intensity * 0.28})`,
-          boxShadow: `0 0 ${Math.round(48 * intensity)}px ${color}`,
+          boxShadow: `0 0 ${Math.round(52 * intensity)}px ${color}88`,
         }}
       />
     </div>

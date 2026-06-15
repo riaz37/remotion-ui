@@ -1,14 +1,17 @@
 import { HomeLayout } from "fumadocs-ui/layouts/home";
 import type { Metadata } from "next";
-import { FeaturedCompositions } from "@/components/featured-compositions";
-import { HeroSection } from "@/components/hero-section";
-import { OnboardingSteps } from "@/components/onboarding-steps";
+import { InstallStrip } from "@/components/landing/install-strip";
+import { LandingCta } from "@/components/landing/landing-cta";
+import { LandingLivePlayground } from "@/components/landing/landing-live-playground";
+import { RecipeRail } from "@/components/landing/recipe-rail";
+import { StoryboardShowcase } from "@/components/landing/storyboard-showcase";
+import { StudioHero } from "@/components/landing/studio-hero";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteLogo } from "@/components/site-logo";
 import { githubStarNavLink } from "@/lib/github-nav-link";
 import { navLinks, siteConfig } from "@/lib/site-config";
 
-const title = "RemotionUI – Production-ready motion for Remotion";
+const title = "RemotionUI – Compositions you own, frame by frame";
 const description = `${siteConfig.tagline} ${siteConfig.description}`;
 
 export const metadata: Metadata = {
@@ -42,9 +45,12 @@ export default function HomePage() {
       ]}
       className="flex flex-1 flex-col"
     >
-      <HeroSection />
-      <FeaturedCompositions />
-      <OnboardingSteps />
+      <StudioHero />
+      <LandingLivePlayground />
+      <RecipeRail />
+      <StoryboardShowcase />
+      <InstallStrip />
+      <LandingCta />
       <SiteFooter />
     </HomeLayout>
   );

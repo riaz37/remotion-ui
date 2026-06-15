@@ -9,6 +9,7 @@ import {
 
 export const BRollStackPreview: React.FC = () => (
   <BRollStack
+    kicker="Cutaway"
     title="Layer supporting visuals"
     items={[
       { src: DEMO_MEDIA_SRC, title: "Hook" },
