@@ -525,7 +525,7 @@ const SceneFour: React.FC = () => {
               maxWidth: scaleFont(920, width),
             }}
           >
-            Copy-paste motion primitives for Remotion.
+            Production-ready motion for Remotion. Source you own.
           </p>
         </FadeIn>
         <ScaleIn delayInFrames={40} durationInFrames={20}>

@@ -47,6 +47,10 @@ reports/
 marketing/
 scripts/render-marketing-demo.sh
 
+# Local component exports (social posts, demos — not shipped)
+exports/
+apps/web/public/showcases/*.mp4
+
 
 # Testing
 coverage/
