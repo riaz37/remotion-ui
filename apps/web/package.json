@@ -40,7 +40,7 @@
   "devDependencies": {
     "@remotion/cli": "^4.0.473",
     "@remotionui/typescript-config": "workspace:*",
-    "@types/node": "^22.13.4",
+    "@types/node": "^25.9.3",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "sharp": "^0.34.5",
