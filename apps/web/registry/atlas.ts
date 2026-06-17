@@ -1,37 +1,66 @@
 export const ATLAS_LANES = {
   atoms: {
-    label: "Atoms",
-    description: "Frame-level enter/exit motion",
+    label: "Primitives",
+    description: "Motion, text effects, and backgrounds",
   },
   signals: {
-    label: "Signals",
-    description: "Data- and media-driven motion",
+    label: "Data & media",
+    description: "Captions, audio, charts, and live metrics",
   },
   vectors: {
-    label: "Vectors",
-    description: "SVG paths, shapes, draw-on",
+    label: "Paths & shapes",
+    description: "SVG draw-on, logos, and cursors",
   },
   spatial: {
-    label: "Spatial",
-    description: "Maps, camera, depth",
+    label: "Maps & device",
+    description: "Map scenes and device mockups",
   },
   blocks: {
-    label: "Blocks",
-    description: "Composed scene layouts",
+    label: "Scenes",
+    description: "Composed layouts, cards, and UI blocks",
   },
   cuts: {
-    label: "Cuts",
-    description: "TransitionSeries presets",
+    label: "Transitions",
+    description: "TransitionSeries scene cuts",
   },
   reels: {
-    label: "Reels",
-    description: "Full composition templates",
+    label: "Compositions",
+    description: "Full video templates",
   },
 } as const;
 
 export type AtlasLane = keyof typeof ATLAS_LANES;
 export type AtlasDrive = "time" | "data" | "media" | "spatial";
 export type AtlasTier = "core" | "advanced";
+
+export type AtlasTagGroup = {
+  tag: string;
+  label: string;
+  minItems?: number;
+};
+
+/** Tag sub-sections within a lane for docs sidebar and browse filters. */
+export const TAG_GROUPS: Record<AtlasLane, AtlasTagGroup[]> = {
+  atoms: [
+    { tag: "text", label: "Text effects", minItems: 3 },
+    { tag: "background", label: "Backgrounds", minItems: 2 },
+  ],
+  signals: [
+    { tag: "captions", label: "Captions", minItems: 3 },
+    { tag: "audio", label: "Audio", minItems: 3 },
+    { tag: "charts", label: "Charts & metrics", minItems: 2 },
+  ],
+  vectors: [],
+  spatial: [],
+  blocks: [
+    { tag: "ai", label: "AI composers", minItems: 3 },
+    { tag: "code", label: "Code & terminal", minItems: 3 },
+    { tag: "creator", label: "Creator", minItems: 3 },
+    { tag: "ui", label: "UI flows", minItems: 2 },
+  ],
+  cuts: [],
+  reels: [],
+};
 
 export type AtlasMeta = {
   lane: AtlasLane;
@@ -65,6 +94,18 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
     tags: ["text"],
   },
   "progress-bar": { lane: "atoms", drive: "time", tier: "core" },
+  "blur-focus-in": { lane: "atoms", drive: "time", tier: "advanced", tags: ["text"] },
+  "staggered-fade-up": { lane: "atoms", drive: "time", tier: "advanced", tags: ["text"] },
+  "masked-slide-reveal": { lane: "atoms", drive: "time", tier: "advanced", tags: ["text"] },
+  "tracking-in": { lane: "atoms", drive: "time", tier: "advanced", tags: ["text"] },
+  "light-sweep-text": { lane: "atoms", drive: "time", tier: "advanced", tags: ["text"] },
+  "marker-highlight": { lane: "atoms", drive: "time", tier: "advanced", tags: ["text"] },
+  "slot-roll": { lane: "atoms", drive: "time", tier: "advanced", tags: ["text"] },
+  "matrix-decode": { lane: "atoms", drive: "time", tier: "advanced", tags: ["text"] },
+  "rgb-glitch-text": { lane: "atoms", drive: "time", tier: "advanced", tags: ["text"] },
+  "infinite-marquee": { lane: "atoms", drive: "time", tier: "advanced", tags: ["text"] },
+  "perspective-marquee": { lane: "atoms", drive: "time", tier: "advanced", tags: ["text"] },
+  "strikethrough-replace": { lane: "atoms", drive: "time", tier: "advanced", tags: ["text"] },
   // Cuts
   "transition-fade": { lane: "cuts", drive: "time", tier: "core" },
   "transition-slide": { lane: "cuts", drive: "time", tier: "core" },
@@ -97,12 +138,23 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
     lane: "signals",
     drive: "data",
     tier: "advanced",
-    tags: ["metrics"],
+    tags: ["charts", "metrics"],
   },
   "timeline-steps": { lane: "blocks", drive: "time", tier: "core" },
   "callout-spotlight": { lane: "blocks", drive: "time", tier: "core" },
   "zoom-pan-frame": { lane: "blocks", drive: "media", tier: "core" },
-  "code-reveal": { lane: "blocks", drive: "time", tier: "core" },
+  "code-reveal": { lane: "blocks", drive: "time", tier: "core", tags: ["code"] },
+  "terminal-simulator": { lane: "blocks", drive: "time", tier: "core", tags: ["code"] },
+  "code-accordion": { lane: "blocks", drive: "time", tier: "core", tags: ["code"] },
+  "code-diff-wipe": { lane: "blocks", drive: "time", tier: "core", tags: ["code"] },
+  "data-flow-pipes": { lane: "blocks", drive: "data", tier: "advanced", tags: ["data"] },
+  "drag-drop-flow": { lane: "blocks", drive: "time", tier: "core", tags: ["ui"] },
+  "chat-to-preview": { lane: "blocks", drive: "time", tier: "advanced", tags: ["ui"] },
+  "claude-chat": { lane: "blocks", drive: "time", tier: "core", tags: ["ai"] },
+  "chat-gpt": { lane: "blocks", drive: "time", tier: "core", tags: ["ai"] },
+  v0: { lane: "blocks", drive: "time", tier: "core", tags: ["ai"] },
+  "claude-code": { lane: "blocks", drive: "time", tier: "core", tags: ["ai"] },
+  opencode: { lane: "blocks", drive: "time", tier: "core", tags: ["ai"] },
   "hook-card": {
     lane: "blocks",
     drive: "time",
@@ -186,13 +238,39 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   // Vectors
   "path-draw": { lane: "vectors", drive: "time", tier: "advanced" },
   "logo-reveal": { lane: "vectors", drive: "time", tier: "advanced" },
-  "line-chart-draw": { lane: "vectors", drive: "data", tier: "advanced" },
+  "line-chart-draw": {
+    lane: "signals",
+    drive: "data",
+    tier: "advanced",
+    tags: ["charts"],
+  },
   "cursor-path": { lane: "vectors", drive: "time", tier: "core" },
   // Spatial
   "map-canvas": { lane: "spatial", drive: "spatial", tier: "advanced" },
   "map-route": { lane: "spatial", drive: "spatial", tier: "advanced" },
   "map-markers": { lane: "spatial", drive: "spatial", tier: "advanced" },
   "map-flight": { lane: "spatial", drive: "spatial", tier: "advanced" },
+  "mesh-gradient-bg": { lane: "atoms", drive: "time", tier: "advanced", tags: ["background"] },
+  "dynamic-grid": { lane: "atoms", drive: "time", tier: "advanced", tags: ["background"] },
+  "directional-wipe": { lane: "cuts", drive: "time", tier: "advanced" },
+  "spatial-push": { lane: "cuts", drive: "time", tier: "advanced" },
+  "chromatic-aberration-wipe": { lane: "cuts", drive: "time", tier: "advanced" },
+  "zoom-through": { lane: "cuts", drive: "time", tier: "advanced" },
+  "confetti-burst": { lane: "atoms", drive: "time", tier: "advanced" },
+  "simulated-cursor": { lane: "vectors", drive: "time", tier: "core" },
+  "device-mockup-zoom": { lane: "spatial", drive: "spatial", tier: "advanced" },
+  "hero-device-assemble": {lane:"reels",drive:"time",tier:"advanced"},
+  "ecosystem-orbit": {lane:"reels",drive:"time",tier:"advanced"},
+  "bento-pan": {lane:"reels",drive:"time",tier:"advanced"},
+  "browser-flow": {lane:"reels",drive:"time",tier:"advanced"},
+  "ai-generation-canvas": {lane:"reels",drive:"time",tier:"advanced"},
+  "live-code-split": {lane:"reels",drive:"time",tier:"advanced"},
+  "deploy-reveal": {lane:"reels",drive:"time",tier:"advanced"},
+  "dashboard-populate": {lane:"reels",drive:"data",tier:"advanced"},
+  "pricing-focus": {lane:"reels",drive:"time",tier:"advanced"},
+  "landing-code-showcase": {lane:"reels",drive:"time",tier:"advanced"},
+  "tool-menu-slide": {lane:"reels",drive:"time",tier:"advanced"},
+  "image-expand": {lane:"reels",drive:"media",tier:"advanced"},
 };
 
 export function getAtlasMeta(name: string): AtlasMeta | undefined {

@@ -1,4 +1,5 @@
 import { interpolate, useCurrentFrame } from "remotion";
+import { EASING } from "@/remotion/lib/motion-tokens";
 import { clampProgress, getPathDrawStyles } from "@/remotion/lib/path-utils";
 
 export type PathDrawProps = {
@@ -29,6 +30,7 @@ export const PathDraw: React.FC<PathDrawProps> = ({
     interpolate(frame, [delayInFrames, delayInFrames + durationInFrames], [0, 1], {
       extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
+      easing: EASING.enter,
     }),
   );
   const { strokeDasharray, strokeDashoffset } = getPathDrawStyles(progress, d);

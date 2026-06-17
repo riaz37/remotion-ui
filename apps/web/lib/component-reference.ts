@@ -361,8 +361,8 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       },
       {
         name: "variant",
-        type: '"linear" | "spring"',
-        default: '"linear"',
+        type: '"linear" | "spring" | "editorial"',
+        default: '"editorial"',
         description: "Timing curve for the fade.",
       },
     ],
@@ -692,7 +692,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     props: [
       { name: "durationInFrames", type: "number", default: "20", description: "Transition overlap length." },
       { name: "maxBlur", type: "number", default: "24", description: "Peak blur radius in px." },
-      { name: "variant", type: '"linear" | "spring"', default: '"linear"', description: "Timing curve." },
+      { name: "variant", type: '"linear" | "spring" | "editorial"', default: '"editorial"', description: "Timing curve." },
     ],
     related: ["transition-fade", "frosted-glass-wipe"],
   },
@@ -938,6 +938,153 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     ],
     related: ["tutorial-clip"],
   },
+  "terminal-simulator": {
+    category: "scene",
+    usage: `import { TerminalSimulator } from "@/remotion/scenes/terminal-simulator";
+
+<TerminalSimulator title="Build output" />`,
+    props: [
+      { name: "lines", type: "TerminalLine[]", description: "Build log lines with optional tone." },
+      { name: "title", type: "string", default: '"Build output"', description: "Terminal window title." },
+      { name: "accentColor", type: "string", default: '"#e8b86d"', description: "Accent and progress color." },
+    ],
+    related: ["code-reveal"],
+  },
+  "code-accordion": {
+    category: "scene",
+    usage: `import { CodeAccordion } from "@/remotion/scenes/code-accordion";
+
+<CodeAccordion activeIndex={1} />`,
+    props: [
+      { name: "sections", type: "AccordionSection[]", description: "Collapsible code sections." },
+      { name: "activeIndex", type: "number", default: "1", description: "Section expanded during the scene." },
+    ],
+    related: ["code-reveal", "code-diff-wipe"],
+  },
+  "code-diff-wipe": {
+    category: "scene",
+    usage: `import { CodeDiffWipe } from "@/remotion/scenes/code-diff-wipe";
+
+<CodeDiffWipe beforeCode={before} afterCode={after} />`,
+    props: [
+      { name: "beforeCode", type: "string", description: "Code shown before the wipe." },
+      { name: "afterCode", type: "string", description: "Code revealed by the wipe." },
+      { name: "wipeStartFrame", type: "number", description: "Frame when the wipe begins." },
+    ],
+    related: ["code-reveal", "code-accordion"],
+  },
+  "data-flow-pipes": {
+    category: "scene",
+    usage: `import { DataFlowPipes } from "@/remotion/scenes/data-flow-pipes";
+
+<DataFlowPipes nodes={nodes} edges={edges} />`,
+    props: [
+      { name: "nodes", type: "FlowNode[]", description: "Pipeline nodes with percent x/y positions." },
+      { name: "edges", type: "FlowEdge[]", description: "Connections between node ids." },
+      { name: "title", type: "string", description: "Scene headline." },
+    ],
+    related: ["timeline-steps", "metric-ticker"],
+  },
+  "drag-drop-flow": {
+    category: "scene",
+    usage: `import { DragDropFlow } from "@/remotion/scenes/drag-drop-flow";
+
+<DragDropFlow fileName="hero-loop.tsx" />`,
+    props: [
+      { name: "fileName", type: "string", default: '"hero-loop.tsx"', description: "Dragged file label." },
+      { name: "dropLabel", type: "string", description: "Drop zone prompt." },
+    ],
+    related: ["cursor-path", "tutorial-clip"],
+  },
+  "chat-to-preview": {
+    category: "scene",
+    usage: `import { ChatToPreview } from "@/remotion/scenes/chat-to-preview";
+
+<ChatToPreview messages={messages} previewTitle="Ship the scene" />`,
+    props: [
+      { name: "messages", type: "ChatMessage[]", description: "Chat transcript before morph." },
+      { name: "previewTitle", type: "string", description: "Headline inside the preview frame." },
+      { name: "morphStartFrame", type: "number", description: "Frame when chat morphs to preview." },
+    ],
+    related: ["talking-head-layout", "media-frame"],
+  },
+  "claude-chat": {
+    category: "scene",
+    usage: `import { ClaudeChat } from "@/remotion/scenes/claude-chat";
+
+<ClaudeChat prompt="Draft a launch tweet for our new release" />`,
+    props: [
+      { name: "placeholder", type: "string", description: "Empty composer placeholder text." },
+      { name: "prompt", type: "string", description: "Prompt typed into the composer." },
+      { name: "modelName", type: "string", default: '"Opus"', description: "Model label in the footer." },
+      { name: "modelTier", type: "string", default: '"Max"', description: "Tier label beside the model." },
+      { name: "accentColor", type: "string", default: '"#D97757"', description: "Accent and send button color." },
+      { name: "theme", type: '"light" | "dark"', default: '"dark"', description: "Light or dark surface palette." },
+    ],
+    related: ["chat-gpt", "v0", "chat-to-preview"],
+  },
+  "chat-gpt": {
+    category: "scene",
+    usage: `import { ChatGpt } from "@/remotion/scenes/chat-gpt";
+
+<ChatGpt prompt="Make a sunset over a calm ocean" />`,
+    props: [
+      { name: "greeting", type: "string", description: "Headline above the composer." },
+      { name: "placeholder", type: "string", description: "Empty input placeholder." },
+      { name: "prompt", type: "string", description: "Prompt typed into the pill input." },
+      { name: "accentColor", type: "string", default: '"#2F6FED"', description: "Accent color for highlights." },
+      { name: "theme", type: '"light" | "dark"', default: '"dark"', description: "Light or dark surface palette." },
+    ],
+    related: ["claude-chat", "v0", "chat-to-preview"],
+  },
+  v0: {
+    category: "scene",
+    usage: `import { V0Composer } from "@/remotion/scenes/v0";
+
+<V0Composer prompt="a landing page for my SaaS with pricing" />`,
+    props: [
+      { name: "greeting", type: "string", description: "Headline above the builder." },
+      { name: "placeholder", type: "string", description: "Empty textarea placeholder." },
+      { name: "prompt", type: "string", description: "Build prompt typed into the textarea." },
+      { name: "modelName", type: "string", default: '"v0 Max"', description: "Model selector label." },
+      { name: "projectName", type: "string", default: '"Project"', description: "Project selector label." },
+      { name: "theme", type: '"light" | "dark"', default: '"dark"', description: "Light or dark surface palette." },
+    ],
+    related: ["claude-chat", "chat-gpt", "chat-to-preview"],
+  },
+  "claude-code": {
+    category: "scene",
+    usage: `import { ClaudeCode } from "@/remotion/scenes/claude-code";
+
+<ClaudeCode prompt='edit src/theme.ts to add a dark mode toggle' />`,
+    props: [
+      { name: "title", type: "string", description: "Terminal window title." },
+      { name: "userName", type: "string", description: "Welcome message name." },
+      { name: "model", type: "string", description: "Active model label." },
+      { name: "cwd", type: "string", description: "Working directory shown in the welcome panel." },
+      { name: "placeholder", type: "string", description: "CLI prompt placeholder before typing." },
+      { name: "prompt", type: "string", description: "Command typed at the CLI prompt." },
+      { name: "accentColor", type: "string", default: '"#D97757"', description: "Dashed border and highlight color." },
+      { name: "theme", type: '"light" | "dark"', default: '"dark"', description: "Light or dark terminal palette." },
+    ],
+    related: ["terminal-simulator", "code-reveal", "opencode"],
+  },
+  opencode: {
+    category: "scene",
+    usage: `import { Opencode } from "@/remotion/scenes/opencode";
+
+<Opencode query='"What is the tech stack of this project?"' />`,
+    props: [
+      { name: "placeholder", type: "string", description: "Muted prefix before the typed query." },
+      { name: "query", type: "string", description: "Query typed after the placeholder." },
+      { name: "agentName", type: "string", default: '"Build"', description: "Active agent label." },
+      { name: "modelName", type: "string", description: "Model name in the status row." },
+      { name: "provider", type: "string", description: "Model provider label." },
+      { name: "accentColor", type: "string", default: '"#2B7FFF"', description: "Left accent bar and agent color." },
+      { name: "theme", type: '"light" | "dark"', default: '"dark"', description: "Light or dark TUI palette." },
+    ],
+    related: ["claude-code", "terminal-simulator", "chat-gpt"],
+  },
   "hook-card": {
     category: "scene",
     usage: `import { HookCard } from "@/remotion/scenes/hook-card";
@@ -1082,6 +1229,355 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       { name: "title", type: "string", description: "Opening title." },
     ],
     related: ["audio-pulse", "waveform-line", "caption-scene"],
+  },
+  "blur-focus-in": {
+    category: "primitive",
+    usage: `import { BlurFocusIn } from "@/remotion/primitives/blur-focus-in";
+
+<BlurFocusIn text="Sharp focus" maxBlur={18} />`,
+    props: [
+      { name: "text", type: "string", required: true, description: "Text to reveal from blur." },
+      { name: "durationInFrames", type: "number", default: "36", description: "Blur-to-sharp duration." },
+      { name: "maxBlur", type: "number", default: "18", description: "Starting blur in pixels." },
+    ],
+    related: ["blur-in", "tracking-in"],
+  },
+  "staggered-fade-up": {
+    category: "primitive",
+    usage: `import { StaggeredFadeUp } from "@/remotion/primitives/staggered-fade-up";
+
+<StaggeredFadeUp text="Words rise in sequence" />`,
+    props: [
+      { name: "text", type: "string", required: true, description: "Space-separated words to stagger." },
+      { name: "staggerInFrames", type: "number", default: "4", description: "Delay between words." },
+    ],
+    related: ["stagger-children", "masked-slide-reveal"],
+  },
+  "masked-slide-reveal": {
+    category: "primitive",
+    usage: `import { MaskedSlideReveal } from "@/remotion/primitives/masked-slide-reveal";
+
+<MaskedSlideReveal text="Slide from mask" />`,
+    props: [{ name: "text", type: "string", required: true, description: "Words to reveal through mask." }],
+    related: ["staggered-fade-up"],
+  },
+  "tracking-in": {
+    category: "primitive",
+    usage: `import { TrackingIn } from "@/remotion/primitives/tracking-in";
+
+<TrackingIn text="Tracking snap" />`,
+    props: [{ name: "text", type: "string", required: true, description: "Headline with tracking collapse." }],
+    related: ["blur-focus-in", "typewriter"],
+  },
+  "light-sweep-text": {
+    category: "primitive",
+    usage: `import { LightSweepText } from "@/remotion/primitives/light-sweep-text";
+
+<LightSweepText text="Light pass" />`,
+    props: [{ name: "text", type: "string", required: true, description: "Text with gradient sweep." }],
+    related: ["marker-highlight"],
+  },
+  "marker-highlight": {
+    category: "primitive",
+    usage: `import { MarkerHighlight } from "@/remotion/primitives/marker-highlight";
+
+<MarkerHighlight text="Highlight one word" highlightWord="one" />`,
+    props: [
+      { name: "text", type: "string", required: true, description: "Full sentence." },
+      { name: "highlightWord", type: "string", required: true, description: "Phrase to mark." },
+    ],
+    related: ["word-highlight"],
+  },
+  "slot-roll": {
+    category: "primitive",
+    usage: `import { SlotRoll } from "@/remotion/primitives/slot-roll";
+
+<SlotRoll from="1200" to="9840" />`,
+    props: [
+      { name: "from", type: "string", required: true, description: "Starting characters." },
+      { name: "to", type: "string", required: true, description: "Target characters." },
+    ],
+    related: ["counter"],
+  },
+  "matrix-decode": {
+    category: "primitive",
+    usage: `import { MatrixDecode } from "@/remotion/primitives/matrix-decode";
+
+<MatrixDecode text="DECODED" />`,
+    props: [{ name: "text", type: "string", required: true, description: "Target string." }],
+    related: ["rgb-glitch-text"],
+  },
+  "rgb-glitch-text": {
+    category: "primitive",
+    usage: `import { RgbGlitchText } from "@/remotion/primitives/rgb-glitch-text";
+
+<RgbGlitchText text="Glitch beat" />`,
+    props: [{ name: "text", type: "string", required: true, description: "Text with RGB split window." }],
+    related: ["matrix-decode"],
+  },
+  "infinite-marquee": {
+    category: "primitive",
+    usage: `import { InfiniteMarquee } from "@/remotion/primitives/infinite-marquee";
+
+<InfiniteMarquee text="Scrolling band" speed={2} />`,
+    props: [{ name: "text", type: "string", required: true, description: "Marquee copy." }],
+    related: ["perspective-marquee"],
+  },
+  "perspective-marquee": {
+    category: "primitive",
+    usage: `import { PerspectiveMarquee } from "@/remotion/primitives/perspective-marquee";
+
+<PerspectiveMarquee text="Depth scroll" />`,
+    props: [{ name: "text", type: "string", required: true, description: "Marquee copy in 3D tilt." }],
+    related: ["infinite-marquee"],
+  },
+  "strikethrough-replace": {
+    category: "primitive",
+    usage: `import { StrikethroughReplace } from "@/remotion/primitives/strikethrough-replace";
+
+<StrikethroughReplace from="Old label" to="New label" />`,
+    props: [
+      { name: "from", type: "string", required: true, description: "Text struck through." },
+      { name: "to", type: "string", required: true, description: "Replacement text." },
+    ],
+    related: ["typewriter"],
+  },
+  "mesh-gradient-bg": {
+    category: "primitive",
+    usage: `import { MeshGradientBg } from "@/remotion/primitives/mesh-gradient-bg";
+
+<MeshGradientBg />`,
+    props: [
+      { name: "backgroundColor", type: "string", default: '"#080810"', description: "Stage color." },
+      { name: "colors", type: "[string, string, string]", description: "Blob accent colors." },
+      { name: "intensity", type: "number", default: "1", description: "Drift amplitude multiplier." },
+    ],
+    related: ["dynamic-grid"],
+  },
+  "dynamic-grid": {
+    category: "primitive",
+    usage: `import { DynamicGrid } from "@/remotion/primitives/dynamic-grid";
+
+<DynamicGrid spacing={48} />`,
+    props: [
+      { name: "spacing", type: "number", default: "48", description: "Grid cell size in px." },
+      { name: "dotSize", type: "number", default: "2", description: "Dot radius in px." },
+      { name: "drift", type: "number", default: "1", description: "Motion speed multiplier." },
+    ],
+    related: ["mesh-gradient-bg"],
+  },
+  "directional-wipe": {
+    category: "primitive",
+    usage: `import { transitionDirectionalWipe } from "@/remotion/primitives/directional-wipe";
+
+<TransitionSeries.Transition {...transitionDirectionalWipe({ direction: "from-left" })} />`,
+    props: [
+      { name: "durationInFrames", type: "number", default: "22", description: "Transition overlap length." },
+      { name: "direction", type: '"from-left" | "from-right" | "from-top" | "from-bottom"', default: '"from-left"', description: "Wipe direction." },
+      { name: "variant", type: '"linear" | "spring" | "editorial"', default: '"editorial"', description: "Timing curve." },
+    ],
+    related: ["transition-wipe", "spatial-push"],
+  },
+  "spatial-push": {
+    category: "primitive",
+    usage: `import { transitionSpatialPush } from "@/remotion/primitives/spatial-push";
+
+<TransitionSeries.Transition {...transitionSpatialPush()} />`,
+    props: [
+      { name: "durationInFrames", type: "number", default: "24", description: "Transition overlap length." },
+      { name: "direction", type: '"from-left" | "from-right"', default: '"from-left"', description: "Push direction." },
+      { name: "pushDepth", type: "number", default: "0.42", description: "Travel depth as fraction of frame." },
+    ],
+    related: ["directional-wipe", "zoom-through"],
+  },
+  "chromatic-aberration-wipe": {
+    category: "primitive",
+    usage: `import { transitionChromaticAberrationWipe } from "@/remotion/primitives/chromatic-aberration-wipe";
+
+<TransitionSeries.Transition {...transitionChromaticAberrationWipe({ split: 10 })} />`,
+    props: [
+      { name: "durationInFrames", type: "number", default: "20", description: "Transition overlap length." },
+      { name: "split", type: "number", default: "10", description: "Peak RGB offset in px." },
+      { name: "tint", type: "string", default: '"#e8b86d"', description: "Sweep edge glow color." },
+    ],
+    related: ["blur-reveal", "directional-wipe"],
+  },
+  "zoom-through": {
+    category: "primitive",
+    usage: `import { transitionZoomThrough } from "@/remotion/primitives/zoom-through";
+
+<TransitionSeries.Transition {...transitionZoomThrough({ enterScale: 1.45 })} />`,
+    props: [
+      { name: "durationInFrames", type: "number", default: "22", description: "Transition overlap length." },
+      { name: "enterScale", type: "number", default: "1.45", description: "Incoming scene start scale." },
+      { name: "exitScale", type: "number", default: "0.82", description: "Outgoing scene end scale." },
+    ],
+    related: ["spatial-push", "blur-reveal"],
+  },
+  "simulated-cursor": {
+    category: "primitive",
+    usage: `import { SimulatedCursor } from "@/remotion/primitives/simulated-cursor";
+
+<SimulatedCursor points={[{ x: 20, y: 60, frame: 0 }, { x: 70, y: 40, frame: 30 }]} clickFrames={[30]} />`,
+    props: [
+      { name: "points", type: "Array<{ x: number; y: number; frame: number }>", description: "Percent-based waypoints with frame timestamps." },
+      { name: "clickFrames", type: "number[]", description: "Frames that trigger click ripples." },
+      { name: "size", type: "number", default: "22", description: "Cursor size in px." },
+    ],
+    related: ["cursor-path"],
+  },
+  "confetti-burst": {
+    category: "primitive",
+    usage: `import { ConfettiBurst } from "@/remotion/primitives/confetti-burst";
+
+<ConfettiBurst originX={50} originY={40} seed="launch" />`,
+    props: [
+      { name: "count", type: "number", default: "48", description: "Particle count." },
+      { name: "originX", type: "number", default: "50", description: "Burst origin X in percent." },
+      { name: "originY", type: "number", default: "42", description: "Burst origin Y in percent." },
+      { name: "seed", type: "string", default: '"confetti"', description: "Deterministic random seed." },
+    ],
+    related: ["spring-in"],
+  },
+  "device-mockup-zoom": {
+    category: "scene",
+    usage: `import { DeviceMockupZoom } from "@/remotion/scenes/device-mockup-zoom";
+
+<DeviceMockupZoom src={staticFile("app.png")} title="Ship faster" device="phone" />`,
+    props: [
+      { name: "src", type: "string", required: true, description: "Screen content image." },
+      { name: "title", type: "string", description: "Headline above the device." },
+      { name: "device", type: '"phone" | "browser"', default: '"phone"', description: "Mockup chrome style." },
+    ],
+    related: ["media-frame", "zoom-pan-frame"],
+  },
+  "hero-device-assemble": {
+    category: "composition",
+    usage: `import { HeroDeviceAssemble } from "@/compositions/hero-device-assemble";
+
+<HeroDeviceAssemble title="Ship on every screen" />`,
+    props: [
+      { name: "title", type: "string", description: "Opening title card headline." },
+      { name: "subtitle", type: "string", description: "Supporting line under the title." },
+    ],
+    note: "1920×1080 product hero. Title card then device mockup assemble.",
+    related: ["title-card", "device-mockup-zoom"],
+  },
+  "ecosystem-orbit": {
+    category: "composition",
+    usage: `import { EcosystemOrbit } from "@/compositions/ecosystem-orbit";
+
+<EcosystemOrbit centerLabel="Your product" satellites={["GitHub", "Vercel", "Stripe"]} />`,
+    props: [
+      { name: "centerLabel", type: "string", default: '"RemotionUI"', description: "Center brand label." },
+      { name: "satellites", type: "string[]", description: "Orbiting integration labels." },
+      { name: "accentColor", type: "string", default: '"#e8b86d"', description: "Center accent color." },
+    ],
+    note: "1920×1080 integration orbit with pulsing connection lines.",
+    related: ["logo-reveal", "showcase"],
+  },
+  "bento-pan": {
+    category: "composition",
+    usage: `import { BentoPan } from "@/compositions/bento-pan";
+
+<BentoPan />`,
+    props: [
+      { name: "backgroundColor", type: "string", default: '"#080810"', description: "Stage background." },
+    ],
+    note: "1920×1080 diagonal bento grid pan with vignette.",
+    related: ["media-sequence", "showcase"],
+  },
+  "browser-flow": {
+    category: "composition",
+    usage: `import { BrowserFlow } from "@/compositions/browser-flow";
+
+<BrowserFlow url="remotionui.com/docs" title="Browse the registry" />`,
+    props: [
+      { name: "url", type: "string", description: "URL shown in the title card subtitle." },
+      { name: "title", type: "string", description: "Opening headline." },
+    ],
+    note: "1920×1080 URL-to-preview flow using chat-to-preview scene.",
+    related: ["chat-to-preview", "title-card"],
+  },
+  "ai-generation-canvas": {
+    category: "composition",
+    usage: `import { AiGenerationCanvas } from "@/compositions/ai-generation-canvas";
+
+<AiGenerationCanvas prompt="Build a launch dashboard" />`,
+    props: [
+      { name: "prompt", type: "string", description: "User prompt shown in chat composer." },
+    ],
+    note: "1920×1080 prompt-to-stat-card generation beat.",
+    related: ["chat-to-preview", "stat-card"],
+  },
+  "live-code-split": {
+    category: "composition",
+    usage: `import { LiveCodeSplit } from "@/compositions/live-code-split";
+
+<LiveCodeSplit code={sourceCode} />`,
+    props: [
+      { name: "code", type: "string", description: "Code reveal content." },
+    ],
+    note: "1920×1080 code editor then live device preview.",
+    related: ["code-reveal", "device-mockup-zoom"],
+  },
+  "deploy-reveal": {
+    category: "composition",
+    usage: `import { DeployReveal } from "@/compositions/deploy-reveal";
+
+<DeployReveal />`,
+    props: [],
+    note: "1920×1080 terminal deploy log then browser reveal.",
+    related: ["terminal-simulator", "device-mockup-zoom"],
+  },
+  "dashboard-populate": {
+    category: "composition",
+    usage: `import { DashboardPopulate } from "@/compositions/dashboard-populate";
+
+<DashboardPopulate />`,
+    props: [],
+    note: "1920×1080 metric ticker then animated bar chart.",
+    related: ["metric-ticker", "animated-bar-chart"],
+  },
+  "pricing-focus": {
+    category: "composition",
+    usage: `import { PricingFocus } from "@/compositions/pricing-focus";
+
+<PricingFocus tiers={[{ name: "Starter", price: "$0" }, { name: "Studio", price: "$29", featured: true }]} />`,
+    props: [
+      { name: "tiers", type: "Array<{ name: string; price: string; featured?: boolean }>", description: "Pricing cards." },
+    ],
+    note: "1920×1080 pricing tier focus with lift and dim siblings.",
+    related: ["stat-card", "feature-list"],
+  },
+  "landing-code-showcase": {
+    category: "composition",
+    usage: `import { LandingCodeShowcase } from "@/compositions/landing-code-showcase";
+
+<LandingCodeShowcase />`,
+    props: [],
+    note: "1920×1080 title card plus install command code reveal.",
+    related: ["title-card", "code-reveal"],
+  },
+  "tool-menu-slide": {
+    category: "composition",
+    usage: `import { ToolMenuSlide } from "@/compositions/tool-menu-slide";
+
+<ToolMenuSlide />`,
+    props: [],
+    note: "1920×1080 staggered tool menu slide-in.",
+    related: ["feature-list", "slide-left"],
+  },
+  "image-expand": {
+    category: "composition",
+    usage: `import { ImageExpand } from "@/compositions/image-expand";
+
+<ImageExpand accentColor="#e8b86d" />`,
+    props: [
+      { name: "accentColor", type: "string", default: '"#e8b86d"', description: "Thumbnail accent color." },
+    ],
+    note: "1920×1080 thumbnail expands to full frame.",
+    related: ["media-frame", "zoom-pan-frame"],
   },
 };
 

@@ -20,12 +20,12 @@ export type CommentCalloutProps = {
 };
 
 const COLORS = {
-  bg: "#0f0d18",
+  bg: "#080810",
   card: "rgba(255,255,255,0.08)",
   border: "rgba(255,255,255,0.14)",
   text: "#fafafa",
   muted: "#a1a1aa",
-  avatarFg: "#0f0d18",
+  avatarFg: "#080810",
   accent: "#f472b6",
 } as const;
 

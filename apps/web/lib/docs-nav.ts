@@ -1,5 +1,5 @@
 import type * as PageTree from "fumadocs-core/page-tree";
-import { ATLAS_LANES, getItemsByLane, type AtlasLane } from "./atlas";
+import { ATLAS_LANES, getAtlasMeta, getItemsByLane, type AtlasLane } from "./atlas";
 import { getComponentDocPath } from "./component-doc-path";
 import { source } from "./source";
 
@@ -10,6 +10,7 @@ export type ComponentLink = {
   description?: string;
   tier?: "core" | "advanced";
   lane?: AtlasLane;
+  tags?: string[];
 };
 
 export type ComponentSection = {
@@ -67,12 +68,19 @@ export function getAtlasSections(): ComponentSection[] {
       title: meta.label,
       basePath: "/docs/components",
       lane,
-      items: items.map((name) => ({
-        name,
-        slug: name,
-        url: getComponentDocPath(name),
-        lane,
-      })),
+      items: items
+        .sort()
+        .map((name) => {
+          const atlas = getAtlasMeta(name);
+          return {
+            name,
+            slug: name,
+            url: getComponentDocPath(name),
+            lane,
+            tier: atlas?.tier,
+            tags: atlas?.tags,
+          };
+        }),
     });
   }
 

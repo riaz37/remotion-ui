@@ -26,7 +26,7 @@ Production-ready motion for Remotion. Source you own. Docs: [remotionui.com](htt
 
 ## What you get
 
-- **60+ components**: primitives, scenes, compositions (captions, charts, social clips, creator reels)
+- **120+ components**: primitives, scenes, compositions (captions, charts, AI composers, social clips, creator reels)
 - **Source you own**: components land in your repo; edit every frame
 - **CLI workflow**: `init`, `add`, `doctor`, `search`, `diff`, `update`, `list`
 - **AI-ready**: [agent index](https://remotionui.com/ai/components.json), [recipes](https://remotionui.com/ai/recipes.json), [llms.txt](https://remotionui.com/llms.txt)
@@ -78,7 +78,8 @@ Run `pnpm skills:sync` to vendor the latest Remotion skills from upstream and li
 | `pnpm build` | Build all packages and apps |
 | `pnpm registry:build` | Build registry JSON for CLI consumption |
 | `pnpm skills:sync` | Sync Remotion Agent Skills and wire Codex |
-| `pnpm lint` | Lint all packages |
+| `pnpm prepare:publish` | Preflight: build, test, registry count, npm dry-run |
+| `pnpm publish:cli` | Publish `remotion-ui` to npm (requires auth) |
 
 ## License
 

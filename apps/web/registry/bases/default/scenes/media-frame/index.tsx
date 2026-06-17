@@ -1,5 +1,5 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
-import { Img, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import { Img, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { Video } from "@remotion/media";
 import {
   getMediaObjectFitStyle,
@@ -42,7 +42,7 @@ export const MediaFrame: React.FC<MediaFrameProps> = ({
   radius,
 }) => {
   const frame = useCurrentFrame();
-  const { width, height } = useVideoConfig();
+  const { fps, width, height } = useVideoConfig();
   const safeArea = getSafeAreaPadding({ width, height });
   const cornerRadius = radius ?? scaleFont(20, width);
   const titleEnter = interpolate(frame, [0, DURATION.fast], [0, 1], {
@@ -50,16 +50,12 @@ export const MediaFrame: React.FC<MediaFrameProps> = ({
     extrapolateRight: "clamp",
     easing: EASING.enter,
   });
-  const mediaEnter = interpolate(
-    frame,
-    [STAGGER.normal, STAGGER.normal + DURATION.fast],
-    [0, 1],
-    {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-      easing: EASING.enter,
-    },
-  );
+  const mediaEnter = spring({
+    frame: frame - STAGGER.normal,
+    fps,
+    config: { damping: 18, stiffness: 110, mass: 0.9 },
+    durationInFrames: DURATION.fast,
+  });
   const captionEnter = interpolate(
     frame,
     [STAGGER.normal * 2, STAGGER.normal * 2 + DURATION.fast],

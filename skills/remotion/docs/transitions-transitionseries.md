@@ -2,7 +2,7 @@
 
 > Official: [https://www.remotion.dev/docs/transitions/transitionseries](https://www.remotion.dev/docs/transitions/transitionseries)
 > Source MDX: [https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/transitions/transitionseries.mdx](https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/transitions/transitionseries.mdx)
-> Mirrored: 2026-06-07
+> Mirrored: 2026-06-17
 
 # &lt;TransitionSeries&gt;
 
@@ -79,7 +79,7 @@ The `` component can only contain ``, ``, and `` components.
 
 ### ``
 
-Inherits the [`durationInFrames`](/docs/sequence#durationinframes), [`name`](/docs/sequence#name), [`className`](/docs/sequence#classname), [`style`](/docs/sequence#style), [`premountFor`](/docs/sequence#premountfor), [`postmountFor`](/docs/sequence#postmountfor) and [`layout`](/docs/sequence#layout) props from [``](/docs/sequence).
+Inherits the [`durationInFrames`](/docs/sequence#durationinframes), [`name`](/docs/sequence#name), [`className`](/docs/sequence#classname), [`style`](/docs/sequence#style), [`showInTimeline`](/docs/sequence#showintimeline), [`freeze`](/docs/sequence#freeze), [`premountFor`](/docs/sequence#premountfor), [`postmountFor`](/docs/sequence#postmountfor) and [`layout`](/docs/sequence#layout) props from [``](/docs/sequence).
 
 As children, put the contents of your scene.
 

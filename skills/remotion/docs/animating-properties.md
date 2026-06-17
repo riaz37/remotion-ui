@@ -2,7 +2,7 @@
 
 > Official: [https://www.remotion.dev/docs/animating-properties](https://www.remotion.dev/docs/animating-properties)
 > Source MDX: [https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/animating-properties.mdx](https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/animating-properties.mdx)
-> Mirrored: 2026-06-07
+> Mirrored: 2026-06-17
 
 Animation works by changing properties over time.  
 Let's create a simple fade in animation.

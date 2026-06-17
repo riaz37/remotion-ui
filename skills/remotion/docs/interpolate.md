@@ -2,7 +2,7 @@
 
 > Official: [https://www.remotion.dev/docs/interpolate](https://www.remotion.dev/docs/interpolate)
 > Source MDX: [https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/interpolate.mdx](https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/interpolate.mdx)
-> Mirrored: 2026-06-07
+> Mirrored: 2026-06-17
 
 Allows you to map a range of values to another using a concise syntax.
 
@@ -103,7 +103,7 @@ const scale = interpolate(frame, [0, 20], [0, 1], {
 
 ## Example: CSS transform values
 
-`outputRange` may contain scale, translate, or rotate strings.
+`outputRange` may contain scale, translate, rotate, or transform origin strings.
 Each value may contain up to three components.
 
 ```tsx twoslash title="MyComposition.tsx"
@@ -120,10 +120,13 @@ export const MyComposition: React.FC = () => {
 Scale values use unitless numbers.
 Translate values use length or percentage units.
 Rotate values use `deg`, `rad`, `grad`, or `turn`.
+Transform origin values may use the `left`, `center`, `right`, `top`, and `bottom` keywords from .
+They are normalized to percentages before interpolation.
+The optional third transform origin component must be a length, for example `10px`.
 
 All values in one interpolation must have the same type.
 For each component, units must match.
-For missing dimensions, CSS defaults are used: scale defaults to `1`, translate and rotate default to `0`.
+For missing dimensions, CSS defaults are used: scale defaults to `1`, translate and rotate default to `0`, and transform origin defaults to `50% 50% 0`.
 
 ## Example: Numeric tuples
 

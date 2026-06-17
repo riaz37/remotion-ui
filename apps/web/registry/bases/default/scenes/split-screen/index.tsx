@@ -1,5 +1,5 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
-import { Img, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import { Img, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { Video } from "@remotion/media";
 import {
   getMediaObjectFitStyle,
@@ -48,10 +48,12 @@ function Panel({
   labelInset: number;
 }) {
   const frame = useCurrentFrame();
-  const progress = interpolate(frame, [delay, delay + DURATION.fast], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: EASING.enter,
+  const { fps } = useVideoConfig();
+  const progress = spring({
+    frame: frame - delay,
+    fps,
+    config: { damping: 18, stiffness: 120, mass: 0.9 },
+    durationInFrames: DURATION.fast,
   });
   const mediaStyle = getMediaObjectFitStyle(panel.fit ?? "contain");
 

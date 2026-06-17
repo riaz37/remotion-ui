@@ -2,7 +2,7 @@
 
 > Official: [https://www.remotion.dev/docs/easing](https://www.remotion.dev/docs/easing)
 > Source MDX: [https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/easing.mdx](https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/easing.mdx)
-> Mirrored: 2026-06-07
+> Mirrored: 2026-06-17
 
 The `Easing` module implements common easing functions. You can use it with the [`interpolate()`](/docs/interpolate) API.
 
@@ -16,6 +16,7 @@ The `Easing` module provides several predefined animations through the following
 - [`bounce`](/docs/easing#bounce) provides a bouncing animation
 - [`ease`](/docs/easing#ease) provides a basic inertial animation
 - [`elastic`](/docs/easing#elastic) provides a basic spring interaction
+- [`spring`](/docs/easing#spring) provides a physics-based spring animation
 
 ### Standard functions
 
@@ -193,6 +194,28 @@ A basic elastic interaction, similar to a spring oscillating back and forth.
 Default bounciness is 1, which overshoots a little bit once. 0 bounciness doesn't overshoot at all, and bounciness of N > 1 will overshoot about N times.
 
 http://easings.net/#easeInElastic
+
+---
+
+### `spring()`
+
+```jsx
+static spring(config?): (t) => number
+```
+
+Creates a spring easing function for [`interpolate()`](/docs/interpolate).
+The curve is normalized to the interpolation progress, so it does not take `frame`, `fps` or `durationInFrames`.
+
+```tsx twoslash title="MyComponent.tsx"
+// ---cut---
+const scale = interpolate(30, [0, 60], [0, 1], {
+  easing: Easing.spring({
+    damping: 200,
+  }),
+});
+```
+
+The supported config fields are `damping`, `mass`, `stiffness` and `overshootClamping`.
 
 ---
 

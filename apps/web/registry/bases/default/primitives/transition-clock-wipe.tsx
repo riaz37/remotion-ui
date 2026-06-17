@@ -1,27 +1,26 @@
-import { linearTiming, springTiming } from "@remotion/transitions";
 import { clockWipe } from "@remotion/transitions/clock-wipe";
-import { springSmooth } from "@/remotion/lib/springs";
+import {
+  resolveTransitionTiming,
+  type TransitionVariant,
+} from "@/remotion/lib/transition-timing";
 
 export type TransitionClockWipeConfig = {
   durationInFrames?: number;
   width: number;
   height: number;
-  variant?: "linear" | "spring";
+  variant?: TransitionVariant;
 };
 
 /** Clock wipe transition config for use with TransitionSeries.Transition */
 export function transitionClockWipe({
-  durationInFrames = 24,
+  durationInFrames = 26,
   width,
   height,
-  variant = "linear",
+  variant = "editorial",
 }: TransitionClockWipeConfig) {
   return {
     presentation: clockWipe({ width, height }),
-    timing:
-      variant === "spring"
-        ? springTiming({ config: springSmooth, durationInFrames })
-        : linearTiming({ durationInFrames }),
+    timing: resolveTransitionTiming({ durationInFrames, variant }),
   };
 }
 

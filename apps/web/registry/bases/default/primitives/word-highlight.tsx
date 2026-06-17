@@ -5,6 +5,7 @@ import { springSmooth } from "@/remotion/lib/springs";
 export type WordHighlightProps = {
   text: string;
   highlightWord: string;
+  mode?: "marker" | "color";
   durationInFrames?: number;
   delayInFrames?: number;
   color?: string;
@@ -53,9 +54,34 @@ const HighlightWipe: React.FC<{
   );
 };
 
+const ColorShiftWord: React.FC<{
+  word: string;
+  baseColor: string;
+  highlightColor: string;
+  delayInFrames: number;
+  durationInFrames: number;
+}> = ({ word, baseColor, highlightColor, delayInFrames, durationInFrames }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const progress = spring({
+    fps,
+    frame,
+    config: springSmooth,
+    delay: delayInFrames,
+    durationInFrames,
+  });
+
+  return (
+    <span style={{ color: progress > 0.5 ? highlightColor : baseColor }}>
+      {word}
+    </span>
+  );
+};
+
 export const WordHighlight: React.FC<WordHighlightProps> = ({
   text,
   highlightWord,
+  mode = "marker",
   durationInFrames = 18,
   delayInFrames = 0,
   color = "#f8fafc",
@@ -87,12 +113,22 @@ export const WordHighlight: React.FC<WordHighlightProps> = ({
   return (
     <span style={baseStyle}>
       {before}
-      <HighlightWipe
-        word={word}
-        color={highlightColor}
-        delayInFrames={delayInFrames}
-        durationInFrames={durationInFrames}
-      />
+      {mode === "color" ? (
+        <ColorShiftWord
+          word={word}
+          baseColor={color}
+          highlightColor={highlightColor}
+          delayInFrames={delayInFrames}
+          durationInFrames={durationInFrames}
+        />
+      ) : (
+        <HighlightWipe
+          word={word}
+          color={highlightColor}
+          delayInFrames={delayInFrames}
+          durationInFrames={durationInFrames}
+        />
+      )}
       {after}
     </span>
   );

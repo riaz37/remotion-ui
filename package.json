@@ -14,6 +14,7 @@
     "skills:sync": "bash scripts/sync-remotion-skills.sh && node scripts/patch-remotion-skill-docs.mjs && node scripts/fetch-remotion-docs.mjs && bash scripts/setup-codex-skills.sh",
     "docs:remotion": "node scripts/fetch-remotion-docs.mjs",
     "publish:cli": "bash scripts/publish-remotion-ui.sh",
+    "prepare:publish": "bash scripts/prepare-publish.sh",
     "qa:browser": "node scripts/qa-browser.mjs",
     "render:showcases": "node scripts/render-showcases.mjs"
   },

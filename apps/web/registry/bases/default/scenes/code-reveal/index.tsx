@@ -66,14 +66,24 @@ export const CodeReveal: React.FC<CodeRevealProps> = ({
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
+        position: "relative",
       }}
     >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: `radial-gradient(ellipse 90% 32% at 50% 0%, ${accentColor}16, transparent 70%)`,
+          pointerEvents: "none",
+        }}
+      />
       <div
         style={{
           borderRadius: scaleFont(18, width),
           background: COLORS.panel,
           border: `1px solid ${COLORS.border}`,
           overflow: "hidden",
+          boxShadow: `inset 0 1px 0 rgba(255,255,255,0.12), 0 ${scaleFont(24, width)}px ${scaleFont(72, width)}px rgba(0,0,0,0.38)`,
         }}
       >
         {title ? (

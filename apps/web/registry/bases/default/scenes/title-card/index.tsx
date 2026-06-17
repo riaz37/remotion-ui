@@ -76,6 +76,14 @@ export const TitleCard: React.FC<TitleCardProps> = ({
       <div
         style={{
           position: "absolute",
+          inset: 0,
+          background: `radial-gradient(ellipse 90% 30% at 50% 0%, ${accentColor}14, transparent 70%)`,
+          pointerEvents: "none",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
           width: "52%",
           height: "52%",
           borderRadius: "50%",

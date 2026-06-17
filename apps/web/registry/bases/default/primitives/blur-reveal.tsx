@@ -1,8 +1,12 @@
 import type { TransitionPresentation } from "@remotion/transitions";
-import { linearTiming, springTiming } from "@remotion/transitions";
 import { useMemo } from "react";
 import { AbsoluteFill, interpolate } from "remotion";
-import { springSmooth } from "@/remotion/lib/springs";
+import {
+  layeredEnterProgress,
+  layeredExitProgress,
+  resolveTransitionTiming,
+  type TransitionVariant,
+} from "@/remotion/lib/transition-timing";
 
 export type BlurRevealProps = {
   maxBlur?: number;
@@ -20,30 +24,34 @@ const BlurRevealPresentation: React.FC<
   passedProps: { maxBlur = 24, shouldBlurOutExitingScene = true },
 }) => {
   const isEntering = presentationDirection === "entering";
+  const layered = isEntering
+    ? layeredEnterProgress(presentationProgress, 0.74)
+    : layeredExitProgress(presentationProgress, 0.7);
+  const motion = isEntering ? layered.motion : 1 - layered.motion;
+  const opacity = isEntering
+    ? layered.opacity
+    : shouldBlurOutExitingScene
+      ? layered.opacity
+      : 1;
 
   const style = useMemo(() => {
-    const opacity = isEntering
-      ? presentationProgress
-      : shouldBlurOutExitingScene
-        ? 1 - presentationProgress
-        : 1;
-
     const blur = isEntering
-      ? interpolate(presentationProgress, [0, 1], [maxBlur, 0])
+      ? interpolate(motion, [0, 0.85, 1], [maxBlur, maxBlur * 0.25, 0])
       : shouldBlurOutExitingScene
-        ? interpolate(presentationProgress, [0, 1], [0, maxBlur])
+        ? interpolate(motion, [0, 0.2, 1], [0, maxBlur * 0.35, maxBlur])
         : 0;
+    const scale = isEntering
+      ? interpolate(motion, [0, 1], [1.03, 1])
+      : shouldBlurOutExitingScene
+        ? interpolate(motion, [0, 1], [1, 0.98])
+        : 1;
 
     return {
       opacity,
       filter: `blur(${blur}px)`,
+      scale,
     };
-  }, [
-    isEntering,
-    maxBlur,
-    presentationProgress,
-    shouldBlurOutExitingScene,
-  ]);
+  }, [isEntering, maxBlur, motion, opacity, shouldBlurOutExitingScene]);
 
   return <AbsoluteFill style={style}>{children}</AbsoluteFill>;
 };
@@ -61,23 +69,20 @@ export function blurReveal(
 export type TransitionBlurRevealConfig = {
   durationInFrames?: number;
   maxBlur?: number;
-  variant?: "linear" | "spring";
+  variant?: TransitionVariant;
   shouldBlurOutExitingScene?: boolean;
 };
 
 /** Blur reveal transition config for use with TransitionSeries.Transition */
 export function transitionBlurReveal({
-  durationInFrames = 20,
+  durationInFrames = 22,
   maxBlur = 24,
-  variant = "linear",
+  variant = "editorial",
   shouldBlurOutExitingScene = true,
 }: TransitionBlurRevealConfig = {}) {
   return {
     presentation: blurReveal({ maxBlur, shouldBlurOutExitingScene }),
-    timing:
-      variant === "spring"
-        ? springTiming({ config: springSmooth, durationInFrames })
-        : linearTiming({ durationInFrames }),
+    timing: resolveTransitionTiming({ durationInFrames, variant }),
   };
 }
 

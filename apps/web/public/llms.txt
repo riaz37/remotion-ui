@@ -41,6 +41,10 @@
 - data-story
 - creator-reel
 - podcast-clip
+- hero-device-assemble
+- ecosystem-orbit
+- bento-pan
+- browser-flow
 
 ## CLI
 

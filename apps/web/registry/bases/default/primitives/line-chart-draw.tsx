@@ -1,5 +1,6 @@
 import { interpolate, useCurrentFrame } from "remotion";
 import { createLinePath, normalizePoints, type ChartPoint } from "@/remotion/lib/chart-utils";
+import { EASING } from "@/remotion/lib/motion-tokens";
 import { getPathDrawStyles } from "@/remotion/lib/path-utils";
 
 export type LineChartDrawProps = {
@@ -25,6 +26,7 @@ export const LineChartDraw: React.FC<LineChartDrawProps> = ({
   const progress = interpolate(frame, [0, durationInFrames], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
+    easing: EASING.enter,
   });
   const normalized = normalizePoints(points, width, height, 36);
   const path = createLinePath(normalized);

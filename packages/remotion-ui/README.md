@@ -57,8 +57,16 @@ import { remotionUiConfigSchema } from "remotion-ui/schema";
 
 ## Publishing (maintainers)
 
+Run the full preflight before tagging or publishing:
+
+```bash
+pnpm prepare:publish
+```
+
+Then deploy [remotionui.com](https://remotionui.com) so the hosted registry is live, tag `v0.x.x`, and publish:
+
 ```bash
 pnpm publish:cli
 ```
 
-Requires `NPM_TOKEN` in the repo root `.env`.
+Requires npm auth (`NPM_TOKEN` in `.env` or GitHub Actions `npm-publish` environment).

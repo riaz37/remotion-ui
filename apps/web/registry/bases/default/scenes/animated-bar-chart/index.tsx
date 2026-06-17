@@ -1,5 +1,5 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
-import { interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import {
   formatCompactNumber,
   getChartDomain,
@@ -39,7 +39,7 @@ export const AnimatedBarChart: React.FC<AnimatedBarChartProps> = ({
   backgroundColor = COLORS.bg,
 }) => {
   const frame = useCurrentFrame();
-  const { width, height } = useVideoConfig();
+  const { fps, width, height } = useVideoConfig();
   const safe = getSafeAreaPadding({ width, height });
   const domain = getChartDomain(data.map((item) => item.value));
   const topValue = maxValue ?? domain.max;
@@ -98,18 +98,19 @@ export const AnimatedBarChart: React.FC<AnimatedBarChartProps> = ({
       >
         {data.map((item, index) => {
           const delay = STAGGER.normal + index * STAGGER.normal;
-          const progress = interpolate(
-            frame,
-            [delay, delay + DURATION.normal],
-            [0, 1],
-            {
-              extrapolateLeft: "clamp",
-              extrapolateRight: "clamp",
-              easing: EASING.enter,
-            },
-          );
+          const progress = spring({
+            frame: frame - delay,
+            fps,
+            config: { damping: 18, stiffness: 120, mass: 0.85 },
+            durationInFrames: DURATION.normal,
+          });
+          const valueProgress = interpolate(progress, [0, 1], [0, 1], {
+            extrapolateLeft: "clamp",
+            extrapolateRight: "clamp",
+            easing: EASING.enter,
+          });
           const widthPercent =
-            Math.max(0.04, item.value / topValue) * progress * 100;
+            Math.max(0.04, item.value / topValue) * valueProgress * 100;
           const fill = item.color ?? barColor;
 
           return (
@@ -161,7 +162,7 @@ export const AnimatedBarChart: React.FC<AnimatedBarChartProps> = ({
                   transform: `translateY(${(1 - progress) * 8}px)`,
                 }}
               >
-                {valueFormatter(Math.round(item.value * progress))}
+                {valueFormatter(Math.round(item.value * valueProgress))}
               </div>
             </div>
           );

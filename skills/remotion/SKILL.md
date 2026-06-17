@@ -7,21 +7,7 @@ metadata:
 
 ## When to use
 
-Use this skill whenever you are dealing with Remotion code to obtain the domain-specific knowledge.
-
-## Official docs mirror (read first)
-
-Before building or changing components, read the mirrored official docs in **[docs/INDEX.md](docs/INDEX.md)**.
-They are fetched from `remotion-dev/remotion` MDX (same source as [remotion.dev/docs](https://www.remotion.dev/docs)).
-
-Refresh the mirror: `pnpm docs:remotion`
-
-Key pages for RemotionUI:
-
-- [docs/sequence.md](docs/sequence.md) — `layout="none"`, `premountFor`, timing children
-- [docs/absolute-fill.md](docs/absolute-fill.md) — full-frame layering only
-- [docs/animating-properties.md](docs/animating-properties.md) — `useCurrentFrame()` + `interpolate()`
-- [docs/transitions-transitionseries.md](docs/transitions-transitionseries.md) — scene transitions
+Use this skills whenever you are dealing with Remotion code to obtain the domain-specific knowledge.
 
 ## New project setup
 
@@ -37,10 +23,12 @@ Replace `my-video` with a suitable project name.
 
 Before designing visual scenes, layouts, promos, motion graphics, or text-heavy videos, load [rules/video-layout.md](rules/video-layout.md) for video-first layout and text sizing guidance.
 
-Animate properties using `useCurrentFrame()` and `interpolate()`. Use Easing to customize the timing of the animation.
+Animate properties using `useCurrentFrame()` and `interpolate()`. Prefer `interpolate()` over `spring()` unless physics-based motion is explicitly needed. Use `Easing.bezier()` to customize timing, including jumpy or overshooting motion.
+
+For animations that should be editable in Remotion Studio, keep the `interpolate()` call inline in the `style` prop and use individual CSS transform properties (`scale`, `translate`, `rotate`) instead of composing a `transform` string.
 
 ```tsx
-import { useCurrentFrame, Easing } from "remotion";
+import { useCurrentFrame, Easing, interpolate, useVideoConfig } from "remotion";
 
 export const FadeIn = () => {
   const frame = useCurrentFrame();
@@ -54,6 +42,26 @@ export const FadeIn = () => {
 
   return <div style={{ opacity }}>Hello World!</div>;
 };
+```
+
+Prefer:
+
+```tsx
+style={{
+  scale: interpolate(frame, [0, 100], [0, 1]),
+  translate: interpolate(frame, [0, 100], ["0px 0px", "100px 100px"]),
+  rotate: interpolate(frame, [0, 100], ["20deg", "90deg"]),
+}}
+```
+
+Over:
+
+```tsx
+const scale = interpolate(frame, [0, 100], [0, 1]);
+
+style={{
+  transform: `scale(${scale})`,
+}}
 ```
 
 CSS transitions or animations are FORBIDDEN - they will not render correctly.  
@@ -248,11 +256,11 @@ When needing to use sound effects, load the [./rules/sfx.md](./rules/sfx.md) fil
 
 ## Visual and pixel effects
 
-When creating a visual effect, prefer: 1. normal Remotion/HTML/CSS/SVG/filter/blend/mask animation, 2. a listed effect via [rules/effects.md](rules/effects.md), including on HTML rendered through `<HtmlInCanvas>`, 3. custom `<HtmlInCanvas onPaint>` via [rules/html-in-canvas.md](rules/html-in-canvas.md) only if no listed effect fits.
+When creating a visual effect, prefer: 1. normal Remotion/HTML/CSS/SVG/filter/blend/mask animation, 2. a listed effect via [rules/effects.md](rules/effects.md), including on HTML rendered through `<HtmlInCanvas>`, 3. a custom `createEffect()` via [rules/effects.md](rules/effects.md) when the user asks for a reusable/project-specific effect, 4. custom `<HtmlInCanvas onPaint>` via [rules/html-in-canvas.md](rules/html-in-canvas.md) only if no effect fits.
 
 For light leak overlays, see [rules/light-leaks.md](rules/light-leaks.md). Docs: https://www.remotion.dev/docs/effects
 
-Available effects: `barrelDistortion()`, `blur()`, `brightness()`, `chromaticAberration()`, `colorKey()`, `contrast()`, `dotGrid()`, `dropShadow()`, `duotone()`, `evolve()`, `fisheye()`, `glow()`, `grayscale()`, `halftone()`, `halftoneLinearGradient()`, `hue()`, `invert()`, `lightLeak()`, `linearProgressiveBlur()`, `lines()`, `mirror()`, `noise()`, `pixelDissolve()`, `rings()`, `saturation()`, `scale()`, `scanlines()`, `shine()`, `speckle()`, `starburst()`, `tint()`, `uvTranslate()`, `vignette()`, `wave()`, `waves()`, `whiteNoise()`, `xyTranslate()`, `zigzag()`.
+Available effects: `brightness()`, `contrast()`, `colorKey()`, `duotone()`, `grayscale()`, `hue()`, `invert()`, `saturation()`, `tint()`, `thermalVision()`, `blur()`, `linearProgressiveBlur()`, `dropShadow()`, `glow()`, `evolve()`, `mirror()`, `scale()`, `uvTranslate()`, `xyTranslate()`, `barrelDistortion()`, `chromaticAberration()`, `fisheye()`, `wave()`, `burlap()`, `emboss()`, `dotGrid()`, `halftone()`, `noise()`, `noiseDisplacement()`, `pattern()`, `pixelate()`, `pixelDissolve()`, `scanlines()`, `speckle()`, `shine()`, `shrinkwrap()`, `vignette()`, `contourLines()`, `halftoneLinearGradient()`, `whiteNoise()`, `tvSignalOff()`, `lines()`, `rings()`, `waves()`, `zigzag()`, `lightLeak()`, `starburst()`.
 
 ## 3D content
 

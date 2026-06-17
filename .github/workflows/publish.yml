@@ -32,6 +32,23 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Preflight publish prep (without dry-run upload)
+        run: |
+          VERSION="$(node -p "require('./packages/remotion-ui/package.json').version")"
+          awk -v ver="$VERSION" '
+            /^## / { if ($2 == ver) found=1 }
+            END { exit found ? 0 : 1 }
+          ' CHANGELOG.md
+          pnpm registry:build
+          node -e "
+            const count = require('./apps/web/public/r/index.json').items.length;
+            if (count < 100) {
+              console.error('Registry item count too low:', count);
+              process.exit(1);
+            }
+            console.log('Registry items:', count);
+          "
+
       - name: Build CLI
         run: pnpm --filter remotion-ui build
 
