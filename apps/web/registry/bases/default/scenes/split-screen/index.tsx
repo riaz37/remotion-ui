@@ -7,10 +7,10 @@ import {
   type MediaFit,
 } from "@/remotion/lib/media-utils";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
-import { DURATION, STAGGER } from "@/remotion/lib/motion-tokens";
+import { DURATION, EASING, STAGGER } from "@/remotion/lib/motion-tokens";
 
 const { fontFamily } = loadFont("normal", {
-  weights: ["400", "700", "800"],
+  weights: ["400", "600", "700"],
   subsets: ["latin"],
 });
 
@@ -29,28 +29,31 @@ export type SplitScreenProps = {
 };
 
 const COLORS = {
-  bg: "#0c1018",
+  bg: "#080810",
   panel: "#0a0e14",
   labelBg: "rgba(8,12,20,0.85)",
   text: "#ffffff",
-  accent: "#818cf8",
+  accent: "#e8b86d",
 } as const;
 
 function Panel({
   panel,
   delay,
   labelSize,
+  labelInset,
 }: {
   panel: SplitScreenPanel;
   delay: number;
   labelSize: number;
+  labelInset: number;
 }) {
   const frame = useCurrentFrame();
   const progress = interpolate(frame, [delay, delay + DURATION.fast], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
+    easing: EASING.enter,
   });
-  const mediaStyle = getMediaObjectFitStyle(panel.fit);
+  const mediaStyle = getMediaObjectFitStyle(panel.fit ?? "contain");
 
   return (
     <div
@@ -75,15 +78,19 @@ function Panel({
         <div
           style={{
             position: "absolute",
-            left: 20,
-            top: 20,
-            padding: "8px 14px",
+            left: labelInset,
+            top: labelInset,
+            padding: `${Math.round(labelInset * 0.5)}px ${labelInset}px`,
             borderRadius: 999,
             background: COLORS.labelBg,
             color: COLORS.text,
             fontSize: labelSize,
-            fontWeight: 700,
+            fontWeight: 600,
             fontFamily,
+            maxWidth: `calc(100% - ${labelInset * 2}px)`,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
           }}
         >
           {panel.label}
@@ -100,10 +107,19 @@ export const SplitScreen: React.FC<SplitScreenProps> = ({
   backgroundColor = COLORS.bg,
   accentColor = COLORS.accent,
 }) => {
+  const frame = useCurrentFrame();
   const { width, height } = useVideoConfig();
   const safe = getSafeAreaPadding({ width, height });
   const isPortrait = height > width;
   const labelSize = scaleFont(26, width);
+  const labelInset = scaleFont(16, width);
+  const titleProgress = title
+    ? interpolate(frame, [0, DURATION.fast], [0, 1], {
+        extrapolateLeft: "clamp",
+        extrapolateRight: "clamp",
+        easing: EASING.enter,
+      })
+    : 0;
 
   return (
     <div
@@ -126,10 +142,12 @@ export const SplitScreen: React.FC<SplitScreenProps> = ({
         <div
           style={{
             fontSize: scaleFont(64, width),
-            fontWeight: 800,
+            fontWeight: 700,
             lineHeight: 1.05,
             letterSpacing: "-0.02em",
             color: accentColor,
+            opacity: titleProgress,
+            transform: `translateY(${(1 - titleProgress) * 16}px)`,
           }}
         >
           {title}
@@ -144,8 +162,18 @@ export const SplitScreen: React.FC<SplitScreenProps> = ({
           gap: scaleFont(20, width),
         }}
       >
-        <Panel panel={left} delay={0} labelSize={labelSize} />
-        <Panel panel={right} delay={STAGGER.normal} labelSize={labelSize} />
+        <Panel
+          panel={left}
+          delay={STAGGER.normal}
+          labelSize={labelSize}
+          labelInset={labelInset}
+        />
+        <Panel
+          panel={right}
+          delay={STAGGER.normal * 2}
+          labelSize={labelSize}
+          labelInset={labelInset}
+        />
       </div>
     </div>
   );

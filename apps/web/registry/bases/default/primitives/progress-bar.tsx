@@ -21,7 +21,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   progress = 1,
   durationInFrames = 60,
   delayInFrames = 0,
-  color = "#6366f1",
+  color = "#e8b86d",
   trackColor = "rgba(255, 255, 255, 0.08)",
   height = 10,
   label,

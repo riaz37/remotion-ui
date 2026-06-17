@@ -1,9 +1,9 @@
-import { AbsoluteFill, useVideoConfig } from "remotion";
+import { useVideoConfig } from "remotion";
 import { FadeIn } from "@/remotion/primitives/fade-in";
 import { PathDraw } from "@/remotion/primitives/path-draw";
 import { ScaleIn } from "@/remotion/primitives/scale-in";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
-import { DURATION } from "@/remotion/lib/motion-tokens";
+import { DELAY, DURATION } from "@/remotion/lib/motion-tokens";
 
 export type LogoRevealProps = {
   pathD: string;
@@ -16,9 +16,9 @@ export type LogoRevealProps = {
 };
 
 const COLORS = {
-  bg: "#0b0f1a",
-  stroke: "#818cf8",
-  glow: "rgba(129,140,248,0.2)",
+  bg: "#080810",
+  stroke: "#e8b86d",
+  glow: "rgba(232,184,109,0.2)",
 } as const;
 
 export const LogoReveal: React.FC<LogoRevealProps> = ({
@@ -37,8 +37,10 @@ export const LogoReveal: React.FC<LogoRevealProps> = ({
   const lineWidth = strokeWidth ?? scaleFont(4, width);
 
   return (
-    <AbsoluteFill
+    <div
       style={{
+        width,
+        height,
         backgroundColor,
         paddingLeft: safeArea.paddingLeft,
         paddingRight: safeArea.paddingRight,
@@ -47,6 +49,7 @@ export const LogoReveal: React.FC<LogoRevealProps> = ({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        position: "relative",
       }}
     >
       <div
@@ -69,10 +72,11 @@ export const LogoReveal: React.FC<LogoRevealProps> = ({
             height={drawHeight}
             stroke={stroke}
             strokeWidth={lineWidth}
+            delayInFrames={DELAY.short}
             durationInFrames={DURATION.slow * 2}
           />
         </FadeIn>
       </ScaleIn>
-    </AbsoluteFill>
+    </div>
   );
 };

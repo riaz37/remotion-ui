@@ -25,6 +25,9 @@ export { CaptionHighlight } from "../registry/bases/default/primitives/caption-h
 export { AudiogramBars } from "../registry/bases/default/primitives/audiogram-bars";
 export { PathDraw } from "../registry/bases/default/primitives/path-draw";
 export { MapFlight } from "../registry/bases/default/scenes/map-flight";
+export { MapCanvas } from "../registry/bases/default/primitives/map-canvas";
+export { MapRoute } from "../registry/bases/default/primitives/map-route";
+export { MapMarkers } from "../registry/bases/default/primitives/map-markers";
 export { CaptionScene } from "../registry/bases/default/scenes/caption-scene";
 export { AudiogramScene } from "../registry/bases/default/scenes/audiogram-scene";
 export { LogoReveal } from "../registry/bases/default/scenes/logo-reveal";
@@ -52,3 +55,11 @@ export { TutorialClip } from "../registry/bases/default/compositions/tutorial-cl
 export { DataStory } from "../registry/bases/default/compositions/data-story";
 export { PodcastClip } from "../registry/bases/default/compositions/podcast-clip";
 export { CreatorReel } from "../registry/bases/default/compositions/creator-reel";
+export { transitionFade, getTransitionFadeDuration } from "../registry/bases/default/primitives/transition-fade";
+export { transitionSlide, getTransitionSlideDuration } from "../registry/bases/default/primitives/transition-slide";
+export { transitionWipe, getTransitionWipeDuration } from "../registry/bases/default/primitives/transition-wipe";
+export { transitionClockWipe, getTransitionClockWipeDuration } from "../registry/bases/default/primitives/transition-clock-wipe";
+export { TransitionLightLeak } from "../registry/bases/default/primitives/transition-light-leak";
+export { transitionBlurReveal, getTransitionBlurRevealDuration } from "../registry/bases/default/primitives/blur-reveal";
+export { transitionGridPixelateWipe, getTransitionGridPixelateWipeDuration } from "../registry/bases/default/primitives/grid-pixelate-wipe";
+export { transitionFrostedGlassWipe, getTransitionFrostedGlassWipeDuration } from "../registry/bases/default/primitives/frosted-glass-wipe";

@@ -1,4 +1,4 @@
-import { DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/layouts/docs/page";
+import { DocsPage, DocsDescription, DocsTitle } from "fumadocs-ui/layouts/docs/page";
 import type { Metadata } from "next";
 import { RecipeWizard } from "@/components/docs/recipe-wizard";
 import { siteConfig } from "@/lib/site-config";

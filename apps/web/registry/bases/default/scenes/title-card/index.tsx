@@ -1,12 +1,10 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
-import { AbsoluteFill, useVideoConfig } from "remotion";
-import { FadeIn } from "@/remotion/primitives/fade-in";
-import { ScaleIn } from "@/remotion/primitives/scale-in";
+import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
-import { DURATION } from "@/remotion/lib/motion-tokens";
+import { DELAY, DURATION, EASING } from "@/remotion/lib/motion-tokens";
 
 const { fontFamily } = loadFont("normal", {
-  weights: ["500", "700", "800"],
+  weights: ["500", "700"],
   subsets: ["latin"],
 });
 
@@ -21,8 +19,8 @@ const COLORS = {
   bg: "#080810",
   title: "#fafafa",
   subtitle: "#71717a",
-  accent: "#6366f1",
-  glow: "rgba(99,102,241,0.22)",
+  accent: "#e8b86d",
+  glow: "rgba(232,184,109,0.22)",
 } as const;
 
 export const TitleCard: React.FC<TitleCardProps> = ({
@@ -31,20 +29,48 @@ export const TitleCard: React.FC<TitleCardProps> = ({
   backgroundColor = COLORS.bg,
   accentColor = COLORS.accent,
 }) => {
-  const { width, height } = useVideoConfig();
+  const frame = useCurrentFrame();
+  const { fps, width, height } = useVideoConfig();
   const safeArea = getSafeAreaPadding({ width, height });
+  const barWidth = scaleFont(72, width);
+
+  const barDraw = interpolate(frame, [0, DURATION.fast], [0, 1], {
+    easing: EASING.enter,
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const titleEnter = spring({
+    frame,
+    fps,
+    config: { damping: 16, stiffness: 110, mass: 0.85 },
+    delay: DELAY.short,
+  });
+  const subtitleEnter = interpolate(
+    frame,
+    [DELAY.medium, DELAY.medium + DURATION.fast],
+    [0, 1],
+    {
+      easing: EASING.enter,
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+    },
+  );
 
   return (
-    <AbsoluteFill
+    <div
       style={{
+        width,
+        height,
         backgroundColor,
         paddingLeft: safeArea.paddingLeft,
         paddingRight: safeArea.paddingRight,
         paddingTop: safeArea.paddingTop,
         paddingBottom: safeArea.paddingBottom,
-        justifyContent: "center",
+        display: "flex",
         alignItems: "center",
+        justifyContent: "center",
         fontFamily,
+        position: "relative",
       }}
     >
       <div
@@ -66,44 +92,56 @@ export const TitleCard: React.FC<TitleCardProps> = ({
           pointerEvents: "none",
         }}
       />
-      <ScaleIn durationInFrames={DURATION.normal}>
-        <FadeIn durationInFrames={DURATION.fast}>
-          <div
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: scaleFont(24, width),
+          maxWidth: "88%",
+          textAlign: "center",
+          position: "relative",
+        }}
+      >
+        <div
+          style={{
+            width: barWidth * barDraw,
+            height: scaleFont(4, width),
+            borderRadius: 999,
+            backgroundColor: accentColor,
+            boxShadow: `0 0 ${scaleFont(20, width)}px ${accentColor}66`,
+          }}
+        />
+        <h1
+          style={{
+            color: COLORS.title,
+            fontSize: scaleFont(84, width),
+            fontWeight: 700,
+            margin: 0,
+            lineHeight: 1.05,
+            letterSpacing: "-0.03em",
+            opacity: Math.min(1, titleEnter),
+            transform: `translateY(${(1 - titleEnter) * 28}px) scale(${0.94 + titleEnter * 0.06})`,
+          }}
+        >
+          {title}
+        </h1>
+        {subtitle ? (
+          <p
             style={{
-              textAlign: "center",
-              position: "relative",
-              maxWidth: "88%",
+              color: COLORS.subtitle,
+              fontSize: scaleFont(36, width),
+              margin: 0,
+              lineHeight: 1.35,
+              fontWeight: 500,
+              opacity: subtitleEnter,
+              transform: `translateY(${(1 - subtitleEnter) * 16}px)`,
             }}
           >
-            <h1
-              style={{
-                color: COLORS.title,
-                fontSize: scaleFont(84, width),
-                fontWeight: 800,
-                margin: 0,
-                lineHeight: 1.05,
-                letterSpacing: "-0.03em",
-              }}
-            >
-              {title}
-            </h1>
-            {subtitle ? (
-              <p
-                style={{
-                  color: COLORS.subtitle,
-                  fontSize: scaleFont(36, width),
-                  marginTop: scaleFont(20, width),
-                  marginBottom: 0,
-                  lineHeight: 1.35,
-                  fontWeight: 500,
-                }}
-              >
-                {subtitle}
-              </p>
-            ) : null}
-          </div>
-        </FadeIn>
-      </ScaleIn>
-    </AbsoluteFill>
+            {subtitle}
+          </p>
+        ) : null}
+      </div>
+    </div>
   );
 };

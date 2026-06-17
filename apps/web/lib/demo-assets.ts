@@ -4,6 +4,79 @@ import { BRAND_MARK_SVG } from "./brand-mark-svg";
 export const DEMO_AUDIO_SRC =
   "https://remotion.media/audio.wav";
 
+/** Curated demo palette — see skills/remotion-ui/rules/component-polish.md */
+export const DEMO_PALETTE = {
+  phosphor: "#e8b86d",
+  amber: "#f59e0b",
+  teal: "#2dd4bf",
+  rose: "#f472b6",
+  bg: "#080810",
+  bgRaised: "#0c0c14",
+  text: "#fafafa",
+  muted: "#71717a",
+} as const;
+
+/** Docs preview backdrop — matches caption-scene / audiogram-scene plate */
+export const SCENE_PREVIEW_GRADIENT =
+  `radial-gradient(circle at 18% 18%, rgba(232,184,109,0.14) 0%, transparent 46%), radial-gradient(circle at 82% 64%, rgba(45,212,191,0.10) 0%, transparent 52%), linear-gradient(to bottom, #050510 0%, ${DEMO_PALETTE.bg} 100%)`;
+
+/** Aspect presets for docs preview QA */
+export const PREVIEW_LANDSCAPE = { width: 960, height: 540 } as const;
+export const PREVIEW_PORTRAIT = { width: 1080, height: 1920 } as const;
+export const PREVIEW_HD = { width: 1920, height: 1080 } as const;
+
+/** Story-specific copy deck — avoid tagline reuse across previews */
+export const DEMO_COPY = {
+  productLaunch: {
+    title: "Frame registry",
+    subtitle: "Install compositions as source you own",
+    featureTitle: "Three layers in your repo",
+    featureItems: [
+      "Motion primitives you can edit",
+      "Scenes for hooks, charts, and captions",
+      "Compositions that wire the full story",
+    ],
+  },
+  creatorHook: {
+    eyebrow: "Creator insight",
+    headline: "Make the first second count",
+    subtitle: "Hook viewers before they scroll",
+  },
+  creatorComment: {
+    author: "Alex Chen",
+    handle: "@alexchen",
+    body: "Can you break down how you built that transition?",
+  },
+  dataStory: {
+    title: "Quarterly reach by channel",
+    subtitle: "Short-form climbed while long-form held attention",
+    chartTitle: "Views by format",
+    metricsTitle: "Signals that mattered",
+    timelineTitle: "How we read the quarter",
+    insightEyebrow: "Takeaway",
+    ctaTitle: "Turn your data into motion",
+    statValue: 3,
+    statLabel: "Runtime dependencies",
+    statSuffix: "",
+  },
+  podcast: {
+    title: "Ship faster with source",
+    subtitle: "Edit every frame in your repo",
+  },
+  tutorial: {
+    calloutTitle: "Wire the composition",
+    calloutSubtitle: "Drop scenes into TransitionSeries",
+  },
+  quote: {
+    text: "The best motion is code you can read and change.",
+    attribution: "Remotion team",
+  },
+  endCard: {
+    ctaLabel: "Browse components",
+    ctaUrl: "remotionui.dev/docs/components",
+  },
+} as const;
+
 const svgData = (svg: string) =>
   `data:image/svg+xml,${encodeURIComponent(svg)}`;
 
@@ -12,18 +85,18 @@ export const DEMO_MEDIA_SRC = svgData(`
   <defs>
     <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
       <stop stop-color="#111827"/>
-      <stop offset="1" stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#1a1510"/>
     </linearGradient>
   </defs>
   <rect width="1280" height="720" fill="url(#g)"/>
-  <circle cx="1030" cy="146" r="190" fill="#93c5fd" opacity=".25"/>
+  <circle cx="1030" cy="146" r="190" fill="${DEMO_PALETTE.phosphor}" opacity=".18"/>
   <rect x="104" y="96" width="650" height="430" rx="42" fill="#f8fafc" opacity=".12"/>
   <rect x="154" y="154" width="450" height="38" rx="19" fill="#f8fafc" opacity=".78"/>
-  <rect x="154" y="224" width="312" height="28" rx="14" fill="#bfdbfe" opacity=".95"/>
+  <rect x="154" y="224" width="312" height="28" rx="14" fill="${DEMO_PALETTE.amber}" opacity=".85"/>
   <rect x="154" y="306" width="500" height="112" rx="28" fill="#020617" opacity=".42"/>
   <rect x="804" y="342" width="300" height="118" rx="34" fill="#f8fafc" opacity=".14"/>
-  <text x="112" y="610" font-family="Arial,sans-serif" font-size="60" font-weight="800" fill="#f8fafc">Launch dashboard</text>
-  <text x="114" y="658" font-family="Arial,sans-serif" font-size="28" fill="#bfdbfe">Feature story, KPI, and product frame</text>
+  <text x="112" y="610" font-family="Arial,sans-serif" font-size="60" font-weight="700" fill="#f8fafc">Launch dashboard</text>
+  <text x="114" y="658" font-family="Arial,sans-serif" font-size="28" fill="${DEMO_PALETTE.phosphor}">Feature story, KPI, and product frame</text>
 </svg>`);
 
 export const DEMO_MEDIA_ALT_SRC = svgData(`

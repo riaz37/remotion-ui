@@ -37,12 +37,12 @@ const COLORS = {
   secondary: "#999999",
   muted: "#555555",
   dim: "#333333",
-  accent: "#6366f1",
-  accentLight: "#a5b4fc",
+  accent: "#e8b86d",
+  accentLight: "#f0d4a8",
   green: "#4ade80",
   yellow: "#fcd34d",
   pink: "#f9a8d4",
-  cyan: "#67e8f9",
+  cyan: "#2dd4bf",
   purpleCode: "#c084fc",
 } as const;
 
@@ -548,11 +548,10 @@ const InlineProgressBar: React.FC = () => {
           margin: "14px 0 0",
           color: "#444444",
           fontSize: 16,
-          letterSpacing: 1.8,
-          textTransform: "uppercase",
+          letterSpacing: 0.02,
         }}
       >
-        9 primitives. source-owned.
+        9 primitives. Source-owned.
       </p>
     </div>
   );
@@ -669,9 +668,8 @@ const eyebrowStyle: CSSProperties = {
   color: COLORS.muted,
   fontSize: 16,
   fontWeight: 700,
-  letterSpacing: 3,
+  letterSpacing: 0.02,
   lineHeight: 1,
-  textTransform: "uppercase",
 };
 
 const largeLineStyle: CSSProperties = {
@@ -710,8 +708,7 @@ const demoLabelStyle: CSSProperties = {
   color: COLORS.muted,
   fontSize: 14,
   fontWeight: 700,
-  letterSpacing: 2,
-  textTransform: "uppercase",
+  letterSpacing: 0.02,
 };
 
 const pillStyle: CSSProperties = {

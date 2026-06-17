@@ -1,8 +1,14 @@
 import { Img, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import {
+  getMediaObjectFitStyle,
+  type MediaFit,
+} from "@/remotion/lib/media-utils";
 import { getSafeAreaPadding } from "@/remotion/lib/layout";
+import { EASING } from "@/remotion/lib/motion-tokens";
 
 export type ZoomPanFrameProps = {
   src: string;
+  fit?: MediaFit;
   fromScale?: number;
   toScale?: number;
   fromX?: number;
@@ -20,6 +26,7 @@ const COLORS = {
 
 export const ZoomPanFrame: React.FC<ZoomPanFrameProps> = ({
   src,
+  fit = "contain",
   fromScale = 1,
   toScale = 1.22,
   fromX = 0,
@@ -35,10 +42,12 @@ export const ZoomPanFrame: React.FC<ZoomPanFrameProps> = ({
   const progress = interpolate(frame, [0, durationInFrames], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
+    easing: EASING.editorial,
   });
   const scale = fromScale + (toScale - fromScale) * progress;
   const x = fromX + (toX - fromX) * progress;
   const y = fromY + (toY - fromY) * progress;
+  const mediaStyle = getMediaObjectFitStyle(fit);
 
   return (
     <div
@@ -53,10 +62,9 @@ export const ZoomPanFrame: React.FC<ZoomPanFrameProps> = ({
       <Img
         src={src}
         style={{
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
+          ...mediaStyle,
           transform: `translate(${x}px, ${y}px) scale(${scale})`,
+          transformOrigin: "center center",
         }}
       />
       <div

@@ -31,7 +31,7 @@ function interpolatePoint(points: CursorPoint[], progress: number) {
 export const CursorPath: React.FC<CursorPathProps> = ({
   points,
   durationInFrames = 90,
-  color = "#6366f1",
+  color = "#e8b86d",
   size = 34,
 }) => {
   const frame = useCurrentFrame();

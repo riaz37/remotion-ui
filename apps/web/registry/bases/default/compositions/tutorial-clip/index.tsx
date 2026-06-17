@@ -19,6 +19,14 @@ const COLORS = {
   endAccent: "#22d3ee",
 } as const;
 
+const SCENE = {
+  hook: 48,
+  media: 72,
+  callout: 64,
+  code: 64,
+  end: 48,
+} as const;
+
 export type TutorialClipProps = {
   title?: string;
   subtitle?: string;
@@ -46,7 +54,7 @@ export const TutorialClip: React.FC<TutorialClipProps> = ({
 }) => (
   <AbsoluteFill style={{ backgroundColor: COLORS.bg }}>
     <TransitionSeries>
-      <TransitionSeries.Sequence durationInFrames={60}>
+      <TransitionSeries.Sequence durationInFrames={SCENE.hook}>
         <AutoFitTitle
           title={title}
           subtitle={subtitle}
@@ -55,7 +63,7 @@ export const TutorialClip: React.FC<TutorialClipProps> = ({
         />
       </TransitionSeries.Sequence>
       <TransitionSeries.Transition {...fade} />
-      <TransitionSeries.Sequence durationInFrames={90}>
+      <TransitionSeries.Sequence durationInFrames={SCENE.media}>
         <MediaFrame
           src={mediaSrc}
           title="Screen recording"
@@ -63,7 +71,7 @@ export const TutorialClip: React.FC<TutorialClipProps> = ({
         />
       </TransitionSeries.Sequence>
       <TransitionSeries.Transition {...fade} />
-      <TransitionSeries.Sequence durationInFrames={80}>
+      <TransitionSeries.Sequence durationInFrames={SCENE.callout}>
         <CalloutSpotlight
           title={calloutTitle}
           subtitle={calloutSubtitle}
@@ -73,11 +81,11 @@ export const TutorialClip: React.FC<TutorialClipProps> = ({
         />
       </TransitionSeries.Sequence>
       <TransitionSeries.Transition {...fade} />
-      <TransitionSeries.Sequence durationInFrames={80}>
+      <TransitionSeries.Sequence durationInFrames={SCENE.code}>
         <CodeReveal code={code} highlightedLines={[2]} backgroundColor={COLORS.codeBg} />
       </TransitionSeries.Sequence>
       <TransitionSeries.Transition {...fade} />
-      <TransitionSeries.Sequence durationInFrames={60}>
+      <TransitionSeries.Sequence durationInFrames={SCENE.end}>
         <EndCard
           title={ctaTitle ?? title}
           cta={ctaLabel}

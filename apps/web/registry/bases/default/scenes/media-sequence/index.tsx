@@ -3,6 +3,7 @@ import { AbsoluteFill } from "remotion";
 import { transitionFade } from "@/remotion/primitives/transition-fade";
 import { MediaFrame } from "@/remotion/scenes/media-frame";
 import { resolveMediaWindows, type MediaItem } from "@/remotion/lib/media-utils";
+import { DELAY } from "@/remotion/lib/motion-tokens";
 import { TransitionSeries } from "@remotion/transitions";
 
 export type MediaSequenceProps = {
@@ -13,13 +14,13 @@ export type MediaSequenceProps = {
 };
 
 const COLORS = {
-  bg: "#06080f",
+  bg: "#080810",
 } as const;
 
 export const MediaSequence: React.FC<MediaSequenceProps> = ({
   items,
-  defaultDurationInFrames = 90,
-  transitionDurationInFrames = 12,
+  defaultDurationInFrames = 72,
+  transitionDurationInFrames = DELAY.short,
   backgroundColor = COLORS.bg,
 }) => {
   const windows = resolveMediaWindows(items, defaultDurationInFrames);
@@ -35,7 +36,7 @@ export const MediaSequence: React.FC<MediaSequenceProps> = ({
                 src={item.src}
                 title={item.title}
                 caption={item.caption}
-                fit={item.fit}
+                fit={item.fit ?? "contain"}
                 backgroundColor={item.backgroundColor ?? backgroundColor}
               />
             </TransitionSeries.Sequence>

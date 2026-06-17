@@ -17,7 +17,7 @@ export const PathDraw: React.FC<PathDrawProps> = ({
   d,
   durationInFrames = 60,
   delayInFrames = 0,
-  stroke = "#a5b4fc",
+  stroke = "#e8b86d",
   strokeWidth = 4,
   width = 200,
   height = 200,

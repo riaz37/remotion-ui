@@ -7,10 +7,10 @@ import {
   type MediaFit,
 } from "@/remotion/lib/media-utils";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
-import { DURATION } from "@/remotion/lib/motion-tokens";
+import { DURATION, EASING, STAGGER } from "@/remotion/lib/motion-tokens";
 
 const { fontFamily } = loadFont("normal", {
-  weights: ["600", "700", "800"],
+  weights: ["500", "600", "700"],
   subsets: ["latin"],
 });
 
@@ -25,18 +25,18 @@ export type MediaFrameProps = {
 };
 
 const COLORS = {
-  bg: "#0a0e16",
+  bg: "#080810",
   frame: "#050810",
   title: "#f8fafc",
   caption: "#cbd5e1",
-  accent: "#38bdf8",
+  accent: "#e8b86d",
 } as const;
 
 export const MediaFrame: React.FC<MediaFrameProps> = ({
   src,
   title,
   caption,
-  fit = "cover",
+  fit = "contain",
   backgroundColor = COLORS.bg,
   accentColor = COLORS.accent,
   radius,
@@ -45,10 +45,31 @@ export const MediaFrame: React.FC<MediaFrameProps> = ({
   const { width, height } = useVideoConfig();
   const safeArea = getSafeAreaPadding({ width, height });
   const cornerRadius = radius ?? scaleFont(20, width);
-  const enter = interpolate(frame, [0, DURATION.fast], [0, 1], {
+  const titleEnter = interpolate(frame, [0, DURATION.fast], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
+    easing: EASING.enter,
   });
+  const mediaEnter = interpolate(
+    frame,
+    [STAGGER.normal, STAGGER.normal + DURATION.fast],
+    [0, 1],
+    {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+      easing: EASING.enter,
+    },
+  );
+  const captionEnter = interpolate(
+    frame,
+    [STAGGER.normal * 2, STAGGER.normal * 2 + DURATION.fast],
+    [0, 1],
+    {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+      easing: EASING.enter,
+    },
+  );
   const mediaStyle = getMediaObjectFitStyle(fit);
 
   return (
@@ -72,11 +93,11 @@ export const MediaFrame: React.FC<MediaFrameProps> = ({
         <div
           style={{
             fontSize: scaleFont(44, width),
-            fontWeight: 800,
+            fontWeight: 700,
             lineHeight: 1.05,
             letterSpacing: "-0.02em",
-            opacity: enter,
-            transform: `translateY(${(1 - enter) * 16}px)`,
+            opacity: titleEnter,
+            transform: `translateY(${(1 - titleEnter) * 16}px)`,
           }}
         >
           {title}
@@ -88,10 +109,10 @@ export const MediaFrame: React.FC<MediaFrameProps> = ({
           minHeight: 0,
           borderRadius: cornerRadius,
           overflow: "hidden",
-          border: `${scaleFont(2, width)}px solid ${accentColor}44`,
-          boxShadow: `0 ${scaleFont(20, width)}px ${scaleFont(64, width)}px ${accentColor}18`,
-          opacity: enter,
-          transform: `scale(${0.97 + enter * 0.03})`,
+          border: `${scaleFont(1, width)}px solid ${accentColor}55`,
+          boxShadow: `0 0 0 ${scaleFont(1, width)}px ${accentColor}12, 0 ${scaleFont(20, width)}px ${scaleFont(64, width)}px rgba(0,0,0,0.35)`,
+          opacity: mediaEnter,
+          transform: `scale(${0.97 + mediaEnter * 0.03})`,
           background: COLORS.frame,
         }}
       >
@@ -107,7 +128,8 @@ export const MediaFrame: React.FC<MediaFrameProps> = ({
             fontSize: scaleFont(26, width),
             color: COLORS.caption,
             fontWeight: 500,
-            opacity: enter,
+            opacity: captionEnter,
+            transform: `translateY(${(1 - captionEnter) * 10}px)`,
           }}
         >
           {caption}

@@ -1,13 +1,11 @@
 "use client";
 
 import { MetricTicker } from "../registry-exports";
+import { DEMO_METRICS } from "@/lib/demo-assets";
+import { ScenePreviewPlate } from "./scene-preview-plate";
 
 export const MetricTickerPreview: React.FC = () => (
-  <MetricTicker
-    metrics={[
-      { label: "Views", value: 124000, delta: "+32%" },
-      { label: "Watch time", value: 8600, suffix: "h", delta: "+18%" },
-      { label: "Clips", value: 42, delta: "+7" },
-    ]}
-  />
+  <ScenePreviewPlate direct>
+    <MetricTicker title="Channel momentum" metrics={DEMO_METRICS} />
+  </ScenePreviewPlate>
 );

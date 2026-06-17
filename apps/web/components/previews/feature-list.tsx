@@ -1,10 +1,14 @@
 "use client";
 
 import { FeatureList } from "../registry-exports";
+import { DEMO_COPY } from "@/lib/demo-assets";
+import { ScenePreviewPlate } from "./scene-preview-plate";
 
 export const FeatureListPreview: React.FC = () => (
-  <FeatureList
-    title="Built for developers"
-    items={["Source you own", "Registry CLI", "Live previews"]}
-  />
+  <ScenePreviewPlate direct>
+    <FeatureList
+      title={DEMO_COPY.productLaunch.featureTitle}
+      items={[...DEMO_COPY.productLaunch.featureItems]}
+    />
+  </ScenePreviewPlate>
 );

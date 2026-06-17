@@ -1,3 +1,4 @@
 {
-  "title": "AI Usage"
+  "title": "AI Usage",
+  "pages": ["index", "[Recipe wizard](/docs/ai/start)"]
 }

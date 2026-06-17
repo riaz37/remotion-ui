@@ -2,10 +2,10 @@ import { loadFont } from "@remotion/google-fonts/Inter";
 import { interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { formatCompactNumber } from "@/remotion/lib/chart-utils";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
-import { DURATION, STAGGER } from "@/remotion/lib/motion-tokens";
+import { DURATION, EASING, STAGGER } from "@/remotion/lib/motion-tokens";
 
 const { fontFamily } = loadFont("normal", {
-  weights: ["600", "700", "800", "900"],
+  weights: ["600", "700"],
   subsets: ["latin"],
 });
 
@@ -24,13 +24,13 @@ export type MetricTickerProps = {
 };
 
 const COLORS = {
-  bg: "#06080f",
+  bg: "#080810",
   title: "#e4e4e7",
   label: "#a1a1aa",
   card: "rgba(12,16,28,0.82)",
   border: "rgba(161,161,170,0.18)",
-  delta: "#6ee7b7",
-  accent: "#a78bfa",
+  delta: "#2dd4bf",
+  accent: "#e8b86d",
 } as const;
 
 export const MetricTicker: React.FC<MetricTickerProps> = ({
@@ -42,7 +42,15 @@ export const MetricTicker: React.FC<MetricTickerProps> = ({
   const frame = useCurrentFrame();
   const { width, height } = useVideoConfig();
   const safeArea = getSafeAreaPadding({ width, height });
-  const columns = Math.min(metrics.length, 3);
+  const isPortrait = height > width;
+  const columns = isPortrait ? 1 : Math.min(metrics.length, 3);
+  const titleProgress = title
+    ? interpolate(frame, [0, DURATION.fast], [0, 1], {
+        extrapolateLeft: "clamp",
+        extrapolateRight: "clamp",
+        easing: EASING.enter,
+      })
+    : 0;
 
   return (
     <div
@@ -69,8 +77,10 @@ export const MetricTicker: React.FC<MetricTickerProps> = ({
             margin: 0,
             fontSize: scaleFont(52, width),
             lineHeight: 1.05,
-            fontWeight: 800,
+            fontWeight: 700,
             letterSpacing: "-0.02em",
+            opacity: titleProgress,
+            transform: `translateY(${(1 - titleProgress) * 16}px)`,
           }}
         >
           {title}
@@ -79,12 +89,12 @@ export const MetricTicker: React.FC<MetricTickerProps> = ({
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: `repeat(${columns}, 1fr)`,
+          gridTemplateColumns: isPortrait ? "1fr" : `repeat(${columns}, 1fr)`,
           gap: scaleFont(20, width),
         }}
       >
         {metrics.slice(0, 3).map((metric, index) => {
-          const delay = index * STAGGER.normal;
+          const delay = STAGGER.normal + index * STAGGER.normal;
           const progress = interpolate(
             frame,
             [delay, delay + DURATION.normal],
@@ -92,6 +102,7 @@ export const MetricTicker: React.FC<MetricTickerProps> = ({
             {
               extrapolateLeft: "clamp",
               extrapolateRight: "clamp",
+              easing: EASING.enter,
             },
           );
 
@@ -111,7 +122,7 @@ export const MetricTicker: React.FC<MetricTickerProps> = ({
                 style={{
                   color: COLORS.label,
                   fontSize: scaleFont(24, width),
-                  fontWeight: 700,
+                  fontWeight: 600,
                 }}
               >
                 {metric.label}
@@ -120,7 +131,7 @@ export const MetricTicker: React.FC<MetricTickerProps> = ({
                 style={{
                   color: accentColor,
                   fontSize: scaleFont(48, width),
-                  fontWeight: 900,
+                  fontWeight: 700,
                   marginTop: scaleFont(12, width),
                   letterSpacing: "-0.02em",
                 }}

@@ -1,13 +1,15 @@
 "use client";
 
 import { AutoFitTitle } from "../registry-exports";
-import { PreviewFrame } from "./preview-frame";
+import { DEMO_COPY, DEMO_LOGO_SRC } from "@/lib/demo-assets";
+import { ScenePreviewPlate } from "./scene-preview-plate";
 
 export const AutoFitTitlePreview: React.FC = () => (
-  <PreviewFrame>
+  <ScenePreviewPlate direct>
     <AutoFitTitle
-      title="Headlines that always fit"
-      subtitle="Any resolution, any length"
+      title={DEMO_COPY.productLaunch.title}
+      subtitle={DEMO_COPY.productLaunch.subtitle}
+      logoSrc={DEMO_LOGO_SRC}
     />
-  </PreviewFrame>
+  </ScenePreviewPlate>
 );

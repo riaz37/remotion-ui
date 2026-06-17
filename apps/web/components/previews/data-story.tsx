@@ -2,27 +2,28 @@
 
 import { Sequence } from "remotion";
 import { DataStory } from "../registry-exports";
-import { DEMO_BAR_DATA } from "@/lib/demo-assets";
+import {
+  DEMO_BAR_DATA,
+  DEMO_COPY,
+  DEMO_METRICS,
+  DEMO_TIMELINE_STEPS,
+} from "@/lib/demo-assets";
 
 export const DataStoryPreview: React.FC = () => (
-  <Sequence from={-72}>
+  <Sequence from={0}>
     <DataStory
-      title="Creator growth"
-      subtitle="Turn weekly numbers into a video story"
+      title={DEMO_COPY.dataStory.title}
+      subtitle={DEMO_COPY.dataStory.subtitle}
+      chartTitle={DEMO_COPY.dataStory.chartTitle}
+      metricsTitle={DEMO_COPY.dataStory.metricsTitle}
+      timelineTitle={DEMO_COPY.dataStory.timelineTitle}
       barData={DEMO_BAR_DATA}
-      metrics={[
-        { label: "Reach", value: 124000, delta: "+32%" },
-        { label: "Retention", value: 68, suffix: "%", delta: "+11%" },
-        { label: "Exports", value: 42, delta: "+7" },
-      ]}
-      steps={[
-        { title: "Collect", description: "Gather the signal." },
-        { title: "Measure", description: "Show the delta." },
-        { title: "Explain", description: "Name the insight." },
-      ]}
-      insight="The clearest trend gets the most screen time."
-      ctaTitle="Data Cut"
-      ctaLabel="Build the next insight"
+      metrics={DEMO_METRICS}
+      steps={DEMO_TIMELINE_STEPS}
+      insight={DEMO_COPY.quote.text}
+      insightEyebrow={DEMO_COPY.dataStory.insightEyebrow}
+      ctaTitle={DEMO_COPY.dataStory.ctaTitle}
+      ctaLabel={DEMO_COPY.endCard.ctaLabel}
     />
   </Sequence>
 );

@@ -1,10 +1,10 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
 import { interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
-import { DURATION, STAGGER } from "@/remotion/lib/motion-tokens";
+import { DELAY, DURATION, EASING, STAGGER } from "@/remotion/lib/motion-tokens";
 
 const { fontFamily } = loadFont("normal", {
-  weights: ["400", "700", "800"],
+  weights: ["400", "700"],
   subsets: ["latin"],
 });
 
@@ -21,7 +21,7 @@ export type TimelineStepsProps = {
 };
 
 const COLORS = {
-  bg: "#0c0f14",
+  bg: "#080810",
   text: "#f4f4f5",
   muted: "#a1a1aa",
   accent: "#f59e0b",
@@ -38,7 +38,11 @@ export const TimelineSteps: React.FC<TimelineStepsProps> = ({
   const safe = getSafeAreaPadding({ width, height });
   const visibleSteps = steps.slice(0, 4);
   const nodeSize = scaleFont(52, width);
-  const connectorOpacity = 0.45;
+  const titleEnter = interpolate(frame, [0, DURATION.fast], [0, 1], {
+    easing: EASING.enter,
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
   return (
     <div
@@ -63,9 +67,11 @@ export const TimelineSteps: React.FC<TimelineStepsProps> = ({
           style={{
             margin: 0,
             fontSize: scaleFont(84, width),
-            fontWeight: 800,
+            fontWeight: 700,
             lineHeight: 1.05,
             letterSpacing: "-0.02em",
+            opacity: titleEnter,
+            transform: `translateY(${(1 - titleEnter) * 16}px)`,
           }}
         >
           {title}
@@ -80,11 +86,35 @@ export const TimelineSteps: React.FC<TimelineStepsProps> = ({
       >
         {visibleSteps.map((step, index) => {
           const delay = index * STAGGER.relaxed;
-          const progress = interpolate(
+          const nodeEnter = interpolate(
             frame,
-            [delay, delay + DURATION.normal],
+            [delay, delay + DURATION.fast],
             [0, 1],
-            { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+            {
+              easing: EASING.enter,
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp",
+            },
+          );
+          const connectorDraw = interpolate(
+            frame,
+            [delay + DURATION.fast, delay + DURATION.fast + DURATION.normal],
+            [0, 1],
+            {
+              easing: EASING.enter,
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp",
+            },
+          );
+          const textEnter = interpolate(
+            frame,
+            [delay + DELAY.short, delay + DELAY.short + DURATION.fast],
+            [0, 1],
+            {
+              easing: EASING.enter,
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp",
+            },
           );
           const isLast = index === visibleSteps.length - 1;
 
@@ -117,9 +147,9 @@ export const TimelineSteps: React.FC<TimelineStepsProps> = ({
                     display: "grid",
                     placeItems: "center",
                     fontSize: scaleFont(26, width),
-                    fontWeight: 800,
-                    opacity: progress,
-                    transform: `scale(${0.85 + progress * 0.15})`,
+                    fontWeight: 700,
+                    opacity: nodeEnter,
+                    transform: `scale(${0.85 + nodeEnter * 0.15})`,
                   }}
                 >
                   {index + 1}
@@ -133,9 +163,9 @@ export const TimelineSteps: React.FC<TimelineStepsProps> = ({
                       marginRight: 8,
                       borderRadius: 999,
                       background: accentColor,
-                      opacity: connectorOpacity * progress,
+                      opacity: 0.45,
                       transformOrigin: "left center",
-                      transform: `scaleX(${progress})`,
+                      transform: `scaleX(${connectorDraw})`,
                     }}
                   />
                 ) : null}
@@ -144,14 +174,14 @@ export const TimelineSteps: React.FC<TimelineStepsProps> = ({
                 style={{
                   marginTop: scaleFont(22, width),
                   paddingRight: index < visibleSteps.length - 1 ? 12 : 0,
-                  opacity: progress,
-                  transform: `translateY(${(1 - progress) * 20}px)`,
+                  opacity: textEnter,
+                  transform: `translateY(${(1 - textEnter) * 20}px)`,
                 }}
               >
                 <div
                   style={{
                     fontSize: scaleFont(32, width),
-                    fontWeight: 800,
+                    fontWeight: 700,
                     lineHeight: 1.15,
                   }}
                 >

@@ -1,10 +1,16 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
 import { Img, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
-import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
-import { DURATION } from "@/remotion/lib/motion-tokens";
+import {
+  clampRectToSafeArea,
+  getSafeAreaPadding,
+  scaleFont,
+  type Rect,
+  type SafeAreaPadding,
+} from "@/remotion/lib/layout";
+import { DURATION, EASING, STAGGER } from "@/remotion/lib/motion-tokens";
 
 const { fontFamily } = loadFont("normal", {
-  weights: ["400", "700", "800"],
+  weights: ["400", "600", "700"],
   subsets: ["latin"],
 });
 
@@ -26,11 +32,101 @@ export type CalloutSpotlightProps = {
 };
 
 const COLORS = {
-  bg: "#0a0e17",
-  overlay: "rgba(8,12,20,0.72)",
+  bg: "#080810",
+  overlay: "rgba(8, 8, 16, 0.76)",
+  card: "rgba(8, 8, 16, 0.94)",
+  cardBorder: "rgba(255, 255, 255, 0.1)",
   muted: "#a1a1aa",
-  accent: "#38bdf8",
+  accent: "#e8b86d",
 } as const;
+
+type CalloutPlacement = {
+  left?: number;
+  right?: number;
+  top?: number;
+  bottom?: number;
+  maxWidth: number;
+};
+
+const MIN_CALLOUT_WIDTH = 200;
+
+function getCalloutPlacement({
+  target,
+  width,
+  height,
+  safe,
+  gap,
+}: {
+  target: Rect;
+  width: number;
+  height: number;
+  safe: SafeAreaPadding;
+  gap: number;
+}): CalloutPlacement {
+  const rightSpace =
+    width - safe.paddingRight - (target.x + target.width + gap);
+  const leftSpace = target.x - gap - safe.paddingLeft;
+  const belowSpace =
+    height - safe.paddingBottom - (target.y + target.height + gap);
+  const aboveSpace = target.y - gap - safe.paddingTop;
+  const fullWidth = width - safe.paddingLeft - safe.paddingRight;
+
+  const candidates: Array<{ score: number; placement: CalloutPlacement }> = [];
+
+  if (rightSpace >= MIN_CALLOUT_WIDTH) {
+    candidates.push({
+      score: rightSpace * 1.1,
+      placement: {
+        left: target.x + target.width + gap,
+        top: Math.max(safe.paddingTop, target.y),
+        maxWidth: rightSpace,
+      },
+    });
+  }
+
+  if (leftSpace >= MIN_CALLOUT_WIDTH) {
+    candidates.push({
+      score: leftSpace,
+      placement: {
+        right: width - (target.x - gap),
+        top: Math.max(safe.paddingTop, target.y),
+        maxWidth: leftSpace,
+      },
+    });
+  }
+
+  if (belowSpace >= scaleFont(72, width)) {
+    candidates.push({
+      score: belowSpace * 0.85,
+      placement: {
+        left: safe.paddingLeft,
+        top: target.y + target.height + gap,
+        maxWidth: fullWidth,
+      },
+    });
+  }
+
+  if (aboveSpace >= scaleFont(72, width)) {
+    candidates.push({
+      score: aboveSpace * 0.75,
+      placement: {
+        left: safe.paddingLeft,
+        bottom: height - (target.y - gap),
+        maxWidth: fullWidth,
+      },
+    });
+  }
+
+  candidates.sort((a, b) => b.score - a.score);
+
+  return (
+    candidates[0]?.placement ?? {
+      left: safe.paddingLeft,
+      bottom: safe.paddingBottom,
+      maxWidth: fullWidth,
+    }
+  );
+}
 
 export const CalloutSpotlight: React.FC<CalloutSpotlightProps> = ({
   title,
@@ -44,12 +140,41 @@ export const CalloutSpotlight: React.FC<CalloutSpotlightProps> = ({
   const frame = useCurrentFrame();
   const { width, height } = useVideoConfig();
   const safe = getSafeAreaPadding({ width, height });
-  const progress = interpolate(frame, [0, DURATION.fast], [0, 1], {
+  const clampedTarget = clampRectToSafeArea(target, width, height);
+  const isPortrait = height > width;
+  const gap = scaleFont(20, width);
+
+  const ringProgress = interpolate(frame, [0, DURATION.fast], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
+    easing: EASING.enter,
   });
 
-  const calloutOnLeft = target.x + target.width / 2 > width / 2;
+  const calloutProgress = interpolate(
+    frame,
+    [STAGGER.normal, STAGGER.normal + DURATION.fast],
+    [0, 1],
+    {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+      easing: EASING.enter,
+    },
+  );
+
+  const placement = getCalloutPlacement({
+    target: clampedTarget,
+    width,
+    height,
+    safe,
+    gap,
+  });
+
+  const calloutOffset = (1 - calloutProgress) * scaleFont(16, width);
+  const slideFromRight =
+    placement.left !== undefined &&
+    placement.left >= clampedTarget.x + clampedTarget.width;
+  const slideFromLeft =
+    placement.right !== undefined && placement.top !== undefined;
 
   return (
     <div
@@ -67,54 +192,71 @@ export const CalloutSpotlight: React.FC<CalloutSpotlightProps> = ({
         <Img
           src={backgroundSrc}
           style={{
+            position: "absolute",
+            inset: 0,
             width: "100%",
             height: "100%",
             objectFit: "cover",
-            opacity: 0.8,
           }}
         />
       ) : null}
+
       <div
         style={{
           position: "absolute",
           inset: 0,
           background: COLORS.overlay,
+          pointerEvents: "none",
         }}
       />
+
       <div
         style={{
           position: "absolute",
-          left: target.x,
-          top: target.y,
-          width: target.width,
-          height: target.height,
-          borderRadius: 20,
-          border: `4px solid ${accentColor}`,
-          boxShadow: `0 0 0 9999px rgba(8,12,20,0.42), 0 0 48px ${accentColor}66`,
-          opacity: progress,
-          transform: `scale(${0.96 + progress * 0.04})`,
+          left: clampedTarget.x,
+          top: clampedTarget.y,
+          width: clampedTarget.width,
+          height: clampedTarget.height,
+          borderRadius: scaleFont(14, width),
+          border: `${scaleFont(3, width)}px solid ${accentColor}`,
+          boxShadow: `0 0 0 9999px rgba(8, 8, 16, 0.5), 0 0 ${scaleFont(40, width)}px ${accentColor}55`,
+          opacity: ringProgress,
+          transform: `scale(${0.94 + ringProgress * 0.06})`,
+          pointerEvents: "none",
         }}
       />
+
       <div
         style={{
           position: "absolute",
-          left: calloutOnLeft ? safe.paddingLeft : undefined,
-          right: calloutOnLeft ? undefined : safe.paddingRight,
-          bottom: safe.paddingBottom,
-          maxWidth: width * 0.48,
-          opacity: progress,
-          transform: `translateY(${(1 - progress) * 24}px)`,
+          left: placement.left,
+          right: placement.right,
+          top: placement.top,
+          bottom: placement.bottom,
+          maxWidth: placement.maxWidth,
+          opacity: calloutProgress,
+          transform: slideFromRight
+            ? `translateX(${calloutOffset}px)`
+            : slideFromLeft
+              ? `translateX(${-calloutOffset}px)`
+              : `translateY(${calloutOffset}px)`,
+          padding: scaleFont(20, width),
+          borderRadius: scaleFont(14, width),
+          background: COLORS.card,
+          border: `1px solid ${COLORS.cardBorder}`,
+          borderLeft: `${scaleFont(4, width)}px solid ${accentColor}`,
+          boxShadow: `0 ${scaleFont(16, width)}px ${scaleFont(48, width)}px rgba(0, 0, 0, 0.45)`,
+          boxSizing: "border-box",
         }}
       >
         {kicker ? (
           <div
             style={{
               color: accentColor,
-              fontSize: scaleFont(32, width),
-              fontWeight: 800,
-              letterSpacing: "0.06em",
-              textTransform: "uppercase",
-              marginBottom: scaleFont(12, width),
+              fontSize: scaleFont(26, width),
+              fontWeight: 600,
+              marginBottom: scaleFont(8, width),
+              letterSpacing: "0.02em",
             }}
           >
             {kicker}
@@ -122,10 +264,11 @@ export const CalloutSpotlight: React.FC<CalloutSpotlightProps> = ({
         ) : null}
         <div
           style={{
-            fontSize: scaleFont(64, width),
-            fontWeight: 800,
-            lineHeight: 1.05,
+            fontSize: scaleFont(isPortrait ? 44 : 40, width),
+            fontWeight: 700,
+            lineHeight: 1.12,
             letterSpacing: "-0.02em",
+            overflowWrap: "break-word",
           }}
         >
           {title}
@@ -134,9 +277,10 @@ export const CalloutSpotlight: React.FC<CalloutSpotlightProps> = ({
           <div
             style={{
               color: COLORS.muted,
-              fontSize: scaleFont(36, width),
-              marginTop: scaleFont(14, width),
-              lineHeight: 1.3,
+              fontSize: scaleFont(28, width),
+              marginTop: scaleFont(10, width),
+              lineHeight: 1.35,
+              overflowWrap: "break-word",
             }}
           >
             {subtitle}

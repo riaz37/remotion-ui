@@ -437,7 +437,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       { name: "title", type: "string", description: "Section heading." },
       { name: "accentColor", type: "string", description: "Bullet and accent color." },
     ],
-    note: "Installs `stagger-children`, `slide-left`, and `fade-in`.",
+    note: "Self-contained scene. Uses layout and motion-tokens helpers only.",
     related: ["stat-card", "showcase"],
   },
   "stat-card": {
@@ -499,10 +499,12 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     category: "composition",
     usage: `import { Showcase } from "@/remotion/compositions/showcase";
 
-<Showcase title="Product story" subtitle="Install source, compose scenes, render on your timeline" />`,
+<Showcase title="Product story" subtitle="Install source, compose scenes, render on your timeline" statValue={3} statLabel="Runtime dependencies" />`,
     props: [
       { name: "title", type: "string", description: "Opening title." },
       { name: "subtitle", type: "string", description: "Opening subtitle." },
+      { name: "statValue", type: "number", default: "3", description: "Counter value for the stat scene." },
+      { name: "statLabel", type: "string", default: '"Runtime dependencies"', description: "Stat card label." },
     ],
     note: "Demo reel using TransitionSeries across multiple scenes.",
     related: ["transition-fade", "feature-list"],
@@ -523,9 +525,9 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 <CaptionHighlight page={page} activeColor="#60a5fa" />`,
     props: [
       { name: "page", type: "TikTokPage", required: true, description: "Caption page from createTikTokStyleCaptions." },
-      { name: "activeColor", type: "string", default: '"#60a5fa"', description: "Highlight color for the active word." },
+      { name: "activeColor", type: "string", default: '"#fbbf24"', description: "Highlight color for the active word." },
       { name: "inactiveColor", type: "string", default: '"#f8fafc"', description: "Color for inactive words." },
-      { name: "fontSize", type: "number", default: "48", description: "Caption font size in pixels." },
+      { name: "fontSize", type: "number", default: "56 (scaled)", description: "Caption font size in pixels." },
     ],
     note: "Advanced. Installs @remotion/captions.",
     related: ["caption-scene", "caption-utils"],
@@ -552,7 +554,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     props: [
       { name: "src", type: "string", required: true, description: "Audio file URL or staticFile path." },
       { name: "height", type: "number", default: "120", description: "Bar container height." },
-      { name: "barColor", type: "string", default: '"#3b82f6"', description: "Bar fill color." },
+      { name: "barColor", type: "string", default: '"#e8b86d"', description: "Bar fill color." },
     ],
     note: "Advanced. Installs @remotion/media-utils.",
     related: ["audiogram-scene"],
@@ -682,6 +684,44 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     note: "Advanced. Installs @remotion/light-leaks.",
     related: ["transition-fade"],
   },
+  "blur-reveal": {
+    category: "primitive",
+    usage: `import { transitionBlurReveal } from "@/remotion/primitives/blur-reveal";
+
+<TransitionSeries.Transition {...transitionBlurReveal({ maxBlur: 24 })} />`,
+    props: [
+      { name: "durationInFrames", type: "number", default: "20", description: "Transition overlap length." },
+      { name: "maxBlur", type: "number", default: "24", description: "Peak blur radius in px." },
+      { name: "variant", type: '"linear" | "spring"', default: '"linear"', description: "Timing curve." },
+    ],
+    related: ["transition-fade", "frosted-glass-wipe"],
+  },
+  "grid-pixelate-wipe": {
+    category: "primitive",
+    usage: `import { transitionGridPixelateWipe } from "@/remotion/primitives/grid-pixelate-wipe";
+
+<TransitionSeries.Transition {...transitionGridPixelateWipe({ cols: 12, rows: 8 })} />`,
+    props: [
+      { name: "durationInFrames", type: "number", default: "24", description: "Transition overlap length." },
+      { name: "cols", type: "number", default: "12", description: "Grid column count." },
+      { name: "rows", type: "number", default: "8", description: "Grid row count." },
+      { name: "direction", type: '"from-left" | "from-top"', default: '"from-left"', description: "Stagger direction." },
+    ],
+    related: ["transition-wipe", "blur-reveal"],
+  },
+  "frosted-glass-wipe": {
+    category: "primitive",
+    usage: `import { transitionFrostedGlassWipe } from "@/remotion/primitives/frosted-glass-wipe";
+
+<TransitionSeries.Transition {...transitionFrostedGlassWipe({ blur: 20 })} />`,
+    props: [
+      { name: "durationInFrames", type: "number", default: "22", description: "Transition overlap length." },
+      { name: "blur", type: "number", default: "20", description: "Frost panel blur radius." },
+      { name: "panelWidth", type: "number", default: "0.14", description: "Sweep panel width as fraction of frame." },
+      { name: "direction", type: '"from-left" | "from-right"', default: '"from-left"', description: "Sweep direction." },
+    ],
+    related: ["blur-reveal", "transition-wipe"],
+  },
   "auto-fit-title": {
     category: "scene",
     usage: `import { AutoFitTitle } from "@/remotion/scenes/auto-fit-title";
@@ -766,7 +806,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 <MediaFrame src={staticFile("demo.png")} title="Product demo" />`,
     props: [
       { name: "src", type: "string", required: true, description: "Image or video source." },
-      { name: "fit", type: '"cover" | "contain"', default: '"cover"', description: "Media object-fit behavior." },
+      { name: "fit", type: '"cover" | "contain"', default: '"contain"', description: "Media object-fit behavior. Use contain for UI screenshots." },
       { name: "caption", type: "string", description: "Optional supporting caption." },
     ],
     note: "Advanced. Installs @remotion/media for video sources.",
@@ -815,7 +855,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 <CaptionBumper text="This is the key moment." />`,
     props: [
       { name: "text", type: "string", required: true, description: "Large quote or caption text." },
-      { name: "eyebrow", type: "string", default: '"Key moment"', description: "Small label above the text." },
+      { name: "eyebrow", type: "string", default: '"Key moment"', description: "Small label above the text (sentence case)." },
     ],
     related: ["karaoke-captions", "data-story"],
   },
@@ -860,9 +900,9 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 <CalloutSpotlight kicker="Tutorial" title="Click export" target={{ x: 320, y: 180, width: 420, height: 180 }} />`,
     props: [
       { name: "title", type: "string", required: true, description: "Callout headline." },
-      { name: "kicker", type: "string", description: "Optional uppercase label above the headline." },
+      { name: "kicker", type: "string", description: "Optional label above the headline." },
       { name: "subtitle", type: "string", description: "Supporting line below the headline." },
-      { name: "target", type: "SpotlightTarget", required: true, description: "Highlighted rectangle." },
+      { name: "target", type: "SpotlightTarget", required: true, description: "Highlighted rectangle; clamped to safe area. Callout flips above target when bottom clearance is low." },
       { name: "backgroundSrc", type: "string", description: "Optional screenshot or media background." },
     ],
     related: ["zoom-pan-frame", "tutorial-clip"],
@@ -896,16 +936,16 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     usage: `import { HookCard } from "@/remotion/scenes/hook-card";
 
 <HookCard
-  kicker="Creator media"
-  headline="Make the first second count"
-  subtitle="A punchy opener for reels and shorts."
+  kicker="Creator insight"
+  headline="Frame registry"
+  subtitle="Hook viewers before they scroll"
 />`,
     props: [
       { name: "headline", type: "string", required: true, description: "Large hook text." },
       { name: "kicker", type: "string", default: '"Creator insight"', description: "Small label above the headline." },
       { name: "subtitle", type: "string", description: "Optional supporting line." },
-      { name: "accentColor", type: "string", default: '"#f97316"', description: "Accent sweep, label, and glow color." },
-      { name: "backgroundColor", type: "string", default: '"#09090b"', description: "Scene background color." },
+      { name: "accentColor", type: "string", default: '"#e8b86d"', description: "Accent sweep, label, and glow color." },
+      { name: "backgroundColor", type: "string", default: '"#0c0a09"', description: "Scene background color." },
     ],
     related: ["creator-reel", "title-card", "auto-fit-title"],
   },
@@ -971,15 +1011,21 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
   captions={captions}
 />`,
     props: [
-      { name: "hookHeadline", type: "string", description: "Opening hook headline." },
+      { name: "hookHeadline", type: "string", description: "Opening hook headline (auto-fit in portrait)." },
+      { name: "hookSubtitle", type: "string", description: "Supporting line under the hook." },
       { name: "mediaSrc", type: "string", description: "Speaker image or video source." },
       { name: "mediaFit", type: '"cover" | "contain"', default: '"cover"', description: "Speaker media object-fit behavior." },
       { name: "audioSrc", type: "string", description: "Optional audio source for waveform visuals." },
       { name: "captions", type: "Caption[]", description: "Synced captions layered over the talking-head scene." },
-      { name: "talkingHeadTitle", type: "string", description: "Title shown in the talking-head layout." },
-      { name: "talkingHeadSubtitle", type: "string", description: "Subtitle shown in the talking-head layout." },
+      { name: "talkingHeadEyebrow", type: "string", description: "Eyebrow label above the talking-head title." },
+      { name: "talkingHeadTitle", type: "string", description: "Short title in the talking-head layout." },
       { name: "comment", type: "string", description: "Comment callout body text." },
+      { name: "author", type: "string", description: "Comment author display name." },
+      { name: "handle", type: "string", description: "Comment author handle." },
       { name: "bRollItems", type: "BRollItem[]", description: "Media cards for the proof/b-roll section." },
+      { name: "bRollTitle", type: "string", description: "Headline beside the b-roll stack." },
+      { name: "ctaTitle", type: "string", description: "End card headline (separate from hook)." },
+      { name: "ctaLabel", type: "string", description: "End card CTA pill label." },
     ],
     note: "9:16 creator template. Advanced tier.",
     related: ["hook-card", "talking-head-layout", "comment-callout"],
@@ -1002,10 +1048,20 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <DataStory barData={barData} metrics={metrics} steps={steps} />`,
     props: [
+      { name: "title", type: "string", description: "Opening hook headline (auto-fit)." },
+      { name: "subtitle", type: "string", description: "Supporting line under the hook." },
       { name: "barData", type: "ChartDatum[]", required: true, description: "Bar chart data." },
       { name: "metrics", type: "MetricTickerItem[]", required: true, description: "Metric cards." },
       { name: "steps", type: "TimelineStep[]", required: true, description: "Context steps." },
+      { name: "chartTitle", type: "string", description: "Headline on the bar chart scene." },
+      { name: "metricsTitle", type: "string", description: "Headline on the metric ticker scene." },
+      { name: "timelineTitle", type: "string", description: "Headline on the timeline scene." },
+      { name: "insight", type: "string", description: "Takeaway quote in the insight bumper." },
+      { name: "insightEyebrow", type: "string", description: "Eyebrow above the insight quote." },
+      { name: "ctaTitle", type: "string", description: "End card headline (separate from hook)." },
+      { name: "ctaLabel", type: "string", description: "End card CTA pill label." },
     ],
+    note: "1920×1080 data explainer template. Advanced tier.",
     related: ["animated-bar-chart", "metric-ticker", "timeline-steps"],
   },
   "podcast-clip": {

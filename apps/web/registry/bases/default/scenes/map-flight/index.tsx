@@ -2,7 +2,6 @@ import { loadFont } from "@remotion/google-fonts/Inter";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AbsoluteFill,
-  Easing,
   interpolate,
   useCurrentFrame,
   useDelayRender,
@@ -18,9 +17,12 @@ import {
   DEMO_ROUTE,
   getCameraOptions,
   greatCircleLine,
+  mapVignetteStyle,
+  MAP_THEME,
   type LngLat,
 } from "@/remotion/lib/map-utils";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
+import { EASING } from "@/remotion/lib/motion-tokens";
 
 const { fontFamily } = loadFont("normal", {
   weights: ["600", "700"],
@@ -35,19 +37,12 @@ export type MapFlightProps = {
   backgroundColor?: string;
 };
 
-const COLORS = {
-  bg: "#0a1420",
-  label: "#e4e4e7",
-  muted: "#a1a1aa",
-  pill: "rgba(8,12,20,0.82)",
-} as const;
-
 export const MapFlight: React.FC<MapFlightProps> = ({
   from = DEMO_ROUTE.from,
   to = DEMO_ROUTE.to,
   fromLabel,
   toLabel,
-  backgroundColor = COLORS.bg,
+  backgroundColor = MAP_THEME.background,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const frame = useCurrentFrame();
@@ -61,10 +56,10 @@ export const MapFlight: React.FC<MapFlightProps> = ({
   const markers = useMemo(
     () =>
       createMarkerCollection([
-        { position: from, name: fromLabel ?? "" },
-        { position: to, name: toLabel ?? "" },
+        { position: from, name: "" },
+        { position: to, name: "" },
       ]),
-    [from, fromLabel, to, toLabel],
+    [from, to],
   );
 
   useEffect(() => {
@@ -76,11 +71,11 @@ export const MapFlight: React.FC<MapFlightProps> = ({
       containerRef.current,
       width,
       height,
-      { center: from, zoom: 7 },
+      { center: from, zoom: 5 },
     );
 
     mapInstance.on("load", () => {
-      mapInstance.jumpTo({ center: from, zoom: 7 });
+      mapInstance.jumpTo({ center: from, zoom: 5 });
       mapInstance.once("idle", () => {
         setMap(mapInstance);
         continueRender(loadingHandle);
@@ -106,7 +101,7 @@ export const MapFlight: React.FC<MapFlightProps> = ({
     const travelProgress = interpolate(timelineProgress, [0.2, 0.82], [0, 1], {
       extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
-      easing: Easing.inOut(Easing.cubic),
+      easing: EASING.editorial,
     });
     const cameraAltitudeMeters = interpolate(
       timelineProgress,
@@ -115,7 +110,7 @@ export const MapFlight: React.FC<MapFlightProps> = ({
       {
         extrapolateLeft: "clamp",
         extrapolateRight: "clamp",
-        easing: Easing.inOut(Easing.cubic),
+        easing: EASING.editorial,
       },
     );
     const cameraLatitudeOffset = interpolate(
@@ -125,7 +120,7 @@ export const MapFlight: React.FC<MapFlightProps> = ({
       {
         extrapolateLeft: "clamp",
         extrapolateRight: "clamp",
-        easing: Easing.inOut(Easing.cubic),
+        easing: EASING.editorial,
       },
     );
 
@@ -164,10 +159,20 @@ export const MapFlight: React.FC<MapFlightProps> = ({
   const routeProgress = interpolate(timelineProgress, [0.2, 0.82], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
-    easing: Easing.inOut(Easing.cubic),
+    easing: EASING.editorial,
   });
   const safe = getSafeAreaPadding({ width, height });
   const showLabels = Boolean(fromLabel || toLabel);
+  const fromReveal = interpolate(timelineProgress, [0, 0.14], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: EASING.enter,
+  });
+  const toReveal = interpolate(timelineProgress, [0.78, 0.94], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: EASING.enter,
+  });
 
   return (
     <AbsoluteFill style={{ backgroundColor }}>
@@ -176,7 +181,8 @@ export const MapFlight: React.FC<MapFlightProps> = ({
         style={{ width, height, position: "absolute" }}
       />
       <MapRoute map={map} route={targetRoute} progress={routeProgress} />
-      <MapMarkers map={map} markers={markers} />
+      <MapMarkers map={map} markers={markers} revealProgress={1} />
+      <div style={mapVignetteStyle} />
       {showLabels ? (
         <div
           style={{
@@ -192,35 +198,44 @@ export const MapFlight: React.FC<MapFlightProps> = ({
           }}
         >
           {fromLabel ? (
-            <div
-              style={{
-                padding: `${scaleFont(10, width)}px ${scaleFont(18, width)}px`,
-                borderRadius: 999,
-                background: COLORS.pill,
-                color: COLORS.label,
-                fontSize: scaleFont(26, width),
-                fontWeight: 700,
-              }}
-            >
-              {fromLabel}
-            </div>
+            <EndpointLabel label={fromLabel} reveal={fromReveal} width={width} />
           ) : null}
           {toLabel ? (
-            <div
-              style={{
-                padding: `${scaleFont(10, width)}px ${scaleFont(18, width)}px`,
-                borderRadius: 999,
-                background: COLORS.pill,
-                color: COLORS.label,
-                fontSize: scaleFont(26, width),
-                fontWeight: 700,
-              }}
-            >
-              {toLabel}
-            </div>
+            <EndpointLabel label={toLabel} reveal={toReveal} width={width} />
           ) : null}
         </div>
       ) : null}
     </AbsoluteFill>
   );
 };
+
+const EndpointLabel: React.FC<{
+  label: string;
+  reveal: number;
+  width: number;
+}> = ({ label, reveal, width }) => (
+  <div
+    style={{
+      opacity: reveal,
+      transform: `translateY(${(1 - reveal) * 12}px)`,
+      padding: `${scaleFont(10, width)}px ${scaleFont(18, width)}px`,
+      borderRadius: 12,
+      background: "rgba(8, 8, 16, 0.82)",
+      border: "1px solid rgba(255, 255, 255, 0.1)",
+      color: MAP_THEME.label,
+      fontSize: scaleFont(26, width),
+      fontWeight: 700,
+      boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
+    }}
+  >
+    <span
+      style={{
+        display: "inline-block",
+        borderBottom: `2px solid ${MAP_THEME.marker}`,
+        paddingBottom: 2,
+      }}
+    >
+      {label}
+    </span>
+  </div>
+);

@@ -10,13 +10,13 @@ import { EndCard } from "@/remotion/scenes/end-card";
 
 const COLORS = {
   bg: "#050508",
-  hookBg: "#1a0f2e",
-  hookAccent: "#fb7185",
+  hookBg: "#1a1510",
+  hookAccent: "#e8b86d",
   bodyBg: "#0c1222",
-  bodyAccent: "#fbbf24",
-  captionActive: "#fbbf24",
+  bodyAccent: "#f59e0b",
+  captionActive: "#f59e0b",
   endBg: "#111827",
-  endAccent: "#fb7185",
+  endAccent: "#2dd4bf",
 } as const;
 
 const SCENE_DURATIONS = {
@@ -40,13 +40,13 @@ export type SocialClipProps = {
 };
 
 export const SocialClip: React.FC<SocialClipProps> = ({
-  hookTitle = "Clip the sharpest moment",
-  hookSubtitle = "Hook, audiogram, and a clean close",
+  hookTitle = "This line stops the scroll",
+  hookSubtitle = "Lead with the sharpest quote from the episode",
   logoSrc,
   audioSrc,
   captions,
   podcastTitle = "Weekly Brief",
-  ctaTitle,
+  ctaTitle = "Hear the full episode",
   ctaLabel,
   ctaUrl,
 }) => {
@@ -84,7 +84,7 @@ export const SocialClip: React.FC<SocialClipProps> = ({
         <TransitionSeries.Transition {...FADE} />
         <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.end}>
           <EndCard
-            title={ctaTitle ?? hookTitle}
+            title={ctaTitle}
             cta={ctaLabel}
             logoSrc={logoSrc}
             url={ctaUrl}

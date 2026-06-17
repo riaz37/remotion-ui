@@ -1,10 +1,11 @@
 import type { TikTokPage } from "@remotion/captions";
-import { spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { scaleFont } from "@/remotion/lib/layout";
+import { useCurrentFrame, useVideoConfig } from "remotion";
 import {
   getAbsoluteTimeMs,
+  getTokenEmphasis,
   isTokenActive,
 } from "@/remotion/lib/caption-utils";
+import { scaleFont } from "@/remotion/lib/layout";
 
 export type CaptionHighlightProps = {
   page: TikTokPage;
@@ -12,19 +13,28 @@ export type CaptionHighlightProps = {
   inactiveColor?: string;
   fontSize?: number;
   fontWeight?: number | string;
-  /** Scale multiplier for the active word. 1 keeps legacy color-only behavior. */
+  /** Scale multiplier for the active word. 1 keeps color-only behavior. */
   activeScale?: number;
+  /**
+   * Optional frame override.
+   * Pass a parent `frame` when using inside `<Sequence from={...}>`.
+   */
+  frame?: number;
 };
+
+const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
 
 export const CaptionHighlight: React.FC<CaptionHighlightProps> = ({
   page,
-  activeColor = "#fbbf24",
-  inactiveColor = "#f8fafc",
+  activeColor = "#e8b86d",
+  inactiveColor = "#fafafa",
   fontSize: fontSizeProp,
-  fontWeight = "bold",
-  activeScale = 1,
+  fontWeight = 700,
+  activeScale = 1.08,
+  frame: frameOverride,
 }) => {
-  const frame = useCurrentFrame();
+  const localFrame = useCurrentFrame();
+  const frame = frameOverride ?? localFrame;
   const { fps, width } = useVideoConfig();
   const fontSize = fontSizeProp ?? scaleFont(56, width);
   const absoluteTimeMs = getAbsoluteTimeMs(page, frame, fps);
@@ -34,24 +44,18 @@ export const CaptionHighlight: React.FC<CaptionHighlightProps> = ({
       style={{
         fontSize,
         fontWeight,
-        whiteSpace: "pre",
         textAlign: "center",
-        lineHeight: 1.25,
-        textShadow: "0 2px 16px rgba(0, 0, 0, 0.65)",
+        lineHeight: 1.2,
+        whiteSpace: "pre",
+        color: inactiveColor,
+        textShadow: "0 2px 18px rgba(0, 0, 0, 0.72)",
       }}
     >
       {page.tokens.map((token) => {
         const active = isTokenActive(token, absoluteTimeMs);
-        const scale =
-          active && activeScale > 1
-            ? spring({
-                frame,
-                fps,
-                config: { damping: 18, stiffness: 220 },
-              }) *
-                (activeScale - 1) +
-              1
-            : 1;
+        const emphasis = clamp01(getTokenEmphasis(frame, token, page, fps));
+        const scale = activeScale > 1 ? 1 + emphasis * (activeScale - 1) : 1;
+        const glow = active ? 0.35 + emphasis * 0.25 : 0;
 
         return (
           <span
@@ -61,6 +65,10 @@ export const CaptionHighlight: React.FC<CaptionHighlightProps> = ({
               display: "inline-block",
               transform: `scale(${scale})`,
               transformOrigin: "center bottom",
+              textShadow:
+                glow > 0
+                  ? `0 0 ${Math.round(18 * glow)}px ${activeColor}88, 0 2px 18px rgba(0, 0, 0, 0.72)`
+                  : undefined,
             }}
           >
             {token.text}

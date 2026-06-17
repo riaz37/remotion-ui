@@ -405,9 +405,6 @@
         "remotion"
       ],
       "registryDependencies": [
-        "stagger-children",
-        "slide-left",
-        "fade-in",
         "layout",
         "motion-tokens"
       ],
@@ -788,6 +785,60 @@
       "files": [
         {
           "path": "registry/bases/default/primitives/transition-light-leak.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "blur-reveal",
+      "type": "registry:ui",
+      "description": "Blur and opacity reveal transition for TransitionSeries",
+      "dependencies": [
+        "remotion",
+        "@remotion/transitions"
+      ],
+      "registryDependencies": [
+        "springs"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/blur-reveal.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "grid-pixelate-wipe",
+      "type": "registry:ui",
+      "description": "Grid cell opacity stagger wipe for TransitionSeries",
+      "dependencies": [
+        "remotion",
+        "@remotion/transitions"
+      ],
+      "registryDependencies": [
+        "springs"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/grid-pixelate-wipe.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "frosted-glass-wipe",
+      "type": "registry:ui",
+      "description": "Progressive frosted glass panel sweep for TransitionSeries",
+      "dependencies": [
+        "remotion",
+        "@remotion/transitions"
+      ],
+      "registryDependencies": [
+        "springs"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/frosted-glass-wipe.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1347,7 +1398,7 @@
       "composition": {
         "id": "DataStory",
         "component": "DataStory",
-        "durationInFrames": 452,
+        "durationInFrames": 420,
         "fps": 30,
         "width": 1920,
         "height": 1080,
@@ -1370,7 +1421,7 @@
         "@remotion/transitions"
       ],
       "registryDependencies": [
-        "hook-card",
+        "auto-fit-title",
         "talking-head-layout",
         "comment-callout",
         "caption-scene",
@@ -1381,7 +1432,7 @@
       "composition": {
         "id": "CreatorReel",
         "component": "CreatorReel",
-        "durationInFrames": 398,
+        "durationInFrames": 390,
         "fps": 30,
         "width": 1080,
         "height": 1920,

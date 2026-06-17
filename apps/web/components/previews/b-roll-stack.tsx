@@ -6,15 +6,18 @@ import {
   DEMO_MEDIA_SRC,
   DEMO_MEDIA_THIRD_SRC,
 } from "@/lib/demo-assets";
+import { ScenePreviewPlate } from "./scene-preview-plate";
 
 export const BRollStackPreview: React.FC = () => (
-  <BRollStack
-    kicker="Cutaway"
-    title="Layer supporting visuals"
-    items={[
-      { src: DEMO_MEDIA_SRC, title: "Hook" },
-      { src: DEMO_MEDIA_ALT_SRC, title: "Proof" },
-      { src: DEMO_MEDIA_THIRD_SRC, title: "CTA" },
-    ]}
-  />
+  <ScenePreviewPlate direct>
+    <BRollStack
+      kicker="Supporting visuals"
+      title="Layer cutaways behind the narration"
+      items={[
+        { src: DEMO_MEDIA_SRC, title: "Product screen" },
+        { src: DEMO_MEDIA_ALT_SRC, title: "Team workflow" },
+        { src: DEMO_MEDIA_THIRD_SRC, title: "Customer result" },
+      ]}
+    />
+  </ScenePreviewPlate>
 );

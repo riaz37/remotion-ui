@@ -7,27 +7,27 @@ const GOALS = [
   {
     label: "Creator reel",
     recipeSlug: "creator-reel",
-    compositionHref: "/docs/components/creator-reel",
+    compositionHref: "/docs/compositions/creator-reel",
   },
   {
     label: "Social clip",
     recipeSlug: "captioned-social-video",
-    compositionHref: "/docs/components/social-clip",
+    compositionHref: "/docs/compositions/social-clip",
   },
   {
     label: "Podcast",
     recipeSlug: "podcast-clip",
-    compositionHref: "/docs/components/podcast-clip",
+    compositionHref: "/docs/compositions/podcast-clip",
   },
   {
     label: "Data story",
     recipeSlug: "data-story",
-    compositionHref: "/docs/components/data-story",
+    compositionHref: "/docs/compositions/data-story",
   },
   {
     label: "Product intro",
     recipeSlug: "product-intro",
-    compositionHref: "/docs/components/intro",
+    compositionHref: "/docs/compositions/intro",
   },
 ] as const;
 
