@@ -9,7 +9,8 @@
     "lint": "tsc --noEmit",
     "registry:build": "tsx scripts/build-registry.mts",
     "brand:generate": "tsx scripts/generate-brand-assets.mts",
-    "render:showcases": "remotion render showcase/src/index.ts SocialClip public/showcases/social-clip.mp4",
+    "render:component": "tsx scripts/render-component.mts",
+    "render:showcases": "tsx scripts/render-component.mts social-clip --out public/showcases/social-clip.mp4",
     "postinstall": "fumadocs-mdx"
   },
   "dependencies": {
