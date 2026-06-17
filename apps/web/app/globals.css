@@ -196,17 +196,6 @@ h3 {
   border-top: 1px solid var(--bay-border);
 }
 
-.render-queue-connector {
-  width: 24px;
-  height: 1px;
-  margin-top: 2.75rem;
-  background: linear-gradient(
-    90deg,
-    var(--bay-phosphor) 0%,
-    var(--bay-border-strong) 100%
-  );
-}
-
 .link-phosphor {
   text-decoration: underline;
   text-decoration-color: var(--bay-phosphor);
@@ -215,6 +204,27 @@ h3 {
 
 .link-phosphor:hover {
   color: var(--bay-phosphor);
+}
+
+@keyframes queue-panel-in {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.queue-panel-in {
+  animation: queue-panel-in 300ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .queue-panel-in {
+    animation: none;
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {

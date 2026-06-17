@@ -20,6 +20,7 @@ import { SpringIn } from "@/remotion/primitives/spring-in";
 import { StaggerChildren } from "@/remotion/primitives/stagger-children";
 import { Typewriter } from "@/remotion/primitives/typewriter";
 import { WordHighlight } from "@/remotion/primitives/word-highlight";
+import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
 
 const { fontFamily: interFamily } = loadFont("normal", {
   weights: ["400", "500", "600", "700", "800"],
@@ -85,6 +86,10 @@ export const HeroLoop: React.FC = () => {
     extrapolateRight: "clamp",
     easing: Easing.out(Easing.linear),
   });
+  const splitOpacity = interpolate(frame, [352, 368], [1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
   return (
     <AbsoluteFill
@@ -97,26 +102,28 @@ export const HeroLoop: React.FC = () => {
       }}
     >
       <BackgroundTexture />
-      <SplitLayout>
-        <LeftColumn>
-          <SceneOneLeft />
-          <Sequence from={90} durationInFrames={154} layout="none">
-            <SceneTwoLeft />
-          </Sequence>
-          <Sequence from={240} durationInFrames={120} layout="none">
-            <SceneThreeLeft />
-          </Sequence>
-        </LeftColumn>
-        <RightColumn>
-          <SceneOneRight />
-          <Sequence from={88} durationInFrames={158} layout="none">
-            <SceneTwoRight />
-          </Sequence>
-          <Sequence from={240} durationInFrames={122} layout="none">
-            <SceneThreeRight />
-          </Sequence>
-        </RightColumn>
-      </SplitLayout>
+      <div style={{ position: "absolute", inset: 0, opacity: splitOpacity }}>
+        <SplitLayout>
+          <LeftColumn>
+            <SceneOneLeft />
+            <Sequence from={90} durationInFrames={154} layout="none">
+              <SceneTwoLeft />
+            </Sequence>
+            <Sequence from={240} durationInFrames={120} layout="none">
+              <SceneThreeLeft />
+            </Sequence>
+          </LeftColumn>
+          <RightColumn>
+            <SceneOneRight />
+            <Sequence from={88} durationInFrames={158} layout="none">
+              <SceneTwoRight />
+            </Sequence>
+            <Sequence from={240} durationInFrames={122} layout="none">
+              <SceneThreeRight />
+            </Sequence>
+          </RightColumn>
+        </SplitLayout>
+      </div>
       <Sequence from={360} durationInFrames={90}>
         <SceneFour />
       </Sequence>
@@ -461,60 +468,95 @@ const CodeImportLine: React.FC<{
   </div>
 );
 
-const SceneFour: React.FC = () => (
-  <AbsoluteFill
-    style={{
-      alignItems: "center",
-      justifyContent: "center",
-      backgroundColor: COLORS.bg,
-    }}
-  >
-    <div style={{ textAlign: "center", transform: "translateY(-8px)" }}>
-      <RotateIn durationInFrames={30} degrees={-14}>
-        <p
-          style={{
-            ...eyebrowStyle,
-            marginBottom: 20,
-            color: COLORS.text,
-            fontSize: 22,
-            letterSpacing: 4,
-          }}
-        >
-          RemotionUI
-        </p>
-      </RotateIn>
-      <FadeIn delayInFrames={20} durationInFrames={18}>
-        <p
-          style={{
-            margin: 0,
-            color: "#777777",
-            fontSize: 34,
-            lineHeight: 1.25,
-          }}
-        >
-          Copy-paste motion primitives for Remotion.
-        </p>
-      </FadeIn>
-      <ScaleIn delayInFrames={40} durationInFrames={20}>
-        <div style={commandPillStyle}>
-          <span style={{ color: COLORS.muted }}>$</span>
-          <Typewriter
-            text="npx remotion-ui@latest init my-video"
-            charFrames={2}
-            delayInFrames={8}
-            showCursor={false}
+const SceneFour: React.FC = () => {
+  const { width, height } = useVideoConfig();
+  const safe = getSafeAreaPadding({ width, height });
+
+  return (
+    <AbsoluteFill
+      style={{
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: COLORS.bg,
+        backgroundImage:
+          "radial-gradient(ellipse 70% 55% at 50% 50%, rgba(99,102,241,0.1), transparent)",
+        paddingLeft: safe.paddingLeft,
+        paddingRight: safe.paddingRight,
+        paddingTop: safe.paddingTop,
+        paddingBottom: safe.paddingBottom,
+        boxSizing: "border-box",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: scaleFont(28, width),
+          width: "100%",
+          maxWidth: scaleFont(1100, width),
+        }}
+      >
+        <RotateIn durationInFrames={30} degrees={-14}>
+          <p
             style={{
-              color: COLORS.accentLight,
-              fontFamily: font.mono,
-              fontSize: 18,
+              margin: 0,
+              color: COLORS.text,
+              fontSize: scaleFont(84, width),
+              fontWeight: 900,
+              lineHeight: 1.05,
+              letterSpacing: -0.02,
+              textAlign: "center",
             }}
-          />
-          <BlinkCursor />
-        </div>
-      </ScaleIn>
-    </div>
-  </AbsoluteFill>
-);
+          >
+            RemotionUI
+          </p>
+        </RotateIn>
+        <FadeIn delayInFrames={20} durationInFrames={18}>
+          <p
+            style={{
+              margin: 0,
+              color: COLORS.secondary,
+              fontSize: scaleFont(44, width),
+              lineHeight: 1.25,
+              fontWeight: 500,
+              textAlign: "center",
+              maxWidth: scaleFont(920, width),
+            }}
+          >
+            Copy-paste motion primitives for Remotion.
+          </p>
+        </FadeIn>
+        <ScaleIn delayInFrames={40} durationInFrames={20}>
+          <div
+            style={{
+              ...commandPillStyle,
+              marginTop: 0,
+              maxWidth: "100%",
+              flexWrap: "wrap",
+              justifyContent: "center",
+            }}
+          >
+            <span style={{ color: COLORS.muted }}>$</span>
+            <Typewriter
+              text="npx remotion-ui@latest init my-video"
+              charFrames={2}
+              delayInFrames={8}
+              showCursor={false}
+              style={{
+                color: COLORS.accentLight,
+                fontFamily: font.mono,
+                fontSize: scaleFont(18, width),
+              }}
+            />
+            <BlinkCursor />
+          </div>
+        </ScaleIn>
+      </div>
+    </AbsoluteFill>
+  );
+};
 
 const InlineProgressBar: React.FC = () => {
   const frame = useCurrentFrame();
@@ -769,8 +811,7 @@ const codeGlowStyle: CSSProperties = {
 };
 
 const commandPillStyle: CSSProperties = {
-  marginTop: 34,
-  display: "inline-flex",
+  display: "flex",
   alignItems: "center",
   gap: 16,
   minHeight: 58,

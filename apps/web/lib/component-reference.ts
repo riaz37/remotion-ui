@@ -840,11 +840,18 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     category: "scene",
     usage: `import { BRollStack } from "@/remotion/scenes/b-roll-stack";
 
-<BRollStack kicker="Cutaway" items={[{ src: staticFile("shot.png"), title: "Proof" }]} />`,
+<BRollStack
+  kicker="Cutaway"
+  title="Layer proof shots behind the narration"
+  items={[{ src: staticFile("shot.png"), title: "Proof", fit: "cover" }]}
+/>`,
     props: [
-      { name: "items", type: "{ src: string; title?: string }[]", required: true, description: "Media cards to layer." },
-      { name: "kicker", type: "string", description: "Optional uppercase label above the headline." },
+      { name: "items", type: "BRollItem[]", description: "Image or video cards to layer. Omit for styled placeholders." },
+      { name: "kicker", type: "string", default: '"Supporting visuals"', description: "Short label above the headline." },
       { name: "title", type: "string", description: "Scene headline." },
+      { name: "caption", type: "string", description: "Supporting copy below the headline." },
+      { name: "muted", type: "boolean", default: "true", description: "Mute video cards in the stack." },
+      { name: "maxCards", type: "number", default: "4", description: "Maximum cards to layer." },
     ],
     related: ["media-frame", "media-sequence"],
   },

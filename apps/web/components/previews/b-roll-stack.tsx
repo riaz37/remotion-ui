@@ -12,11 +12,27 @@ export const BRollStackPreview: React.FC = () => (
   <ScenePreviewPlate direct>
     <BRollStack
       kicker="Supporting visuals"
-      title="Layer cutaways behind the narration"
+      title="Proof shots behind narration"
+      caption="Drop in screen captures, process clips, or customer moments."
       items={[
-        { src: DEMO_MEDIA_SRC, title: "Product screen" },
-        { src: DEMO_MEDIA_ALT_SRC, title: "Team workflow" },
-        { src: DEMO_MEDIA_THIRD_SRC, title: "Customer result" },
+        {
+          src: DEMO_MEDIA_SRC,
+          title: "Product screen",
+          caption: "Feature walkthrough",
+          fit: "contain",
+        },
+        {
+          src: DEMO_MEDIA_ALT_SRC,
+          title: "Team workflow",
+          caption: "Behind the build",
+          fit: "contain",
+        },
+        {
+          src: DEMO_MEDIA_THIRD_SRC,
+          title: "Customer result",
+          caption: "Proof point",
+          fit: "contain",
+        },
       ]}
     />
   </ScenePreviewPlate>

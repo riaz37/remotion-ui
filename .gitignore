@@ -81,6 +81,10 @@ Thumbs.db
 .agents/
 .codex/
 
+# Local design playbooks (not for public repo)
+IDENTITY.md
+STUDIO-DESIGN.md
+
 # Misc
 *.tgz
 .cache/

@@ -1165,10 +1165,13 @@
       "type": "registry:block",
       "description": "Layered b-roll media stack",
       "dependencies": [
+        "@remotion/media",
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "layout",
+        "media-utils",
+        "motion-tokens"
       ],
       "files": [
         {
