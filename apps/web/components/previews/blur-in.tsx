@@ -1,16 +1,27 @@
 "use client";
 
 import { BlurIn } from "../registry-exports";
-import { PreviewFrame, ProductCard } from "./preview-frame";
+import { DEMO_COPY } from "@/lib/demo-assets";
+import { PreviewFrame, PreviewGhostStack, ProductCard } from "./preview-frame";
 
 export const BlurInPreview: React.FC = () => (
   <PreviewFrame lane="atoms">
-    <BlurIn>
-      <ProductCard
-        kicker="Focus shift"
-        title="Bring the message in"
-        detail="Soft blur resolves to crisp type"
-      />
-    </BlurIn>
+    <PreviewGhostStack
+      ghost={
+        <ProductCard
+          kicker={DEMO_COPY.productLaunch.subtitle}
+          title={DEMO_COPY.productLaunch.title}
+          detail={DEMO_COPY.productLaunch.featureTitle}
+        />
+      }
+    >
+      <BlurIn delayInFrames={6} durationInFrames={30}>
+        <ProductCard
+          kicker={DEMO_COPY.productLaunch.subtitle}
+          title={DEMO_COPY.productLaunch.title}
+          detail={DEMO_COPY.productLaunch.featureTitle}
+        />
+      </BlurIn>
+    </PreviewGhostStack>
   </PreviewFrame>
 );

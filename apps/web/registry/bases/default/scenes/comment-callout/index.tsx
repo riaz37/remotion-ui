@@ -1,15 +1,16 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
-import { interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
-import { DELAY, DURATION } from "@/remotion/lib/motion-tokens";
+import { DELAY, DURATION, EASING } from "@/remotion/lib/motion-tokens";
+import { springSnappy } from "@/remotion/lib/springs";
 
 const { fontFamily } = loadFont("normal", {
-  weights: ["500", "700", "800"],
+  weights: ["500", "700"],
   subsets: ["latin"],
 });
 
 export type CommentCalloutProps = {
-  body: string;
+  body?: string;
   author?: string;
   handle?: string;
   initials?: string;
@@ -25,31 +26,35 @@ const COLORS = {
   text: "#fafafa",
   muted: "#a1a1aa",
   avatarFg: "#0f0d18",
-  accent: "#c4b5fd",
+  accent: "#f472b6",
 } as const;
 
 export const CommentCallout: React.FC<CommentCalloutProps> = ({
-  body,
-  author,
-  handle,
-  initials,
-  replyLabel,
+  body = "Can you break this down in a 30-second clip?",
+  author = "Alex Rivera",
+  handle = "@alexbuilds",
+  initials = "AR",
+  replyLabel = "Reply",
   accentColor = COLORS.accent,
   backgroundColor = COLORS.bg,
 }) => {
   const frame = useCurrentFrame();
-  const { width, height } = useVideoConfig();
+  const { fps, width, height } = useVideoConfig();
   const safeArea = getSafeAreaPadding({ width, height });
-  const cardEnter = interpolate(frame, [0, DURATION.fast], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
+
+  const cardEnter = spring({
+    frame,
+    fps,
+    config: springSnappy,
   });
+  const cardLift = interpolate(cardEnter, [0, 1], [56, 0]);
   const replyEnter = interpolate(
     frame,
     [DELAY.medium, DELAY.medium + DURATION.normal],
     [0, 1],
     {
-    extrapolateLeft: "clamp",
+      easing: EASING.enter,
+      extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
     },
   );
@@ -94,8 +99,8 @@ export const CommentCallout: React.FC<CommentCalloutProps> = ({
           background: COLORS.card,
           border: `1px solid ${COLORS.border}`,
           boxShadow: `0 ${scaleFont(24, width)}px ${scaleFont(72, width)}px rgba(0,0,0,0.32)`,
-          opacity: cardEnter,
-          transform: `translateY(${(1 - cardEnter) * 36}px) scale(${0.96 + cardEnter * 0.04})`,
+          opacity: Math.min(1, cardEnter),
+          transform: `translateY(${cardLift}px) scale(${0.96 + cardEnter * 0.04})`,
         }}
       >
         <div
@@ -118,7 +123,7 @@ export const CommentCallout: React.FC<CommentCalloutProps> = ({
                 alignItems: "center",
                 justifyContent: "center",
                 fontSize: scaleFont(26, width),
-                fontWeight: 800,
+                fontWeight: 700,
               }}
             >
               {avatarText}

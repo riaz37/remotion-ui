@@ -1,19 +1,27 @@
 "use client";
 
-import { Sequence } from "remotion";
 import { SlideUp } from "../registry-exports";
-import { PreviewFrame, ProductCard } from "./preview-frame";
+import { DEMO_COPY } from "@/lib/demo-assets";
+import { PreviewFrame, PreviewGhostStack, ProductCard } from "./preview-frame";
 
 export const SlideUpPreview: React.FC = () => (
   <PreviewFrame lane="atoms">
-    <Sequence from={-20} layout="none">
-      <SlideUp>
+    <PreviewGhostStack
+      ghost={
         <ProductCard
-          kicker="Hero entrance"
-          title="Ship the update"
-          detail="Rises into its reserved slot"
+          kicker={DEMO_COPY.productLaunch.subtitle}
+          title={DEMO_COPY.productLaunch.title}
+          detail={DEMO_COPY.productLaunch.featureTitle}
+        />
+      }
+    >
+      <SlideUp delayInFrames={6} durationInFrames={30}>
+        <ProductCard
+          kicker={DEMO_COPY.productLaunch.subtitle}
+          title={DEMO_COPY.productLaunch.title}
+          detail={DEMO_COPY.productLaunch.featureTitle}
         />
       </SlideUp>
-    </Sequence>
+    </PreviewGhostStack>
   </PreviewFrame>
 );

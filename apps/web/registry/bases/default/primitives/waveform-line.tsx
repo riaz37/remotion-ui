@@ -3,6 +3,7 @@ import {
   useWindowedAudioData,
   visualizeAudioWaveform,
 } from "@remotion/media-utils";
+import { useId } from "react";
 import { useCurrentFrame, useVideoConfig } from "remotion";
 
 export type WaveformLineProps = {
@@ -18,19 +19,20 @@ export type WaveformLineProps = {
 export const WaveformLine: React.FC<WaveformLineProps> = ({
   src,
   height = 120,
-  strokeColor = "#c084fc",
+  strokeColor = "#e8b86d",
   strokeWidth = 3,
   samples = 256,
   mirror = false,
   windowInSeconds = 0.5,
 }) => {
+  const glowId = useId().replace(/:/g, "-");
   const frame = useCurrentFrame();
   const { fps, width } = useVideoConfig();
   const { audioData, dataOffsetInSeconds } = useWindowedAudioData({
     src,
     frame,
     fps,
-    windowInSeconds: 30,
+    windowInSeconds,
   });
 
   if (!audioData) {
@@ -46,7 +48,7 @@ export const WaveformLine: React.FC<WaveformLineProps> = ({
     return (
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
         <defs>
-          <filter id="waveform-glow">
+          <filter id={glowId} x="-20%" y="-60%" width="140%" height="220%">
             <feGaussianBlur stdDeviation="2" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
@@ -60,7 +62,7 @@ export const WaveformLine: React.FC<WaveformLineProps> = ({
           stroke={strokeColor}
           strokeWidth={strokeWidth}
           strokeLinecap="round"
-          filter="url(#waveform-glow)"
+          filter={`url(#${glowId})`}
         />
       </svg>
     );
@@ -92,7 +94,7 @@ export const WaveformLine: React.FC<WaveformLineProps> = ({
   return (
     <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
       <defs>
-        <filter id="waveform-glow">
+        <filter id={glowId} x="-20%" y="-60%" width="140%" height="220%">
           <feGaussianBlur stdDeviation="2" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
@@ -106,7 +108,7 @@ export const WaveformLine: React.FC<WaveformLineProps> = ({
         stroke={strokeColor}
         strokeWidth={strokeWidth}
         strokeLinecap="round"
-        filter="url(#waveform-glow)"
+        filter={`url(#${glowId})`}
       />
       {mirroredPath ? (
         <path

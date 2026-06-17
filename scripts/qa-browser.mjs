@@ -11,6 +11,7 @@ import { fileURLToPath } from "node:url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DOCS_ROOT = path.join(ROOT, "apps/web/content/docs");
 const PREVIEW_CATEGORIES = [
+  "components",
   "primitives",
   "signals",
   "vectors",
@@ -115,7 +116,14 @@ for (const item of PAGES) {
 
 let errors = "none";
 try {
-  errors = ab("errors") || "none";
+  const raw = ab("errors") || "";
+  const cleaned = raw
+    .split("\n")
+    .map((line) => line.trimEnd())
+    .filter((line) => line.trim() !== "" && line.trim() !== "✗")
+    .join("\n")
+    .trim();
+  errors = cleaned.length > 0 ? cleaned : "none";
 } catch {
   /* ignore */
 }

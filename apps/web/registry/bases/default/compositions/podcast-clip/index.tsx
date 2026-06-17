@@ -21,17 +21,17 @@ const { fontFamily } = loadFont("normal", {
 });
 
 const COLORS = {
-  bg: "#120c08",
-  introBg: "#1c1410",
-  accent: "#f59e0b",
-  accentSoft: "#fcd34d",
-  studioBg: "#18110c",
-  studioGlow: "rgba(245,158,11,0.14)",
-  waveform: "#fbbf24",
-  quoteBg: "#0f0a07",
-  endBg: "#120c08",
-  endAccent: "#f59e0b",
-  muted: "#a8a29e",
+  bg: "#080810",
+  introBg: "#0c0c14",
+  accent: "#e8b86d",
+  accentSoft: "#f5d08a",
+  studioBg: "#0a1014",
+  studioGlow: "rgba(232,184,109,0.14)",
+  waveform: "#f59e0b",
+  quoteBg: "#080810",
+  endBg: "#080810",
+  endAccent: "#2dd4bf",
+  muted: "#71717a",
 } as const;
 
 const fade = transitionFade({ durationInFrames: DURATION.fast });
@@ -80,8 +80,6 @@ const PodcastIntro: React.FC<{
               color: COLORS.accentSoft,
               fontSize: scaleFont(28, width),
               fontWeight: 700,
-              letterSpacing: scaleFont(4, width),
-              textTransform: "uppercase",
             }}
           >
             Podcast clip
@@ -89,7 +87,7 @@ const PodcastIntro: React.FC<{
           <h1
             style={{
               margin: `${scaleFont(16, width)}px 0 0`,
-              color: "#fef3c7",
+              color: "#fafafa",
               fontSize: scaleFont(72, width),
               fontWeight: 800,
               lineHeight: 1.05,
@@ -145,8 +143,6 @@ const PodcastStudio: React.FC<{
               color: COLORS.accentSoft,
               fontSize: scaleFont(26, width),
               fontWeight: 700,
-              letterSpacing: scaleFont(3, width),
-              textTransform: "uppercase",
             }}
           >
             {showName}
@@ -154,7 +150,7 @@ const PodcastStudio: React.FC<{
           <h2
             style={{
               margin: `${scaleFont(10, width)}px 0 0`,
-              color: "#fef3c7",
+              color: "#fafafa",
               fontSize: scaleFont(52, width),
               fontWeight: 800,
               lineHeight: 1.08,

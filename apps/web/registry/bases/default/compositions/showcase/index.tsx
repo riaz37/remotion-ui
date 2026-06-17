@@ -9,12 +9,12 @@ import { TitleCard } from "@/remotion/scenes/title-card";
 
 const COLORS = {
   bg: "#080810",
-  accent: "#6366f1",
+  accent: "#e8b86d",
   featureBg: "#0c0c14",
   statBg: "#0a1014",
   statAccent: "#2dd4bf",
   endBg: "#080810",
-  endAccent: "#6366f1",
+  endAccent: "#f59e0b",
 } as const;
 
 const SCENE_DURATIONS = {
@@ -47,7 +47,7 @@ export const Showcase: React.FC<ShowcaseProps> = ({
     "Scenes for hooks, charts, and captions",
     "Compositions that wire the full story",
   ],
-  statValue = 0,
+  statValue = 3,
   statLabel = "Runtime dependencies",
   statSuffix = "",
   ctaLabel,

@@ -7,8 +7,8 @@ import { getAtlasMeta, type AtlasLane } from "@/lib/atlas";
 
 const DURATIONS: Record<string, number> = {
   "social-clip": 228,
-  "creator-reel": 398,
-  "data-story": 452,
+  "creator-reel": 390,
+  "data-story": 420,
   "podcast-clip": 366,
   "hero-loop": 450,
   showcase: 150,

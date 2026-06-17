@@ -1,12 +1,12 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
-import { AbsoluteFill, Img, useVideoConfig } from "remotion";
-import { AudiogramBars } from "@/remotion/primitives/audiogram-bars";
-import { FadeIn } from "@/remotion/primitives/fade-in";
+import { AbsoluteFill, Img, useCurrentFrame, useVideoConfig } from "remotion";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
 import { DURATION } from "@/remotion/lib/motion-tokens";
+import { AudiogramBars } from "@/remotion/primitives/audiogram-bars";
+import { FadeIn } from "@/remotion/primitives/fade-in";
 
 const { fontFamily } = loadFont("normal", {
-  weights: ["400", "600", "800"],
+  weights: ["400", "600", "700"],
   subsets: ["latin"],
 });
 
@@ -21,11 +21,11 @@ export type AudiogramSceneProps = {
 };
 
 const COLORS = {
-  bg: "#0a0812",
-  title: "#faf5ff",
-  subtitle: "#c4b5fd",
-  glow: "rgba(124,58,237,0.2)",
-  accent: "#7c3aed",
+  bg: "#080810",
+  title: "#fafafa",
+  subtitle: "#d4d4d8",
+  glow: "rgba(232,184,109,0.16)",
+  accent: "#e8b86d",
 } as const;
 
 export const AudiogramScene: React.FC<AudiogramSceneProps> = ({
@@ -37,6 +37,7 @@ export const AudiogramScene: React.FC<AudiogramSceneProps> = ({
   accentColor = COLORS.accent,
   backgroundColor = COLORS.bg,
 }) => {
+  const frame = useCurrentFrame();
   const { width, height } = useVideoConfig();
   const safeArea = getSafeAreaPadding({ width, height });
   const hasHeader = Boolean(title || subtitle || logoSrc);
@@ -46,10 +47,14 @@ export const AudiogramScene: React.FC<AudiogramSceneProps> = ({
       style={{
         backgroundColor,
         backgroundImage: `radial-gradient(ellipse 90% 55% at 50% 0%, ${COLORS.glow}, transparent)`,
-        ...safeArea,
+        paddingLeft: safeArea.paddingLeft,
+        paddingRight: safeArea.paddingRight,
+        paddingTop: safeArea.paddingTop,
+        paddingBottom: safeArea.paddingBottom + scaleFont(28, width),
         display: "flex",
         flexDirection: "column",
-        justifyContent: "center",
+        justifyContent: "space-between",
+        alignItems: "stretch",
         gap: scaleFont(36, width),
         fontFamily,
       }}
@@ -62,7 +67,7 @@ export const AudiogramScene: React.FC<AudiogramSceneProps> = ({
               flexDirection: "column",
               alignItems: logoSrc ? "center" : "flex-start",
               textAlign: logoSrc ? "center" : "left",
-              gap: logoSrc ? scaleFont(20, width) : 0,
+              gap: scaleFont(12, width),
             }}
           >
             {logoSrc ? (
@@ -80,7 +85,7 @@ export const AudiogramScene: React.FC<AudiogramSceneProps> = ({
                 style={{
                   color: COLORS.title,
                   fontSize: scaleFont(64, width),
-                  fontWeight: 800,
+                  fontWeight: 700,
                   margin: 0,
                   lineHeight: 1.05,
                   letterSpacing: "-0.02em",
@@ -105,12 +110,22 @@ export const AudiogramScene: React.FC<AudiogramSceneProps> = ({
           </div>
         </FadeIn>
       ) : null}
-      <FadeIn durationInFrames={DURATION.normal} delayInFrames={8}>
-        <AudiogramBars
-          src={src}
-          barColor={accentColor}
-          height={Math.round(height * 0.18)}
-        />
+      <FadeIn durationInFrames={DURATION.normal} delayInFrames={10}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            width: "100%",
+            paddingBottom: scaleFont(18, width),
+          }}
+        >
+          <AudiogramBars
+            src={src}
+            frame={frame}
+            barColor={accentColor}
+            height={Math.round(height * 0.14)}
+          />
+        </div>
       </FadeIn>
     </AbsoluteFill>
   );

@@ -2,7 +2,7 @@
 
 import { Player, type PlayerRef } from "@remotion/player";
 import type { ComponentType, RefObject } from "react";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 
 type ScaledPlayerStageProps = {
   playerRef: RefObject<PlayerRef | null>;
@@ -26,22 +26,6 @@ export function ScaledPlayerStage({
   const containerRef = useRef<HTMLDivElement>(null);
   const isPortrait = height > width;
 
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const updateScale = () => {
-      const { width: cw, height: ch } = container.getBoundingClientRect();
-      const scale = Math.min(cw / width, ch / height);
-      container.style.setProperty("--player-scale", String(scale));
-    };
-
-    updateScale();
-    const observer = new ResizeObserver(updateScale);
-    observer.observe(container);
-    return () => observer.disconnect();
-  }, [width, height]);
-
   return (
     <div
       ref={containerRef}
@@ -64,11 +48,9 @@ export function ScaledPlayerStage({
         compositionWidth={width}
         compositionHeight={height}
         style={{
-          width,
-          height,
+          width: "100%",
+          height: "100%",
           display: "block",
-          transform: "scale(var(--player-scale, 1))",
-          transformOrigin: "center center",
         }}
         inputProps={inputProps}
         controls={false}

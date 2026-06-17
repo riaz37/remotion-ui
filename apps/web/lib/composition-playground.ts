@@ -20,7 +20,7 @@ const PLAYGROUND_META: Record<string, CompositionPlaygroundMeta> = {
       "ctaLabel",
       "comment",
     ],
-    durationInFrames: 398,
+    durationInFrames: 390,
     previewWidth: 1080,
     previewHeight: 1920,
   },
@@ -32,7 +32,7 @@ const PLAYGROUND_META: Record<string, CompositionPlaygroundMeta> = {
   },
   "data-story": {
     editablePropNames: ["title", "insight", "ctaLabel"],
-    durationInFrames: 452,
+    durationInFrames: 420,
     previewWidth: 1920,
     previewHeight: 1080,
   },

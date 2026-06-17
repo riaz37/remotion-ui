@@ -8,9 +8,10 @@ import type { Map } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {
   createMapInstance,
-  DEFAULT_MAP_STYLE,
+  isMapStyleReady,
+  mapVignetteStyle,
+  MAP_THEME,
   type LngLat,
-  type MapInitOptions,
 } from "@/remotion/lib/map-utils";
 
 export type MapCanvasProps = {
@@ -19,6 +20,7 @@ export type MapCanvasProps = {
   style?: string;
   onMapReady?: (map: Map) => void;
   backgroundColor?: string;
+  showVignette?: boolean;
 };
 
 export const MapCanvas: React.FC<MapCanvasProps> = ({
@@ -26,49 +28,58 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   zoom = 7,
   style,
   onMapReady,
-  backgroundColor = "#0c1220",
+  backgroundColor = MAP_THEME.background,
+  showVignette = true,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<Map | null>(null);
+  const onMapReadyRef = useRef(onMapReady);
   const { delayRender, continueRender } = useDelayRender();
   const { width, height } = useVideoConfig();
-  const [map, setMap] = useState<Map | null>(null);
   const [loadingHandle] = useState(() => delayRender("Loading map"));
+
+  onMapReadyRef.current = onMapReady;
 
   useEffect(() => {
     if (!containerRef.current) {
       return;
     }
 
-    const options: MapInitOptions = {
+    const mapInstance = createMapInstance(containerRef.current, width, height, {
       center,
       zoom,
-      style: style ?? DEFAULT_MAP_STYLE,
-    };
-    const mapInstance = createMapInstance(
-      containerRef.current,
-      width,
-      height,
-      options,
-    );
+      style,
+    });
+    mapRef.current = mapInstance;
 
-    mapInstance.on("load", () => {
+    const notifyReady = () => {
+      if (!isMapStyleReady(mapInstance)) {
+        return;
+      }
+
       mapInstance.jumpTo({ center, zoom });
       mapInstance.once("idle", () => {
-        setMap(mapInstance);
-        onMapReady?.(mapInstance);
+        onMapReadyRef.current?.(mapInstance);
         continueRender(loadingHandle);
       });
-    });
-  }, [
-    center,
-    continueRender,
-    height,
-    loadingHandle,
-    onMapReady,
-    style,
-    width,
-    zoom,
-  ]);
+    };
+
+    if (mapInstance.loaded()) {
+      notifyReady();
+    } else {
+      mapInstance.on("load", notifyReady);
+    }
+  }, [continueRender, height, loadingHandle, style, width, zoom]);
+
+  useEffect(() => {
+    const mapInstance = mapRef.current;
+    if (!isMapStyleReady(mapInstance) || !mapInstance.loaded()) {
+      return;
+    }
+
+    mapInstance.jumpTo({ center, zoom });
+    mapInstance.triggerRepaint();
+  }, [center, zoom]);
 
   return (
     <AbsoluteFill style={{ backgroundColor }}>
@@ -78,11 +89,9 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           width,
           height,
           position: "absolute",
-          borderRadius: 12,
-          overflow: "hidden",
-          boxShadow: "inset 0 0 0 1px rgba(255, 255, 255, 0.08)",
         }}
       />
+      {showVignette ? <div style={mapVignetteStyle} /> : null}
     </AbsoluteFill>
   );
 };

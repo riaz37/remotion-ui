@@ -6,10 +6,10 @@ import {
   type ChartDatum,
 } from "@/remotion/lib/chart-utils";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
-import { DURATION, STAGGER } from "@/remotion/lib/motion-tokens";
+import { DURATION, EASING, STAGGER } from "@/remotion/lib/motion-tokens";
 
 const { fontFamily } = loadFont("normal", {
-  weights: ["400", "700", "800"],
+  weights: ["400", "600", "700"],
   subsets: ["latin"],
 });
 
@@ -23,11 +23,11 @@ export type AnimatedBarChartProps = {
 };
 
 const COLORS = {
-  bg: "#0c1018",
+  bg: "#080810",
   label: "#a1a1aa",
   track: "rgba(161,161,170,0.14)",
   value: "#f8fafc",
-  bar: "#34d399",
+  bar: "#2dd4bf",
 } as const;
 
 export const AnimatedBarChart: React.FC<AnimatedBarChartProps> = ({
@@ -47,6 +47,13 @@ export const AnimatedBarChart: React.FC<AnimatedBarChartProps> = ({
   const labelWidth = scaleFont(isPortrait ? 120 : 160, width);
   const valueWidth = scaleFont(isPortrait ? 72 : 96, width);
   const barHeight = scaleFont(34, width);
+  const titleProgress = title
+    ? interpolate(frame, [0, DURATION.fast], [0, 1], {
+        extrapolateLeft: "clamp",
+        extrapolateRight: "clamp",
+        easing: EASING.enter,
+      })
+    : 0;
 
   return (
     <div
@@ -70,9 +77,11 @@ export const AnimatedBarChart: React.FC<AnimatedBarChartProps> = ({
           style={{
             margin: 0,
             fontSize: scaleFont(84, width),
-            fontWeight: 800,
+            fontWeight: 700,
             lineHeight: 1.05,
             letterSpacing: "-0.02em",
+            opacity: titleProgress,
+            transform: `translateY(${(1 - titleProgress) * 20}px)`,
           }}
         >
           {title}
@@ -88,12 +97,16 @@ export const AnimatedBarChart: React.FC<AnimatedBarChartProps> = ({
         }}
       >
         {data.map((item, index) => {
-          const delay = index * STAGGER.normal;
+          const delay = STAGGER.normal + index * STAGGER.normal;
           const progress = interpolate(
             frame,
             [delay, delay + DURATION.normal],
             [0, 1],
-            { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+            {
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp",
+              easing: EASING.enter,
+            },
           );
           const widthPercent =
             Math.max(0.04, item.value / topValue) * progress * 100;
@@ -113,7 +126,7 @@ export const AnimatedBarChart: React.FC<AnimatedBarChartProps> = ({
                 style={{
                   color: COLORS.label,
                   fontSize: scaleFont(28, width),
-                  fontWeight: 700,
+                  fontWeight: 600,
                   overflow: "hidden",
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
@@ -142,9 +155,10 @@ export const AnimatedBarChart: React.FC<AnimatedBarChartProps> = ({
               <div
                 style={{
                   fontSize: scaleFont(28, width),
-                  fontWeight: 800,
+                  fontWeight: 700,
                   textAlign: "right",
                   opacity: progress,
+                  transform: `translateY(${(1 - progress) * 8}px)`,
                 }}
               >
                 {valueFormatter(Math.round(item.value * progress))}

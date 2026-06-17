@@ -1,5 +1,7 @@
-import { useCurrentFrame } from "remotion";
+import { useCurrentFrame, useVideoConfig } from "remotion";
 import {
+  DEFAULT_AUDIO_WINDOW_SECONDS,
+  downsampleSpectrum,
   scaleFrequenciesForDisplay,
   useSpectrumBars,
 } from "@/remotion/lib/audio-viz-utils";
@@ -11,21 +13,25 @@ export type AudiogramBarsProps = {
   barGap?: number;
   numberOfSamples?: number;
   maxBarCount?: number;
+  /**
+   * Optional frame override.
+   * Pass a parent `frame` when using inside `<Sequence from={...}>` to avoid discontinuities.
+   */
+  frame?: number;
 };
 
-function PlaceholderBars({
-  height,
-  barColor,
-  barGap,
-  maxBarCount,
-}: {
+const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
+
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+type BarRendererProps = {
+  bars: number[];
   height: number;
   barColor: string;
   barGap: number;
-  maxBarCount: number;
-}) {
-  const frame = useCurrentFrame();
+};
 
+function BarRenderer({ bars, height, barColor, barGap }: BarRendererProps) {
   return (
     <div
       style={{
@@ -36,20 +42,30 @@ function PlaceholderBars({
         width: "100%",
       }}
     >
-      {Array.from({ length: maxBarCount }).map((_, index) => {
-        const wave =
-          0.35 +
-          0.3 * Math.sin((frame + index * 4) / 8) +
-          0.2 * Math.sin((frame + index * 2) / 3);
+      {bars.map((value, index) => {
+        const v = clamp01(value);
+        const minPct = 0.06;
+        const pct = Math.max(minPct, v);
+        const glow = lerp(8, 22, v);
+        const sheen = lerp(0.06, 0.22, v);
+        const radius = Math.max(2, Math.round(lerp(4, 2, index / Math.max(1, bars.length - 1))));
+
         return (
           <div
             key={index}
             style={{
               flex: 1,
-              height: `${Math.max(12, wave * 100)}%`,
-              background: `linear-gradient(to top, ${barColor} 0%, ${barColor}55 100%)`,
-              borderRadius: 3,
-              boxShadow: wave > 0.55 ? `0 0 12px ${barColor}44` : undefined,
+              height: `${pct * 100}%`,
+              background: [
+                `linear-gradient(to top, ${barColor} 0%, ${barColor}9a 55%, ${barColor}22 100%)`,
+                `linear-gradient(to bottom, rgba(255,255,255,${sheen}) 0%, rgba(255,255,255,0) 55%)`,
+              ].join(", "),
+              borderRadius: radius,
+              boxShadow:
+                v > 0.2
+                  ? `0 0 ${Math.round(glow)}px ${barColor}55, 0 0 ${Math.round(glow * 0.55)}px ${barColor}22`
+                  : undefined,
+              filter: "saturate(1.05)",
             }}
           />
         );
@@ -58,53 +74,74 @@ function PlaceholderBars({
   );
 }
 
+function LoadingBars({
+  height,
+  barColor,
+  barGap,
+  maxBarCount,
+  frame,
+  fps,
+}: {
+  height: number;
+  barColor: string;
+  barGap: number;
+  maxBarCount: number;
+  frame: number;
+  fps: number;
+}) {
+  const bars = Array.from({ length: maxBarCount }, (_, index) => {
+    const t = frame / fps;
+    return (
+      0.12 +
+      0.1 * Math.sin(t * Math.PI * 2 * 1.4 + index * 0.35) +
+      0.06 * Math.sin(t * Math.PI * 2 * 2.8 + index * 0.18)
+    );
+  });
+
+  return (
+    <BarRenderer bars={bars} height={height} barColor={barColor} barGap={barGap} />
+  );
+}
+
 export const AudiogramBars: React.FC<AudiogramBarsProps> = ({
   src,
   height = 120,
-  barColor = "#67e8f9",
+  barColor = "#e8b86d",
   barGap = 2,
   numberOfSamples = 64,
   maxBarCount = 48,
+  frame: frameOverride,
 }) => {
-  const { frequencies } = useSpectrumBars({ src, numberOfSamples });
+  const localFrame = useCurrentFrame();
+  const frame = frameOverride ?? localFrame;
+  const { fps } = useVideoConfig();
+
+  const { frequencies } = useSpectrumBars({
+    src,
+    numberOfSamples,
+    windowInSeconds: DEFAULT_AUDIO_WINDOW_SECONDS,
+    frame,
+  });
 
   if (!frequencies) {
     return (
-      <PlaceholderBars
+      <LoadingBars
         height={height}
         barColor={barColor}
         barGap={barGap}
         maxBarCount={maxBarCount}
+        frame={frame}
+        fps={fps}
       />
     );
   }
 
-  const scaled = scaleFrequenciesForDisplay(frequencies);
-  const step = Math.max(1, Math.floor(scaled.length / maxBarCount));
-  const bars = scaled.filter((_, index) => index % step === 0).slice(0, maxBarCount);
+  const bars = downsampleSpectrum(
+    scaleFrequenciesForDisplay(frequencies),
+    maxBarCount,
+  );
 
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "flex-end",
-        height,
-        gap: barGap,
-        width: "100%",
-      }}
-    >
-      {bars.map((value, index) => (
-        <div
-          key={index}
-          style={{
-            flex: 1,
-            height: `${Math.max(6, value * 100)}%`,
-            background: `linear-gradient(to top, ${barColor} 0%, ${barColor}88 55%, ${barColor}33 100%)`,
-            borderRadius: 3,
-            boxShadow: value > 0.35 ? `0 0 14px ${barColor}55` : undefined,
-          }}
-        />
-      ))}
-    </div>
+    <BarRenderer bars={bars} height={height} barColor={barColor} barGap={barGap} />
   );
 };

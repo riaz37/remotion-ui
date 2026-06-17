@@ -2,16 +2,15 @@
 
 import { LogoReveal } from "../registry-exports";
 import { DEMO_LOGO_PATH } from "@/lib/demo-assets";
-import { PreviewFrame } from "./preview-frame";
+import { ScenePreviewPlate } from "./scene-preview-plate";
 
 export const LogoRevealPreview: React.FC = () => (
-  <PreviewFrame lane="vectors">
+  <ScenePreviewPlate direct>
     <LogoReveal
       pathD={DEMO_LOGO_PATH}
       width={220}
       height={220}
       viewBox="0 0 200 200"
-      stroke="#6366f1"
     />
-  </PreviewFrame>
+  </ScenePreviewPlate>
 );

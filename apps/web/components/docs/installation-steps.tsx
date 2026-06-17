@@ -23,7 +23,11 @@ const STEPS = [
 export function InstallationSteps() {
   return (
     <div className="not-prose my-8">
-      <RenderQueueStrip steps={STEPS} outputPath="out/social-clip.mp4" layout="vertical" />
+      <RenderQueueStrip
+        steps={STEPS}
+        outputPath="out/social-clip.mp4"
+        layout="vertical"
+      />
     </div>
   );
 }

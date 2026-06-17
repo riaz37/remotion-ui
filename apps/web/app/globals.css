@@ -94,6 +94,15 @@ h3 {
   border-bottom: 1px solid var(--color-fd-border);
 }
 
+/* Remotion previews inside docs — never inherit prose heading rules */
+.prose .not-prose h1,
+.prose .not-prose h2,
+.prose .not-prose h3 {
+  margin-top: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
 .prose code:not(pre code) {
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-fd-border);

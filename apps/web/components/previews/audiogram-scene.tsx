@@ -1,17 +1,22 @@
 "use client";
 
-import { Sequence } from "remotion";
+import { Audio } from "@remotion/media";
 import { AudiogramScene } from "../registry-exports";
-import { DEMO_AUDIO_SRC, DEMO_LOGO_SRC } from "@/lib/demo-assets";
-import { siteConfig } from "@/lib/site-config";
+import {
+  DEMO_AUDIO_SRC,
+  DEMO_COPY,
+  DEMO_LOGO_SRC,
+} from "@/lib/demo-assets";
+import { ScenePreviewPlate } from "./scene-preview-plate";
 
 export const AudiogramScenePreview: React.FC = () => (
-  <Sequence from={-20}>
+  <ScenePreviewPlate>
+    <Audio src={DEMO_AUDIO_SRC} loop />
     <AudiogramScene
       src={DEMO_AUDIO_SRC}
-      title={siteConfig.name}
-      subtitle="Production-ready motion for Remotion"
+      title={DEMO_COPY.podcast.title}
+      subtitle={DEMO_COPY.podcast.subtitle}
       logoSrc={DEMO_LOGO_SRC}
     />
-  </Sequence>
+  </ScenePreviewPlate>
 );

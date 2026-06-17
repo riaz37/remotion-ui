@@ -1,0 +1,18 @@
+{
+  "title": "Atoms",
+  "pages": [
+    "fade-in",
+    "fade-out",
+    "slide-up",
+    "slide-left",
+    "scale-in",
+    "typewriter",
+    "counter",
+    "blur-in",
+    "spring-in",
+    "stagger-children",
+    "word-highlight",
+    "progress-bar",
+    "rotate-in"
+  ]
+}

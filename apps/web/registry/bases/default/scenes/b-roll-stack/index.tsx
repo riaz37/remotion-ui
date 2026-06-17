@@ -1,10 +1,10 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
 import { Img, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
-import { DURATION, STAGGER } from "@/remotion/lib/motion-tokens";
+import { DURATION, EASING, STAGGER } from "@/remotion/lib/motion-tokens";
 
 const { fontFamily } = loadFont("normal", {
-  weights: ["400", "700", "800"],
+  weights: ["400", "600", "700"],
   subsets: ["latin"],
 });
 
@@ -22,17 +22,32 @@ export type BRollStackProps = {
 };
 
 const COLORS = {
-  bg: "#0e0c12",
+  bg: "#080810",
   cardBg: "#18141f",
-  accent: "#ec4899",
+  accent: "#e8b86d",
 } as const;
 
-const CARD_OFFSETS = [
-  { top: 0, left: 0, rotate: -6, zIndex: 4 },
-  { top: 28, left: 36, rotate: 4, zIndex: 3 },
-  { top: 56, left: 72, rotate: -2, zIndex: 2 },
-  { top: 84, left: 108, rotate: 7, zIndex: 1 },
-] as const;
+type CardOffset = {
+  top: number;
+  shiftX: number;
+  rotate: number;
+  zIndex: number;
+  depth: number;
+};
+
+const LANDSCAPE_CARD_OFFSETS: CardOffset[] = [
+  { top: 0, shiftX: 0, rotate: -4, zIndex: 4, depth: 64 },
+  { top: 20, shiftX: 28, rotate: 2.5, zIndex: 3, depth: 48 },
+  { top: 40, shiftX: 56, rotate: -1.5, zIndex: 2, depth: 32 },
+  { top: 60, shiftX: 84, rotate: 4, zIndex: 1, depth: 20 },
+];
+
+const PORTRAIT_CARD_OFFSETS: CardOffset[] = [
+  { top: 0, shiftX: 0, rotate: -1.5, zIndex: 4, depth: 40 },
+  { top: 14, shiftX: 10, rotate: 1.25, zIndex: 3, depth: 30 },
+  { top: 28, shiftX: 20, rotate: -1, zIndex: 2, depth: 22 },
+  { top: 42, shiftX: 30, rotate: 1.25, zIndex: 1, depth: 14 },
+];
 
 export const BRollStack: React.FC<BRollStackProps> = ({
   items,
@@ -45,13 +60,40 @@ export const BRollStack: React.FC<BRollStackProps> = ({
   const { width, height } = useVideoConfig();
   const safe = getSafeAreaPadding({ width, height });
   const isPortrait = height > width;
-  const stackHeight = Math.round(height * (isPortrait ? 0.42 : 0.58));
+  const contentWidth = width - safe.paddingLeft - safe.paddingRight;
+  const rotationBleed = scaleFont(isPortrait ? 56 : 40, width);
+  const stackHeight = Math.round(
+    height * (isPortrait ? 0.38 : 0.58) - (isPortrait ? scaleFont(24, width) : 0),
+  );
+  const cardOffsets = isPortrait ? PORTRAIT_CARD_OFFSETS : LANDSCAPE_CARD_OFFSETS;
+  const cardWidth = contentWidth - rotationBleed * 2;
+
+  const kickerProgress = kicker
+    ? interpolate(frame, [0, DURATION.fast], [0, 1], {
+        extrapolateLeft: "clamp",
+        extrapolateRight: "clamp",
+        easing: EASING.enter,
+      })
+    : 0;
+  const titleProgress = title
+    ? interpolate(
+        frame,
+        [STAGGER.tight, STAGGER.tight + DURATION.fast],
+        [0, 1],
+        {
+          extrapolateLeft: "clamp",
+          extrapolateRight: "clamp",
+          easing: EASING.enter,
+        },
+      )
+    : 0;
 
   return (
     <div
       style={{
         width,
         height,
+        boxSizing: "border-box",
         background: backgroundColor,
         color: "white",
         paddingLeft: safe.paddingLeft,
@@ -61,19 +103,19 @@ export const BRollStack: React.FC<BRollStackProps> = ({
         fontFamily,
         display: "flex",
         flexDirection: isPortrait ? "column" : "row",
-        gap: scaleFont(40, width),
+        gap: scaleFont(isPortrait ? 28 : 40, width),
         alignItems: isPortrait ? "stretch" : "center",
       }}
     >
-      <div style={{ flex: isPortrait ? undefined : "0 0 38%" }}>
+      <div style={{ flex: isPortrait ? undefined : "0 0 38%", minWidth: 0 }}>
         {kicker ? (
           <div
             style={{
               color: accentColor,
-              fontSize: scaleFont(32, width),
-              fontWeight: 800,
-              letterSpacing: "0.04em",
-              textTransform: "uppercase",
+              fontSize: scaleFont(isPortrait ? 28 : 32, width),
+              fontWeight: 600,
+              opacity: kickerProgress,
+              transform: `translateY(${(1 - kickerProgress) * 12}px)`,
             }}
           >
             {kicker}
@@ -82,11 +124,13 @@ export const BRollStack: React.FC<BRollStackProps> = ({
         {title ? (
           <h2
             style={{
-              fontSize: scaleFont(84, width),
-              lineHeight: 1.05,
+              fontSize: scaleFont(isPortrait ? 52 : 84, width),
+              lineHeight: 1.08,
               margin: kicker ? `${scaleFont(12, width)}px 0 0` : 0,
-              fontWeight: 800,
+              fontWeight: 700,
               letterSpacing: "-0.02em",
+              opacity: titleProgress,
+              transform: `translateY(${(1 - titleProgress) * 16}px)`,
             }}
           >
             {title}
@@ -99,17 +143,25 @@ export const BRollStack: React.FC<BRollStackProps> = ({
           flex: 1,
           height: stackHeight,
           minHeight: stackHeight,
+          width: isPortrait ? "100%" : undefined,
+          boxSizing: "border-box",
         }}
       >
         {items.slice(0, 4).map((item, index) => {
-          const offset = CARD_OFFSETS[index] ?? CARD_OFFSETS[0];
-          const delay = index * STAGGER.relaxed;
+          const offset = cardOffsets[index] ?? cardOffsets[0]!;
+          const delay = STAGGER.relaxed + index * STAGGER.relaxed;
           const progress = interpolate(
             frame,
             [delay, delay + DURATION.fast],
             [0, 1],
-            { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+            {
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp",
+              easing: EASING.enter,
+            },
           );
+          const labelPad = scaleFont(16, width);
+          const cardHeight = stackHeight - offset.top;
 
           return (
             <div
@@ -117,33 +169,42 @@ export const BRollStack: React.FC<BRollStackProps> = ({
               style={{
                 position: "absolute",
                 top: offset.top,
-                left: offset.left,
-                right: offset.left,
-                bottom: offset.top,
+                left: rotationBleed,
+                width: cardWidth,
+                height: cardHeight,
                 zIndex: offset.zIndex,
-                borderRadius: 20,
+                borderRadius: scaleFont(20, width),
                 overflow: "hidden",
-                border: "2px solid rgba(248,250,252,0.1)",
+                border: "1px solid rgba(248,250,252,0.12)",
                 background: COLORS.cardBg,
-                boxShadow: "0 24px 64px rgba(0,0,0,0.4)",
+                boxShadow: `0 ${offset.depth}px ${offset.depth * 2}px rgba(0,0,0,0.45)`,
                 opacity: progress,
-                transform: `translateY(${(1 - progress) * 40}px) rotate(${offset.rotate * progress}deg)`,
+                transform: `translateX(${offset.shiftX * progress}px) translateY(${(1 - progress) * 36}px) rotate(${offset.rotate * progress}deg) scale(${0.96 + progress * 0.04})`,
+                transformOrigin: "center center",
+                display: "flex",
+                flexDirection: "column",
               }}
             >
               <Img
                 src={item.src}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                style={{
+                  flex: 1,
+                  minHeight: 0,
+                  width: "100%",
+                  objectFit: isPortrait ? "contain" : "cover",
+                  backgroundColor: COLORS.cardBg,
+                }}
               />
               {item.title ? (
                 <div
                   style={{
-                    position: "absolute",
-                    left: scaleFont(18, width),
-                    right: scaleFont(18, width),
-                    top: scaleFont(18, width),
+                    display: "flex",
+                    alignItems: "center",
+                    padding: `${labelPad}px ${labelPad}px ${labelPad + 2}px`,
                     fontSize: scaleFont(26, width),
-                    fontWeight: 700,
-                    textShadow: "0 2px 12px rgba(0,0,0,0.85)",
+                    fontWeight: 600,
+                    background:
+                      "linear-gradient(to top, rgba(8,8,16,0.92), rgba(8,8,16,0.55))",
                   }}
                 >
                   {item.title}

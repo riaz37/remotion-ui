@@ -5,7 +5,7 @@ import { TitleCard } from "@/remotion/scenes/title-card";
 
 const COLORS = {
   bg: "#080810",
-  accent: "#818cf8",
+  accent: "#e8b86d",
   subtitle: "#71717a",
 } as const;
 
@@ -17,8 +17,8 @@ export type IntroProps = {
 };
 
 export const Intro: React.FC<IntroProps> = ({
-  title = "Product overview",
-  subtitle = "Set context before the walkthrough",
+  title = "Chapter open",
+  subtitle = "Name the topic before the walkthrough begins",
   backgroundColor = COLORS.bg,
   accentColor = COLORS.accent,
 }) => {

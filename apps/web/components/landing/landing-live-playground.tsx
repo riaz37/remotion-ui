@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { SocialClip } from "@/components/registry-exports";
 import {
   DEMO_AUDIO_SRC,
+  DEMO_COPY,
   DEMO_LOGO_SRC,
   DEMO_SOCIAL_CLIP_CAPTIONS,
 } from "@/lib/demo-assets";
@@ -18,12 +19,12 @@ const BASE_PROPS = {
   audioSrc: DEMO_AUDIO_SRC,
   captions: DEMO_SOCIAL_CLIP_CAPTIONS,
   logoSrc: DEMO_LOGO_SRC,
-  hookTitle: "Production-ready motion",
-  hookSubtitle: "for Remotion. Source you own.",
+  hookTitle: DEMO_COPY.productLaunch.title,
+  hookSubtitle: DEMO_COPY.productLaunch.subtitle,
   podcastTitle: siteConfig.name,
   ctaTitle: siteConfig.name,
-  ctaLabel: "npx remotion-ui add",
-  ctaUrl: "remotionui.com",
+  ctaLabel: DEMO_COPY.endCard.ctaLabel,
+  ctaUrl: DEMO_COPY.endCard.ctaUrl,
 };
 
 const EDITABLE = ["hookTitle", "hookSubtitle", "ctaLabel", "logoSrc"] as const;

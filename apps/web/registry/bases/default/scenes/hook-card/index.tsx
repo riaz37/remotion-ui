@@ -4,7 +4,7 @@ import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
 import { DELAY, DURATION, EASING } from "@/remotion/lib/motion-tokens";
 
 const { fontFamily } = loadFont("normal", {
-  weights: ["600", "800", "900"],
+  weights: ["500", "600", "700"],
   subsets: ["latin"],
 });
 
@@ -20,7 +20,7 @@ const COLORS = {
   bg: "#0c0a09",
   text: "#fafaf9",
   muted: "#d6d3d1",
-  accent: "#fb923c",
+  accent: "#e8b86d",
 } as const;
 
 export const HookCard: React.FC<HookCardProps> = ({
@@ -33,6 +33,9 @@ export const HookCard: React.FC<HookCardProps> = ({
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
   const safeArea = getSafeAreaPadding({ width, height });
+  const contentWidth = width - safeArea.paddingLeft - safeArea.paddingRight;
+  const isPortrait = height > width;
+
   const enter = spring({
     frame,
     fps,
@@ -99,7 +102,8 @@ export const HookCard: React.FC<HookCardProps> = ({
           display: "flex",
           flexDirection: "column",
           gap: scaleFont(20, width),
-          maxWidth: width * 0.84,
+          maxWidth: contentWidth,
+          width: "100%",
         }}
       >
         {kicker ? (
@@ -118,15 +122,14 @@ export const HookCard: React.FC<HookCardProps> = ({
                 height: scaleFont(4, width),
                 borderRadius: 999,
                 background: accentColor,
+                flexShrink: 0,
               }}
             />
             <div
               style={{
                 color: accentColor,
                 fontSize: scaleFont(26, width),
-                fontWeight: 800,
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
+                fontWeight: 600,
               }}
             >
               {kicker}
@@ -136,10 +139,10 @@ export const HookCard: React.FC<HookCardProps> = ({
         <h1
           style={{
             margin: 0,
-            fontSize: scaleFont(88, width),
-            lineHeight: 0.98,
+            fontSize: scaleFont(isPortrait ? 72 : 88, width),
+            lineHeight: 1.02,
             letterSpacing: "-0.03em",
-            fontWeight: 900,
+            fontWeight: 700,
             opacity: Math.min(1, enter),
             transform: `translateY(${(1 - enter) * 36}px) scale(${0.94 + enter * 0.06})`,
             transformOrigin: "left center",
@@ -151,10 +154,10 @@ export const HookCard: React.FC<HookCardProps> = ({
           <p
             style={{
               margin: 0,
-              maxWidth: "72%",
+              maxWidth: "100%",
               color: COLORS.muted,
               fontSize: scaleFont(34, width),
-              lineHeight: 1.2,
+              lineHeight: 1.25,
               fontWeight: 500,
               opacity: subtitleEnter,
               transform: `translateY(${(1 - subtitleEnter) * 16}px)`,

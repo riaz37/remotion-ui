@@ -1,5 +1,3 @@
-> If RemotionUI saves you time, please ⭐ star the repo — it helps a lot!
-
 <div align="center">
 
 # RemotionUI

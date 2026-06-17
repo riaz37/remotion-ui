@@ -65,6 +65,9 @@ import {
   TransitionSlidePreview,
   TransitionWipePreview,
 } from "./previews/transition-previews";
+import { TransitionBlurRevealPreview } from "./previews/transition-blur-reveal";
+import { TransitionFrostedGlassWipePreview } from "./previews/transition-frosted-glass-wipe";
+import { TransitionGridPixelateWipePreview } from "./previews/transition-grid-pixelate-wipe";
 import { TutorialClipPreview } from "./previews/tutorial-clip";
 import { TypewriterPreview } from "./previews/typewriter";
 import { WaveformLinePreview } from "./previews/waveform-line";
@@ -108,7 +111,7 @@ const PREVIEWS: Record<string, PreviewConfig> = {
     height: 1920,
   },
   "cursor-path": { component: CursorPathPreview },
-  "data-story": { component: DataStoryPreview, durationInFrames: 180 },
+  "data-story": { component: DataStoryPreview, durationInFrames: 420 },
   "end-card": { component: EndCardPreview },
   "fade-in": { component: FadeInPreview },
   "fade-out": { component: FadeOutPreview },
@@ -159,6 +162,9 @@ const PREVIEWS: Record<string, PreviewConfig> = {
   "transition-light-leak": { component: TransitionLightLeakPreview },
   "transition-slide": { component: TransitionSlidePreview },
   "transition-wipe": { component: TransitionWipePreview },
+  "blur-reveal": { component: TransitionBlurRevealPreview },
+  "grid-pixelate-wipe": { component: TransitionGridPixelateWipePreview },
+  "frosted-glass-wipe": { component: TransitionFrostedGlassWipePreview },
   "tutorial-clip": {
     component: TutorialClipPreview,
     durationInFrames: 180,

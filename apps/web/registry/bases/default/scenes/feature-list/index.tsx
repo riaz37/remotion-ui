@@ -1,111 +1,217 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
-import { AbsoluteFill, useVideoConfig } from "remotion";
-import { FadeIn } from "@/remotion/primitives/fade-in";
-import { SlideLeft } from "@/remotion/primitives/slide-left";
-import { StaggerChildren } from "@/remotion/primitives/stagger-children";
+import {
+  interpolate,
+  Sequence,
+  spring,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
-import { DURATION, STAGGER } from "@/remotion/lib/motion-tokens";
+import { DELAY, DURATION, EASING, STAGGER } from "@/remotion/lib/motion-tokens";
 
 const { fontFamily } = loadFont("normal", {
-  weights: ["500", "700", "800"],
+  weights: ["500", "600", "700"],
   subsets: ["latin"],
 });
 
 export type FeatureListProps = {
   title?: string;
-  items: string[];
+  items?: string[];
   accentColor?: string;
   backgroundColor?: string;
 };
 
 const COLORS = {
-  bg: "#0c0f14",
-  text: "#f4f4f5",
-  item: "#d4d4d8",
+  bg: "#080810",
+  title: "#fafafa",
+  item: "#e4e4e7",
   accent: "#f59e0b",
+  glow: "rgba(245, 158, 11, 0.14)",
 } as const;
+
+const DEFAULT_ITEMS = [
+  "Source you own",
+  "Registry CLI",
+  "Live previews",
+] as const;
+
+const FeatureListItem: React.FC<{
+  item: string;
+  accentColor: string;
+}> = ({ item, accentColor }) => {
+  const frame = useCurrentFrame();
+  const { fps, width } = useVideoConfig();
+
+  const rowEnter = spring({
+    frame,
+    fps,
+    config: { damping: 18, stiffness: 140, mass: 0.82 },
+  });
+
+  const textEnter = interpolate(frame, [4, 4 + DURATION.fast], [0, 1], {
+    easing: EASING.enter,
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  const markerSize = scaleFont(12, width);
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "flex-start",
+        gap: scaleFont(20, width),
+        opacity: rowEnter,
+        transform: `translateX(${(1 - rowEnter) * scaleFont(36, width)}px)`,
+      }}
+    >
+      <div
+        style={{
+          position: "relative",
+          width: markerSize,
+          height: markerSize,
+          marginTop: scaleFont(16, width),
+          flexShrink: 0,
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            inset: scaleFont(-10, width),
+            borderRadius: "50%",
+            background: `${accentColor}33`,
+            filter: `blur(${scaleFont(8, width)}px)`,
+            opacity: rowEnter,
+          }}
+        />
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            borderRadius: "50%",
+            background: accentColor,
+            boxShadow: `0 0 ${scaleFont(20, width)}px ${accentColor}88`,
+            transform: `scale(${0.5 + rowEnter * 0.5})`,
+          }}
+        />
+      </div>
+      <span
+        style={{
+          color: COLORS.item,
+          fontSize: scaleFont(44, width),
+          lineHeight: 1.32,
+          fontWeight: 500,
+          opacity: textEnter,
+          transform: `translateY(${(1 - textEnter) * scaleFont(10, width)}px)`,
+          overflowWrap: "break-word",
+          flex: 1,
+          minWidth: 0,
+        }}
+      >
+        {item}
+      </span>
+    </div>
+  );
+};
 
 export const FeatureList: React.FC<FeatureListProps> = ({
   title,
-  items,
+  items = [...DEFAULT_ITEMS],
   accentColor = COLORS.accent,
   backgroundColor = COLORS.bg,
 }) => {
-  const { width, height } = useVideoConfig();
+  const frame = useCurrentFrame();
+  const { fps, width, height } = useVideoConfig();
   const safeArea = getSafeAreaPadding({ width, height });
+  const listStart = title ? DELAY.medium + DURATION.fast : 0;
+
+  const titleEnter = title
+    ? spring({
+        frame,
+        fps,
+        config: { damping: 16, stiffness: 110, mass: 0.85 },
+        delay: DELAY.short,
+      })
+    : 0;
 
   return (
-    <AbsoluteFill
+    <div
       style={{
+        width,
+        height,
         backgroundColor,
-        ...safeArea,
+        paddingLeft: safeArea.paddingLeft,
+        paddingRight: safeArea.paddingRight,
+        paddingTop: safeArea.paddingTop,
+        paddingBottom: safeArea.paddingBottom,
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        gap: scaleFont(36, width),
         fontFamily,
+        position: "relative",
       }}
     >
-      {title ? (
-        <FadeIn durationInFrames={DURATION.fast}>
-          <h2
-            style={{
-              color: COLORS.text,
-              fontSize: scaleFont(84, width),
-              fontWeight: 800,
-              margin: 0,
-              lineHeight: 1.05,
-              letterSpacing: "-0.02em",
-            }}
-          >
-            {title}
-          </h2>
-        </FadeIn>
-      ) : null}
+      <div
+        style={{
+          position: "absolute",
+          width: "48%",
+          height: "48%",
+          left: "8%",
+          top: "18%",
+          borderRadius: "50%",
+          background: `radial-gradient(circle, ${COLORS.glow} 0%, transparent 72%)`,
+          filter: `blur(${scaleFont(56, width)}px)`,
+          pointerEvents: "none",
+        }}
+      />
+
       <div
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: scaleFont(22, width),
+          gap: scaleFont(40, width),
+          maxWidth: width - safeArea.paddingLeft - safeArea.paddingRight,
         }}
       >
-        <StaggerChildren staggerInFrames={STAGGER.normal}>
-          {items.map((item) => (
-            <SlideLeft key={item} durationInFrames={DURATION.fast} distance={48}>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: scaleFont(18, width),
-                }}
-              >
-                <div
-                  style={{
-                    width: scaleFont(14, width),
-                    height: scaleFont(14, width),
-                    marginTop: scaleFont(14, width),
-                    borderRadius: 4,
-                    backgroundColor: accentColor,
-                    flexShrink: 0,
-                    boxShadow: `0 0 16px ${accentColor}66`,
-                    transform: "rotate(45deg)",
-                  }}
-                />
-                <span
-                  style={{
-                    color: COLORS.item,
-                    fontSize: scaleFont(44, width),
-                    lineHeight: 1.35,
-                    fontWeight: 500,
-                  }}
-                >
-                  {item}
-                </span>
-              </div>
-            </SlideLeft>
+        {title ? (
+          <div
+            style={{
+              color: COLORS.title,
+              fontSize: scaleFont(84, width),
+              fontWeight: 700,
+              margin: 0,
+              padding: 0,
+              border: "none",
+              lineHeight: 1.05,
+              letterSpacing: "-0.02em",
+              opacity: titleEnter,
+              transform: `translateY(${(1 - titleEnter) * scaleFont(20, width)}px)`,
+              overflowWrap: "break-word",
+            }}
+          >
+            {title}
+          </div>
+        ) : null}
+
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: scaleFont(28, width),
+          }}
+        >
+          {items.map((item, index) => (
+            <Sequence
+              key={`${item}-${index}`}
+              from={listStart + index * STAGGER.normal}
+              layout="none"
+            >
+              <FeatureListItem item={item} accentColor={accentColor} />
+            </Sequence>
           ))}
-        </StaggerChildren>
+        </div>
       </div>
-    </AbsoluteFill>
+    </div>
   );
 };

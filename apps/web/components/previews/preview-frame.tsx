@@ -58,6 +58,24 @@ export const PreviewLabel: React.FC<{ children: ReactNode; tone?: string }> = ({
   tone = "#ececec",
 }) => <div style={{ ...previewTextStyle, color: tone }}>{children}</div>;
 
+export const PreviewGhostStack: React.FC<{
+  children: ReactNode;
+  ghost: ReactNode;
+  ghostOpacity?: number;
+  scale?: number;
+}> = ({ children, ghost, ghostOpacity = 0.16, scale }) => (
+  <div
+    style={{
+      display: "grid",
+      placeItems: "center",
+      ...(scale !== undefined ? { transform: `scale(${scale})` } : {}),
+    }}
+  >
+    <div style={{ gridArea: "1 / 1", opacity: ghostOpacity }}>{ghost}</div>
+    <div style={{ gridArea: "1 / 1" }}>{children}</div>
+  </div>
+);
+
 export function laneAccent(_lane: PreviewLane): string {
   return "#ececec";
 }

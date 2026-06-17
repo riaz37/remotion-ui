@@ -71,6 +71,9 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   "transition-wipe": { lane: "cuts", drive: "time", tier: "advanced" },
   "transition-clock-wipe": { lane: "cuts", drive: "time", tier: "advanced" },
   "transition-light-leak": { lane: "cuts", drive: "time", tier: "advanced" },
+  "blur-reveal": { lane: "cuts", drive: "time", tier: "advanced" },
+  "grid-pixelate-wipe": { lane: "cuts", drive: "time", tier: "advanced" },
+  "frosted-glass-wipe": { lane: "cuts", drive: "time", tier: "advanced" },
   // Blocks
   "lower-third": { lane: "blocks", drive: "time", tier: "core" },
   "title-card": { lane: "blocks", drive: "time", tier: "core" },

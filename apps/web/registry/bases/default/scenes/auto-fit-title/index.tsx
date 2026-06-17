@@ -6,7 +6,7 @@ import { DURATION } from "@/remotion/lib/motion-tokens";
 import { fitHeadline } from "@/remotion/lib/text-fit-utils";
 
 const { fontFamily } = loadFont("normal", {
-  weights: ["600", "700", "800"],
+  weights: ["600", "700"],
   subsets: ["latin"],
 });
 
@@ -21,9 +21,9 @@ export type AutoFitTitleProps = {
 };
 
 const COLORS = {
-  bg: "#0c0e14",
+  bg: "#080810",
   title: "#fafafa",
-  accent: "#a78bfa",
+  accent: "#e8b86d",
 } as const;
 
 function getTitleSize(
@@ -38,7 +38,7 @@ function getTitleSize(
     maxFontSize: Math.min(maxFontSize, scaleFont(96, fallbackWidth)),
     minFontSize: scaleFont(42, fallbackWidth),
     fontFamily,
-    fontWeight: "800",
+    fontWeight: "700",
   });
 }
 
@@ -92,11 +92,13 @@ export const AutoFitTitle: React.FC<AutoFitTitleProps> = ({
           style={{
             color: COLORS.title,
             fontSize: titleSize,
-            fontWeight: 800,
+            fontWeight: 700,
             margin: 0,
             lineHeight: 1.08,
             letterSpacing: "-0.03em",
             maxWidth,
+            overflowWrap: "break-word",
+            wordBreak: "break-word",
           }}
         >
           {title}
@@ -111,6 +113,7 @@ export const AutoFitTitle: React.FC<AutoFitTitleProps> = ({
               margin: 0,
               fontWeight: 600,
               maxWidth,
+              overflowWrap: "break-word",
             }}
           >
             {subtitle}
