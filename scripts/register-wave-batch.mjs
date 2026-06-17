@@ -93,7 +93,7 @@ const newItems = [
   composition("ecosystem-orbit", "Logo with orbiting satellites", "ecosystem-orbit", "EcosystemOrbit", ["layout", "timing"]),
   composition("bento-pan", "Diagonal bento grid pan", "bento-pan", "BentoPan", []),
   composition("browser-flow", "URL to browser preview flow", "browser-flow", "BrowserFlow", ["title-card", "chat-to-preview"]),
-  composition("ai-generation-canvas", "Prompt to dashboard populate", "ai-generation-canvas", "AiGenerationCanvas", ["chat-to-preview", "stat-card"]),
+  composition("ai-generation-canvas", "Prompt-to-dashboard generation with morphing input, skeleton shimmer, and card flips", "ai-generation-canvas", "AiGenerationCanvas", []),
   composition("live-code-split", "Code editor with live preview", "live-code-split", "LiveCodeSplit", ["code-reveal", "device-mockup-zoom"]),
   composition("deploy-reveal", "Terminal deploy to browser", "deploy-reveal", "DeployReveal", ["terminal-simulator", "device-mockup-zoom"]),
   composition("dashboard-populate", "Dashboard metrics populate", "dashboard-populate", "DashboardPopulate", ["metric-ticker", "animated-bar-chart"]),

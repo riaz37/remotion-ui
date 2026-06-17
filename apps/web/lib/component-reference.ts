@@ -1503,12 +1503,15 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     category: "composition",
     usage: `import { AiGenerationCanvas } from "@/compositions/ai-generation-canvas";
 
-<AiGenerationCanvas prompt="Build a launch dashboard" />`,
+<AiGenerationCanvas prompt="Generate a dashboard" accentColor="#7c3aed" cardCount={4} />`,
     props: [
-      { name: "prompt", type: "string", description: "User prompt shown in chat composer." },
+      { name: "prompt", type: "string", description: "Prompt typed into the input during phase one." },
+      { name: "accentColor", type: "string", description: "Accent for border, shimmer, and chart highlights." },
+      { name: "cardCount", type: "number", description: "Dashboard cards revealed in the grid (max 4 columns)." },
+      { name: "speed", type: "number", description: "Timeline multiplier for the composition beat." },
     ],
-    note: "1920×1080 prompt-to-stat-card generation beat.",
-    related: ["chat-to-preview", "stat-card"],
+    note: "1920×1080 prompt-to-dashboard generation beat with morphing input, skeleton shimmer, and card flips.",
+    related: ["dashboard-populate", "chat-to-preview"],
   },
   "live-code-split": {
     category: "composition",
