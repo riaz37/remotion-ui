@@ -1,3 +1,4 @@
+import { createRequire } from "node:module";
 import { Command } from "commander";
 import { addCommand } from "./commands/add.js";
 import { buildCommand } from "./commands/build.js";
@@ -9,12 +10,15 @@ import { updateCommand } from "./commands/update.js";
 import { searchCommand } from "./commands/search.js";
 import { viewCommand } from "./commands/view.js";
 
+const require = createRequire(import.meta.url);
+const { version } = require("../package.json") as { version: string };
+
 const program = new Command();
 
 program
   .name("remotion-ui")
   .description("Add Remotion video components to your project")
-  .version("0.5.2");
+  .version(version);
 
 program
   .command("init")

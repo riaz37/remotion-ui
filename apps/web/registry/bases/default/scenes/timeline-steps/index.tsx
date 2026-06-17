@@ -60,8 +60,17 @@ export const TimelineSteps: React.FC<TimelineStepsProps> = ({
         flexDirection: "column",
         justifyContent: "center",
         gap: scaleFont(48, width),
+        position: "relative",
       }}
     >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: `radial-gradient(circle at 14% 22%, ${accentColor}18, transparent 34%), radial-gradient(ellipse 90% 28% at 50% 0%, ${accentColor}12, transparent 68%)`,
+          pointerEvents: "none",
+        }}
+      />
       {title ? (
         <h2
           style={{

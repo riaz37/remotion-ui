@@ -14,6 +14,7 @@ export type TypewriterProps = {
   showCursor?: boolean;
   cursorBlinkFrames?: number;
   fontSize?: number;
+  fontWeight?: number;
   color?: string;
   fontFamily?: string;
   className?: string;
@@ -80,6 +81,7 @@ export const Typewriter: React.FC<TypewriterProps> = ({
   showCursor = true,
   cursorBlinkFrames = 16,
   fontSize: fontSizeProp,
+  fontWeight = 600,
   color,
   fontFamily,
   className,
@@ -106,7 +108,7 @@ export const Typewriter: React.FC<TypewriterProps> = ({
       className={className}
       style={{
         fontSize,
-        fontWeight: 600,
+        fontWeight,
         lineHeight: 1.2,
         ...(color !== undefined ? { color } : {}),
         ...(fontFamily !== undefined ? { fontFamily } : {}),

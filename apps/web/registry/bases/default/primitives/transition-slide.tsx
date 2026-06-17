@@ -1,6 +1,8 @@
-import { linearTiming, springTiming } from "@remotion/transitions";
 import { slide } from "@remotion/transitions/slide";
-import { springSmooth } from "@/remotion/lib/springs";
+import {
+  resolveTransitionTiming,
+  type TransitionVariant,
+} from "@/remotion/lib/transition-timing";
 
 export type SlideDirection =
   | "from-left"
@@ -11,21 +13,18 @@ export type SlideDirection =
 export type TransitionSlideConfig = {
   durationInFrames?: number;
   direction?: SlideDirection;
-  variant?: "linear" | "spring";
+  variant?: TransitionVariant;
 };
 
 /** Slide transition config for use with TransitionSeries.Transition */
 export function transitionSlide({
-  durationInFrames = 20,
+  durationInFrames = 22,
   direction = "from-left",
-  variant = "linear",
+  variant = "editorial",
 }: TransitionSlideConfig = {}) {
   return {
     presentation: slide({ direction }),
-    timing:
-      variant === "spring"
-        ? springTiming({ config: springSmooth, durationInFrames })
-        : linearTiming({ durationInFrames }),
+    timing: resolveTransitionTiming({ durationInFrames, variant }),
   };
 }
 

@@ -19,6 +19,12 @@
     "caption-bumper",
     "timeline-steps",
     "callout-spotlight",
+    "terminal-simulator",
+    "code-accordion",
+    "code-diff-wipe",
+    "data-flow-pipes",
+    "drag-drop-flow",
+    "chat-to-preview",
     "zoom-pan-frame",
     "code-reveal"
   ]

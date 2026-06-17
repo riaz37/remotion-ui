@@ -54,7 +54,13 @@ export const Showcase: React.FC<ShowcaseProps> = ({
   ctaUrl,
 }) => {
   return (
-    <AbsoluteFill style={{ backgroundColor: COLORS.bg }}>
+    <AbsoluteFill
+      style={{
+        backgroundColor: COLORS.bg,
+        backgroundImage:
+          "radial-gradient(ellipse 80% 60% at 20% 20%, rgba(232,184,109,0.1), transparent 50%), radial-gradient(ellipse 60% 50% at 80% 80%, rgba(45,212,191,0.08), transparent)",
+      }}
+    >
       <TransitionSeries>
         <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.title}>
           <TitleCard

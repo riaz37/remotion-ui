@@ -82,8 +82,17 @@ export const EndCard: React.FC<EndCardProps> = ({
         alignItems: "center",
         justifyContent: "center",
         fontFamily,
+        position: "relative",
       }}
     >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: `radial-gradient(ellipse 90% 30% at 50% 0%, ${accentColor}14, transparent 70%)`,
+          pointerEvents: "none",
+        }}
+      />
       <div
         style={{
           display: "flex",

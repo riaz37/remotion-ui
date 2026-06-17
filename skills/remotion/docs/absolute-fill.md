@@ -2,7 +2,7 @@
 
 > Official: [https://www.remotion.dev/docs/absolute-fill](https://www.remotion.dev/docs/absolute-fill)
 > Source MDX: [https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/absolute-fill.mdx](https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/absolute-fill.mdx)
-> Mirrored: 2026-06-07
+> Mirrored: 2026-06-17
 
 A helper component - it is an absolutely positioned `` with the following styles:
 

@@ -3,6 +3,26 @@ title: Components
 description: Browse and install Remotion compositions, scenes, and primitives.
 ---
 
-RemotionUI groups components by **motion role** (Atlas lanes), not UI widget type. The sidebar lists every installable item; filters below browse by lane.
+RemotionUI groups components by **motion role** (lanes), with **tags** for use-case filters inside dense lanes.
 
 <ComponentsHub />
+
+## How categorization works
+
+**Lanes** describe how a component behaves on the timeline:
+
+| Lane | Install path | Examples |
+|------|----------------|----------|
+| Primitives | `@/remotion/primitives/…` | `fade-in`, `typewriter`, `mesh-gradient-bg` |
+| Data & media | `@/remotion/primitives/…` or scenes | `caption-highlight`, `animated-bar-chart` |
+| Paths & shapes | `@/remotion/primitives/…` | `path-draw`, `logo-reveal` |
+| Maps & device | scenes / primitives | `map-flight`, `device-mockup-zoom` |
+| Scenes | `@/remotion/scenes/…` | `lower-third`, `claude-chat`, `code-reveal` |
+| Transitions | `@/remotion/primitives/transition-*` | `transition-fade`, `blur-reveal` |
+| Compositions | `@/compositions/…` | `social-clip`, `hero-loop` |
+
+**Tags** narrow a lane by use case — AI composers, code & terminal, creator layouts, captions, charts, and more. Use tag chips on this page when a lane is selected, or follow tag sub-groups in the sidebar.
+
+**Helpers** (`layout`, `springs`, `timing`, `use-stagger`) install to `@/remotion/lib/` and `@/remotion/hooks/`.
+
+For task-first installs, see [Recipes](/docs/recipes).

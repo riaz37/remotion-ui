@@ -1,24 +1,23 @@
 import { fade } from "@remotion/transitions/fade";
-import { linearTiming, springTiming } from "@remotion/transitions";
-import { springSmooth } from "@/remotion/lib/springs";
+import {
+  resolveTransitionTiming,
+  type TransitionVariant,
+} from "@/remotion/lib/transition-timing";
 
 export type TransitionFadeConfig = {
   durationInFrames?: number;
-  /** `spring` uses organic motion; `linear` is constant speed */
-  variant?: "linear" | "spring";
+  /** `spring` uses organic motion; `editorial` ease-out; `linear` is constant speed */
+  variant?: TransitionVariant;
 };
 
 /** Fade transition config for use with TransitionSeries.Transition */
 export function transitionFade({
-  durationInFrames = 15,
-  variant = "linear",
+  durationInFrames = 18,
+  variant = "editorial",
 }: TransitionFadeConfig = {}) {
   return {
     presentation: fade(),
-    timing:
-      variant === "spring"
-        ? springTiming({ config: springSmooth, durationInFrames })
-        : linearTiming({ durationInFrames }),
+    timing: resolveTransitionTiming({ durationInFrames, variant }),
   };
 }
 

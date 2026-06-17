@@ -4,7 +4,7 @@ import {
   visualizeAudioWaveform,
 } from "@remotion/media-utils";
 import { useId } from "react";
-import { useCurrentFrame, useVideoConfig } from "remotion";
+import { interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 
 export type WaveformLineProps = {
   src: string;
@@ -28,6 +28,10 @@ export const WaveformLine: React.FC<WaveformLineProps> = ({
   const glowId = useId().replace(/:/g, "-");
   const frame = useCurrentFrame();
   const { fps, width } = useVideoConfig();
+  const enter = interpolate(frame, [0, 12], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
   const { audioData, dataOffsetInSeconds } = useWindowedAudioData({
     src,
     frame,
@@ -46,7 +50,7 @@ export const WaveformLine: React.FC<WaveformLineProps> = ({
       })
       .join(" ");
     return (
-      <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
+      <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} style={{ opacity: enter }}>
         <defs>
           <filter id={glowId} x="-20%" y="-60%" width="140%" height="220%">
             <feGaussianBlur stdDeviation="2" result="blur" />
@@ -92,7 +96,7 @@ export const WaveformLine: React.FC<WaveformLineProps> = ({
     : null;
 
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
+    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} style={{ opacity: enter }}>
       <defs>
         <filter id={glowId} x="-20%" y="-60%" width="140%" height="220%">
           <feGaussianBlur stdDeviation="2" result="blur" />

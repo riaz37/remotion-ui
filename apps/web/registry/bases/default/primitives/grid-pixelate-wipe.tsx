@@ -1,8 +1,11 @@
 import type { TransitionPresentation } from "@remotion/transitions";
-import { linearTiming, springTiming } from "@remotion/transitions";
 import { useMemo } from "react";
-import { AbsoluteFill } from "remotion";
-import { springSmooth } from "@/remotion/lib/springs";
+import { AbsoluteFill, Easing, interpolate } from "remotion";
+import {
+  resolveTransitionTiming,
+  type TransitionVariant,
+} from "@/remotion/lib/transition-timing";
+import { EASING_ENTER } from "@/remotion/lib/timing";
 
 export type GridPixelateDirection = "from-left" | "from-top";
 
@@ -26,8 +29,13 @@ function cellOpacity(
   const normalized = order / (total - 1);
   const revealAt = normalized * stagger;
   const span = Math.max(1 - stagger, 0.001);
+  const raw = Math.min(1, Math.max(0, (progress - revealAt) / span));
 
-  return Math.min(1, Math.max(0, (progress - revealAt) / span));
+  return interpolate(raw, [0, 1], [0, 1], {
+    easing: Easing.out(Easing.cubic),
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 }
 
 function buildGridMask(
@@ -37,6 +45,11 @@ function buildGridMask(
   direction: GridPixelateDirection,
   stagger: number,
 ): string {
+  const easedProgress = interpolate(progress, [0, 1], [0, 1], {
+    easing: EASING_ENTER,
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
   const total = cols * rows;
   const cellW = 100 / cols;
   const cellH = 100 / rows;
@@ -46,7 +59,7 @@ function buildGridMask(
     for (let col = 0; col < cols; col++) {
       const order =
         direction === "from-left" ? row * cols + col : col * rows + row;
-      const opacity = cellOpacity(progress, order, total, stagger);
+      const opacity = cellOpacity(easedProgress, order, total, stagger);
       rects.push(
         `<rect x="${col * cellW}%" y="${row * cellH}%" width="${cellW}%" height="${cellH}%" fill="white" fill-opacity="${opacity.toFixed(3)}"/>`,
       );
@@ -80,6 +93,10 @@ const GridPixelateWipePresentation: React.FC<
       maskSize: "100% 100%",
       WebkitMaskRepeat: "no-repeat",
       maskRepeat: "no-repeat",
+      opacity: interpolate(progress, [0, 0.15, 1], [0.35, 0.85, 1], {
+        extrapolateLeft: "clamp",
+        extrapolateRight: "clamp",
+      }),
     }),
     [cols, direction, progress, rows, stagger],
   );
@@ -103,24 +120,21 @@ export type TransitionGridPixelateWipeConfig = {
   rows?: number;
   direction?: GridPixelateDirection;
   stagger?: number;
-  variant?: "linear" | "spring";
+  variant?: TransitionVariant;
 };
 
 /** Grid pixelate wipe transition config for use with TransitionSeries.Transition */
 export function transitionGridPixelateWipe({
-  durationInFrames = 24,
+  durationInFrames = 26,
   cols = 12,
   rows = 8,
   direction = "from-left",
   stagger = 0.82,
-  variant = "linear",
+  variant = "editorial",
 }: TransitionGridPixelateWipeConfig = {}) {
   return {
     presentation: gridPixelateWipe({ cols, rows, direction, stagger }),
-    timing:
-      variant === "spring"
-        ? springTiming({ config: springSmooth, durationInFrames })
-        : linearTiming({ durationInFrames }),
+    timing: resolveTransitionTiming({ durationInFrames, variant }),
   };
 }
 

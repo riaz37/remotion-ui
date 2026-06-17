@@ -1,6 +1,6 @@
-import { interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { scaleFont } from "@/remotion/lib/layout";
-import { EASING_ENTER } from "@/remotion/lib/timing";
+import { springSmooth } from "@/remotion/lib/springs";
 
 export type CounterProps = {
   from?: number;
@@ -26,21 +26,17 @@ export const Counter: React.FC<CounterProps> = ({
   style,
 }) => {
   const frame = useCurrentFrame();
-  const { width } = useVideoConfig();
+  const { width, fps } = useVideoConfig();
   const fontSize = fontSizeProp ?? scaleFont(96, width);
 
-  const value = Math.floor(
-    interpolate(
-      frame,
-      [delayInFrames, delayInFrames + durationInFrames],
-      [from, to],
-      {
-        easing: EASING_ENTER,
-        extrapolateLeft: "clamp",
-        extrapolateRight: "clamp",
-      },
-    ),
-  );
+  const progress = spring({
+    fps,
+    frame,
+    config: springSmooth,
+    delay: delayInFrames,
+    durationInFrames,
+  });
+  const value = Math.floor(interpolate(progress, [0, 1], [from, to]));
 
   return (
     <span

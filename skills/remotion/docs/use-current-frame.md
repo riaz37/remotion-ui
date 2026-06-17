@@ -2,7 +2,7 @@
 
 > Official: [https://www.remotion.dev/docs/use-current-frame](https://www.remotion.dev/docs/use-current-frame)
 > Source MDX: [https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/use-current-frame.mdx](https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/use-current-frame.mdx)
-> Mirrored: 2026-06-07
+> Mirrored: 2026-06-17
 
 With this hook, you can retrieve the current frame of the video. Frames are 0-indexed, meaning the first frame is `0`, the last frame is the duration of the composition in frames minus one. To learn more about how Remotion works with time, read the page about [the fundamentals](/docs/the-fundamentals).
 

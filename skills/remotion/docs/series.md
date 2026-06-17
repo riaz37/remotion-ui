@@ -2,7 +2,7 @@
 
 > Official: [https://www.remotion.dev/docs/series](https://www.remotion.dev/docs/series)
 > Source MDX: [https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/series.mdx](https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/series.mdx)
-> Mirrored: 2026-06-07
+> Mirrored: 2026-06-17
 
 Using this component, you can easily stitch together scenes that should play sequentially after another.
 
@@ -69,6 +69,10 @@ The offset does not apply to sequences that come before, but the sequences that 
 **Example 1**: Pass `10` to delay the sequence by 10 frames and create a blank space of 10 frames before it.  
 **Example 2**: Pass `-10` to start the sequence earlier and overlay the sequence on top of the previous one for 10 frames.
 
+### `freeze?`
+
+Freezes the children of the sequence at the specified frame. See [`freeze`](/docs/sequence#freeze) on [``](/docs/sequence).
+
 ### `layout?`
 
 Either `"absolute-fill"` _(default)_ or `"none"` By default, your sequences will be absolutely positioned, so they will overlay each other. If you would like to opt out of it and handle layouting yourself, pass `layout="none"`.
@@ -80,6 +84,10 @@ CSS styles to be applied to the container. If `layout` is set to `none`, there i
 ### `className?`
 
 A class name to be applied to the container. If `layout` is set to `none`, there is no container and setting this style is not allowed.
+
+### `showInTimeline?`
+
+Whether this sequence should be shown in the timeline in the Studio. See [`showInTimeline`](/docs/sequence#showintimeline).
 
 ### `premountFor?`
 

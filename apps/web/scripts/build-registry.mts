@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { componentReference } from "../lib/component-reference.ts";
-import { REGISTRY_ATLAS } from "../registry/atlas.ts";
+import { ATLAS_LANES, REGISTRY_ATLAS, TAG_GROUPS } from "../registry/atlas.ts";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const appRoot = path.resolve(__dirname, "..");
@@ -24,16 +24,62 @@ const LANE_ORDER = [
 
 const LIBRARY_SLUGS = new Set(["timing", "springs", "layout", "use-stagger"]);
 
-/** Plain-language sidebar group labels (Atlas lane names are internal). */
-const LANE_SIDEBAR_GROUP: Record<(typeof LANE_ORDER)[number], string> = {
-  atoms: "Motion primitives",
-  signals: "Captions & media",
-  vectors: "SVG & paths",
-  spatial: "Maps",
-  blocks: "Scenes",
-  cuts: "Transitions",
-  reels: "Templates",
-};
+type DerivedCategory = "primitive" | "scene" | "composition" | "utility";
+
+function deriveCategory(item: RegistryItem): DerivedCategory | undefined {
+  if (
+    LIBRARY_SLUGS.has(item.name) ||
+    item.type === "registry:lib" ||
+    item.type === "registry:hook"
+  ) {
+    return "utility";
+  }
+
+  const firstPath = item.files[0]?.path ?? "";
+  if (firstPath.includes("/compositions/")) return "composition";
+  if (firstPath.includes("/scenes/")) return "scene";
+  if (item.type === "registry:ui" || firstPath.includes("/primitives/")) {
+    return "primitive";
+  }
+
+  return undefined;
+}
+
+function assertCategoryAlignment(registry: Registry): void {
+  const mismatches: string[] = [];
+
+  for (const item of registry.items) {
+    const reference = componentReference[item.name];
+    if (!reference) continue;
+
+    const derived = deriveCategory(item);
+    if (derived && reference.category !== derived) {
+      mismatches.push(
+        `${item.name}: reference="${reference.category}" derived="${derived}"`,
+      );
+    }
+  }
+
+  if (mismatches.length > 0) {
+    throw new Error(
+      `component-reference category drift:\n${mismatches.join("\n")}`,
+    );
+  }
+}
+
+function slugsForLaneTag(
+  laneSlugs: string[],
+  tag: string,
+  assigned: Set<string>,
+): string[] {
+  return laneSlugs
+    .filter(
+      (slug) =>
+        !assigned.has(slug) &&
+        REGISTRY_ATLAS[slug]?.tags?.includes(tag),
+    )
+    .sort();
+}
 
 type RegistryFile = {
   path: string;
@@ -161,6 +207,8 @@ async function buildAiFiles(registry: Registry): Promise<void> {
     const firstFile = item.files[0];
     const reference = componentReference[item.name];
 
+    const derivedCategory = deriveCategory(item);
+
     return {
       name: item.name,
       type: item.type,
@@ -175,13 +223,13 @@ async function buildAiFiles(registry: Registry): Promise<void> {
       detailUrl: `${siteUrl}/ai/components/${item.name}.json`,
       importPath: getImportPath(item, firstFile),
       installTarget: getInstallTarget(item, firstFile),
+      ...(derivedCategory ? { category: derivedCategory } : {}),
       ...(reference
         ? {
             props: reference.props,
             usage: reference.usage,
             related: reference.related,
             note: reference.note,
-            category: reference.category,
           }
         : {}),
       ...(item.composition ? { composition: item.composition } : {}),
@@ -362,8 +410,24 @@ async function buildComponentsMeta(registry: Registry): Promise<void> {
       .sort();
 
     if (laneSlugs.length === 0) continue;
-    pages.push(`---${LANE_SIDEBAR_GROUP[lane]}---`);
-    pages.push(...laneSlugs);
+
+    pages.push(`---${ATLAS_LANES[lane].label}---`);
+
+    const assigned = new Set<string>();
+    const tagGroups = TAG_GROUPS[lane] ?? [];
+
+    for (const group of tagGroups) {
+      const matching = slugsForLaneTag(laneSlugs, group.tag, assigned);
+      const min = group.minItems ?? 3;
+      if (matching.length < min) continue;
+
+      pages.push(`---${group.label}---`);
+      pages.push(...matching);
+      for (const slug of matching) assigned.add(slug);
+    }
+
+    const remaining = laneSlugs.filter((slug) => !assigned.has(slug));
+    pages.push(...remaining);
   }
 
   const librarySlugs = mdxSlugs.filter((slug) => LIBRARY_SLUGS.has(slug)).sort();
@@ -453,6 +517,7 @@ async function buildRegistry(): Promise<void> {
   console.log(`Output: public/r/`);
 
   await buildComponentsMeta(registry);
+  assertCategoryAlignment(registry);
   await buildAiFiles(registry);
   const recipes = await loadRecipes();
   await writeLlmsTxt(registry, recipes);

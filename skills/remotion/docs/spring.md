@@ -2,7 +2,7 @@
 
 > Official: [https://www.remotion.dev/docs/spring](https://www.remotion.dev/docs/spring)
 > Source MDX: [https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/spring.mdx](https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/spring.mdx)
-> Mirrored: 2026-06-07
+> Mirrored: 2026-06-17
 
 A physics-based animation primitive.
 

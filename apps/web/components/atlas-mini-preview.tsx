@@ -5,6 +5,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { AtlasLane } from "@/lib/atlas";
 import { laneAccentMuted } from "@/lib/lane-visuals";
 import { AnimatedBarChartPreview } from "./previews/animated-bar-chart";
+import {
+  ChatGptPreview,
+  ClaudeChatPreview,
+  ClaudeCodePreview,
+  OpencodePreview,
+  V0ComposerPreview,
+} from "./previews/ai-composer-previews";
 import { AudioPulsePreview } from "./previews/audio-pulse";
 import { AudiogramBarsPreview } from "./previews/audiogram-bars";
 import { AudiogramScenePreview } from "./previews/audiogram-scene";
@@ -15,12 +22,17 @@ import { CalloutSpotlightPreview } from "./previews/callout-spotlight";
 import { CaptionBumperPreview } from "./previews/caption-bumper";
 import { CaptionHighlightPreview } from "./previews/caption-highlight";
 import { CaptionScenePreview } from "./previews/caption-scene";
+import { ChatToPreviewPreview } from "./previews/chat-to-preview";
+import { CodeAccordionPreview } from "./previews/code-accordion";
+import { CodeDiffWipePreview } from "./previews/code-diff-wipe";
 import { CodeRevealPreview } from "./previews/code-reveal";
 import { CommentCalloutPreview } from "./previews/comment-callout";
 import { CounterPreview } from "./previews/counter";
 import { CreatorReelPreview } from "./previews/creator-reel";
 import { CursorPathPreview } from "./previews/cursor-path";
+import { DataFlowPipesPreview } from "./previews/data-flow-pipes";
 import { DataStoryPreview } from "./previews/data-story";
+import { DragDropFlowPreview } from "./previews/drag-drop-flow";
 import { EndCardPreview } from "./previews/end-card";
 import { FadeInPreview } from "./previews/fade-in";
 import { FadeOutPreview } from "./previews/fade-out";
@@ -55,6 +67,7 @@ import { SplitScreenPreview } from "./previews/split-screen";
 import { SpringInPreview } from "./previews/spring-in";
 import { StaggerChildrenPreview } from "./previews/stagger-children";
 import { StatCardPreview } from "./previews/stat-card";
+import { TerminalSimulatorPreview } from "./previews/terminal-simulator";
 import { TimelineStepsPreview } from "./previews/timeline-steps";
 import { TitleCardPreview } from "./previews/title-card";
 import { TalkingHeadLayoutPreview } from "./previews/talking-head-layout";
@@ -65,11 +78,34 @@ import {
   TransitionSlidePreview,
   TransitionWipePreview,
 } from "./previews/transition-previews";
+import { ConfettiBurstPreview } from "./previews/confetti-burst";
+import { DeviceMockupZoomPreview } from "./previews/device-mockup-zoom";
+import { DynamicGridPreview } from "./previews/dynamic-grid";
+import { MeshGradientBgPreview } from "./previews/mesh-gradient-bg";
+import { SimulatedCursorPreview } from "./previews/simulated-cursor";
 import { TransitionBlurRevealPreview } from "./previews/transition-blur-reveal";
+import { TransitionChromaticAberrationWipePreview } from "./previews/transition-chromatic-aberration-wipe";
+import { TransitionDirectionalWipePreview } from "./previews/transition-directional-wipe";
 import { TransitionFrostedGlassWipePreview } from "./previews/transition-frosted-glass-wipe";
 import { TransitionGridPixelateWipePreview } from "./previews/transition-grid-pixelate-wipe";
+import { TransitionSpatialPushPreview } from "./previews/transition-spatial-push";
+import { TransitionZoomThroughPreview } from "./previews/transition-zoom-through";
 import { TutorialClipPreview } from "./previews/tutorial-clip";
 import { TypewriterPreview } from "./previews/typewriter";
+import {
+  AiGenerationCanvasPreview,
+  BentoPanPreview,
+  BrowserFlowPreview,
+  DashboardPopulatePreview,
+  DeployRevealPreview,
+  EcosystemOrbitPreview,
+  HeroDeviceAssemblePreview,
+  ImageExpandPreview,
+  LandingCodeShowcasePreview,
+  LiveCodeSplitPreview,
+  PricingFocusPreview,
+  ToolMenuSlidePreview,
+} from "./previews/wave-batch-previews";
 import { WaveformLinePreview } from "./previews/waveform-line";
 import { WordHighlightPreview } from "./previews/word-highlight";
 import { ZoomPanFramePreview } from "./previews/zoom-pan-frame";
@@ -101,6 +137,14 @@ const PREVIEWS: Record<string, PreviewConfig> = {
   "caption-bumper": { component: CaptionBumperPreview },
   "caption-highlight": { component: CaptionHighlightPreview },
   "caption-scene": { component: CaptionScenePreview, durationInFrames: 150 },
+  "chat-to-preview": { component: ChatToPreviewPreview, durationInFrames: 110 },
+  "claude-chat": { component: ClaudeChatPreview, durationInFrames: 120 },
+  "chat-gpt": { component: ChatGptPreview, durationInFrames: 120 },
+  v0: { component: V0ComposerPreview, durationInFrames: 120 },
+  "claude-code": { component: ClaudeCodePreview, durationInFrames: 120 },
+  opencode: { component: OpencodePreview, durationInFrames: 120 },
+  "code-accordion": { component: CodeAccordionPreview, durationInFrames: 90 },
+  "code-diff-wipe": { component: CodeDiffWipePreview, durationInFrames: 100 },
   "code-reveal": { component: CodeRevealPreview },
   "comment-callout": { component: CommentCalloutPreview },
   counter: { component: CounterPreview },
@@ -111,12 +155,26 @@ const PREVIEWS: Record<string, PreviewConfig> = {
     height: 1920,
   },
   "cursor-path": { component: CursorPathPreview },
+  "data-flow-pipes": { component: DataFlowPipesPreview, durationInFrames: 100 },
   "data-story": { component: DataStoryPreview, durationInFrames: 420 },
+  "drag-drop-flow": { component: DragDropFlowPreview, durationInFrames: 90 },
   "end-card": { component: EndCardPreview },
   "fade-in": { component: FadeInPreview },
   "fade-out": { component: FadeOutPreview },
   "feature-list": { component: FeatureListPreview },
   "hero-loop": { component: HeroLoopPreview, durationInFrames: 180 },
+  "hero-device-assemble": { component: HeroDeviceAssemblePreview, durationInFrames: 180 },
+  "ecosystem-orbit": { component: EcosystemOrbitPreview, durationInFrames: 180 },
+  "bento-pan": { component: BentoPanPreview, durationInFrames: 180 },
+  "browser-flow": { component: BrowserFlowPreview, durationInFrames: 180 },
+  "ai-generation-canvas": { component: AiGenerationCanvasPreview, durationInFrames: 180 },
+  "live-code-split": { component: LiveCodeSplitPreview, durationInFrames: 180 },
+  "deploy-reveal": { component: DeployRevealPreview, durationInFrames: 180 },
+  "dashboard-populate": { component: DashboardPopulatePreview, durationInFrames: 180 },
+  "pricing-focus": { component: PricingFocusPreview, durationInFrames: 180 },
+  "landing-code-showcase": { component: LandingCodeShowcasePreview, durationInFrames: 180 },
+  "tool-menu-slide": { component: ToolMenuSlidePreview, durationInFrames: 120 },
+  "image-expand": { component: ImageExpandPreview, durationInFrames: 120 },
   "hook-card": { component: HookCardPreview },
   intro: { component: IntroPreview, durationInFrames: 150 },
   "karaoke-captions": { component: KaraokeCaptionsPreview },
@@ -154,6 +212,7 @@ const PREVIEWS: Record<string, PreviewConfig> = {
   "spring-in": { component: SpringInPreview },
   "stagger-children": { component: StaggerChildrenPreview },
   "stat-card": { component: StatCardPreview },
+  "terminal-simulator": { component: TerminalSimulatorPreview, durationInFrames: 90 },
   "timeline-steps": { component: TimelineStepsPreview },
   "title-card": { component: TitleCardPreview },
   "talking-head-layout": { component: TalkingHeadLayoutPreview },
@@ -163,8 +222,17 @@ const PREVIEWS: Record<string, PreviewConfig> = {
   "transition-slide": { component: TransitionSlidePreview },
   "transition-wipe": { component: TransitionWipePreview },
   "blur-reveal": { component: TransitionBlurRevealPreview },
+  "chromatic-aberration-wipe": { component: TransitionChromaticAberrationWipePreview },
+  "confetti-burst": { component: ConfettiBurstPreview, durationInFrames: 72 },
+  "device-mockup-zoom": { component: DeviceMockupZoomPreview, durationInFrames: 90 },
+  "directional-wipe": { component: TransitionDirectionalWipePreview },
+  "dynamic-grid": { component: DynamicGridPreview, durationInFrames: 90 },
   "grid-pixelate-wipe": { component: TransitionGridPixelateWipePreview },
   "frosted-glass-wipe": { component: TransitionFrostedGlassWipePreview },
+  "mesh-gradient-bg": { component: MeshGradientBgPreview, durationInFrames: 90 },
+  "simulated-cursor": { component: SimulatedCursorPreview, durationInFrames: 72 },
+  "spatial-push": { component: TransitionSpatialPushPreview },
+  "zoom-through": { component: TransitionZoomThroughPreview },
   "tutorial-clip": {
     component: TutorialClipPreview,
     durationInFrames: 180,

@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+## 0.6.0
+
+### Added
+
+- **Motion catalog expansion** — 46+ net-new registry components: typography primitives, transitions, UI blocks, compositions, and AI composer scenes (`claude-chat`, `chat-gpt`, `v0`, `claude-code`, `opencode`).
+- **12 new composition templates** — `hero-device-assemble`, `ecosystem-orbit`, `bento-pan`, `browser-flow`, `ai-generation-canvas`, `live-code-split`, `deploy-reveal`, `dashboard-populate`, `pricing-focus`, `landing-code-showcase`, `tool-menu-slide`, `image-expand`.
+- **Developer-friendly categorization** — unified Atlas lane labels, tag sub-sections in the docs sidebar, and tag filters on the component browse page.
+- **`transition-timing` and `ai-composer-utils` libs** — shared helpers for polished transitions and AI composer scenes.
+
+### Changed
+
+- **Registry scale** — 124 installable items (up from 78); docs catalog at 113 component pages.
+- **CLI version** — reads semver from `package.json` so `remotion-ui --version` stays in sync with npm.
+- **Docs IA** — recipe wizard removed from AI Usage nav; AI Usage sidebar no longer duplicates its index page.
+
+### Notes for maintainers
+
+- Deploy the docs site (`pnpm registry:build && pnpm --filter web build`) **before** publishing the CLI so `https://remotionui.com/r` serves the new registry JSON.
+
 ## 0.5.2
 
 ### Added

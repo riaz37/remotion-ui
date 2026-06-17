@@ -104,7 +104,7 @@ export const LowerThird: React.FC<LowerThirdProps> = ({
             alignItems: "stretch",
             borderRadius: scaleFont(6, width),
             overflow: "hidden",
-            boxShadow: `0 ${scaleFont(8, width)}px ${scaleFont(24, width)}px rgba(0,0,0,0.4)`,
+            boxShadow: `0 ${scaleFont(8, width)}px ${scaleFont(24, width)}px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)`,
             opacity: titleEnter,
             transform: `translateX(${(1 - titleEnter) * -40}px)`,
             maxWidth: "100%",

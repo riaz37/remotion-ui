@@ -1,5 +1,5 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
-import { interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { formatCompactNumber } from "@/remotion/lib/chart-utils";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
 import { DURATION, EASING, STAGGER } from "@/remotion/lib/motion-tokens";
@@ -40,7 +40,7 @@ export const MetricTicker: React.FC<MetricTickerProps> = ({
   accentColor = COLORS.accent,
 }) => {
   const frame = useCurrentFrame();
-  const { width, height } = useVideoConfig();
+  const { fps, width, height } = useVideoConfig();
   const safeArea = getSafeAreaPadding({ width, height });
   const isPortrait = height > width;
   const columns = isPortrait ? 1 : Math.min(metrics.length, 3);
@@ -95,16 +95,16 @@ export const MetricTicker: React.FC<MetricTickerProps> = ({
       >
         {metrics.slice(0, 3).map((metric, index) => {
           const delay = STAGGER.normal + index * STAGGER.normal;
-          const progress = interpolate(
-            frame,
-            [delay, delay + DURATION.normal],
-            [0, 1],
-            {
-              extrapolateLeft: "clamp",
-              extrapolateRight: "clamp",
-              easing: EASING.enter,
-            },
-          );
+          const progress = spring({
+            frame: frame - delay,
+            fps,
+            config: { damping: 16, stiffness: 110, mass: 0.9 },
+            durationInFrames: DURATION.normal,
+          });
+          const glow = interpolate(progress, [0.6, 1], [0, 1], {
+            extrapolateLeft: "clamp",
+            extrapolateRight: "clamp",
+          });
 
           return (
             <div
@@ -116,6 +116,10 @@ export const MetricTicker: React.FC<MetricTickerProps> = ({
                 background: COLORS.card,
                 opacity: progress,
                 transform: `translateY(${(1 - progress) * 20}px)`,
+                boxShadow:
+                  glow > 0
+                    ? `0 0 ${Math.round(24 * glow)}px ${accentColor}33, inset 0 1px 0 rgba(255,255,255,0.04)`
+                    : undefined,
               }}
             >
               <div

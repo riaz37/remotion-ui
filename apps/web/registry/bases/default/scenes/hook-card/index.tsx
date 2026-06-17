@@ -17,7 +17,7 @@ export type HookCardProps = {
 };
 
 const COLORS = {
-  bg: "#0c0a09",
+  bg: "#080810",
   text: "#fafaf9",
   muted: "#d6d3d1",
   accent: "#e8b86d",
@@ -79,7 +79,7 @@ export const HookCard: React.FC<HookCardProps> = ({
         style={{
           position: "absolute",
           inset: 0,
-          background: `radial-gradient(circle at 16% 16%, ${accentColor}38, transparent 36%)`,
+          background: `radial-gradient(circle at 16% 16%, ${accentColor}38, transparent 36%), radial-gradient(ellipse 90% 28% at 50% 0%, ${accentColor}12, transparent 70%)`,
           pointerEvents: "none",
         }}
       />

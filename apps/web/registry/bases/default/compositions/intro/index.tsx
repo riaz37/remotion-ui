@@ -26,7 +26,13 @@ export const Intro: React.FC<IntroProps> = ({
   const premountFor = Math.round(fps * 0.5) + DELAY.short;
 
   return (
-    <AbsoluteFill style={{ backgroundColor }}>
+    <AbsoluteFill
+      style={{
+        backgroundColor,
+        backgroundImage:
+          "radial-gradient(ellipse 70% 55% at 50% 40%, rgba(232,184,109,0.08), transparent)",
+      }}
+    >
       <Sequence durationInFrames={120} premountFor={premountFor}>
         <TitleCard
           title={title}

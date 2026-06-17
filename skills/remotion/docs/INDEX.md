@@ -1,6 +1,6 @@
 # Remotion official docs mirror
 
-Last updated: **2026-06-07**
+Last updated: **2026-06-17**
 
 Fetched from [remotion-dev/remotion](https://github.com/remotion-dev/remotion) `packages/docs/docs/*.mdx` — the same source that powers [remotion.dev/docs](https://www.remotion.dev/docs).
 

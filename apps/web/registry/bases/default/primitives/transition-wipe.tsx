@@ -1,6 +1,8 @@
-import { linearTiming, springTiming } from "@remotion/transitions";
 import { wipe } from "@remotion/transitions/wipe";
-import { springSmooth } from "@/remotion/lib/springs";
+import {
+  resolveTransitionTiming,
+  type TransitionVariant,
+} from "@/remotion/lib/transition-timing";
 
 export type WipeDirection =
   | "from-left"
@@ -11,21 +13,18 @@ export type WipeDirection =
 export type TransitionWipeConfig = {
   durationInFrames?: number;
   direction?: WipeDirection;
-  variant?: "linear" | "spring";
+  variant?: TransitionVariant;
 };
 
 /** Wipe transition config for use with TransitionSeries.Transition */
 export function transitionWipe({
-  durationInFrames = 20,
+  durationInFrames = 22,
   direction = "from-left",
-  variant = "linear",
+  variant = "editorial",
 }: TransitionWipeConfig = {}) {
   return {
     presentation: wipe({ direction }),
-    timing:
-      variant === "spring"
-        ? springTiming({ config: springSmooth, durationInFrames })
-        : linearTiming({ durationInFrames }),
+    timing: resolveTransitionTiming({ durationInFrames, variant }),
   };
 }
 

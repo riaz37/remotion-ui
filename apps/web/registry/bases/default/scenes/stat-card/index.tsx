@@ -78,6 +78,14 @@ export const StatCard: React.FC<StatCardProps> = ({
         position: "relative",
       }}
     >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: `radial-gradient(ellipse 90% 30% at 50% 0%, ${accentColor}14, transparent 70%)`,
+          pointerEvents: "none",
+        }}
+      />
       <svg
         width={ringSize}
         height={ringSize}

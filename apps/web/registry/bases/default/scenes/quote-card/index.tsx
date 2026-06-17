@@ -88,6 +88,7 @@ export const QuoteCard: React.FC<QuoteCardProps> = ({
           borderRadius: scaleFont(28, width),
           background: `linear-gradient(145deg, ${accentColor}16 0%, ${accentColor}08 100%)`,
           border: `1px solid ${accentColor}24`,
+          boxShadow: `inset 0 1px 0 rgba(255,255,255,0.1), 0 0 ${scaleFont(40, width)}px ${accentColor}12`,
           opacity: backingEnter,
           transform: `scale(${0.94 + backingEnter * 0.06})`,
           pointerEvents: "none",

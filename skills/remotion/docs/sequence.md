@@ -2,7 +2,7 @@
 
 > Official: [https://www.remotion.dev/docs/sequence](https://www.remotion.dev/docs/sequence)
 > Source MDX: [https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/sequence.mdx](https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/sequence.mdx)
-> Mirrored: 2026-06-07
+> Mirrored: 2026-06-17
 
 ```twoslash include example
 const BlueSquare: React.FC = () => 
@@ -184,6 +184,28 @@ From v3.2.36 onwards, this prop will be optional; by default, it will be 0.
 
 For how many frames the sequence should be displayed. Children are unmounted if they are not within the time range of display. By default it will be `Infinity` to avoid limit the duration of the sequence.
 
+### `freeze?`
+
+Freezes the children of the sequence at the specified frame.
+Pass `null` or omit the prop to keep the sequence unfrozen.
+
+```tsx twoslash title="MyVideo.tsx"
+
+const Child = () => {useCurrentFrame()};
+
+// ---cut---
+
+export const MyVideo = () => {
+  return (
+    
+      
+    
+  );
+};
+```
+
+This is equivalent to wrapping the children in [``](/docs/freeze), but without remounting the sequence.
+
 ### `height?`
 
 Gives the sequence a specific `style={{height: height}}` style and overrides `height` that is returned by the [`useVideoConfig()`](/docs/use-video-config) hook in child components. Useful for including a component that was designed for a specific height.
@@ -199,6 +221,25 @@ You can give your sequence a name and it will be shown as the label of the seque
 ### `layout?`
 
 Either `"absolute-fill"` _(default)_ or `"none"`. By default, your sequences will be absolutely positioned, so they will overlay each other. If you would like to opt out of it and handle layouting yourself, pass `layout="none"`. Available since v1.4.
+
+### `outlineRef?`
+
+A React ref pointing to the element that the Remotion Studio should use for drawing the selection outline in the preview.
+
+By default, the Studio outlines the wrapper created by ``. If you use `layout="none"`, no wrapper exists, so pass `outlineRef` to make the rendered element selectable in the preview.
+
+```tsx twoslash title="MyVideo.tsx"
+
+export const MyVideo = () => {
+  const outlineRef = useRef(null);
+
+  return (
+    
+      Selectable in the Studio preview
+    
+  );
+};
+```
 
 ### `style?`
 
