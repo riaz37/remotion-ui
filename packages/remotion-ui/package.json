@@ -52,7 +52,7 @@
     "publish:npm": "npm publish --access public"
   },
   "dependencies": {
-    "commander": "^13.1.0",
+    "commander": "^15.0.0",
     "cosmiconfig": "^9.0.0",
     "fs-extra": "^11.3.0",
     "zod": "^3.24.2"
