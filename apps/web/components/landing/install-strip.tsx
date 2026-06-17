@@ -1,5 +1,5 @@
 import { LandingSection } from "@/components/landing/landing-section";
-import { RenderQueueStrip } from "@/components/landing/render-queue-strip";
+import { RenderQueueBay } from "@/components/landing/render-queue-bay";
 
 const STEPS = [
   {
@@ -25,9 +25,9 @@ export function InstallStrip() {
     <LandingSection
       title="Render queue"
       lead="Init a project, add a composition, export an MP4 — three CLI steps, no editor required."
-      layout="narrow"
+      layout="bin"
     >
-      <RenderQueueStrip steps={STEPS} outputPath="out/social-clip.mp4" />
+      <RenderQueueBay steps={STEPS} outputPath="out/social-clip.mp4" />
     </LandingSection>
   );
 }

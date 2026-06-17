@@ -1,7 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import type { AtlasLane } from "@/lib/atlas";
-import { laneAccent } from "@/lib/lane-visuals";
 
 type ClipCardProps = {
   name: string;
@@ -23,21 +22,13 @@ export function ClipCard({
   className = "",
 }: ClipCardProps) {
   const displayName = name.replace(/-/g, " ");
-  const stripeColor = lane ? laneAccent(lane) : "var(--bay-border-strong)";
 
   return (
     <Link
       href={url}
       className={`motion-border group flex min-w-[220px] flex-col overflow-hidden rounded-md border border-[var(--bay-border)] bg-[var(--bay-surface)] hover:border-[var(--bay-border-strong)] ${className}`}
     >
-      <div className="flex min-h-0 flex-1">
-        <div
-          className="w-1 shrink-0"
-          style={{ backgroundColor: stripeColor }}
-          aria-hidden
-        />
-        <div className="min-w-0 flex-1">{thumbnail}</div>
-      </div>
+      <div className="min-h-0 flex-1">{thumbnail}</div>
       <div className="border-t border-[var(--bay-border)] px-3 py-2.5">
         <div className="flex items-baseline justify-between gap-2">
           <p className="truncate text-sm font-semibold capitalize text-fd-foreground">

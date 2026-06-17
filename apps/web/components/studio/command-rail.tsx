@@ -73,7 +73,7 @@ export function CommandRail({
         ) : null
       }
     >
-      <code className="block min-w-max font-[family-name:var(--font-mono)] text-fd-foreground">
+      <code className="block font-[family-name:var(--font-mono)] text-fd-foreground">
         <span className="text-[var(--bay-phosphor)]">$ </span>
         {displayCommand}
       </code>

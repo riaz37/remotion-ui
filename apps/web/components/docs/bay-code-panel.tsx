@@ -18,7 +18,7 @@ export function BayCodePanel({
 }: BayCodePanelProps) {
   return (
     <div
-      className={`not-prose my-4 rounded-md border border-[var(--bay-border)] bg-[var(--bay-surface)] ${className}`}
+      className={`not-prose my-4 min-w-0 rounded-md border border-[var(--bay-border)] bg-[var(--bay-surface)] ${className}`}
     >
       <div className="flex flex-col gap-3 border-b border-[var(--bay-border)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">{headerLeft}</div>
