@@ -48,7 +48,9 @@ export const EXPORT_OVERRIDES: Record<
   },
   "creator-reel": { durationInFrames: 180, width: 1080, height: 1920 },
   "podcast-clip": { durationInFrames: 180, width: 1080, height: 1920 },
-  "data-story": { durationInFrames: 420 },
+  "ai-generation-canvas": {
+    durationInFrames: 180,
+  },
   v0: {
     source: {
       importPath: "@/components/previews/ai-composer-previews",

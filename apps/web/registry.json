@@ -2102,14 +2102,12 @@
     {
       "name": "ai-generation-canvas",
       "type": "registry:block",
-      "description": "Prompt to dashboard populate",
+      "description": "Prompt-to-dashboard generation with morphing input, skeleton shimmer, and card flips",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/google-fonts"
       ],
-      "registryDependencies": [
-        "chat-to-preview",
-        "stat-card"
-      ],
+      "registryDependencies": [],
       "composition": {
         "id": "AiGenerationCanvas",
         "component": "AiGenerationCanvas",
