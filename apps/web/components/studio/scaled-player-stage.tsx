@@ -12,6 +12,7 @@ type ScaledPlayerStageProps = {
   width: number;
   height: number;
   inputProps: Record<string, unknown>;
+  loop?: boolean;
 };
 
 export function ScaledPlayerStage({
@@ -22,6 +23,7 @@ export function ScaledPlayerStage({
   width,
   height,
   inputProps,
+  loop = true,
 }: ScaledPlayerStageProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isPortrait = height > width;
@@ -54,7 +56,7 @@ export function ScaledPlayerStage({
         }}
         inputProps={inputProps}
         controls={false}
-        loop
+        loop={loop}
         autoPlay
         clickToPlay={false}
         initiallyMuted

@@ -1,4 +1,5 @@
-import { interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import { measureText } from "@remotion/layout-utils";
+import { useCurrentFrame, useVideoConfig } from "remotion";
 import { scaleFont } from "@/remotion/lib/layout";
 
 export type InfiniteMarqueeProps = {
@@ -10,6 +11,26 @@ export type InfiniteMarqueeProps = {
   fontFamily?: string;
   gap?: number;
 };
+
+function getItemWidth(
+  text: string,
+  fontSize: number,
+  fontWeight: number,
+  fontFamily?: string,
+) {
+  const family = fontFamily ?? "system-ui";
+
+  if (typeof document !== "undefined") {
+    return measureText({
+      text,
+      fontFamily: family,
+      fontSize,
+      fontWeight: String(fontWeight),
+    }).width;
+  }
+
+  return text.length * fontSize * 0.55;
+}
 
 export const InfiniteMarquee: React.FC<InfiniteMarqueeProps> = ({
   text,
@@ -23,8 +44,13 @@ export const InfiniteMarquee: React.FC<InfiniteMarqueeProps> = ({
   const frame = useCurrentFrame();
   const { width } = useVideoConfig();
   const fontSize = fontSizeProp ?? scaleFont(56, width);
-  const segment = `${text} `.repeat(4);
-  const offset = (frame * speed) % (segment.length * fontSize * 0.55 + gap);
+
+  const itemWidth = getItemWidth(text, fontSize, fontWeight, fontFamily);
+  const repetitions = Math.max(4, Math.ceil(width / itemWidth) + 2);
+  const halfWidth =
+    repetitions * itemWidth + Math.max(0, repetitions - 1) * gap;
+  const loopPeriodFrames = Math.max(1, Math.round(halfWidth / speed));
+  const progress = (frame % loopPeriodFrames) / loopPeriodFrames;
 
   return (
     <div
@@ -38,15 +64,17 @@ export const InfiniteMarquee: React.FC<InfiniteMarqueeProps> = ({
         style={{
           display: "inline-flex",
           gap,
-          transform: `translateX(${-offset}px)`,
+          whiteSpace: "nowrap",
+          translate: `${-progress * 50}% 0`,
           fontSize,
           fontWeight,
           color,
           ...(fontFamily ? { fontFamily } : {}),
         }}
       >
-        <span>{segment}</span>
-        <span>{segment}</span>
+        {Array.from({ length: repetitions * 2 }, (_, i) => (
+          <span key={i}>{text}</span>
+        ))}
       </div>
     </div>
   );

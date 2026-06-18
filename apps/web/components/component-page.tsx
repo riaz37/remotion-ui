@@ -24,6 +24,7 @@ type ComponentPageProps = {
   durationInFrames?: number;
   previewWidth?: number;
   previewHeight?: number;
+  previewLoop?: boolean;
   inputProps?: Record<string, unknown>;
   children?: ReactNode;
 };
@@ -34,6 +35,7 @@ export function ComponentPage({
   durationInFrames = 90,
   previewWidth = 960,
   previewHeight = 540,
+  previewLoop = true,
   inputProps,
   children,
 }: ComponentPageProps) {
@@ -44,6 +46,7 @@ export function ComponentPage({
       durationInFrames={durationInFrames}
       previewWidth={previewWidth}
       previewHeight={previewHeight}
+      previewLoop={previewLoop}
       inputProps={inputProps}
     />
   ) : null;

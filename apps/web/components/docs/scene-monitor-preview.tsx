@@ -12,6 +12,7 @@ type SceneMonitorPreviewProps = {
   previewWidth: number;
   previewHeight: number;
   inputProps?: Record<string, unknown>;
+  previewLoop?: boolean;
 };
 
 export function SceneMonitorPreview({
@@ -21,6 +22,7 @@ export function SceneMonitorPreview({
   previewWidth,
   previewHeight,
   inputProps = {},
+  previewLoop = true,
 }: SceneMonitorPreviewProps) {
   const playerRef = useRef<PlayerRef>(null);
   const meta = `30fps · ${previewWidth}×${previewHeight}`;
@@ -55,6 +57,7 @@ export function SceneMonitorPreview({
         width={previewWidth}
         height={previewHeight}
         inputProps={inputProps}
+        loop={previewLoop}
       />
     </div>
   );

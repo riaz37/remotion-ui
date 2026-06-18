@@ -1257,8 +1257,57 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     category: "primitive",
     usage: `import { MaskedSlideReveal } from "@/remotion/primitives/masked-slide-reveal";
 
-<MaskedSlideReveal text="Slide from mask" />`,
-    props: [{ name: "text", type: "string", required: true, description: "Words to reveal through mask." }],
+<MaskedSlideReveal
+  lines={[
+    "Three layers in your repo",
+    "Drop scenes into",
+    "TransitionSeries",
+  ]}
+/>`,
+    props: [
+      {
+        name: "text",
+        type: "string",
+        description:
+          "Copy to reveal. Splits on newlines for line mode, or words on a single line. Omit when using lines.",
+      },
+      {
+        name: "lines",
+        type: "string[]",
+        description:
+          "Explicit lines to reveal through the mask. Preferred for multi-line headlines.",
+      },
+      {
+        name: "staggerInFrames",
+        type: "number",
+        default: "6",
+        description: "Frames between each line or word reveal.",
+      },
+      {
+        name: "durationInFrames",
+        type: "number",
+        default: "16",
+        description: "Frames for each masked slide-in.",
+      },
+      {
+        name: "delayInFrames",
+        type: "number",
+        default: "0",
+        description: "Delay before the first item animates.",
+      },
+      {
+        name: "textAlign",
+        type: '"left" | "center" | "right"',
+        default: '"center"',
+        description: "Horizontal alignment of lines.",
+      },
+      {
+        name: "lineGap",
+        type: "number",
+        default: "0.18",
+        description: "Gap between lines in em units (line mode only).",
+      },
+    ],
     related: ["staggered-fade-up"],
   },
   "tracking-in": {
@@ -1327,9 +1376,17 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     category: "primitive",
     usage: `import { PerspectiveMarquee } from "@/remotion/primitives/perspective-marquee";
 
-<PerspectiveMarquee text="Depth scroll" />`,
-    props: [{ name: "text", type: "string", required: true, description: "Marquee copy in 3D tilt." }],
+<PerspectiveMarquee text="Depth scroll" speed={10} floorTilt={70} perspective={640} />`,
+    props: [
+      { name: "text", type: "string", required: true, description: "Marquee copy." },
+      { name: "speed", type: "number", default: "10", description: "Scroll speed in pixels per frame along the floor plane." },
+      { name: "gap", type: "number", default: "72", description: "Gap between repeated items in px." },
+      { name: "floorTilt", type: "number", default: "70", description: "Floor plane tilt in degrees — higher values exaggerate depth receding toward the horizon." },
+      { name: "perspective", type: "number", default: "640", description: "Perspective distance in px — lower values exaggerate depth." },
+      { name: "showFloorGrid", type: "boolean", default: "true", description: "Draw a perspective grid behind the marquee plane." },
+    ],
     related: ["infinite-marquee"],
+    note: "Unlike InfiniteMarquee, text scrolls on a receding 3D floor with horizon fade — not a flat band.",
   },
   "strikethrough-replace": {
     category: "primitive",
