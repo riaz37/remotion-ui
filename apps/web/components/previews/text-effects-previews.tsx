@@ -15,12 +15,25 @@ import {
   TrackingIn,
 } from "../registry-exports";
 import { DEMO_COPY } from "@/lib/demo-assets";
-import { PreviewFrame } from "./preview-frame";
+import { PreviewFrame, PreviewGhostStack } from "./preview-frame";
 
 const sample = DEMO_COPY.productLaunch.featureTitle;
 const sub = DEMO_COPY.tutorial.calloutSubtitle;
 
 const center = {
+  display: "grid",
+  placeItems: "center",
+  width: "100%",
+  textAlign: "center" as const,
+};
+
+const maskedSlideLines = [
+  sample,
+  "Drop scenes into",
+  "TransitionSeries",
+];
+
+const maskedSlideGhostStyle = {
   display: "grid",
   placeItems: "center",
   width: "100%",
@@ -41,7 +54,33 @@ export const StaggeredFadeUpPreview = () => (
 
 export const MaskedSlideRevealPreview = () => (
   <PreviewFrame lane="atoms" padding={72}>
-    <div style={center}><MaskedSlideReveal text={`${sample} ${sub}`} /></div>
+    <PreviewGhostStack
+      ghost={
+        <div style={maskedSlideGhostStyle}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "0.18em",
+              fontSize: 64,
+              fontWeight: 600,
+              color: "#f4f4f5",
+              lineHeight: 1.12,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            {maskedSlideLines.map((line) => (
+              <span key={line}>{line}</span>
+            ))}
+          </div>
+        </div>
+      }
+    >
+      <div style={maskedSlideGhostStyle}>
+        <MaskedSlideReveal lines={maskedSlideLines} />
+      </div>
+    </PreviewGhostStack>
   </PreviewFrame>
 );
 
@@ -90,7 +129,7 @@ export const InfiniteMarqueePreview = () => (
 );
 
 export const PerspectiveMarqueePreview = () => (
-  <PreviewFrame lane="atoms" padding={48}>
+  <PreviewFrame lane="atoms" padding={0} justifyContent="stretch" alignItems="stretch">
     <PerspectiveMarquee text={sample} />
   </PreviewFrame>
 );
