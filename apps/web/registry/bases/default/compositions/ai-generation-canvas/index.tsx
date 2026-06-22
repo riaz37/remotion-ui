@@ -1,39 +1,81 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
 import {
   AbsoluteFill,
+  Easing,
   interpolate,
   spring,
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
+import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
 
 const { fontFamily } = loadFont("normal", {
   weights: ["500", "600", "700"],
   subsets: ["latin"],
 });
 
-const DESIGN_WIDTH = 1280;
+const ENTER_EASE = Easing.bezier(0.16, 1, 0.3, 1);
+const DEMO_BG = "#080810";
+
+export type AiGenerationMetric = {
+  label: string;
+  value: string;
+  delta?: string;
+};
 
 export type AiGenerationCanvasProps = {
   prompt?: string;
   accentColor?: string;
   cardCount?: number;
+  metrics?: AiGenerationMetric[];
+  eyebrow?: string;
+  statusLabel?: string;
   speed?: number;
 };
 
-const MiniBarChart: React.FC<{ accentColor: string; scale: number }> = ({
-  accentColor,
-  scale,
-}) => {
-  const bars = [0.4, 0.7, 0.55, 0.85, 0.5, 0.95, 0.65];
+const DEFAULT_METRICS: AiGenerationMetric[] = [
+  { label: "Revenue", value: "$48.2k", delta: "+12.4%" },
+  { label: "Active users", value: "12,840", delta: "+18.1%" },
+  { label: "Sessions", value: "9.1k", delta: "+8.7%" },
+  { label: "Conversion", value: "3.8%", delta: "+2.2%" },
+  { label: "Retention", value: "76%", delta: "+5.4%" },
+  { label: "Latency", value: "142ms", delta: "-11.8%" },
+];
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function fittedPromptSize(prompt: string, width: number, isPortrait: boolean) {
+  const base = scaleFont(isPortrait ? 46 : 34, width);
+  const longCopyAdjustment = prompt.length > 56 ? 0.78 : prompt.length > 36 ? 0.88 : 1;
+  return Math.round(clamp(base * longCopyAdjustment, scaleFont(24, width), base));
+}
+
+const SparkIcon: React.FC<{ size: number; color: string }> = ({ size, color }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} fill="none">
+    <path
+      d="M12 2.6l2.58 6.82L21.4 12l-6.82 2.58L12 21.4l-2.58-6.82L2.6 12l6.82-2.58L12 2.6z"
+      fill={color}
+    />
+  </svg>
+);
+
+const MiniBarChart: React.FC<{
+  accentColor: string;
+  scale: number;
+  progress: number;
+}> = ({ accentColor, scale, progress }) => {
+  const bars = [0.42, 0.72, 0.56, 0.88, 0.5, 0.95, 0.66];
+
   return (
     <div
       style={{
         display: "flex",
         alignItems: "flex-end",
-        gap: 6 * scale,
-        height: 60 * scale,
-        marginTop: 12 * scale,
+        gap: 8 * scale,
+        height: 76 * scale,
+        marginTop: 18 * scale,
       }}
     >
       {bars.map((height, index) => (
@@ -41,10 +83,11 @@ const MiniBarChart: React.FC<{ accentColor: string; scale: number }> = ({
           key={index}
           style={{
             flex: 1,
-            height: `${height * 100}%`,
-            background: accentColor,
-            borderRadius: 3 * scale,
-            opacity: 0.3 + height * 0.7,
+            height: `${height * progress * 100}%`,
+            minHeight: 4 * scale,
+            background: `linear-gradient(180deg, ${accentColor}, ${accentColor}88)`,
+            borderRadius: 999,
+            opacity: 0.34 + height * 0.62,
           }}
         />
       ))}
@@ -52,177 +95,284 @@ const MiniBarChart: React.FC<{ accentColor: string; scale: number }> = ({
   );
 };
 
-const MiniRows: React.FC<{ scale: number }> = ({ scale }) => (
+const MiniRows: React.FC<{ scale: number; progress: number }> = ({
+  scale,
+  progress,
+}) => (
   <div
     style={{
-      marginTop: 12 * scale,
+      marginTop: 18 * scale,
       display: "flex",
       flexDirection: "column",
-      gap: 6 * scale,
+      gap: 8 * scale,
     }}
   >
-    {[0.9, 0.7, 0.85, 0.6].map((width, index) => (
+    {[0.9, 0.7, 0.84, 0.58].map((width, index) => (
       <div
         key={index}
         style={{
-          height: 8 * scale,
-          width: `${width * 100}%`,
-          background: "rgba(255,255,255,0.12)",
-          borderRadius: 4 * scale,
+          height: 10 * scale,
+          width: `${width * progress * 100}%`,
+          background: "rgba(255,255,255,0.14)",
+          borderRadius: 999,
         }}
       />
     ))}
   </div>
 );
 
-const StatBlock: React.FC<{
+const SkeletonCard: React.FC<{
   accentColor: string;
-  value: string;
+  radius: number;
   scale: number;
-}> = ({ accentColor, value, scale }) => (
-  <div style={{ marginTop: 8 * scale }}>
+  shimmer: number;
+}> = ({ accentColor, radius, scale, shimmer }) => (
+  <div
+    style={{
+      position: "absolute",
+      inset: 0,
+      background: "rgba(16,16,24,0.88)",
+      border: "1px solid rgba(255,255,255,0.08)",
+      borderRadius: radius,
+      backfaceVisibility: "hidden",
+      overflow: "hidden",
+    }}
+  >
     <div
       style={{
-        fontSize: 36 * scale,
-        fontWeight: 700,
-        color: "white",
-        letterSpacing: "-0.03em",
-        fontFamily,
+        position: "absolute",
+        inset: 0,
+        background: `linear-gradient(110deg, transparent 0%, transparent ${shimmer}%, ${accentColor}24 ${shimmer + 16}%, transparent ${shimmer + 32}%)`,
       }}
-    >
-      {value}
-    </div>
-    <div
-      style={{
-        fontSize: 12 * scale,
-        color: accentColor,
-        marginTop: 2 * scale,
-        fontWeight: 500,
-      }}
-    >
-      +12.4% this week
+    />
+    <div style={{ padding: 24 * scale }}>
+      <div
+        style={{
+          width: "42%",
+          height: 12 * scale,
+          background: "rgba(255,255,255,0.09)",
+          borderRadius: 999,
+        }}
+      />
+      <div
+        style={{
+          width: "72%",
+          height: 34 * scale,
+          background: "rgba(255,255,255,0.1)",
+          borderRadius: 10 * scale,
+          marginTop: 18 * scale,
+        }}
+      />
+      <div
+        style={{
+          width: "100%",
+          height: 82 * scale,
+          background: "rgba(255,255,255,0.055)",
+          borderRadius: 12 * scale,
+          marginTop: 20 * scale,
+        }}
+      />
     </div>
   </div>
 );
 
-const CardContent: React.FC<{
-  index: number;
+const MetricCard: React.FC<{
   accentColor: string;
+  metric: AiGenerationMetric;
+  index: number;
+  progress: number;
+  radius: number;
   scale: number;
-}> = ({ index, accentColor, scale }) => {
-  const titles = [
-    "Revenue",
-    "Active Users",
-    "Sessions",
-    "Conversion",
-    "Retention",
-    "Latency",
-  ];
-  const values = ["$48.2k", "12,840", "9.1k", "3.8%", "76%", "142ms"];
+}> = ({ accentColor, metric, index, progress, radius, scale }) => {
   const variant = index % 3;
 
   return (
-    <div style={{ width: "100%", height: "100%", padding: 18 * scale }}>
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        background:
+          "linear-gradient(180deg, rgba(24,24,34,0.96), rgba(12,12,18,0.96))",
+        border: `1px solid ${accentColor}38`,
+        borderRadius: radius,
+        backfaceVisibility: "hidden",
+        transform: "rotateY(180deg)",
+        overflow: "hidden",
+        boxShadow: `0 0 0 1px ${accentColor}14, 0 ${24 * scale}px ${70 * scale}px rgba(0,0,0,0.34)`,
+      }}
+    >
       <div
         style={{
-          fontSize: 12 * scale,
-          color: "rgba(255,255,255,0.55)",
-          fontWeight: 500,
-          fontFamily,
-          letterSpacing: "0.02em",
-          textTransform: "uppercase",
+          position: "absolute",
+          width: 160 * scale,
+          height: 160 * scale,
+          right: -72 * scale,
+          top: -72 * scale,
+          borderRadius: 999,
+          background: `${accentColor}18`,
+          filter: `blur(${24 * scale}px)`,
+        }}
+      />
+      <div
+        style={{
+          position: "relative",
+          height: "100%",
+          padding: 24 * scale,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
         }}
       >
-        {titles[index % titles.length]}
+        <div>
+          <div
+            style={{
+              fontSize: scaleFont(20, scale * 1080),
+              color: "rgba(255,255,255,0.58)",
+              fontWeight: 600,
+              fontFamily,
+            }}
+          >
+            {metric.label}
+          </div>
+          <div
+            style={{
+              marginTop: 10 * scale,
+              fontSize: scaleFont(58, scale * 1080),
+              lineHeight: 1,
+              fontWeight: 700,
+              color: "white",
+              fontFamily,
+            }}
+          >
+            {metric.value}
+          </div>
+          {metric.delta ? (
+            <div
+              style={{
+                marginTop: 10 * scale,
+                fontSize: scaleFont(19, scale * 1080),
+                color: accentColor,
+                fontWeight: 700,
+              }}
+            >
+              {metric.delta} this week
+            </div>
+          ) : null}
+        </div>
+        {variant === 0 ? (
+          <MiniBarChart accentColor={accentColor} scale={scale} progress={progress} />
+        ) : variant === 1 ? (
+          <MiniRows scale={scale} progress={progress} />
+        ) : (
+          <div>
+            <MiniBarChart
+              accentColor={accentColor}
+              scale={scale}
+              progress={progress}
+            />
+            <MiniRows scale={scale} progress={progress} />
+          </div>
+        )}
       </div>
-      {variant === 0 ? (
-        <>
-          <StatBlock
-            accentColor={accentColor}
-            value={values[index % values.length]}
-            scale={scale}
-          />
-          <MiniBarChart accentColor={accentColor} scale={scale} />
-        </>
-      ) : variant === 1 ? (
-        <>
-          <StatBlock
-            accentColor={accentColor}
-            value={values[index % values.length]}
-            scale={scale}
-          />
-          <MiniRows scale={scale} />
-        </>
-      ) : (
-        <>
-          <MiniBarChart accentColor={accentColor} scale={scale} />
-          <MiniRows scale={scale} />
-        </>
-      )}
     </div>
   );
 };
 
 export const AiGenerationCanvas: React.FC<AiGenerationCanvasProps> = ({
-  prompt = "Generate a dashboard",
-  accentColor = "#7c3aed",
+  prompt = "Generate a revenue dashboard for this launch",
+  accentColor = "#e8b86d",
   cardCount = 4,
+  metrics = DEFAULT_METRICS,
+  eyebrow = "AI generation canvas",
+  statusLabel = "Generating",
   speed = 1,
 }) => {
-  const frame = useCurrentFrame() * speed;
-  const { fps, width } = useVideoConfig();
-  const scale = width / DESIGN_WIDTH;
+  const rawFrame = useCurrentFrame();
+  const frame = rawFrame * speed;
+  const { fps, width, height } = useVideoConfig();
+  const safe = getSafeAreaPadding({ width, height });
+  const isPortrait = height > width;
+  const scale = width / 1920;
+  const safeWidth = width - safe.paddingLeft - safe.paddingRight;
 
-  const P1_END = 40;
-  const P2_END = 70;
-  const P3_END = 100;
+  const promptEnd = 44;
+  const morphEnd = 78;
+  const skeletonEnd = 104;
+  const normalizedCardCount = clamp(Math.round(cardCount), 1, 6);
+  const visibleMetrics = Array.from({ length: normalizedCardCount }, (_, index) => {
+    return metrics[index % metrics.length] ?? DEFAULT_METRICS[index % DEFAULT_METRICS.length];
+  });
 
-  const charCount = Math.floor(
-    interpolate(frame, [4, P1_END - 2], [0, prompt.length], {
+  const typedCount = Math.floor(
+    interpolate(frame, [6, promptEnd - 4], [0, prompt.length], {
       extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
+      easing: Easing.out(Easing.cubic),
     }),
   );
-  const typedText = prompt.substring(0, charCount);
+  const typedText = prompt.slice(0, typedCount);
   const cursorVisible = Math.floor(frame / 12) % 2 === 0;
 
-  const transformProgress = spring({
-    frame: frame - P1_END,
+  const morph = spring({
+    frame: frame - promptEnd,
     fps,
-    config: { mass: 1, damping: 16, stiffness: 110 },
-    durationInFrames: 30,
+    config: { mass: 1, damping: 17, stiffness: 118 },
+    durationInFrames: morphEnd - promptEnd,
   });
 
-  const inputCenteredW = 640 * scale;
-  const inputCenteredH = 80 * scale;
-  const headerW = 1200 * scale;
-  const headerH = 56 * scale;
-  const inputW = interpolate(
-    transformProgress,
-    [0, 1],
-    [inputCenteredW, headerW],
-  );
-  const inputH = interpolate(
-    transformProgress,
-    [0, 1],
-    [inputCenteredH, headerH],
-  );
-  const inputTop = interpolate(transformProgress, [0, 1], [320 * scale, 40 * scale]);
-  const inputRadius = interpolate(transformProgress, [0, 1], [16 * scale, 12 * scale]);
-  const inputFontSize = interpolate(transformProgress, [0, 1], [24 * scale, 14 * scale]);
-
-  const skeletonOpacity = interpolate(frame, [P2_END, P3_END], [0, 1], {
+  const dashboardEnter = interpolate(frame, [morphEnd - 8, skeletonEnd], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
+    easing: ENTER_EASE,
   });
+  const backgroundPulse = interpolate(
+    rawFrame % 120,
+    [0, 60, 120],
+    [0.74, 1, 0.74],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+  );
+  const shimmer = ((frame * 1.35) % 180) - 38;
 
-  const shimmerPos = ((frame * 1.5) % 200) - 50;
-  const cards = Array.from({ length: cardCount });
+  const promptSize = fittedPromptSize(prompt, width, isPortrait);
+  const headerPromptSize = scaleFont(isPortrait ? 24 : 18, width);
+  const inputHeight = interpolate(
+    morph,
+    [0, 1],
+    [scaleFont(isPortrait ? 132 : 106, width), scaleFont(isPortrait ? 76 : 62, width)],
+  );
+  const inputWidth = interpolate(
+    morph,
+    [0, 1],
+    [Math.min(safeWidth, scaleFont(isPortrait ? 860 : 760, width)), safeWidth],
+  );
+  const inputFontSize = interpolate(morph, [0, 1], [promptSize, headerPromptSize]);
+  const inputRadius = interpolate(
+    morph,
+    [0, 1],
+    [scaleFont(22, width), scaleFont(16, width)],
+  );
+  const inputTranslateY = interpolate(
+    morph,
+    [0, 1],
+    [isPortrait ? height * 0.27 : height * 0.3, 0],
+  );
+  const dashboardTranslate = interpolate(
+    dashboardEnter,
+    [0, 1],
+    [scaleFont(34, width), 0],
+  );
+
+  const columns = isPortrait
+    ? Math.min(2, normalizedCardCount)
+    : Math.min(normalizedCardCount, 4);
+  const radius = scaleFont(isPortrait ? 26 : 20, width);
+  const cardMinHeight = scaleFont(isPortrait ? 250 : 270, width);
+  const cardGap = scaleFont(isPortrait ? 22 : 24, width);
 
   return (
     <AbsoluteFill
       style={{
-        background: "#0a0a0a",
+        background: DEMO_BG,
         overflow: "hidden",
         fontFamily,
       }}
@@ -232,225 +382,283 @@ export const AiGenerationCanvas: React.FC<AiGenerationCanvasProps> = ({
           position: "absolute",
           inset: 0,
           backgroundImage:
-            "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
-          backgroundSize: `${40 * scale}px ${40 * scale}px`,
+            "linear-gradient(rgba(255,255,255,0.032) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.032) 1px, transparent 1px)",
+          backgroundSize: `${scaleFont(isPortrait ? 46 : 44, width)}px ${scaleFont(isPortrait ? 46 : 44, width)}px`,
           maskImage:
-            "radial-gradient(ellipse at center, black 40%, transparent 80%)",
+            "radial-gradient(ellipse at center, black 36%, transparent 78%)",
         }}
       />
-
-      {frame > P2_END ? (
-        <div
-          style={{
-            position: "absolute",
-            top: 130 * scale,
-            left: 40 * scale,
-            right: 40 * scale,
-            bottom: 40 * scale,
-            display: "grid",
-            gridTemplateColumns: `repeat(${Math.min(cardCount, 4)}, 1fr)`,
-            gap: 20 * scale,
-          }}
-        >
-          {cards.map((_, index) => {
-            const cardStart = P3_END + index * 8;
-            const flipProgress = spring({
-              frame: frame - cardStart,
-              fps,
-              config: { mass: 0.9, damping: 14, stiffness: 100 },
-              durationInFrames: 30,
-            });
-            const rotation = interpolate(flipProgress, [0, 1], [0, 180]);
-            const showSkeleton = rotation < 90;
-
-            return (
-              <div
-                key={index}
-                style={{
-                  position: "relative",
-                  perspective: 1200 * scale,
-                  opacity: skeletonOpacity,
-                }}
-              >
-                <div
-                  style={{
-                    position: "relative",
-                    width: "100%",
-                    height: "100%",
-                    transformStyle: "preserve-3d",
-                    transform: `rotateY(${rotation}deg)`,
-                  }}
-                >
-                  <div
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      background: "#141416",
-                      border: "1px solid rgba(255,255,255,0.06)",
-                      borderRadius: 14 * scale,
-                      backfaceVisibility: "hidden",
-                      overflow: "hidden",
-                      visibility: showSkeleton ? "visible" : "hidden",
-                    }}
-                  >
-                    <div
-                      style={{
-                        position: "absolute",
-                        inset: 0,
-                        background: `linear-gradient(110deg, transparent 0%, transparent ${shimmerPos}%, ${accentColor}22 ${shimmerPos + 15}%, transparent ${shimmerPos + 30}%)`,
-                      }}
-                    />
-                    <div style={{ padding: 18 * scale }}>
-                      <div
-                        style={{
-                          width: "40%",
-                          height: 10 * scale,
-                          background: "rgba(255,255,255,0.08)",
-                          borderRadius: 4 * scale,
-                        }}
-                      />
-                      <div
-                        style={{
-                          width: "70%",
-                          height: 28 * scale,
-                          background: "rgba(255,255,255,0.08)",
-                          borderRadius: 6 * scale,
-                          marginTop: 14 * scale,
-                        }}
-                      />
-                      <div
-                        style={{
-                          width: "100%",
-                          height: 60 * scale,
-                          background: "rgba(255,255,255,0.05)",
-                          borderRadius: 6 * scale,
-                          marginTop: 16 * scale,
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      background: "#141416",
-                      border: `1px solid ${accentColor}33`,
-                      borderRadius: 14 * scale,
-                      backfaceVisibility: "hidden",
-                      transform: "rotateY(180deg)",
-                      overflow: "hidden",
-                      boxShadow: `0 0 0 1px ${accentColor}22, 0 ${20 * scale}px ${40 * scale}px rgba(0,0,0,0.4)`,
-                    }}
-                  >
-                    <CardContent
-                      index={index}
-                      accentColor={accentColor}
-                      scale={scale}
-                    />
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      ) : null}
-
       <div
         style={{
           position: "absolute",
-          left: "50%",
-          top: inputTop,
-          width: inputW,
-          height: inputH,
-          marginLeft: -inputW / 2,
-          background: "rgba(20,20,22,0.85)",
-          border: `1px solid ${accentColor}55`,
-          borderRadius: inputRadius,
-          backdropFilter: "blur(12px)",
+          width: scaleFont(isPortrait ? 680 : 820, width),
+          height: scaleFont(isPortrait ? 680 : 820, width),
+          right: -scaleFont(isPortrait ? 250 : 180, width),
+          top: -scaleFont(isPortrait ? 150 : 220, width),
+          borderRadius: 999,
+          background: `${accentColor}24`,
+          filter: `blur(${scaleFont(90, width)}px)`,
+          opacity: backgroundPulse,
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          width: scaleFont(isPortrait ? 520 : 620, width),
+          height: scaleFont(isPortrait ? 520 : 620, width),
+          left: -scaleFont(isPortrait ? 210 : 140, width),
+          bottom: -scaleFont(isPortrait ? 160 : 190, width),
+          borderRadius: 999,
+          background: "rgba(45,212,191,0.16)",
+          filter: `blur(${scaleFont(100, width)}px)`,
+        }}
+      />
+
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          height: "100%",
+          paddingTop: safe.paddingTop,
+          paddingRight: safe.paddingRight,
+          paddingBottom: safe.paddingBottom,
+          paddingLeft: safe.paddingLeft,
           display: "flex",
-          alignItems: "center",
-          padding: `0 ${20 * scale}px`,
-          boxShadow:
-            transformProgress < 0.5
-              ? `0 0 0 ${6 * scale}px ${accentColor}11, 0 ${30 * scale}px ${80 * scale}px rgba(0,0,0,0.6)`
-              : `0 ${8 * scale}px ${24 * scale}px rgba(0,0,0,0.4)`,
+          flexDirection: "column",
+          gap: scaleFont(isPortrait ? 34 : 30, width),
         }}
       >
         <div
           style={{
-            width: 20 * scale,
-            height: 20 * scale,
-            marginRight: 12 * scale,
-            color: accentColor,
+            minHeight: inputHeight,
             display: "flex",
-            alignItems: "center",
             justifyContent: "center",
-            flexShrink: 0,
+            alignItems: "flex-start",
           }}
         >
-          <svg
-            viewBox="0 0 24 24"
-            width={20 * scale}
-            height={20 * scale}
-            fill="currentColor"
-          >
-            <path d="M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5L12 2z" />
-          </svg>
-        </div>
-        <div
-          style={{
-            color: "white",
-            fontSize: inputFontSize,
-            fontWeight: 500,
-            letterSpacing: "-0.01em",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-          }}
-        >
-          {typedText}
-          {frame < P1_END && cursorVisible ? (
-            <span
-              style={{
-                display: "inline-block",
-                width: 2 * scale,
-                height: inputFontSize,
-                background: accentColor,
-                marginLeft: 2 * scale,
-                verticalAlign: "middle",
-              }}
-            />
-          ) : null}
-        </div>
-        {transformProgress > 0.6 ? (
           <div
             style={{
-              marginLeft: "auto",
+              width: inputWidth,
+              height: inputHeight,
+              transform: `translateY(${inputTranslateY}px)`,
+              background: "rgba(18,18,25,0.84)",
+              border: `1px solid ${accentColor}66`,
+              borderRadius: inputRadius,
+              backdropFilter: "blur(18px)",
               display: "flex",
-              gap: 8 * scale,
-              alignItems: "center",
-              opacity: (transformProgress - 0.6) / 0.4,
+              alignItems: morph > 0.5 ? "center" : "flex-start",
+              padding: `0 ${scaleFont(isPortrait ? 24 : 22, width)}px`,
+              boxShadow:
+                morph < 0.5
+                  ? `0 0 0 ${scaleFont(8, width)}px ${accentColor}12, 0 ${scaleFont(34, width)}px ${scaleFont(100, width)}px rgba(0,0,0,0.52)`
+                  : `0 ${scaleFont(10, width)}px ${scaleFont(32, width)}px rgba(0,0,0,0.36)`,
             }}
           >
             <div
               style={{
-                width: 8 * scale,
-                height: 8 * scale,
-                borderRadius: 4 * scale,
-                background: accentColor,
-                boxShadow: `0 0 ${12 * scale}px ${accentColor}`,
-              }}
-            />
-            <div
-              style={{
-                fontSize: 12 * scale,
-                color: "rgba(255,255,255,0.6)",
-                fontWeight: 500,
+                width: scaleFont(isPortrait ? 36 : 28, width),
+                height: scaleFont(isPortrait ? 36 : 28, width),
+                marginTop: morph > 0.5 ? 0 : scaleFont(24, width),
+                marginRight: scaleFont(16, width),
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
               }}
             >
-              Generating
+              <SparkIcon size={scaleFont(isPortrait ? 31 : 24, width)} color={accentColor} />
+            </div>
+            <div
+              style={{
+                minWidth: 0,
+                color: "white",
+                fontSize: inputFontSize,
+                lineHeight: 1.15,
+                fontWeight: 600,
+                paddingTop: morph > 0.5 ? 0 : scaleFont(22, width),
+                textOverflow: "ellipsis",
+                whiteSpace: morph > 0.7 ? "nowrap" : "normal",
+              }}
+            >
+              {typedText}
+              {frame < promptEnd && cursorVisible ? (
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: Math.max(2, scaleFont(3, width)),
+                    height: inputFontSize,
+                    background: accentColor,
+                    marginLeft: scaleFont(4, width),
+                    verticalAlign: "middle",
+                  }}
+                />
+              ) : null}
+            </div>
+            <div
+              style={{
+                marginLeft: "auto",
+                display: "flex",
+                gap: scaleFont(10, width),
+                alignItems: "center",
+                opacity: interpolate(morph, [0.58, 1], [0, 1], {
+                  extrapolateLeft: "clamp",
+                  extrapolateRight: "clamp",
+                }),
+                flexShrink: 0,
+              }}
+            >
+              <div
+                style={{
+                  width: scaleFont(10, width),
+                  height: scaleFont(10, width),
+                  borderRadius: 999,
+                  background: accentColor,
+                  boxShadow: `0 0 ${scaleFont(18, width)}px ${accentColor}`,
+                }}
+              />
+              <div
+                style={{
+                  fontSize: scaleFont(isPortrait ? 20 : 16, width),
+                  color: "rgba(255,255,255,0.66)",
+                  fontWeight: 700,
+                }}
+              >
+                {statusLabel}
+              </div>
             </div>
           </div>
-        ) : null}
+        </div>
+
+        <div
+          style={{
+            opacity: dashboardEnter,
+            transform: `translateY(${dashboardTranslate}px)`,
+            flex: 1,
+            minHeight: 0,
+            display: "flex",
+            flexDirection: "column",
+            gap: scaleFont(isPortrait ? 22 : 20, width),
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: isPortrait ? "flex-start" : "flex-end",
+              justifyContent: "space-between",
+              gap: scaleFont(24, width),
+              flexDirection: isPortrait ? "column" : "row",
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  color: accentColor,
+                  fontSize: scaleFont(isPortrait ? 24 : 18, width),
+                  fontWeight: 700,
+                }}
+              >
+                {eyebrow}
+              </div>
+              <div
+                style={{
+                  marginTop: scaleFont(8, width),
+                  color: "white",
+                  fontSize: scaleFont(isPortrait ? 48 : 42, width),
+                  lineHeight: 1.04,
+                  fontWeight: 700,
+                  maxWidth: isPortrait ? safeWidth : safeWidth * 0.62,
+                }}
+              >
+                Live metrics from one prompt
+              </div>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: scaleFont(12, width),
+                color: "rgba(255,255,255,0.68)",
+                fontSize: scaleFont(isPortrait ? 22 : 18, width),
+                fontWeight: 600,
+              }}
+            >
+              <div
+                style={{
+                  width: scaleFont(9, width),
+                  height: scaleFont(9, width),
+                  borderRadius: 999,
+                  background: "#2dd4bf",
+                  boxShadow: `0 0 ${scaleFont(16, width)}px #2dd4bf`,
+                }}
+              />
+              Analysis ready
+            </div>
+          </div>
+
+          <div
+            style={{
+              flex: 1,
+              minHeight: 0,
+              display: "grid",
+              gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+              gridAutoRows: `minmax(${cardMinHeight}px, 1fr)`,
+              gap: cardGap,
+            }}
+          >
+            {visibleMetrics.map((metric, index) => {
+              const cardStart = skeletonEnd + index * 7;
+              const cardSpring = spring({
+                frame: frame - cardStart,
+                fps,
+                config: { mass: 0.9, damping: 15, stiffness: 112 },
+                durationInFrames: 28,
+              });
+              const rotation = interpolate(cardSpring, [0, 1], [0, 180]);
+              const cardProgress = interpolate(cardSpring, [0.45, 1], [0, 1], {
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+                easing: ENTER_EASE,
+              });
+
+              return (
+                <div
+                  key={`${metric.label}-${index}`}
+                  style={{
+                    position: "relative",
+                    perspective: scaleFont(1300, width),
+                    opacity: dashboardEnter,
+                    minHeight: cardMinHeight,
+                  }}
+                >
+                  <div
+                    style={{
+                      position: "relative",
+                      width: "100%",
+                      height: "100%",
+                      transformStyle: "preserve-3d",
+                      transform: `rotateY(${rotation}deg)`,
+                    }}
+                  >
+                    <SkeletonCard
+                      accentColor={accentColor}
+                      radius={radius}
+                      scale={scale}
+                      shimmer={shimmer}
+                    />
+                    <MetricCard
+                      accentColor={accentColor}
+                      metric={metric}
+                      index={index}
+                      progress={cardProgress}
+                      radius={radius}
+                      scale={scale}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </AbsoluteFill>
   );
