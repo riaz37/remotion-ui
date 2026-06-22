@@ -2107,7 +2107,9 @@
         "remotion",
         "@remotion/google-fonts"
       ],
-      "registryDependencies": [],
+      "registryDependencies": [
+        "layout"
+      ],
       "composition": {
         "id": "AiGenerationCanvas",
         "component": "AiGenerationCanvas",

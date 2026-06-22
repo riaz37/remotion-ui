@@ -1560,14 +1560,21 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     category: "composition",
     usage: `import { AiGenerationCanvas } from "@/compositions/ai-generation-canvas";
 
-<AiGenerationCanvas prompt="Generate a dashboard" accentColor="#7c3aed" cardCount={4} />`,
+<AiGenerationCanvas
+  prompt="Generate a revenue dashboard for this launch"
+  accentColor="#e8b86d"
+  cardCount={4}
+/>`,
     props: [
       { name: "prompt", type: "string", description: "Prompt typed into the input during phase one." },
       { name: "accentColor", type: "string", description: "Accent for border, shimmer, and chart highlights." },
-      { name: "cardCount", type: "number", description: "Dashboard cards revealed in the grid (max 4 columns)." },
+      { name: "cardCount", type: "number", description: "Dashboard cards revealed in the grid. Clamped between 1 and 6." },
+      { name: "metrics", type: "AiGenerationMetric[]", description: "Labels, values, and optional deltas for the revealed dashboard cards." },
+      { name: "eyebrow", type: "string", description: "Small label above the generated dashboard headline." },
+      { name: "statusLabel", type: "string", description: "Header status text shown after the prompt morphs." },
       { name: "speed", type: "number", description: "Timeline multiplier for the composition beat." },
     ],
-    note: "1920×1080 prompt-to-dashboard generation beat with morphing input, skeleton shimmer, and card flips.",
+    note: "Responsive prompt-to-dashboard generation beat with safe-area layout, skeleton shimmer, and card flips.",
     related: ["dashboard-populate", "chat-to-preview"],
   },
   "live-code-split": {
