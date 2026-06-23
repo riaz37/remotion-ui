@@ -8,7 +8,7 @@ export { Counter } from "../registry/bases/default/primitives/counter";
 export { BlurIn } from "../registry/bases/default/primitives/blur-in";
 export { SpringIn } from "../registry/bases/default/primitives/spring-in";
 export { StaggerChildren } from "../registry/bases/default/primitives/stagger-children";
-export { WordHighlight } from "../registry/bases/default/primitives/word-highlight";
+export { MarkerHighlight } from "../registry/bases/default/primitives/marker-highlight";
 export { ProgressBar } from "../registry/bases/default/primitives/progress-bar";
 export { RotateIn } from "../registry/bases/default/primitives/rotate-in";
 export { LowerThird } from "../registry/bases/default/scenes/lower-third";
@@ -79,7 +79,6 @@ export { StaggeredFadeUp } from "../registry/bases/default/primitives/staggered-
 export { MaskedSlideReveal } from "../registry/bases/default/primitives/masked-slide-reveal";
 export { TrackingIn } from "../registry/bases/default/primitives/tracking-in";
 export { LightSweepText } from "../registry/bases/default/primitives/light-sweep-text";
-export { MarkerHighlight } from "../registry/bases/default/primitives/marker-highlight";
 export { SlotRoll } from "../registry/bases/default/primitives/slot-roll";
 export { MatrixDecode } from "../registry/bases/default/primitives/matrix-decode";
 export { RgbGlitchText } from "../registry/bases/default/primitives/rgb-glitch-text";

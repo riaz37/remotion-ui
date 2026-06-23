@@ -128,7 +128,7 @@ export const ClaudeCode: React.FC<ClaudeCodeProps> = ({
               >
                 <div style={{ color: accentColor, fontWeight: 700, marginBottom: 10 }}>What&apos;s new</div>
                 {WHATS_NEW.map((line) => (
-                  <div key={line} style={{ fontSize: 14, marginBottom: 6 }}>
+                  <div key={line} style={{ fontSize: 14, marginBottom: 6, color: t.dim }}>
                     {line}
                   </div>
                 ))}

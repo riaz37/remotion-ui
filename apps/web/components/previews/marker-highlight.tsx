@@ -1,10 +1,10 @@
 "use client";
 
-import { WordHighlight } from "../registry-exports";
+import { MarkerHighlight } from "../registry-exports";
 import { DEMO_COPY, DEMO_PALETTE } from "@/lib/demo-assets";
 import { PreviewFrame, PreviewKicker } from "./preview-frame";
 
-export const WordHighlightPreview: React.FC = () => (
+export const MarkerHighlightPreview: React.FC = () => (
   <PreviewFrame lane="atoms" padding={72}>
     <div
       style={{
@@ -20,12 +20,13 @@ export const WordHighlightPreview: React.FC = () => (
       }}
     >
       <PreviewKicker>{DEMO_COPY.quote.attribution}</PreviewKicker>
-      <WordHighlight
+      <MarkerHighlight
         text={DEMO_COPY.quote.text}
         highlightWord="change"
         delayInFrames={10}
         durationInFrames={45}
-        highlightColor={DEMO_PALETTE.phosphor}
+        markerColor={DEMO_PALETTE.phosphor}
+        invertOnHighlight
       />
     </div>
   </PreviewFrame>

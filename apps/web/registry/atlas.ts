@@ -87,7 +87,7 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   },
   typewriter: { lane: "atoms", drive: "time", tier: "core", tags: ["text"] },
   counter: { lane: "atoms", drive: "time", tier: "core", tags: ["text"] },
-  "word-highlight": {
+  "marker-highlight": {
     lane: "atoms",
     drive: "time",
     tier: "core",
@@ -99,7 +99,6 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   "masked-slide-reveal": { lane: "atoms", drive: "time", tier: "advanced", tags: ["text"] },
   "tracking-in": { lane: "atoms", drive: "time", tier: "advanced", tags: ["text"] },
   "light-sweep-text": { lane: "atoms", drive: "time", tier: "advanced", tags: ["text"] },
-  "marker-highlight": { lane: "atoms", drive: "time", tier: "advanced", tags: ["text"] },
   "slot-roll": { lane: "atoms", drive: "time", tier: "advanced", tags: ["text"] },
   "matrix-decode": { lane: "atoms", drive: "time", tier: "advanced", tags: ["text"] },
   "rgb-glitch-text": { lane: "atoms", drive: "time", tier: "advanced", tags: ["text"] },

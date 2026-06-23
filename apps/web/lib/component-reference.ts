@@ -107,17 +107,18 @@ export const componentReference: Record<string, ComponentReference> = {
     usage: `import { Typewriter } from "@/remotion/primitives/typewriter";
 
 <Typewriter
-  text="Build videos with React."
+  text="Build videos with React.[pause:0.5] One frame at a time."
   charFrames={2}
-  pauseAfter="React."
-  pauseSeconds={0.5}
+  humanize
+  respectPunctuation
+  cursorStyle="block"
 />`,
     props: [
       {
         name: "text",
         type: "string",
         required: true,
-        description: "Full string to reveal character by character.",
+        description: "Full string to reveal character by character. Use [pause:0.5] for inline pauses.",
       },
       {
         name: "charFrames",
@@ -127,7 +128,8 @@ export const componentReference: Record<string, ComponentReference> = {
       {
         name: "durationInFrames",
         type: "number",
-        description: "Legacy total duration when charFrames is omitted.",
+        default: "60",
+        description: "Total duration when charFrames is omitted.",
       },
       {
         name: "delayInFrames",
@@ -143,7 +145,8 @@ export const componentReference: Record<string, ComponentReference> = {
       {
         name: "pauseSeconds",
         type: "number",
-        description: "Length of the pause in seconds.",
+        default: "0.6",
+        description: "Length of the pauseAfter pause in seconds.",
       },
       {
         name: "showCursor",
@@ -151,8 +154,67 @@ export const componentReference: Record<string, ComponentReference> = {
         default: "true",
         description: "Show a blinking cursor while typing.",
       },
+      {
+        name: "cursorBlinkFrames",
+        type: "number",
+        default: "30",
+        description: "Cursor blink cycle length in frames.",
+      },
+      {
+        name: "cursorColor",
+        type: "string",
+        description: "Cursor color. Defaults to the text color.",
+      },
+      {
+        name: "cursorWidth",
+        type: "number",
+        description: "Cursor width in pixels (bar/underscore only).",
+      },
+      {
+        name: "cursorStyle",
+        type: '"bar" | "block" | "underscore"',
+        default: '"bar"',
+        description: "Cursor shape.",
+      },
+      {
+        name: "humanize",
+        type: "boolean",
+        default: "false",
+        description: "Add subtle per-character timing variation.",
+      },
+      {
+        name: "respectPunctuation",
+        type: "boolean",
+        default: "false",
+        description: "Pause automatically after . ! ? ; : ,",
+      },
+      {
+        name: "punctuationPauseSeconds",
+        type: "number",
+        default: "0.25",
+        description: "Length of automatic punctuation pauses.",
+      },
+      {
+        name: "loop",
+        type: "boolean",
+        default: "false",
+        description: "Type, pause, backspace, and repeat.",
+      },
+      {
+        name: "loopPauseSeconds",
+        type: "number",
+        default: "1",
+        description: "Pause at full text before backspacing.",
+      },
+      {
+        name: "backspaceCharFrames",
+        type: "number",
+        default: "1",
+        description: "Frames per character when backspacing.",
+      },
     ],
-    related: ["word-highlight", "counter"],
+    note: "Inline pause markers like [pause:0.5] are stripped from the rendered text.",
+    related: ["marker-highlight", "counter"],
   },
   counter: {
     category: "primitive",
@@ -247,14 +309,15 @@ import { SlideLeft } from "@/remotion/primitives/slide-left";
     note: "Installs `motion-wrapper` automatically. Each child should use an enter primitive.",
     related: ["slide-left", "fade-in"],
   },
-  "word-highlight": {
+  "marker-highlight": {
     category: "primitive",
-    usage: `import { WordHighlight } from "@/remotion/primitives/word-highlight";
+    usage: `import { MarkerHighlight } from "@/remotion/primitives/marker-highlight";
 
-<WordHighlight
+<MarkerHighlight
   text="Ship faster with RemotionUI"
   highlightWord="RemotionUI"
-  highlightColor="#f97316"
+  markerColor="#f97316"
+  invertOnHighlight
 />`,
     props: [
       {
@@ -270,20 +333,43 @@ import { SlideLeft } from "@/remotion/primitives/slide-left";
         description: "Substring to highlight with an animated wipe.",
       },
       {
-        name: "durationInFrames",
-        type: "number",
-        default: "30",
-        description: "Highlight wipe duration.",
+        name: "markerColor",
+        type: "string",
+        description: "Fill color for the marker wipe.",
       },
       {
-        name: "highlightColor",
+        name: "invertOnHighlight",
+        type: "boolean",
+        description: "Switch highlighted word to dark text once the marker covers it.",
+      },
+      {
+        name: "durationInFrames",
+        type: "number",
+        default: "18",
+        description: "Highlight wipe duration in frames.",
+      },
+      {
+        name: "delayInFrames",
+        type: "number",
+        default: "0",
+        description: "Frames to delay before the wipe begins.",
+      },
+      {
+        name: "color",
         type: "string",
-        description: "Background color behind the highlighted word.",
+        default: '"#f8fafc"',
+        description: "Base text color.",
       },
       {
         name: "fontSize",
         type: "number",
         description: "Text size in pixels.",
+      },
+      {
+        name: "fontWeight",
+        type: "number",
+        default: "600",
+        description: "Text weight.",
       },
     ],
     related: ["quote-card", "typewriter"],
@@ -401,14 +487,16 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
   title="Jane Doe"
   subtitle="Product Designer"
   accentColor="#f97316"
+  align="left"
 />`,
     props: [
       { name: "title", type: "string", required: true, description: "Primary line." },
       { name: "subtitle", type: "string", description: "Secondary line." },
       { name: "accentColor", type: "string", description: "Accent bar color." },
-      { name: "backgroundColor", type: "string", description: "Panel background." },
+      { name: "backgroundColor", type: "string", default: '"rgba(5, 7, 15, 0.78)"', description: "Panel background." },
+      { name: "align", type: '"left" | "right"', default: '"left"', description: "Lower-third side." },
     ],
-    note: "Installs `fade-in` and `slide-left` as dependencies.",
+    note: "Transparent overlay scene designed to sit over footage.",
     related: ["title-card", "end-card"],
   },
   "title-card": {
@@ -467,8 +555,8 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       { name: "highlightWord", type: "string", required: true, description: "Word to highlight." },
       { name: "author", type: "string", required: true, description: "Attribution line." },
     ],
-    note: "Installs `word-highlight`.",
-    related: ["word-highlight", "title-card"],
+    note: "Installs `marker-highlight`.",
+    related: ["marker-highlight", "title-card"],
   },
   "end-card": {
     category: "scene",
@@ -1015,11 +1103,14 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 <ClaudeChat prompt="Draft a launch tweet for our new release" />`,
     props: [
       { name: "placeholder", type: "string", description: "Empty composer placeholder text." },
-      { name: "prompt", type: "string", description: "Prompt typed into the composer." },
-      { name: "modelName", type: "string", default: '"Opus"', description: "Model label in the footer." },
-      { name: "modelTier", type: "string", default: '"Max"', description: "Tier label beside the model." },
+      { name: "prompt", type: "string", description: "Prompt typed into the chat thread." },
+      { name: "response", type: "string", description: "Assistant response streamed before the artifact appears." },
+      { name: "artifactTitle", type: "string", description: "Title shown in the artifact/code panel." },
+      { name: "projectName", type: "string", description: "Project breadcrumb label in the top bar." },
+      { name: "modelName", type: "string", default: '"Claude 3.5 Sonnet"', description: "Model label in the composer." },
+      { name: "modelTier", type: "string", default: '""', description: "Optional tier label beside the model." },
       { name: "accentColor", type: "string", default: '"#D97757"', description: "Accent and send button color." },
-      { name: "theme", type: '"light" | "dark"', default: '"dark"', description: "Light or dark surface palette." },
+      { name: "theme", type: '"light" | "dark"', default: '"light"', description: "Light or dark surface palette." },
     ],
     related: ["chat-gpt", "v0", "chat-to-preview"],
   },
@@ -1031,9 +1122,9 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     props: [
       { name: "greeting", type: "string", description: "Headline above the composer." },
       { name: "placeholder", type: "string", description: "Empty input placeholder." },
-      { name: "prompt", type: "string", description: "Prompt typed into the pill input." },
-      { name: "accentColor", type: "string", default: '"#2F6FED"', description: "Accent color for highlights." },
-      { name: "theme", type: '"light" | "dark"', default: '"dark"', description: "Light or dark surface palette." },
+      { name: "prompt", type: "string", description: "Prompt typed into the ChatGPT composer." },
+      { name: "accentColor", type: "string", default: '"#10a37f"', description: "Accent color for selected tools." },
+      { name: "theme", type: '"light" | "dark"', default: '"light"', description: "Light or dark surface palette." },
     ],
     related: ["claude-chat", "v0", "chat-to-preview"],
   },
@@ -1046,9 +1137,9 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       { name: "greeting", type: "string", description: "Headline above the builder." },
       { name: "placeholder", type: "string", description: "Empty textarea placeholder." },
       { name: "prompt", type: "string", description: "Build prompt typed into the textarea." },
-      { name: "modelName", type: "string", default: '"v0 Max"', description: "Model selector label." },
-      { name: "projectName", type: "string", default: '"Project"', description: "Project selector label." },
-      { name: "theme", type: '"light" | "dark"', default: '"dark"', description: "Light or dark surface palette." },
+      { name: "modelName", type: "string", default: '"v0 Mini"', description: "Model selector label." },
+      { name: "projectName", type: "string", default: '"New Chat"', description: "Top-left chat label." },
+      { name: "theme", type: '"light" | "dark"', default: '"light"', description: "Light or dark surface palette." },
     ],
     related: ["claude-chat", "chat-gpt", "chat-to-preview"],
   },
@@ -1326,17 +1417,6 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     props: [{ name: "text", type: "string", required: true, description: "Text with gradient sweep." }],
     related: ["marker-highlight"],
   },
-  "marker-highlight": {
-    category: "primitive",
-    usage: `import { MarkerHighlight } from "@/remotion/primitives/marker-highlight";
-
-<MarkerHighlight text="Highlight one word" highlightWord="one" />`,
-    props: [
-      { name: "text", type: "string", required: true, description: "Full sentence." },
-      { name: "highlightWord", type: "string", required: true, description: "Phrase to mark." },
-    ],
-    related: ["word-highlight"],
-  },
   "slot-roll": {
     category: "primitive",
     usage: `import { SlotRoll } from "@/remotion/primitives/slot-roll";
@@ -1360,8 +1440,17 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     category: "primitive",
     usage: `import { RgbGlitchText } from "@/remotion/primitives/rgb-glitch-text";
 
-<RgbGlitchText text="Glitch beat" />`,
-    props: [{ name: "text", type: "string", required: true, description: "Text with RGB split window." }],
+<RgbGlitchText text="SIGNAL LOCK" glitchDurationInFrames={34} />`,
+    props: [
+      { name: "text", type: "string", required: true, description: "Readable text rendered under the glitch layers." },
+      { name: "glitchStartFrame", type: "number", description: "Frame where the RGB/slice glitch begins." },
+      { name: "glitchDurationInFrames", type: "number", description: "Length of the signal-lock glitch window." },
+      { name: "intensity", type: "number", description: "Channel offset and slice displacement multiplier, clamped from 0 to 2." },
+      { name: "sliceCount", type: "number", description: "Number of deterministic horizontal glitch slices, clamped from 3 to 9." },
+      { name: "redChannelColor", type: "string", description: "Warm channel split color." },
+      { name: "cyanChannelColor", type: "string", description: "Cool channel split color." },
+      { name: "accentColor", type: "string", description: "Scanline and final slice accent." },
+    ],
     related: ["matrix-decode"],
   },
   "infinite-marquee": {
@@ -1500,11 +1589,14 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     category: "scene",
     usage: `import { DeviceMockupZoom } from "@/remotion/scenes/device-mockup-zoom";
 
-<DeviceMockupZoom src={staticFile("app.png")} title="Ship faster" device="phone" />`,
+<DeviceMockupZoom src={staticFile("app.png")} device="laptop" />`,
     props: [
-      { name: "src", type: "string", required: true, description: "Screen content image." },
-      { name: "title", type: "string", description: "Headline above the device." },
-      { name: "device", type: '"phone" | "browser"', default: '"phone"', description: "Mockup chrome style." },
+      { name: "src", type: "string", description: "Optional screen content image. When omitted, the scene renders a polished product dashboard mockup." },
+      { name: "title", type: "string", description: "Optional headline. When omitted, the device remains the sole focal point." },
+      { name: "subtitle", type: "string", description: "Optional supporting line under the headline." },
+      { name: "eyebrow", type: "string", description: "Optional accent label above the headline." },
+      { name: "device", type: '"phone" | "browser" | "laptop"', default: '"laptop"', description: "Mockup shell. Laptop includes a physical base, browser renders chrome only, phone renders a handheld frame." },
+      { name: "children", type: "React.ReactNode", description: "Custom screen content rendered inside the device." },
     ],
     related: ["media-frame", "zoom-pan-frame"],
   },
