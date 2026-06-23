@@ -1,12 +1,12 @@
 ---
 title: Marker Highlight
-description: Marker Highlight text animation for Remotion.
+description: Highlighter-pen-style wipe animation behind the target word.
 ---
 
-import { MarkerHighlightPreview } from '@/components/previews/text-effects-previews';
+import { MarkerHighlightPreview } from '@/components/previews/marker-highlight';
 
 <ComponentPage name="marker-highlight" preview={MarkerHighlightPreview} durationInFrames={60}>
 
-Marker Highlight text animation primitive.
+Finds `highlightWord` in `text` and animates a highlighter-pen-style wipe behind it using `spring()`. Use `markerColor` and `invertOnHighlight` for highlighter-style emphasis.
 
 </ComponentPage>

@@ -19,7 +19,7 @@ import { SlideUp } from "@/remotion/primitives/slide-up";
 import { SpringIn } from "@/remotion/primitives/spring-in";
 import { StaggerChildren } from "@/remotion/primitives/stagger-children";
 import { Typewriter } from "@/remotion/primitives/typewriter";
-import { WordHighlight } from "@/remotion/primitives/word-highlight";
+import { MarkerHighlight } from "@/remotion/primitives/marker-highlight";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
 
 const { fontFamily: interFamily } = loadFont("normal", {
@@ -379,13 +379,13 @@ const TypewriterDemo: React.FC = () => (
           }}
         />
         <div style={{ marginTop: 18 }}>
-          <WordHighlight
+          <MarkerHighlight
             text="Frame-true motion"
             highlightWord="Frame-true"
             delayInFrames={36}
             durationInFrames={18}
             color={COLORS.secondary}
-            highlightColor="rgba(99, 102, 241, 0.22)"
+            markerColor="rgba(99, 102, 241, 0.22)"
             fontSize={24}
             fontWeight={700}
           />

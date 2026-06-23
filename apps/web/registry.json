@@ -223,7 +223,7 @@
     {
       "name": "typewriter",
       "type": "registry:ui",
-      "description": "Typewriter text reveal",
+      "description": "Typewriter text reveal with rhythm, punctuation pauses, inline pause markers, looping, and configurable cursor",
       "dependencies": [
         "remotion"
       ],
@@ -307,18 +307,19 @@
       ]
     },
     {
-      "name": "word-highlight",
+      "name": "marker-highlight",
       "type": "registry:ui",
-      "description": "Spring-animated highlighter wipe on a word",
+      "description": "Highlighter-pen-style wipe animation behind the target word",
       "dependencies": [
         "remotion"
       ],
       "registryDependencies": [
+        "layout",
         "springs"
       ],
       "files": [
         {
-          "path": "registry/bases/default/primitives/word-highlight.tsx",
+          "path": "registry/bases/default/primitives/marker-highlight.tsx",
           "type": "registry:ui"
         }
       ]
@@ -398,13 +399,13 @@
     {
       "name": "lower-third",
       "type": "registry:block",
-      "description": "Lower third name and subtitle overlay",
+      "description": "Polished lower third name and subtitle overlay",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/google-fonts"
       ],
       "registryDependencies": [
-        "fade-in",
-        "slide-left",
+        "motion-tokens",
         "layout"
       ],
       "files": [
@@ -478,7 +479,7 @@
         "remotion"
       ],
       "registryDependencies": [
-        "word-highlight",
+        "marker-highlight",
         "fade-in",
         "layout"
       ],
@@ -584,7 +585,7 @@
         "spring-in",
         "stagger-children",
         "typewriter",
-        "word-highlight"
+        "marker-highlight"
       ],
       "composition": {
         "id": "HeroLoop",
@@ -1025,7 +1026,7 @@
     {
       "name": "device-mockup-zoom",
       "type": "registry:block",
-      "description": "Phone or browser mockup with slow zoom reveal",
+      "description": "Cinematic laptop, phone, or browser mockup with staged UI and slow camera pullback",
       "dependencies": [
         "remotion",
         "@remotion/google-fonts"
@@ -1771,24 +1772,6 @@
       ]
     },
     {
-      "name": "marker-highlight",
-      "type": "registry:ui",
-      "description": "Marker bar draws behind a highlighted phrase",
-      "dependencies": [
-        "remotion"
-      ],
-      "registryDependencies": [
-        "layout",
-        "springs"
-      ],
-      "files": [
-        {
-          "path": "registry/bases/default/primitives/marker-highlight.tsx",
-          "type": "registry:ui"
-        }
-      ]
-    },
-    {
       "name": "slot-roll",
       "type": "registry:ui",
       "description": "Characters roll like a slot reel into place",
@@ -1826,7 +1809,7 @@
     {
       "name": "rgb-glitch-text",
       "type": "registry:ui",
-      "description": "Brief RGB channel split glitch on text",
+      "description": "Signal-lock RGB glitch text with channel splits, slices, and scanlines",
       "dependencies": [
         "remotion"
       ],
@@ -2317,7 +2300,7 @@
     {
       "name": "claude-chat",
       "type": "registry:block",
-      "description": "Claude chat composer with typed prompt and send morph",
+      "description": "Claude chat interface with artifact split view and streaming response",
       "dependencies": [
         "remotion",
         "@remotion/google-fonts"
@@ -2335,7 +2318,7 @@
     {
       "name": "chat-gpt",
       "type": "registry:block",
-      "description": "ChatGPT composer with suggestion chips and voice-to-send morph",
+      "description": "ChatGPT composer interface with tools menu, suggestion chips, and typed prompt",
       "dependencies": [
         "remotion",
         "@remotion/google-fonts"
@@ -2353,7 +2336,7 @@
     {
       "name": "v0",
       "type": "registry:block",
-      "description": "v0 builder composer with model selectors and mic-to-send morph",
+      "description": "v0 builder home interface with prompt composer, quick actions, and templates",
       "dependencies": [
         "remotion",
         "@remotion/google-fonts"

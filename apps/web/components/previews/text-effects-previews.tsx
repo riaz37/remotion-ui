@@ -4,7 +4,6 @@ import {
   BlurFocusIn,
   InfiniteMarquee,
   LightSweepText,
-  MarkerHighlight,
   MaskedSlideReveal,
   MatrixDecode,
   PerspectiveMarquee,
@@ -96,14 +95,6 @@ export const LightSweepTextPreview = () => (
   </PreviewFrame>
 );
 
-export const MarkerHighlightPreview = () => (
-  <PreviewFrame lane="atoms" padding={72}>
-    <div style={center}>
-      <MarkerHighlight text={`Ship with ${sample}`} highlightWord={sample.split(" ")[0] ?? sample} />
-    </div>
-  </PreviewFrame>
-);
-
 export const SlotRollPreview = () => (
   <PreviewFrame lane="atoms" padding={72}>
     <div style={center}><SlotRoll from="12840" to="50291" /></div>
@@ -118,7 +109,14 @@ export const MatrixDecodePreview = () => (
 
 export const RgbGlitchTextPreview = () => (
   <PreviewFrame lane="atoms" padding={72}>
-    <div style={center}><RgbGlitchText text={sample} /></div>
+    <div style={center}>
+      <RgbGlitchText
+        text="SIGNAL LOCK"
+        glitchStartFrame={8}
+        glitchDurationInFrames={34}
+        maxWidth="100%"
+      />
+    </div>
   </PreviewFrame>
 );
 

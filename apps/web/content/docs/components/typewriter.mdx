@@ -1,12 +1,14 @@
 ---
 title: Typewriter
-description: Character-by-character text reveal.
+description: Character-by-character text reveal with natural rhythm, punctuation pauses, inline pause markers, looping, and a configurable cursor.
 ---
 
 import { TypewriterPreview } from '@/components/previews/typewriter';
 
-<ComponentPage name="typewriter" preview={TypewriterPreview} durationInFrames={60}>
+<ComponentPage name="typewriter" preview={TypewriterPreview} durationInFrames={120}>
 
-Character-by-character text reveal.
+Character-by-character text reveal with natural rhythm, punctuation pauses, inline pause markers, looping, and a configurable cursor.
+
+Use `[pause:0.5]` inside `text` to add dramatic pauses at any point. Enable `humanize` for subtle speed variation and `respectPunctuation` for automatic pauses after sentence punctuation.
 
 </ComponentPage>

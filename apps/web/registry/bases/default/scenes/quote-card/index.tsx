@@ -1,6 +1,6 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
 import { interpolate, useCurrentFrame, useVideoConfig } from "remotion";
-import { WordHighlight } from "@/remotion/primitives/word-highlight";
+import { MarkerHighlight } from "@/remotion/primitives/marker-highlight";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
 import { DELAY, DURATION, EASING } from "@/remotion/lib/motion-tokens";
 
@@ -104,13 +104,13 @@ export const QuoteCard: React.FC<QuoteCardProps> = ({
           transform: `translateY(${(1 - quoteEnter) * 20}px)`,
         }}
       >
-        <WordHighlight
+        <MarkerHighlight
           text={quote}
           highlightWord={highlightWord}
           fontSize={scaleFont(64, width)}
           durationInFrames={DURATION.normal}
           delayInFrames={DELAY.medium}
-          highlightColor={accentColor}
+          markerColor={accentColor}
           fontWeight={600}
           fontFamily={fontFamily}
         />

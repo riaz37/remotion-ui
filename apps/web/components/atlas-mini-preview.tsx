@@ -107,7 +107,7 @@ import {
   ToolMenuSlidePreview,
 } from "./previews/wave-batch-previews";
 import { WaveformLinePreview } from "./previews/waveform-line";
-import { WordHighlightPreview } from "./previews/word-highlight";
+import { MarkerHighlightPreview } from "./previews/marker-highlight";
 import { ZoomPanFramePreview } from "./previews/zoom-pan-frame";
 
 type AtlasMiniPreviewProps = {
@@ -241,7 +241,7 @@ const PREVIEWS: Record<string, PreviewConfig> = {
   },
   typewriter: { component: TypewriterPreview },
   "waveform-line": { component: WaveformLinePreview },
-  "word-highlight": { component: WordHighlightPreview },
+  "marker-highlight": { component: MarkerHighlightPreview },
   "zoom-pan-frame": { component: ZoomPanFramePreview },
 };
 
