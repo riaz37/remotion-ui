@@ -1,4 +1,5 @@
 import { interpolate, useCurrentFrame } from "remotion";
+import { EASING } from "@/remotion/lib/motion-tokens";
 
 export type CursorPoint = {
   x: number;
@@ -18,7 +19,9 @@ function interpolatePoint(points: CursorPoint[], progress: number) {
 
   const segmentProgress = progress * (points.length - 1);
   const index = Math.min(points.length - 2, Math.floor(segmentProgress));
-  const localProgress = segmentProgress - index;
+  // Ease each hop so the cursor decelerates into a waypoint and accelerates
+  // out of it — a linear sweep across the whole path reads robotic.
+  const localProgress = EASING.editorial(segmentProgress - index);
   const from = points[index];
   const to = points[index + 1];
 
