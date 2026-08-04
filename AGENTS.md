@@ -11,8 +11,8 @@
 Before adding or changing Remotion registry code, read these in order:
 
 1. `skills/remotion/docs/INDEX.md`
-2. `skills/remotion/SKILL.md`
-3. `skills/remotion/rules/video-layout.md`
+2. `skills/remotion/remotion-best-practices/SKILL.md`
+3. `skills/remotion/remotion-create/video-layout.md`
 4. `skills/remotion-ui/SKILL.md`
 5. `skills/remotion-ui/registry.md`
 6. `skills/remotion-ui/rules/component-polish.md` — polish rubric, placement rules, demo palette

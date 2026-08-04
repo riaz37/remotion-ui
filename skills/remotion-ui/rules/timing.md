@@ -1,6 +1,6 @@
 # RemotionUI Preset Timing
 
-For Remotion framework timing rules (`interpolate`, `spring`, `Easing`), use the official skill: [skills/remotion/rules/timing.md](../../remotion/rules/timing.md).
+For Remotion framework timing rules (`interpolate`, `spring`, `Easing`), use the official skill: [skills/remotion/remotion-markup/timing.md](../../remotion/remotion-markup/timing.md).
 
 This file covers **RemotionUI-specific** motion preset tokens only.
 

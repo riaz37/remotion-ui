@@ -22,7 +22,7 @@ export const ScaleIn: React.FC<ScaleInProps> = ({
     <MotionWrapper
       style={{
         opacity: progress,
-        transform: `scale(${scale})`,
+        scale,
         transformOrigin: "center center",
       }}
     >

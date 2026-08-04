@@ -37,7 +37,7 @@ const ChromaticPresentation: React.FC<
   const style = useMemo(
     () => ({
       opacity: layered.opacity,
-      transform: `translateX(${slideX}%)`,
+      translate: `${slideX}% 0%`,
       filter: peak > 0.01 ? `drop-shadow(${offset}px 0 #f472b6) drop-shadow(${-offset}px 0 #2dd4bf)` : undefined,
     }),
     [layered.opacity, offset, peak, slideX],

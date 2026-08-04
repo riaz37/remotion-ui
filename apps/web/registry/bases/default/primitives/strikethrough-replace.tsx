@@ -68,7 +68,7 @@ export const StrikethroughReplace: React.FC<StrikethroughReplaceProps> = ({
             right: 0,
             top: "52%",
             height: 3,
-            transform: `scaleX(${strikeProgress})`,
+            scale: `${strikeProgress} 1`,
             transformOrigin: "left center",
             backgroundColor: strikeColor,
             borderRadius: 2,

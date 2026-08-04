@@ -11,7 +11,7 @@ export type StaggerChildrenProps = {
 /**
  * Staggers children using Remotion Sequence with layout="none".
  * Each child animates from local frame 0 when its slot begins.
- * @see skills/remotion/rules/sequencing.md
+ * @see skills/remotion/remotion-markup/sequencing.md
  */
 export const StaggerChildren: React.FC<StaggerChildrenProps> = ({
   children,

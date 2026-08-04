@@ -24,7 +24,7 @@ export const RotateIn: React.FC<RotateInProps> = ({
     <MotionWrapper
       style={{
         opacity: progress,
-        transform: `rotate(${rotation}deg)`,
+        rotate: `${rotation}deg`,
         transformOrigin: "center center",
       }}
     >

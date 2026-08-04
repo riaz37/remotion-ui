@@ -109,6 +109,8 @@ export const ClaudeCode: React.FC<ClaudeCodeProps> = ({
                 borderRadius: 6,
                 padding: "24px",
                 flex: 1,
+                minHeight: 0,
+                overflow: "hidden",
                 display: "flex",
                 opacity: leftFade.opacity,
               }}

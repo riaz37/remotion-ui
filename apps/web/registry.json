@@ -175,7 +175,8 @@
       ],
       "registryDependencies": [
         "timing",
-        "motion-wrapper"
+        "motion-wrapper",
+        "layout"
       ],
       "files": [
         {
@@ -193,7 +194,8 @@
       ],
       "registryDependencies": [
         "timing",
-        "motion-wrapper"
+        "motion-wrapper",
+        "layout"
       ],
       "files": [
         {
@@ -227,7 +229,10 @@
       "dependencies": [
         "remotion"
       ],
-      "registryDependencies": [],
+      "registryDependencies": [
+        "layout",
+        "timing"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/typewriter.tsx",
@@ -243,7 +248,9 @@
         "remotion"
       ],
       "registryDependencies": [
-        "timing"
+        "timing",
+        "layout",
+        "springs"
       ],
       "files": [
         {
@@ -425,7 +432,8 @@
       "registryDependencies": [
         "fade-in",
         "scale-in",
-        "layout"
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -462,7 +470,8 @@
       "registryDependencies": [
         "counter",
         "spring-in",
-        "layout"
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -481,7 +490,8 @@
       "registryDependencies": [
         "marker-highlight",
         "fade-in",
-        "layout"
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -500,7 +510,8 @@
       "registryDependencies": [
         "scale-in",
         "fade-in",
-        "layout"
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -518,7 +529,8 @@
       ],
       "registryDependencies": [
         "title-card",
-        "fade-out"
+        "fade-out",
+        "motion-tokens"
       ],
       "composition": {
         "id": "Intro",
@@ -549,7 +561,8 @@
         "title-card",
         "feature-list",
         "stat-card",
-        "end-card"
+        "end-card",
+        "motion-tokens"
       ],
       "composition": {
         "id": "Showcase",
@@ -585,7 +598,8 @@
         "spring-in",
         "stagger-children",
         "typewriter",
-        "marker-highlight"
+        "marker-highlight",
+        "layout"
       ],
       "composition": {
         "id": "HeroLoop",
@@ -674,7 +688,9 @@
         "@remotion/captions"
       ],
       "registryDependencies": [
-        "caption-utils"
+        "caption-utils",
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -710,7 +726,8 @@
         "@remotion/paths"
       ],
       "registryDependencies": [
-        "path-utils"
+        "path-utils",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -747,7 +764,8 @@
         "@turf/turf"
       ],
       "registryDependencies": [
-        "map-utils"
+        "map-utils",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -765,7 +783,8 @@
         "maplibre-gl"
       ],
       "registryDependencies": [
-        "map-utils"
+        "map-utils",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -855,7 +874,8 @@
         "@remotion/transitions"
       ],
       "registryDependencies": [
-        "transition-timing"
+        "transition-timing",
+        "timing"
       ],
       "files": [
         {
@@ -1033,7 +1053,8 @@
       ],
       "registryDependencies": [
         "layout",
-        "motion-tokens"
+        "motion-tokens",
+        "springs"
       ],
       "files": [
         {
@@ -1053,7 +1074,9 @@
       "registryDependencies": [
         "caption-highlight",
         "caption-utils",
-        "layout"
+        "layout",
+        "karaoke-captions",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1073,7 +1096,8 @@
       "registryDependencies": [
         "audiogram-bars",
         "fade-in",
-        "layout"
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1092,7 +1116,9 @@
       "registryDependencies": [
         "path-draw",
         "fade-in",
-        "scale-in"
+        "scale-in",
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1113,7 +1139,9 @@
       "registryDependencies": [
         "map-route",
         "map-markers",
-        "map-utils"
+        "map-utils",
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1133,7 +1161,8 @@
       "registryDependencies": [
         "fade-in",
         "layout",
-        "text-fit-utils"
+        "text-fit-utils",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1157,7 +1186,8 @@
         "auto-fit-title",
         "audiogram-scene",
         "caption-scene",
-        "end-card"
+        "end-card",
+        "motion-tokens"
       ],
       "composition": {
         "id": "SocialClip",
@@ -1257,7 +1287,9 @@
         "@remotion/captions"
       ],
       "registryDependencies": [
-        "caption-utils"
+        "caption-utils",
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1276,7 +1308,8 @@
       ],
       "registryDependencies": [
         "chart-utils",
-        "path-utils"
+        "path-utils",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1292,7 +1325,9 @@
       "dependencies": [
         "remotion"
       ],
-      "registryDependencies": [],
+      "registryDependencies": [
+        "motion-tokens"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/cursor-path.tsx",
@@ -1310,7 +1345,8 @@
       ],
       "registryDependencies": [
         "media-utils",
-        "layout"
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1331,7 +1367,8 @@
       "registryDependencies": [
         "media-frame",
         "media-utils",
-        "transition-fade"
+        "transition-fade",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1350,7 +1387,8 @@
       ],
       "registryDependencies": [
         "media-utils",
-        "layout"
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1389,7 +1427,8 @@
       ],
       "registryDependencies": [
         "layout",
-        "text-fit-utils"
+        "text-fit-utils",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1407,7 +1446,8 @@
       ],
       "registryDependencies": [
         "chart-utils",
-        "layout"
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1425,7 +1465,8 @@
       ],
       "registryDependencies": [
         "chart-utils",
-        "layout"
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1442,7 +1483,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1459,7 +1501,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1475,7 +1518,11 @@
       "dependencies": [
         "remotion"
       ],
-      "registryDependencies": [],
+      "registryDependencies": [
+        "layout",
+        "media-utils",
+        "motion-tokens"
+      ],
       "files": [
         {
           "path": "registry/bases/default/scenes/zoom-pan-frame/index.tsx",
@@ -1491,7 +1538,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1508,7 +1556,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1528,7 +1577,8 @@
       "registryDependencies": [
         "layout",
         "media-utils",
-        "waveform-line"
+        "waveform-line",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1545,7 +1595,9 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "layout",
+        "motion-tokens",
+        "springs"
       ],
       "files": [
         {
@@ -1569,7 +1621,8 @@
         "callout-spotlight",
         "code-reveal",
         "end-card",
-        "transition-fade"
+        "transition-fade",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1595,7 +1648,8 @@
         "caption-bumper",
         "end-card",
         "transition-fade",
-        "chart-utils"
+        "chart-utils",
+        "motion-tokens"
       ],
       "composition": {
         "id": "DataStory",
@@ -1629,7 +1683,8 @@
         "caption-scene",
         "b-roll-stack",
         "end-card",
-        "transition-fade"
+        "transition-fade",
+        "motion-tokens"
       ],
       "composition": {
         "id": "CreatorReel",
@@ -1664,7 +1719,10 @@
         "auto-fit-title",
         "caption-scene",
         "end-card",
-        "transition-fade"
+        "transition-fade",
+        "fade-in",
+        "layout",
+        "motion-tokens"
       ],
       "composition": {
         "id": "PodcastClip",
@@ -1762,7 +1820,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1883,7 +1942,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1900,7 +1960,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1917,7 +1978,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1934,7 +1996,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1951,7 +2014,10 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "layout",
+        "motion-tokens",
+        "simulated-cursor",
+        "springs"
       ],
       "files": [
         {
@@ -1968,7 +2034,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1986,7 +2053,8 @@
       ],
       "registryDependencies": [
         "title-card",
-        "device-mockup-zoom"
+        "device-mockup-zoom",
+        "motion-tokens"
       ],
       "composition": {
         "id": "HeroDeviceAssemble",
@@ -2013,7 +2081,8 @@
       ],
       "registryDependencies": [
         "layout",
-        "timing"
+        "timing",
+        "motion-tokens"
       ],
       "composition": {
         "id": "EcosystemOrbit",
@@ -2064,7 +2133,8 @@
       ],
       "registryDependencies": [
         "title-card",
-        "chat-to-preview"
+        "chat-to-preview",
+        "motion-tokens"
       ],
       "composition": {
         "id": "BrowserFlow",
@@ -2118,7 +2188,8 @@
       ],
       "registryDependencies": [
         "code-reveal",
-        "device-mockup-zoom"
+        "device-mockup-zoom",
+        "motion-tokens"
       ],
       "composition": {
         "id": "LiveCodeSplit",
@@ -2145,7 +2216,8 @@
       ],
       "registryDependencies": [
         "terminal-simulator",
-        "device-mockup-zoom"
+        "device-mockup-zoom",
+        "motion-tokens"
       ],
       "composition": {
         "id": "DeployReveal",
@@ -2172,7 +2244,8 @@
       ],
       "registryDependencies": [
         "metric-ticker",
-        "animated-bar-chart"
+        "animated-bar-chart",
+        "motion-tokens"
       ],
       "composition": {
         "id": "DashboardPopulate",
@@ -2226,7 +2299,8 @@
       ],
       "registryDependencies": [
         "title-card",
-        "code-reveal"
+        "code-reveal",
+        "motion-tokens"
       ],
       "composition": {
         "id": "LandingCodeShowcase",

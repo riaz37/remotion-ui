@@ -1,5 +1,6 @@
 import { interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { scaleFont } from "@/remotion/lib/layout";
+import { EASING } from "@/remotion/lib/motion-tokens";
 
 export type LightSweepTextProps = {
   text: string;
@@ -29,7 +30,11 @@ export const LightSweepText: React.FC<LightSweepTextProps> = ({
     frame,
     [delayInFrames, delayInFrames + durationInFrames],
     [120, -20],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+    {
+      easing: EASING.editorial,
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+    },
   );
 
   return (

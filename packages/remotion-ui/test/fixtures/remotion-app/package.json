@@ -3,6 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "remotion": "^4.0.473"
+    "remotion": "^4.0.505"
   }
 }

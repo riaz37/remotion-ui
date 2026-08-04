@@ -9,7 +9,7 @@ export type MotionWrapperProps = {
 /**
  * Inline wrapper for enter/exit animations.
  * Use this instead of AbsoluteFill so siblings stack in flex/grid layout.
- * @see skills/remotion/rules/video-layout.md
+ * @see skills/remotion/remotion-create/video-layout.md
  */
 export const MotionWrapper: React.FC<MotionWrapperProps> = ({
   children,

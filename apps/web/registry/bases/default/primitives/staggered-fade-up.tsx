@@ -61,7 +61,7 @@ export const StaggeredFadeUp: React.FC<StaggeredFadeUpProps> = ({
             style={{
               display: "inline-block",
               opacity: progress,
-              transform: `translateY(${y}px)`,
+              translate: `0px ${y}px`,
             }}
           >
             {word}

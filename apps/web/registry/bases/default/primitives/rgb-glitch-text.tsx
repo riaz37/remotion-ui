@@ -177,7 +177,7 @@ export const RgbGlitchText: React.FC<RgbGlitchTextProps> = ({
               color: index === normalizedSliceCount - 1 ? accentColor : colorShift,
               opacity: burst * (0.32 + index * 0.04),
               clipPath: `inset(${top}% 0 ${bottom}% 0)`,
-              transform: `translateX(${offset}px)`,
+              translate: `${offset}px 0px`,
               mixBlendMode: "screen",
               zIndex: 2,
             }}

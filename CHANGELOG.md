@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+## 0.6.2
+
+### Fixed
+
+- **`add` now pulls every file a component needs** — 57 registry items declared their components but not the internal libs they import (`motion-tokens`, `transition-timing`, `ai-composer-utils`, and friends), so installs landed with broken imports. All 123 items now declare their full `registryDependencies`.
+- **App-replica scenes no longer overlap their own content** — `v0`, `chat-gpt`, `claude-chat`, and `claude-code` stack their composer, thread, and panel content in flow instead of pinning blocks to fixed offsets, so long prompts and long replies push layout instead of colliding with it.
+- **Transitions render from the CLI slugs** — `blur-reveal`, `grid-pixelate-wipe`, and `frosted-glass-wipe` export helper functions rather than components; the render pipeline now resolves them through their preview wrappers instead of failing to find a composition.
+
+### Changed
+
+- **Remotion 4.0.505** across the app template and test fixtures, with the bundled agent skills re-synced to match.
+- **Caption and audio components rebuilt on current Remotion idiom** — `caption-scene`, `caption-highlight`, `karaoke-captions`, `audiogram-*`, and `waveform-line` follow the 4.0.505 patterns.
+- **Motion tokens applied consistently** — primitives use transform shorthands, and the shared app-replica `fadeUp` helper eases on the `EASING.enter` curve instead of a hand-rolled linear ramp.
+
+### Notes for maintainers
+
+- All 108 renderable registry components were smoke-rendered end to end before this release.
+- Deploy the docs site (`pnpm registry:build && pnpm --filter web build`) **before** publishing the CLI so `https://remotionui.com/r` serves the new registry JSON.
+
 ## 0.6.0
 
 ### Added

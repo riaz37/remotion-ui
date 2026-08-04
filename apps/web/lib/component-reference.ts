@@ -831,8 +831,12 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 <WaveformLine src={staticFile("voice.wav")} mirror />`,
     props: [
       { name: "src", type: "string", required: true, description: "Audio source." },
-      { name: "height", type: "number", default: "120", description: "SVG waveform height." },
+      { name: "height", type: "number", default: "144", description: "SVG waveform height." },
       { name: "mirror", type: "boolean", default: "false", description: "Draw a reflected waveform." },
+      { name: "progress", type: "number", description: "Optional 0-1 played progress override." },
+      { name: "amplitudeScale", type: "number", default: "0.48", description: "Vertical waveform gain." },
+      { name: "normalize", type: "boolean", default: "true", description: "Normalize the visible window for readable quiet audio." },
+      { name: "showBaseline", type: "boolean", default: "true", description: "Render the center baseline." },
     ],
     note: "Advanced. Installs @remotion/media-utils.",
     related: ["audiogram-bars", "audio-pulse"],

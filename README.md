@@ -40,7 +40,7 @@ remotionui/
 ├── packages/typescript-config/
 ├── packages/eslint-config/
 ├── templates/             # Starter project scaffolds
-├── skills/remotion-ui/    # Agent skill documentation
+├── skills/                # Agent skills (vendored Remotion + RemotionUI-authored)
 └── scripts/               # Repo maintenance scripts
 ```
 
@@ -55,7 +55,7 @@ remotionui/
 
 ```bash
 pnpm install
-pnpm skills:sync    # Pull Remotion Agent Skills + wire Codex
+pnpm skills:sync    # Pull Remotion Agent Skills + wire Codex/Claude Code
 pnpm dev
 ```
 
@@ -65,10 +65,13 @@ RemotionUI uses [Agent Skills](https://agentskills.io/home) to give AI agents do
 
 | Skill | Location | Purpose |
 |-------|----------|---------|
-| `remotion` | `skills/remotion/` | Official [Remotion best practices](https://www.remotion.dev/docs/ai/skills) |
+| `remotion-best-practices` + 11 more | `skills/remotion/<skill>/` | Official [Remotion Agent Skills](https://www.remotion.dev/docs/ai/skills), vendored from upstream |
 | `remotion-ui` | `skills/remotion-ui/` | RemotionUI monorepo, CLI, and registry authoring |
+| `remotionui-agent` | `skills/remotionui-agent/` | Building full compositions with RemotionUI recipes |
 
-Run `pnpm skills:sync` to vendor the latest Remotion skills from upstream and link them to `.agents/skills/` for Codex discovery.
+Upstream ships focused skills (`remotion-markup`, `remotion-captions`, `remotion-create`, `remotion-maps`, `remotion-render`, …) with `remotion-best-practices` as the router. `skills/remotion/docs/` is a RemotionUI-maintained mirror of the official docs MDX, refreshed with `pnpm docs:remotion`.
+
+Run `pnpm skills:sync` to vendor the latest skills from upstream and link every skill into `.agents/skills/` (Codex) and `.claude/skills/` (Claude Code).
 
 ## Scripts
 
@@ -77,7 +80,7 @@ Run `pnpm skills:sync` to vendor the latest Remotion skills from upstream and li
 | `pnpm dev` | Start all apps in development mode |
 | `pnpm build` | Build all packages and apps |
 | `pnpm registry:build` | Build registry JSON for CLI consumption |
-| `pnpm skills:sync` | Sync Remotion Agent Skills and wire Codex |
+| `pnpm skills:sync` | Sync Remotion Agent Skills and wire Codex + Claude Code |
 | `pnpm prepare:publish` | Preflight: build, test, registry count, npm dry-run |
 | `pnpm publish:cli` | Publish `remotion-ui` to npm (requires auth) |
 
