@@ -64,7 +64,10 @@ const THEMES = {
   },
 } as const;
 
-const IconBox: React.FC<{ label: string; color: string }> = ({ label, color }) => (
+const IconBox: React.FC<{ label: string; color: string }> = ({
+  label,
+  color,
+}) => (
   <div
     style={{
       width: 28,
@@ -153,7 +156,14 @@ export const V0Composer: React.FC<V0ComposerProps> = ({
             fontSize: 14,
           }}
         >
-          <div style={{ width: 16, height: 16, border: `2px solid ${t.fg}`, borderRadius: 3 }} />
+          <div
+            style={{
+              width: 16,
+              height: 16,
+              border: `2px solid ${t.fg}`,
+              borderRadius: 3,
+            }}
+          />
           <span>{projectName}</span>
         </div>
         <div
@@ -185,194 +195,203 @@ export const V0Composer: React.FC<V0ComposerProps> = ({
           </span>
         </div>
 
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            right: 0,
-            top: 110,
-            display: "flex",
-            justifyContent: "center",
-            gap: 9,
-            color: t.muted,
-            fontSize: 14,
-          }}
-        >
-          {QUICK_ACTIONS.map((action) => (
-            <span key={action}>{action}</span>
-          ))}
-        </div>
-
-        <h1
-          style={{
-            position: "absolute",
-            left: 0,
-            right: 0,
-            top: 156,
-            margin: 0,
-            textAlign: "center",
-            fontSize: 48,
-            lineHeight: 1.08,
-            fontWeight: 750,
-            letterSpacing: 0,
-            opacity: heading.opacity,
-            transform: `translateY(${heading.translateY}px)`,
-          }}
-        >
-          {greeting}
-        </h1>
-
-        <div
-          style={{
-            position: "absolute",
-            left: 270,
-            top: 248,
-            width: 740,
-            height: 92,
-            borderRadius: 14,
-            border: `1px solid ${t.border}`,
-            background: t.surface,
-            boxShadow: theme === "light" ? "0 8px 24px rgba(0,0,0,0.05)" : "none",
-            display: "grid",
-            gridTemplateRows: "1fr 34px",
-            opacity: composer.opacity,
-            transform: `translateY(${composer.translateY + intro.translateY * 0.35}px) scale(${intro.scale})`,
-            transformOrigin: "center top",
-          }}
-        >
-          <div
-            style={{
-              padding: "14px 16px 6px",
-              color: tw.count > 0 ? t.fg : t.faint,
-              fontSize: 17,
-              lineHeight: 1.35,
-            }}
-          >
-            {tw.count > 0 ? (
-              <>
-                {tw.text}
-                <BlockCaret color={t.fg} blink={!tw.typing} height={19} />
-              </>
-            ) : (
-              placeholder
-            )}
-          </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              padding: "0 12px 10px",
-              color: t.muted,
-              fontSize: 13,
-            }}
-          >
-            <span style={{ color: t.accent, fontWeight: 800 }}>v0</span>
-            <span>{modelName}</span>
-            <span style={{ transform: "translateY(-1px)" }}>⌄</span>
-            <div style={{ flex: 1 }} />
-            <div
-              style={{
-                width: 30,
-                height: 30,
-                borderRadius: 8,
-                display: "grid",
-                placeItems: "center",
-                background: send > 0.25 ? t.btn : "transparent",
-                border: send > 0.25 ? "none" : `1px solid ${t.border}`,
-                color: send > 0.25 ? t.btnFg : t.muted,
-                fontWeight: 800,
-              }}
-            >
-              {send > 0.5 ? "↑" : "+"}
-            </div>
-          </div>
-        </div>
-
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            right: 0,
-            top: 356,
-            display: "flex",
-            justifyContent: "center",
-            gap: 10,
-            opacity: actions.opacity,
-            transform: `translateY(${actions.translateY}px)`,
-          }}
-        >
-          {[
-            ["image", "Clone a Screenshot"],
-            ["figma", "Import from Figma"],
-            ["upload", "Upload a Project"],
-            ["page", "Landing Page"],
-          ].map(([kind, label]) => (
-            <div
-              key={label}
-              style={{
-                height: 34,
-                padding: "0 13px",
-                borderRadius: 999,
-                border: `1px solid ${t.border}`,
-                background: t.chip,
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                color: t.muted,
-                fontSize: 13,
-                fontWeight: 500,
-              }}
-            >
-              <SmallIcon kind={kind as "image" | "figma" | "upload" | "page"} />
-              {label}
-            </div>
-          ))}
-        </div>
-
+        {/* Single column so user copy (greeting, prompt) pushes the stack down
+            instead of overlapping the next absolutely-placed block. */}
         <div
           style={{
             position: "absolute",
             left: 84,
             right: 84,
-            top: 476,
-            opacity: templates.opacity,
-            transform: `translateY(${templates.translateY}px)`,
+            top: 110,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
-          <div style={{ fontSize: 18, fontWeight: 650 }}>Start with a template</div>
-          <div style={{ marginTop: 6, color: t.muted, fontSize: 14 }}>
-            Get started instantly with a framework or integration of your choice.
-          </div>
           <div
             style={{
-              marginTop: 18,
-              display: "grid",
-              gridTemplateColumns: "repeat(4, 1fr)",
-              gap: 16,
+              display: "flex",
+              justifyContent: "center",
+              gap: 9,
+              color: t.muted,
+              fontSize: 14,
             }}
           >
-            {TEMPLATES.map((template, index) => (
+            {QUICK_ACTIONS.map((action) => (
+              <span key={action}>{action}</span>
+            ))}
+          </div>
+
+          <h1
+            style={{
+              marginTop: 26,
+              marginBottom: 0,
+              textAlign: "center",
+              fontSize: 48,
+              lineHeight: 1.08,
+              fontWeight: 750,
+              letterSpacing: 0,
+              opacity: heading.opacity,
+              transform: `translateY(${heading.translateY}px)`,
+            }}
+          >
+            {greeting}
+          </h1>
+
+          <div
+            style={{
+              marginTop: 40,
+              width: 740,
+              minHeight: 92,
+              borderRadius: 14,
+              border: `1px solid ${t.border}`,
+              background: t.surface,
+              boxShadow:
+                theme === "light" ? "0 8px 24px rgba(0,0,0,0.05)" : "none",
+              display: "grid",
+              gridTemplateRows: "1fr 34px",
+              opacity: composer.opacity,
+              transform: `translateY(${composer.translateY + intro.translateY * 0.35}px) scale(${intro.scale})`,
+              transformOrigin: "center top",
+            }}
+          >
+            <div
+              style={{
+                padding: "14px 16px 6px",
+                color: tw.count > 0 ? t.fg : t.faint,
+                fontSize: 17,
+                lineHeight: 1.35,
+              }}
+            >
+              {tw.count > 0 ? (
+                <>
+                  {tw.text}
+                  <BlockCaret color={t.fg} blink={!tw.typing} height={19} />
+                </>
+              ) : (
+                placeholder
+              )}
+            </div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                padding: "0 12px 10px",
+                color: t.muted,
+                fontSize: 13,
+              }}
+            >
+              <span style={{ color: t.accent, fontWeight: 800 }}>v0</span>
+              <span>{modelName}</span>
+              <span style={{ transform: "translateY(-1px)" }}>⌄</span>
+              <div style={{ flex: 1 }} />
               <div
-                key={template.name}
                 style={{
-                  minHeight: 114,
-                  borderRadius: 12,
-                  border: `1px solid ${t.border}`,
-                  background: t.surface,
-                  padding: 18,
-                  transform: `translateY(${Math.max(0, 1 - templates.opacity) * (12 + index * 4)}px)`,
+                  width: 30,
+                  height: 30,
+                  borderRadius: 8,
+                  display: "grid",
+                  placeItems: "center",
+                  background: send > 0.25 ? t.btn : "transparent",
+                  border: send > 0.25 ? "none" : `1px solid ${t.border}`,
+                  color: send > 0.25 ? t.btnFg : t.muted,
+                  fontWeight: 800,
                 }}
               >
-                <IconBox label={template.mark} color={index === 0 ? "#ffffff" : t.accent} />
-                <div style={{ marginTop: 14, fontSize: 15, fontWeight: 700 }}>
-                  {template.name}
-                </div>
-                <div style={{ marginTop: 5, color: t.muted, fontSize: 13 }}>
-                  {template.copy}
-                </div>
+                {send > 0.5 ? "↑" : "+"}
+              </div>
+            </div>
+          </div>
+
+          <div
+            style={{
+              marginTop: 16,
+              display: "flex",
+              justifyContent: "center",
+              gap: 10,
+              opacity: actions.opacity,
+              transform: `translateY(${actions.translateY}px)`,
+            }}
+          >
+            {[
+              ["image", "Clone a Screenshot"],
+              ["figma", "Import from Figma"],
+              ["upload", "Upload a Project"],
+              ["page", "Landing Page"],
+            ].map(([kind, label]) => (
+              <div
+                key={label}
+                style={{
+                  height: 34,
+                  padding: "0 13px",
+                  borderRadius: 999,
+                  border: `1px solid ${t.border}`,
+                  background: t.chip,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  color: t.muted,
+                  fontSize: 13,
+                  fontWeight: 500,
+                }}
+              >
+                <SmallIcon
+                  kind={kind as "image" | "figma" | "upload" | "page"}
+                />
+                {label}
               </div>
             ))}
+          </div>
+
+          <div
+            style={{
+              marginTop: 86,
+              alignSelf: "stretch",
+              opacity: templates.opacity,
+              transform: `translateY(${templates.translateY}px)`,
+            }}
+          >
+            <div style={{ fontSize: 18, fontWeight: 650 }}>
+              Start with a template
+            </div>
+            <div style={{ marginTop: 6, color: t.muted, fontSize: 14 }}>
+              Get started instantly with a framework or integration of your
+              choice.
+            </div>
+            <div
+              style={{
+                marginTop: 18,
+                display: "grid",
+                gridTemplateColumns: "repeat(4, 1fr)",
+                gap: 16,
+              }}
+            >
+              {TEMPLATES.map((template, index) => (
+                <div
+                  key={template.name}
+                  style={{
+                    minHeight: 114,
+                    borderRadius: 12,
+                    border: `1px solid ${t.border}`,
+                    background: t.surface,
+                    padding: 18,
+                    transform: `translateY(${Math.max(0, 1 - templates.opacity) * (12 + index * 4)}px)`,
+                  }}
+                >
+                  <IconBox
+                    label={template.mark}
+                    color={index === 0 ? "#ffffff" : t.accent}
+                  />
+                  <div style={{ marginTop: 14, fontSize: 15, fontWeight: 700 }}>
+                    {template.name}
+                  </div>
+                  <div style={{ marginTop: 5, color: t.muted, fontSize: 13 }}>
+                    {template.copy}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
