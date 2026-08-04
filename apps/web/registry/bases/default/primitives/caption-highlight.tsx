@@ -1,11 +1,12 @@
 import type { TikTokPage } from "@remotion/captions";
-import { useCurrentFrame, useVideoConfig } from "remotion";
+import { interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import {
   getAbsoluteTimeMs,
   getTokenEmphasis,
   isTokenActive,
 } from "@/remotion/lib/caption-utils";
 import { scaleFont } from "@/remotion/lib/layout";
+import { EASING } from "@/remotion/lib/motion-tokens";
 
 export type CaptionHighlightProps = {
   page: TikTokPage;
@@ -13,8 +14,9 @@ export type CaptionHighlightProps = {
   inactiveColor?: string;
   fontSize?: number;
   fontWeight?: number | string;
-  /** Scale multiplier for the active word. 1 keeps color-only behavior. */
-  activeScale?: number;
+  activeWeight?: number | string;
+  textAlign?: "left" | "center";
+  lineHeight?: number;
   /**
    * Optional frame override.
    * Pass a parent `frame` when using inside `<Sequence from={...}>`.
@@ -26,49 +28,49 @@ const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
 
 export const CaptionHighlight: React.FC<CaptionHighlightProps> = ({
   page,
-  activeColor = "#e8b86d",
-  inactiveColor = "#fafafa",
+  activeColor = "#ff6b00",
+  inactiveColor = "#111111",
   fontSize: fontSizeProp,
-  fontWeight = 700,
-  activeScale = 1.08,
+  fontWeight = 650,
+  activeWeight = 800,
+  textAlign = "center",
+  lineHeight = 1.12,
   frame: frameOverride,
 }) => {
   const localFrame = useCurrentFrame();
   const frame = frameOverride ?? localFrame;
   const { fps, width } = useVideoConfig();
-  const fontSize = fontSizeProp ?? scaleFont(56, width);
+  const fontSize = fontSizeProp ?? scaleFont(64, width);
   const absoluteTimeMs = getAbsoluteTimeMs(page, frame, fps);
 
   return (
     <div
       style={{
+        color: inactiveColor,
         fontSize,
         fontWeight,
-        textAlign: "center",
-        lineHeight: 1.2,
-        whiteSpace: "pre",
-        color: inactiveColor,
-        textShadow: "0 2px 18px rgba(0, 0, 0, 0.72)",
+        letterSpacing: 0,
+        lineHeight,
+        textAlign,
+        whiteSpace: "pre-wrap",
       }}
     >
       {page.tokens.map((token) => {
         const active = isTokenActive(token, absoluteTimeMs);
         const emphasis = clamp01(getTokenEmphasis(frame, token, page, fps));
-        const scale = activeScale > 1 ? 1 + emphasis * (activeScale - 1) : 1;
-        const glow = active ? 0.35 + emphasis * 0.25 : 0;
+        const activeOpacity = interpolate(emphasis, [0, 1], [0.72, 1], {
+          extrapolateLeft: "clamp",
+          extrapolateRight: "clamp",
+          easing: EASING.enter,
+        });
 
         return (
           <span
             key={`${token.fromMs}-${token.text}`}
             style={{
               color: active ? activeColor : inactiveColor,
-              display: "inline-block",
-              transform: `scale(${scale})`,
-              transformOrigin: "center bottom",
-              textShadow:
-                glow > 0
-                  ? `0 0 ${Math.round(18 * glow)}px ${activeColor}88, 0 2px 18px rgba(0, 0, 0, 0.72)`
-                  : undefined,
+              fontWeight: active ? activeWeight : fontWeight,
+              opacity: active ? activeOpacity : 0.82,
             }}
           >
             {token.text}

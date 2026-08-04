@@ -228,6 +228,7 @@ export const TalkingHeadLayout: React.FC<TalkingHeadLayoutProps> = ({
         <div style={{ marginTop: scaleFont(4, width), width: "100%" }}>
           <WaveformLine
             src={audioSrc!}
+            width={Math.max(1, contentWidth - railGap)}
             height={Math.round(scaleFont(48, width))}
             strokeColor={accentColor}
             mirror

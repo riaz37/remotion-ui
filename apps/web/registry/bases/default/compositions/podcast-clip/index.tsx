@@ -177,6 +177,7 @@ const PodcastStudio: React.FC<{
       <div style={{ paddingBottom: scaleFont(8, width) }}>
         <WaveformLine
           src={audioSrc}
+          width={width - safeArea.paddingLeft - safeArea.paddingRight}
           height={scaleFont(120, height)}
           strokeColor={COLORS.waveform}
           strokeWidth={3}

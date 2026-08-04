@@ -131,7 +131,7 @@ function buildPreviewIndex(previewsDir: string) {
     const importPath = `@/components/previews/${fileName.replace(/\.tsx$/, "")}`;
     const exports = [...content.matchAll(/export const (\w+)(?::[^=]+)?\s*=/g)];
 
-    for (const [exportName] of exports) {
+    for (const [, exportName] of exports) {
       if (!exportName.endsWith("Preview")) {
         continue;
       }

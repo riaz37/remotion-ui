@@ -1,5 +1,5 @@
 import { Easing } from "remotion";
-import { secondsToFrames } from "./timing";
+import { EASING_ENTER, EASING_EXIT, secondsToFrames } from "./timing";
 
 /** Named frame durations — pair with `springs.ts` or `enterProgress()` */
 export const DURATION = {
@@ -20,10 +20,16 @@ export const STAGGER = {
   relaxed: 12,
 } as const;
 
-/** Copy-paste Bézier curves from Remotion timing guidance */
+/**
+ * Copy-paste Bézier curves from Remotion timing guidance.
+ * Curves are shared with `timing.ts` so a component picks the same motion
+ * whether it imports the token object or the standalone curve.
+ */
 export const EASING = {
   /** Strong ease-out — entrances, decelerates into place */
-  enter: Easing.bezier(0.16, 1, 0.3, 1),
+  enter: EASING_ENTER,
+  /** Ease-in — exits accelerate away. Never ease-out an exit. */
+  exit: EASING_EXIT,
   /** Balanced ease-in-out — editorial holds */
   editorial: Easing.bezier(0.45, 0, 0.55, 1),
   /** Slight overshoot — emphasis pops */
