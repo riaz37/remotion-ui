@@ -40,7 +40,7 @@ const ZoomThroughPresentation: React.FC<
 
     return {
       opacity: layered.opacity,
-      transform: `scale(${scale})`,
+      scale,
       filter: blur > 0.2 ? `blur(${blur}px)` : undefined,
     };
   }, [blurPeak, isEntering, layered.opacity, maxScale, motion]);
