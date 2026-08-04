@@ -1,6 +1,6 @@
 # RemotionUI Composition Install Rules
 
-For Remotion composition basics (`<Composition>`, `durationInFrames`, `fps`), use the official skill: [skills/remotion/rules/compositions.md](../../remotion/rules/compositions.md).
+For Remotion composition basics (`<Composition>`, `durationInFrames`, `fps`), use the official skill: [skills/remotion/remotion-markup/compositions.md](../../remotion/remotion-markup/compositions.md).
 
 This file covers **RemotionUI CLI install behavior** only.
 

@@ -74,7 +74,7 @@ export const SimulatedCursor: React.FC<SimulatedCursorProps> = ({
         top: (y / 100) * height,
         width: size,
         height: size,
-        transform: `scale(${scale})`,
+        scale,
         filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.45))",
         pointerEvents: "none",
         zIndex: 20,

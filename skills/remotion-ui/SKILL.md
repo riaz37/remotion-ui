@@ -15,8 +15,8 @@ Use this skill when working with the RemotionUI monorepo or helping users add Re
 For Remotion framework best practices, read in order:
 
 1. **[skills/remotion/docs/INDEX.md](../remotion/docs/INDEX.md)** — mirrored official remotion.dev docs (`pnpm docs:remotion` to refresh)
-2. **[skills/remotion/SKILL.md](../remotion/SKILL.md)** — Remotion skill + conventions
-3. **[skills/remotion/rules/video-layout.md](../remotion/rules/video-layout.md)** — prevent overlapping layouts
+2. **[skills/remotion/remotion-best-practices/SKILL.md](../remotion/remotion-best-practices/SKILL.md)** — Remotion skill + conventions
+3. **[skills/remotion/remotion-create/video-layout.md](../remotion/remotion-create/video-layout.md)** — prevent overlapping layouts
 
 ## When to use
 

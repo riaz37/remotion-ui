@@ -26,7 +26,7 @@ export const SlideUp: React.FC<SlideUpProps> = ({
     <MotionWrapper
       style={{
         opacity: progress,
-        transform: `translateY(${(1 - progress) * distance}px)`,
+        translate: `0px ${(1 - progress) * distance}px`,
         transformOrigin: "center bottom",
       }}
     >

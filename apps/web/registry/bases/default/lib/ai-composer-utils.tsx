@@ -1,4 +1,5 @@
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { EASING } from "./motion-tokens";
 import { springSmooth } from "./springs";
 
 export const AI_TYPING_START = 42;
@@ -42,10 +43,12 @@ export function fadeUp(frame: number, range: [number, number]) {
     opacity: interpolate(frame, range, [0, 1], {
       extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
+      easing: EASING.enter,
     }),
     translateY: interpolate(frame, range, [12, 0], {
       extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
+      easing: EASING.enter,
     }),
   };
 }

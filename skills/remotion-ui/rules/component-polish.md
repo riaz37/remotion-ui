@@ -7,8 +7,8 @@ Mandatory guide for elevating registry components to production-grade motion. Re
 Before editing registry source, read in order:
 
 1. `skills/remotion/docs/INDEX.md`
-2. `skills/remotion/SKILL.md`
-3. `skills/remotion/rules/video-layout.md`
+2. `skills/remotion/remotion-best-practices/SKILL.md`
+3. `skills/remotion/remotion-create/video-layout.md`
 4. `skills/remotion-ui/SKILL.md` + `registry.md`
 
 Then read category-specific rules from the table below.

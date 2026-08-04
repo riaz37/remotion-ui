@@ -2,7 +2,7 @@
 
 > Official: [https://www.remotion.dev/docs/interpolate](https://www.remotion.dev/docs/interpolate)
 > Source MDX: [https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/interpolate.mdx](https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/interpolate.mdx)
-> Mirrored: 2026-06-17
+> Mirrored: 2026-08-04
 
 Allows you to map a range of values to another using a concise syntax.
 
@@ -100,6 +100,24 @@ const scale = interpolate(frame, [0, 20], [0, 1], {
   extrapolateRight: 'clamp',
 });
 ```
+
+## Example: Scaling feels nonlinear? Use perceptual scale output
+
+For `scale` values, additive interpolation changes the CSS number linearly, but the visible area changes with `scale ** 2`.
+Use `output: 'perceptual-scale'` to make the signed visual area change linearly after easing.
+
+```tsx twoslash title="MyComposition.tsx"
+
+const frame = useCurrentFrame();
+const scale = interpolate(frame, [0, 60], [0, 1], {
+  extrapolateLeft: 'clamp',
+  extrapolateRight: 'clamp',
+  output: 'perceptual-scale',
+});
+```
+
+At halfway, this returns `Math.sqrt(0.5)`.
+For negative scales, the sign is preserved, so `[0, -1]` behaves like `[0, 1]` but mirrored.
 
 ## Example: CSS transform values
 
@@ -228,6 +246,23 @@ interpolate(frame, [0, 100, 200], [0, 1, 2], {
 });
 ```
 
+### output?
+
+_Default_: `linear`
+
+Controls how the eased progress maps to the `outputRange`.
+Use `output: 'linear'` for additive interpolation.
+For `[1, 2]` at progress `0.5`, the result is `1.5`.
+
+Use `output: 'perceptual-scale'` for scale interpolation where visible area should change linearly.
+Each output value is mapped to `Math.sign(value) * value ** 2`, interpolated linearly, then the interpolated signed area is mapped back with `Math.sign(area) * Math.sqrt(Math.abs(area))`.
+For `[0, 1]` at progress `0.5`, the result is `Math.sqrt(0.5)`.
+For `[1, 2]` at progress `0.5`, the result is `Math.sqrt(2.5)`.
+For `[0, -1]` at progress `0.5`, the result is `-Math.sqrt(0.5)`.
+
+`easing` still controls time and progress.
+`output` controls the value distribution after easing.
+
 ### posterize
 
 _Default_: no posterization
@@ -254,6 +289,7 @@ Since `v3.3.77`, types for the options are exported from Remotion.
 const extrapolate: ExtrapolateType = 'clamp';
 const option: InterpolateOptions = {
   extrapolateLeft: extrapolate,
+  output: 'perceptual-scale',
   posterize: 3,
 };
 ```

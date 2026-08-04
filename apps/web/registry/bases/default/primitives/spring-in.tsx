@@ -31,7 +31,7 @@ export const SpringIn: React.FC<SpringInProps> = ({
     <MotionWrapper
       style={{
         opacity: progress,
-        transform: `scale(${scale})`,
+        scale,
         transformOrigin: "center center",
       }}
     >

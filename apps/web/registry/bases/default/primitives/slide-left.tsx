@@ -26,7 +26,7 @@ export const SlideLeft: React.FC<SlideLeftProps> = ({
     <MotionWrapper
       style={{
         opacity: progress,
-        transform: `translateX(${(1 - progress) * -distance}px)`,
+        translate: `${(1 - progress) * -distance}px 0px`,
         transformOrigin: "left center",
       }}
     >

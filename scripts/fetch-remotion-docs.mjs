@@ -98,14 +98,14 @@ fs.writeFileSync(
     "",
     "## Rules for RemotionUI components",
     "",
-    "From official docs + `skills/remotion/rules/`:",
+    "From official docs + `skills/remotion/remotion-markup/`:",
     "",
     "1. **Animate with frames** — `useCurrentFrame()` + `interpolate()` / `spring()`. CSS transitions/animations do not render.",
     "2. **`AbsoluteFill`** — full-frame layering only (scenes, backgrounds). Not for wrapping list items.",
     "3. **`Sequence layout=\"none\"`** — stagger inline children without absolute stacking (see `sequence.md`).",
     "4. **`premountFor`** — premount sequences before they play (see `sequence.md`, `series.md`).",
     "5. **`TransitionSeries`** — scene transitions; durations overlap (see `transitions-transitionseries.md`).",
-    "6. **Enter = ease-out, exit = ease-in** — see `easing.md` and `skills/remotion/rules/timing.md`.",
+    "6. **Enter = ease-out, exit = ease-in** — see `easing.md` and `skills/remotion/remotion-markup/timing.md`.",
   ].join("\n"),
 );
 

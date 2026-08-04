@@ -80,6 +80,15 @@ for (const item of PAGES) {
     let snap = ab("snapshot", "-i");
     const playMatch = snap.match(/button "Play video" \[ref=(e\d+)\]/);
     if (playMatch) {
+      // Bring the player into frame first, otherwise the screenshot captures
+      // page chrome and the transport controls stay below the fold.
+      try {
+        ab("scrollintoview", `@${playMatch[1]}`);
+        sleep(400);
+      } catch {
+        ab("scroll", "down", "320");
+        sleep(400);
+      }
       ab("click", `@${playMatch[1]}`);
       sleep(2500);
       snap = ab("snapshot", "-i");
@@ -88,20 +97,28 @@ for (const item of PAGES) {
     ab("screenshot", path.join(OUT, `${item.name}.png`));
 
     const duration = snap.match(/\d+:\d+\s*\/\s*\d+:\d+/)?.[0] ?? null;
-    const hasPlayer =
-      /button "(Play video|Pause video)"/.test(snap) || duration !== null;
     const title =
-      snap.match(/^#\s+(.+)$/m)?.[1]?.trim() ??
-      item.name.replace(/-/g, " ");
+      snap.match(/^#\s+(.+)$/m)?.[1]?.trim() ?? item.name.replace(/-/g, " ");
+    // The docs <Player> only reveals its transport on hover, and headless
+    // Chromium leaves it paused on frame 0 — so neither the controls nor the
+    // screenshot prove the motion is right. What this pass does prove is that
+    // the page builds, mounts, and installs cleanly. Motion is verified with
+    // `pnpm --filter web render:component <slug>` and frame sampling.
+    // `snapshot -i` lists interactive elements only — the install line and
+    // headings live in the full content snapshot.
+    const content = ab("snapshot");
+    const mounted =
+      content.includes(`add ${item.name}`) ||
+      new RegExp(`^#\\s`, "m").test(content);
 
     results.push({
       name: item.name,
       category: item.category,
-      status: hasPlayer && duration ? "pass" : "warn",
+      status: mounted ? "loaded" : "warn",
       url,
       title,
       duration,
-      hasPlayer,
+      mounted,
     });
   } catch (err) {
     results.push({
@@ -137,6 +154,15 @@ console.log("\n# RemotionUI Browser QA\n");
 console.log(`Base: ${BASE}`);
 console.log(`Pages: ${PAGES.length} (auto-discovered from docs with <RemotionPreview>)`);
 console.log(`Screenshots: ${OUT}\n`);
+console.log(
+  "`loaded` = page built and the preview mounted. This pass does NOT verify motion:",
+);
+console.log(
+  "headless leaves the docs Player paused on frame 0. For visual proof render the",
+);
+console.log(
+  "component (`pnpm --filter web render:component <slug>`) and sample frames.\n",
+);
 console.log("| Component | Category | Status | Duration |");
 console.log("|-----------|----------|--------|----------|");
 for (const r of results) {
@@ -150,4 +176,6 @@ for (const r of results) {
 }
 console.log(`\nConsole errors: ${errors}`);
 
-process.exit(results.some((r) => r.status === "fail") ? 1 : 0);
+process.exit(
+  results.some((r) => r.status === "fail" || r.status === "warn") ? 1 : 0,
+);

@@ -63,6 +63,26 @@ export const EXPORT_OVERRIDES: Record<
       exportName: "ChatGptPreview",
     },
   },
+  // These three transitions ship under a bare slug but their preview wrappers
+  // carry the `Transition` prefix, so auto-discovery cannot match them.
+  "blur-reveal": {
+    source: {
+      importPath: "@/components/previews/transition-blur-reveal",
+      exportName: "TransitionBlurRevealPreview",
+    },
+  },
+  "grid-pixelate-wipe": {
+    source: {
+      importPath: "@/components/previews/transition-grid-pixelate-wipe",
+      exportName: "TransitionGridPixelateWipePreview",
+    },
+  },
+  "frosted-glass-wipe": {
+    source: {
+      importPath: "@/components/previews/transition-frosted-glass-wipe",
+      exportName: "TransitionFrostedGlassWipePreview",
+    },
+  },
 };
 
 type RegistryItem = {
@@ -86,13 +106,15 @@ function previewNameToSlug(exportName: string) {
     .toLowerCase();
 }
 
+/**
+ * Transition items export a factory function rather than a component, so a
+ * registry source is not always readable as one. Callers fall back to the
+ * preview wrapper when this returns null.
+ */
 function readNamedExport(filePath: string) {
   const content = fs.readFileSync(filePath, "utf8");
   const match = content.match(/export const (\w+)(?::[^=]+)?\s*=/);
-  if (!match) {
-    throw new Error(`Could not find a named export in ${filePath}`);
-  }
-  return match[1];
+  return match ? match[1] : null;
 }
 
 function registryImportPath(registryFile: string) {
@@ -131,7 +153,7 @@ function buildPreviewIndex(previewsDir: string) {
     const importPath = `@/components/previews/${fileName.replace(/\.tsx$/, "")}`;
     const exports = [...content.matchAll(/export const (\w+)(?::[^=]+)?\s*=/g)];
 
-    for (const [exportName] of exports) {
+    for (const [, exportName] of exports) {
       if (!exportName.endsWith("Preview")) {
         continue;
       }
@@ -186,11 +208,9 @@ export function resolveExportConfig(
   const registryFile = item.files[0].path;
   const registrySourcePath = path.join(appRoot, registryFile);
   const exportName = readNamedExport(registrySourcePath);
-  const compositionId = exportName;
-  const registrySource: ExportSource = {
-    importPath: registryImportPath(registryFile),
-    exportName,
-  };
+  const registrySource: ExportSource | undefined = exportName
+    ? { importPath: registryImportPath(registryFile), exportName }
+    : undefined;
 
   const previewIndex = buildPreviewIndex(path.join(appRoot, "components/previews"));
   const previewSource = previewIndex.get(slug);
@@ -204,9 +224,11 @@ export function resolveExportConfig(
   const source = overrides.source ?? (usePreview ? previewSource : registrySource);
   if (!source) {
     throw new Error(
-      `No preview wrapper found for "${slug}". Re-run with --registry to export the raw component.`,
+      `No renderable component found for "${slug}". Add a preview wrapper in components/previews, or an EXPORT_OVERRIDES entry pointing at one.`,
     );
   }
+
+  const compositionId = exportName ?? source.exportName;
 
   return {
     slug,
