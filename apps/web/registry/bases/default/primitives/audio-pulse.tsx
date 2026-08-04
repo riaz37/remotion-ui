@@ -76,7 +76,7 @@ export const AudioPulse: React.FC<AudioPulseProps> = ({
           background: `radial-gradient(circle at 50% 50%, ${color}14 0%, transparent 62%)`,
           filter: "blur(10px)",
           opacity: 0.78 + intensity * 0.28,
-          transform: `scale(${0.96 + intensity * 0.06})`,
+          scale: 0.96 + intensity * 0.06,
           pointerEvents: "none",
         }}
       />
@@ -99,7 +99,7 @@ export const AudioPulse: React.FC<AudioPulseProps> = ({
               borderRadius: "50%",
               border: `${ringWidth}px solid ${color}`,
               opacity: ringOpacity,
-              transform: `scale(${scale})`,
+              scale,
               boxShadow: `0 0 ${Math.round(glow)}px ${color}3a, 0 0 ${Math.round(
                 glow * 0.55,
               )}px ${color}24`,
@@ -118,7 +118,7 @@ export const AudioPulse: React.FC<AudioPulseProps> = ({
             `conic-gradient(from ${Math.round(frame * 1.2)}deg, ${color}20, ${color}55, ${color}12, ${color}33, ${color}20)`,
           ].join(", "),
           opacity: 0.92 + intensity * 0.05,
-          transform: `scale(${0.78 + intensity * 0.34 + breathe * 0.75})`,
+          scale: 0.78 + intensity * 0.34 + breathe * 0.75,
           boxShadow: `0 0 ${Math.round(58 * intensity)}px ${color}55, inset 0 0 24px ${color}2b`,
           filter: `saturate(${1.05 + intensity * 0.35})`,
         }}
@@ -131,7 +131,7 @@ export const AudioPulse: React.FC<AudioPulseProps> = ({
           background:
             "radial-gradient(circle at 36% 32%, rgba(255,255,255,0.46) 0%, rgba(255,255,255,0) 52%)",
           opacity: 0.5 + intensity * 0.18,
-          transform: `scale(${0.92 + intensity * 0.08})`,
+          scale: 0.92 + intensity * 0.08,
           mixBlendMode: "screen",
           pointerEvents: "none",
         }}

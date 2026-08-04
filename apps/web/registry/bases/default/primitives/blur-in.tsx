@@ -27,7 +27,7 @@ export const BlurIn: React.FC<BlurInProps> = ({
       style={{
         opacity: progress,
         filter: `blur(${(1 - progress) * maxBlur}px)`,
-        transform: `scale(${scale})`,
+        scale,
       }}
     >
       {children}
