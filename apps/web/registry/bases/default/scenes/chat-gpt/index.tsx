@@ -89,12 +89,18 @@ const Icon: React.FC<{ name: string; color: string; size?: number }> = ({
         <>
           <path {...common} d="M20 12v8H4v-8" />
           <path {...common} d="M2.5 7h19v5h-19zM12 7v13" />
-          <path {...common} d="M12 7H8.3A2.3 2.3 0 1 1 12 4.2V7zM12 7h3.7A2.3 2.3 0 1 0 12 4.2V7z" />
+          <path
+            {...common}
+            d="M12 7H8.3A2.3 2.3 0 1 1 12 4.2V7zM12 7h3.7A2.3 2.3 0 1 0 12 4.2V7z"
+          />
         </>
       ) : name === "globe" ? (
         <>
           <circle {...common} cx="12" cy="12" r="9" />
-          <path {...common} d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />
+          <path
+            {...common}
+            d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"
+          />
         </>
       ) : name === "brush" ? (
         <>
@@ -104,7 +110,10 @@ const Icon: React.FC<{ name: string; color: string; size?: number }> = ({
       ) : name === "bulb" ? (
         <>
           <path {...common} d="M9 18h6M10 21h4" />
-          <path {...common} d="M8 14a6 6 0 1 1 8 0c-1 1-1.5 2-1.5 3h-5c0-1-.5-2-1.5-3z" />
+          <path
+            {...common}
+            d="M8 14a6 6 0 1 1 8 0c-1 1-1.5 2-1.5 3h-5c0-1-.5-2-1.5-3z"
+          />
         </>
       ) : name === "pen" ? (
         <>
@@ -169,173 +178,194 @@ export const ChatGpt: React.FC<ChatGptProps> = ({
         >
           =
         </div>
-        <div
-          style={{
-            position: "absolute",
-            top: 160,
-            width: "100%",
-            textAlign: "center",
-            fontSize: 34,
-            lineHeight: 1.1,
-            fontWeight: 650,
-            opacity: heading.opacity,
-            transform: `translateY(${heading.translateY}px)`,
-          }}
-        >
-          {greeting}
-        </div>
-
+        {/* Greeting, composer and the suggestion layer share one column so a long
+            greeting or typed prompt pushes the stack down instead of overlapping. */}
         <div
           style={{
             position: "absolute",
             left: 96,
-            top: 246,
-            width: 1088,
-            minHeight: 126,
-            borderRadius: 28,
-            background: t.composer,
-            opacity: composer.opacity,
-            transform: `translateY(${composer.translateY + intro.translateY * 0.35}px) scale(${intro.scale})`,
-            transformOrigin: "center top",
-            boxShadow:
-              theme === "light"
-                ? "0 1px 0 rgba(0,0,0,0.03)"
-                : "inset 0 0 0 1px rgba(255,255,255,0.04)",
-          }}
-        >
-          <div
-            style={{
-              minHeight: 64,
-              padding: "20px 28px 8px",
-              fontSize: 21,
-              lineHeight: 1.35,
-              color: tw.count > 0 ? t.fg : t.muted,
-            }}
-          >
-            {tw.count > 0 ? (
-              <>
-                {tw.text}
-                <BlockCaret color={t.fg} blink={!tw.typing} height={22} />
-              </>
-            ) : (
-              placeholder
-            )}
-          </div>
-
-          <div
-            style={{
-              height: 54,
-              padding: "0 14px 14px 24px",
-              display: "flex",
-              alignItems: "center",
-              gap: 18,
-            }}
-          >
-            <Icon name="paperclip" color={t.fg} size={24} />
-            <Icon name="gift" color={t.fg} size={24} />
-            <Icon name="globe" color={t.muted} size={24} />
-            <div style={{ flex: 1 }} />
-            <div
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: "50%",
-                background: morph > 0.05 ? t.sendBg : "#0d0d0d",
-                display: "grid",
-                placeItems: "center",
-                color: morph > 0.05 ? t.sendFg : "#ffffff",
-                scale: 0.92 + morph * 0.08,
-              }}
-            >
-              {morph > 0.45 ? <Icon name="send" color={t.sendFg} size={21} /> : "|||"}
-            </div>
-          </div>
-        </div>
-
-        <div
-          style={{
-            position: "absolute",
-            left: 112,
-            top: 386,
-            width: 420,
-            borderRadius: 14,
-            padding: 12,
-            background: t.menu,
-            border: `1px solid ${t.border}`,
-            boxShadow:
-              theme === "light"
-                ? "0 20px 48px rgba(0,0,0,0.16), 0 2px 8px rgba(0,0,0,0.08)"
-                : "0 20px 48px rgba(0,0,0,0.38)",
-            opacity: menu.opacity * Math.max(0, 1 - morph * 4),
-            transform: `translateY(${menu.translateY}px)`,
-          }}
-        >
-          {TOOLS.map((tool, index) => (
-            <div
-              key={tool.title}
-              style={{
-                minHeight: 66,
-                borderRadius: 10,
-                display: "grid",
-                gridTemplateColumns: "42px 1fr",
-                alignItems: "center",
-                padding: "6px 14px",
-                background: index === 0 ? t.menuHover : "transparent",
-                color: t.fg,
-              }}
-            >
-              <Icon name={tool.icon} color={index === 0 ? accentColor : t.muted} />
-              <div>
-                <div style={{ fontSize: 18, fontWeight: 500 }}>{tool.title}</div>
-                <div style={{ marginTop: 3, color: t.muted, fontSize: 16 }}>
-                  {tool.subtitle}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            top: 398,
-            width: "100%",
+            right: 96,
+            top: 160,
             display: "flex",
-            justifyContent: "center",
-            gap: 12,
-            opacity: chips.opacity * menuClear * (1 - morph * 0.35),
-            transform: `translateY(${chips.translateY}px)`,
+            flexDirection: "column",
           }}
         >
-          {SUGGESTIONS.map((chip) => (
+          <div
+            style={{
+              textAlign: "center",
+              fontSize: 34,
+              lineHeight: 1.1,
+              fontWeight: 650,
+              opacity: heading.opacity,
+              transform: `translateY(${heading.translateY}px)`,
+            }}
+          >
+            {greeting}
+          </div>
+
+          <div
+            style={{
+              marginTop: 49,
+              minHeight: 126,
+              borderRadius: 28,
+              background: t.composer,
+              opacity: composer.opacity,
+              transform: `translateY(${composer.translateY + intro.translateY * 0.35}px) scale(${intro.scale})`,
+              transformOrigin: "center top",
+              boxShadow:
+                theme === "light"
+                  ? "0 1px 0 rgba(0,0,0,0.03)"
+                  : "inset 0 0 0 1px rgba(255,255,255,0.04)",
+            }}
+          >
             <div
-              key={chip.label}
               style={{
-                height: 50,
-                padding: "0 18px",
-                borderRadius: 26,
-                background: t.chip,
-                border: `1px solid ${t.border}`,
-                color: t.muted,
-                fontSize: 17,
+                minHeight: 64,
+                padding: "20px 28px 8px",
+                fontSize: 21,
+                lineHeight: 1.35,
+                color: tw.count > 0 ? t.fg : t.muted,
+              }}
+            >
+              {tw.count > 0 ? (
+                <>
+                  {tw.text}
+                  <BlockCaret color={t.fg} blink={!tw.typing} height={22} />
+                </>
+              ) : (
+                placeholder
+              )}
+            </div>
+
+            <div
+              style={{
+                height: 54,
+                padding: "0 14px 14px 24px",
                 display: "flex",
                 alignItems: "center",
-                gap: 10,
-                boxShadow: theme === "light" ? "0 1px 4px rgba(0,0,0,0.05)" : "none",
+                gap: 18,
               }}
             >
-              <span
+              <Icon name="paperclip" color={t.fg} size={24} />
+              <Icon name="gift" color={t.fg} size={24} />
+              <Icon name="globe" color={t.muted} size={24} />
+              <div style={{ flex: 1 }} />
+              <div
                 style={{
-                  width: 17,
-                  height: 17,
-                  borderRadius: 5,
-                  border: `2px solid ${chip.color}`,
+                  width: 40,
+                  height: 40,
+                  borderRadius: "50%",
+                  background: morph > 0.05 ? t.sendBg : "#0d0d0d",
+                  display: "grid",
+                  placeItems: "center",
+                  color: morph > 0.05 ? t.sendFg : "#ffffff",
+                  scale: 0.92 + morph * 0.08,
                 }}
-              />
-              {chip.label}
+              >
+                {morph > 0.45 ? (
+                  <Icon name="send" color={t.sendFg} size={21} />
+                ) : (
+                  "|||"
+                )}
+              </div>
             </div>
-          ))}
+          </div>
+
+          {/* Menu and suggestion chips are alternates that cross-fade in the same
+            slot, so they stay overlaid — but the slot itself follows the composer. */}
+          <div style={{ marginTop: 14, position: "relative" }}>
+            <div
+              style={{
+                position: "absolute",
+                left: 16,
+                top: 0,
+                width: 420,
+                borderRadius: 14,
+                padding: 12,
+                background: t.menu,
+                border: `1px solid ${t.border}`,
+                boxShadow:
+                  theme === "light"
+                    ? "0 20px 48px rgba(0,0,0,0.16), 0 2px 8px rgba(0,0,0,0.08)"
+                    : "0 20px 48px rgba(0,0,0,0.38)",
+                opacity: menu.opacity * Math.max(0, 1 - morph * 4),
+                transform: `translateY(${menu.translateY}px)`,
+              }}
+            >
+              {TOOLS.map((tool, index) => (
+                <div
+                  key={tool.title}
+                  style={{
+                    minHeight: 66,
+                    borderRadius: 10,
+                    display: "grid",
+                    gridTemplateColumns: "42px 1fr",
+                    alignItems: "center",
+                    padding: "6px 14px",
+                    background: index === 0 ? t.menuHover : "transparent",
+                    color: t.fg,
+                  }}
+                >
+                  <Icon
+                    name={tool.icon}
+                    color={index === 0 ? accentColor : t.muted}
+                  />
+                  <div>
+                    <div style={{ fontSize: 18, fontWeight: 500 }}>
+                      {tool.title}
+                    </div>
+                    <div style={{ marginTop: 3, color: t.muted, fontSize: 16 }}>
+                      {tool.subtitle}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div
+              style={{
+                position: "absolute",
+                left: 0,
+                top: 12,
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                gap: 12,
+                opacity: chips.opacity * menuClear * (1 - morph * 0.35),
+                transform: `translateY(${chips.translateY}px)`,
+              }}
+            >
+              {SUGGESTIONS.map((chip) => (
+                <div
+                  key={chip.label}
+                  style={{
+                    height: 50,
+                    padding: "0 18px",
+                    borderRadius: 26,
+                    background: t.chip,
+                    border: `1px solid ${t.border}`,
+                    color: t.muted,
+                    fontSize: 17,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    boxShadow:
+                      theme === "light" ? "0 1px 4px rgba(0,0,0,0.05)" : "none",
+                  }}
+                >
+                  <span
+                    style={{
+                      width: 17,
+                      height: 17,
+                      borderRadius: 5,
+                      border: `2px solid ${chip.color}`,
+                    }}
+                  />
+                  {chip.label}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </AbsoluteFill>
