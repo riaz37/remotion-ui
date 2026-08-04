@@ -2,7 +2,7 @@
 
 > Official: [https://www.remotion.dev/docs/transitions/transitionseries](https://www.remotion.dev/docs/transitions/transitionseries)
 > Source MDX: [https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/transitions/transitionseries.mdx](https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/transitions/transitionseries.mdx)
-> Mirrored: 2026-06-17
+> Mirrored: 2026-08-04
 
 # &lt;TransitionSeries&gt;
 
@@ -75,11 +75,18 @@ export const OverlayExample: React.FC = () => {
 
 Inherits the [`from`](/docs/sequence#from), [`name`](/docs/sequence#name), [`className`](/docs/sequence#classname), and [`style`](/docs/sequence#style) props from [``](/docs/sequence).
 
-The `` component can only contain ``, ``, and `` components.
+The `` component can only contain ``, ``, and `` components.  
+`layout="none"` is deprecated and throws from Remotion 5.0.0 on.  
+Transition scenes must stay absolutely positioned. Remove the `layout` prop or keep the default `absolute-fill`. See the [v5 migration guide](/docs/5-0-migration).
 
 ### ``
 
-Inherits the [`durationInFrames`](/docs/sequence#durationinframes), [`name`](/docs/sequence#name), [`className`](/docs/sequence#classname), [`style`](/docs/sequence#style), [`showInTimeline`](/docs/sequence#showintimeline), [`freeze`](/docs/sequence#freeze), [`premountFor`](/docs/sequence#premountfor), [`postmountFor`](/docs/sequence#postmountfor) and [`layout`](/docs/sequence#layout) props from [``](/docs/sequence).
+Inherits the [`durationInFrames`](/docs/sequence#durationinframes), [`name`](/docs/sequence#name), [`className`](/docs/sequence#classname), [`style`](/docs/sequence#style), [`showInTimeline`](/docs/sequence#showintimeline), [`freeze`](/docs/sequence#freeze), [`premountFor`](/docs/sequence#premountfor) and [`postmountFor`](/docs/sequence#postmountfor) props from [``](/docs/sequence).
+
+`layout="none"` is deprecated and throws from Remotion 5.0.0 on.  
+Transition scenes must stay absolutely positioned. Remove the `layout` prop or keep the default `absolute-fill`. See the [v5 migration guide](/docs/5-0-migration).
+
+The [`trimBefore`](/docs/sequence#trimbefore) prop is supported from .
 
 As children, put the contents of your scene.
 

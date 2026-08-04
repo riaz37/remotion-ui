@@ -2,7 +2,7 @@
 
 > Official: [https://www.remotion.dev/docs/easing](https://www.remotion.dev/docs/easing)
 > Source MDX: [https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/easing.mdx](https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/easing.mdx)
-> Mirrored: 2026-06-17
+> Mirrored: 2026-08-04
 
 The `Easing` module implements common easing functions. You can use it with the [`interpolate()`](/docs/interpolate) API.
 
@@ -211,11 +211,66 @@ The curve is normalized to the interpolation progress, so it does not take `fram
 const scale = interpolate(30, [0, 60], [0, 1], {
   easing: Easing.spring({
     damping: 200,
+    durationRestThreshold: 0.03,
   }),
 });
 ```
 
-The supported config fields are `damping`, `mass`, `stiffness` and `overshootClamping`.
+The spring is measured as if it takes 30 frames.
+
+The supported config fields are `damping`, `mass`, `stiffness`, `overshootClamping`, `durationRestThreshold` and `allowTail`.
+
+#### `damping?`
+
+How hard the spring decelerates. Default: `10`.
+
+#### `mass?`
+
+The weight of the spring. Default: `1`.
+
+#### `stiffness?`
+
+Spring stiffness coefficient. Default: `100`.
+
+#### `overshootClamping?`
+
+Determines whether the spring can overshoot the end value. Default: `false`.
+
+#### `durationRestThreshold?`
+
+How close the spring should get to the end value during the 30-frame easing duration. Default: same as [`spring()`](/docs/spring#durationrestthreshold).
+
+A lower value makes the spring get closer to the end value within the interpolation segment.
+A higher value leaves more of the movement for the end of the segment.
+
+#### `allowTail?`
+
+Allows the spring to continue past the end of the interpolation segment. Default: `false`.
+
+When enabled, `interpolate()` lets the spring tail continue after the segment end. In multi-keyframe interpolations, the previous spring tail can keep settling while the next segment already starts.
+
+```tsx twoslash title="MyComponent.tsx"
+// ---cut---
+const translate = interpolate(
+  45,
+  [0, 30, 60],
+  ['0px 1000px', '0px 0px', '1000px 0px'],
+  {
+    easing: [
+      Easing.spring({
+        allowTail: true,
+        damping: 200,
+        durationRestThreshold: 0.03,
+      }),
+      Easing.spring({
+        allowTail: true,
+        damping: 200,
+        durationRestThreshold: 0.03,
+      }),
+    ],
+  },
+);
+```
 
 ---
 

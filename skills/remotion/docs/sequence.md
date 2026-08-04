@@ -2,7 +2,7 @@
 
 > Official: [https://www.remotion.dev/docs/sequence](https://www.remotion.dev/docs/sequence)
 > Source MDX: [https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/sequence.mdx](https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/sequence.mdx)
-> Mirrored: 2026-06-17
+> Mirrored: 2026-08-04
 
 ```twoslash include example
 const BlueSquare: React.FC = () => 
@@ -126,8 +126,8 @@ const ClipExample: React.FC = () => {
 
 ### Trim start
 
-Wrap the square in `` with a negative `from` value to trim the beginning of the content.  
-By shifting the time backwards, the animation has already progressed by 15 frames when the content appears.
+Pass `trimBefore` to trim the beginning of the content.
+The animation has already progressed by 15 frames when the content appears.
 
 
 
@@ -184,6 +184,29 @@ From v3.2.36 onwards, this prop will be optional; by default, it will be 0.
 
 For how many frames the sequence should be displayed. Children are unmounted if they are not within the time range of display. By default it will be `Infinity` to avoid limit the duration of the sequence.
 
+### `trimBefore?`
+
+Trims the beginning of the child timeline by the specified number of frames.
+Default: `0`.
+
+The sequence still starts at [`from`](#from), but children using [`useCurrentFrame()`](/docs/use-current-frame) receive a frame that is advanced by `trimBefore`.
+
+```tsx twoslash title="MyVideo.tsx"
+
+const Child = () => {useCurrentFrame()};
+
+// ---cut---
+export const MyVideo = () => {
+  return (
+    
+      
+    
+  );
+};
+```
+
+In the example above, `Child` mounts at composition frame `30` and receives frame `15`.
+
 ### `freeze?`
 
 Freezes the children of the sequence at the specified frame.
@@ -218,9 +241,57 @@ Gives the sequence a specific `style={{width: width}}` style and overrides `widt
 
 You can give your sequence a name and it will be shown as the label of the sequence in the timeline of the Remotion Studio. This property is purely for helping you keep track of sequences in the timeline.
 
+### `controls?`
+
+The control state created by [`Interactive.withSchema()`](/docs/interactive-with-schema).
+
+When [making a custom component interactive](/docs/studio/make-component-interactive), forward `controls` unchanged from the inner component to the `` that represents it in the timeline. Do not create this object manually.
+
 ### `layout?`
 
 Either `"absolute-fill"` _(default)_ or `"none"`. By default, your sequences will be absolutely positioned, so they will overlay each other. If you would like to opt out of it and handle layouting yourself, pass `layout="none"`. Available since v1.4.
+
+### `cropLeft?`
+
+Crops the Sequence from the left edge without changing its size or transform origin. The value is a ratio between `0` and `1`: `0` does not crop the edge, while `1` crops the full width.
+
+### `cropRight?`
+
+Like [`cropLeft`](#cropleft), but crops from the right edge.
+
+If `cropLeft` and `cropRight` overlap, both edges meet in the center.
+
+### `cropTop?`
+
+Like [`cropLeft`](#cropleft), but crops the height from the top edge.
+
+### `cropBottom?`
+
+Like [`cropTop`](#croptop), but crops from the bottom edge.
+
+If `cropTop` and `cropBottom` overlap, both edges meet in the center.
+
+All four crop props are only supported with `layout="absolute-fill"` and can be animated:
+
+:::note
+If inline [`border-radius`](https://developer.mozilla.org/en-US/docs/Web/CSS/border-radius) styles are set using `style.borderRadius` or its four corner longhands, the cropped rectangle uses the same corner radii. Border radii applied through a CSS class are not inherited by the crop.
+:::
+
+```tsx twoslash title="MyVideo.tsx"
+
+export const MyVideo = () => {
+  const frame = useCurrentFrame();
+  const cropLeft = interpolate(frame, [0, 30], [0, 0.5], {
+    extrapolateRight: 'clamp',
+  });
+
+  return (
+    
+      Revealed from the left
+    
+  );
+};
+```
 
 ### `outlineRef?`
 

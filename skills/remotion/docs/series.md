@@ -2,7 +2,7 @@
 
 > Official: [https://www.remotion.dev/docs/series](https://www.remotion.dev/docs/series)
 > Source MDX: [https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/series.mdx](https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/series.mdx)
-> Mirrored: 2026-06-17
+> Mirrored: 2026-08-04
 
 Using this component, you can easily stitch together scenes that should play sequentially after another.
 
@@ -69,6 +69,10 @@ The offset does not apply to sequences that come before, but the sequences that 
 **Example 1**: Pass `10` to delay the sequence by 10 frames and create a blank space of 10 frames before it.  
 **Example 2**: Pass `-10` to start the sequence earlier and overlay the sequence on top of the previous one for 10 frames.
 
+### `trimBefore?`
+
+Trims frames from the beginning without changing where the sequence starts. See [`trimBefore`](/docs/sequence#trimbefore) on [``](/docs/sequence).
+
 ### `freeze?`
 
 Freezes the children of the sequence at the specified frame. See [`freeze`](/docs/sequence#freeze) on [``](/docs/sequence).
@@ -92,6 +96,7 @@ Whether this sequence should be shown in the timeline in the Studio. See [`showI
 ### `premountFor?`
 
 [Premount](/docs/player/premounting) the sequence for a set number of frames.
+From [v5.0](/docs/5-0-migration), the default value changes from `0` to `fps` (1 second).
 
 ### `ref?`
 

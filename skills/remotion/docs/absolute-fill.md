@@ -2,7 +2,7 @@
 
 > Official: [https://www.remotion.dev/docs/absolute-fill](https://www.remotion.dev/docs/absolute-fill)
 > Source MDX: [https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/absolute-fill.mdx](https://raw.githubusercontent.com/remotion-dev/remotion/main/packages/docs/docs/absolute-fill.mdx)
-> Mirrored: 2026-06-17
+> Mirrored: 2026-08-04
 
 A helper component - it is an absolutely positioned `` with the following styles:
 
@@ -41,11 +41,34 @@ const MyComp = () => {
 
 The layers that get rendered last appear on top - this is because of how HTML works.
 
-## Adding a ref
+## API
 
-You can add a [React ref](https://react.dev/learn/manipulating-the-dom-with-refs) to an `` from version `v3.2.13` on. If you use TypeScript, you need to type it with `HTMLDivElement`:
+### Inherited props
 
-```tsx twoslash
+`` inherits [`from`](/docs/sequence#from), [`durationInFrames`](/docs/sequence#durationinframes), [`trimBefore`](/docs/sequence#trimbefore), [`freeze`](/docs/sequence#freeze), [`hidden`](/docs/sequence#hidden), [`name`](/docs/sequence#name) and [`showInTimeline`](/docs/sequence#showintimeline) from [``](/docs/sequence).
+
+It is registered as a layer in the [Remotion Studio](/docs/studio) timeline.
+
+:::note
+You can still wrap `` in an outer [``](/docs/sequence). Timing [cascades](/docs/sequence#cascading) like nested sequences.
+:::
+
+```tsx twoslash title="Clip starting at frame 30, lasting 90 frames"
+
+export const MyComp: React.FC = () => {
+  return (
+    
+      This layer is visible from frame 30 to 119.
+    
+  );
+};
+```
+
+### `ref?`
+
+You can add a [React ref](https://react.dev/learn/manipulating-the-dom-with-refs) to an `` from version `v3.2.13` on. If you use TypeScript, type it with `HTMLDivElement`:
+
+```tsx twoslash title="MyComp.tsx"
 
 const content = Hello, World;
 // ---cut---
@@ -54,6 +77,10 @@ const MyComp = () => {
   return {content};
 };
 ```
+
+### Other props
+
+All props of a regular `` element are forwarded, including `className`, `style` and event handlers.
 
 ## TailwindCSS class detection
 

@@ -1,5 +1,6 @@
 upstream: remotion-dev/remotion
-commit: c74c343e77276146a5385211490266272df91c3c
-date: 2026-06-17 17:29:15 +0200
-path: packages/skills/skills/remotion
+commit: 20514bd8b40b8d3dd896845e75445b9fdca542b8
+date: 2026-08-04 16:51:54 +0200
+path: packages/skills/skills
 docs: https://www.remotion.dev/docs/ai/skills
+skills: remotion-best-practices remotion-captions remotion-create remotion-docs remotion-interactivity remotion-maps remotion-markup remotion-multimedia remotion-render remotion-saas remotion-studio remotion-upgrade
