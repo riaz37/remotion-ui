@@ -1,5 +1,10 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
-import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import {
+  AbsoluteFill,
+  interpolate,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 import {
   BlockCaret,
   fadeUp,
@@ -71,7 +76,7 @@ const CODE_LINES = [
   "",
   "export default function UserEngagementScatterPlot() {",
   "  return (",
-  "    <ResponsiveContainer width=\"100%\" height={400}>",
+  '    <ResponsiveContainer width="100%" height={400}>',
   "      <ScatterChart margin={{ top: 20, right: 20 }} />",
   "    </ResponsiveContainer>",
   "  );",
@@ -146,8 +151,12 @@ const ArtifactCard: React.FC<{
       {"</>"}
     </div>
     <div>
-      <div style={{ fontSize: 12, fontWeight: 700, lineHeight: 1.2 }}>{title}</div>
-      <div style={{ marginTop: 3, color: muted, fontSize: 11 }}>Open component</div>
+      <div style={{ fontSize: 12, fontWeight: 700, lineHeight: 1.2 }}>
+        {title}
+      </div>
+      <div style={{ marginTop: 3, color: muted, fontSize: 11 }}>
+        Open component
+      </div>
     </div>
   </div>
 );
@@ -168,7 +177,11 @@ export const ClaudeChat: React.FC<ClaudeChatProps> = ({
   const t = THEMES[theme];
   const scale = stageScale(width, height);
   const typedPrompt = useTypedPrompt({ prompt, startFrame: 22, cps: 72 });
-  const typedResponse = useTypedPrompt({ prompt: response, startFrame: 58, cps: 42 });
+  const typedResponse = useTypedPrompt({
+    prompt: response,
+    startFrame: 58,
+    cps: 42,
+  });
   const promptSubmitted = interpolate(frame, [50, 58], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
@@ -275,16 +288,19 @@ export const ClaudeChat: React.FC<ClaudeChatProps> = ({
               left: 82,
               top: 92,
               width: 426,
-              height: 520,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
             }}
           >
             <FileTile border={t.border} />
 
+            {/* Bubbles stack in flow so a long prompt or response pushes the
+                thread down instead of overlapping the next message. */}
             <div
               style={{
-                position: "absolute",
-                left: 70,
-                top: 84,
+                marginTop: 12,
+                marginLeft: 70,
                 width: 342,
                 padding: "10px 14px",
                 borderRadius: 10,
@@ -318,9 +334,8 @@ export const ClaudeChat: React.FC<ClaudeChatProps> = ({
 
             <div
               style={{
-                position: "absolute",
-                left: 70,
-                top: 184,
+                marginTop: 20,
+                marginLeft: 70,
                 width: 360,
                 padding: "13px 14px",
                 borderRadius: 10,
@@ -334,7 +349,9 @@ export const ClaudeChat: React.FC<ClaudeChatProps> = ({
               }}
             >
               {typedResponse.text}
-              {typedResponse.typing ? <BlockCaret color={t.fg} blink={false} height={15} /> : null}
+              {typedResponse.typing ? (
+                <BlockCaret color={t.fg} blink={false} height={15} />
+              ) : null}
               <ArtifactCard
                 title={artifactTitle}
                 border={t.border}
@@ -358,12 +375,13 @@ export const ClaudeChat: React.FC<ClaudeChatProps> = ({
               </div>
             </div>
 
-            <ChatSpark color={accentColor} size={22} />
+            <div style={{ position: "absolute", left: 0, top: 72 }}>
+              <ChatSpark color={accentColor} size={22} />
+            </div>
             <div
               style={{
-                position: "absolute",
-                left: 170,
-                top: 392,
+                marginTop: 12,
+                marginLeft: 170,
                 color: t.faint,
                 fontSize: 9,
               }}
@@ -400,11 +418,12 @@ export const ClaudeChat: React.FC<ClaudeChatProps> = ({
               borderRadius: 13,
               background: t.composer,
               border: `1px solid ${t.border}`,
-              boxShadow: theme === "light" ? "0 10px 30px rgba(60,48,32,0.08)" : "none",
-                  opacity: Math.max(0.35, composerOpacity),
-                  padding: "11px 14px",
-                }}
-              >
+              boxShadow:
+                theme === "light" ? "0 10px 30px rgba(60,48,32,0.08)" : "none",
+              opacity: Math.max(0.35, composerOpacity),
+              padding: "11px 14px",
+            }}
+          >
             <div
               style={{
                 color: showComposerPrompt ? t.fg : t.faint,
@@ -483,7 +502,13 @@ export const ClaudeChat: React.FC<ClaudeChatProps> = ({
               <span style={{ color: t.muted }}>←</span>
               <span style={{ fontWeight: 600 }}>{artifactTitle}</span>
               <div style={{ marginLeft: "auto", display: "flex", gap: 5 }}>
-                <span style={{ padding: "4px 8px", borderRadius: 999, color: t.muted }}>
+                <span
+                  style={{
+                    padding: "4px 8px",
+                    borderRadius: 999,
+                    color: t.muted,
+                  }}
+                >
                   Preview
                 </span>
                 <span
@@ -519,7 +544,8 @@ export const ClaudeChat: React.FC<ClaudeChatProps> = ({
                     color:
                       line.startsWith("import") || line.startsWith("export")
                         ? "#c4b5fd"
-                        : line.includes("pageLoadTime") || line.includes("sessionDuration")
+                        : line.includes("pageLoadTime") ||
+                            line.includes("sessionDuration")
                           ? "#f6bd72"
                           : "#d7dcff",
                     whiteSpace: "pre",
