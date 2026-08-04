@@ -29,6 +29,10 @@ jobs:
           cache: pnpm
           registry-url: https://registry.npmjs.org
 
+      # Trusted publishing (OIDC) needs npm >= 11.5.1; Node 22 ships npm 10.x.
+      - name: Upgrade npm for trusted publishing
+        run: npm install -g npm@latest
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -58,15 +62,11 @@ jobs:
       - name: Publish remotion-ui (dry run)
         if: inputs.dry_run
         working-directory: packages/remotion-ui
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --access public --dry-run
 
       - name: Publish remotion-ui
         if: ${{ !inputs.dry_run }}
         working-directory: packages/remotion-ui
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --access public
 
       - name: Verify published CLI version
