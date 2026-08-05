@@ -1,12 +1,15 @@
 import fs from "fs-extra";
 import path from "node:path";
 import { getConfig } from "../utils/get-config.js";
+import { RemotionUiError } from "../utils/errors.js";
+import { getInstalledRemotionVersion } from "../utils/get-installed-remotion-version.js";
 
 export async function preflightAdd(cwd: string): Promise<void> {
   const configPath = path.join(cwd, "remotion-ui.json");
 
   if (!(await fs.pathExists(configPath))) {
-    throw new Error(
+    throw new RemotionUiError(
+      "CONFIG_NOT_FOUND",
       `No remotion-ui.json found in ${cwd}. Run "remotion-ui init" first.`,
     );
   }
@@ -19,13 +22,7 @@ export async function preflightAdd(cwd: string): Promise<void> {
     return;
   }
 
-  const pkg = (await fs.readJson(pkgPath)) as {
-    dependencies?: Record<string, string>;
-    devDependencies?: Record<string, string>;
-  };
-
-  const remotionVersion =
-    pkg.dependencies?.remotion ?? pkg.devDependencies?.remotion;
+  const remotionVersion = await getInstalledRemotionVersion(cwd);
 
   if (!remotionVersion) {
     console.warn("  ⚠ remotion is not in package.json dependencies.");

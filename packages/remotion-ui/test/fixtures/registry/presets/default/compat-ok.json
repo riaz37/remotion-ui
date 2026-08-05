@@ -1,0 +1,14 @@
+{
+  "name": "compat-ok",
+  "type": "registry:ui",
+  "dependencies": ["remotion"],
+  "registryDependencies": [],
+  "compat": { "remotion": "^4.0.0" },
+  "files": [
+    {
+      "path": "registry/bases/default/primitives/compat-ok.tsx",
+      "type": "registry:ui",
+      "content": "export const CompatOk = () => null;\n"
+    }
+  ]
+}

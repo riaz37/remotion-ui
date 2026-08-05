@@ -5,6 +5,7 @@ import {
   getConfig,
   resolveAliasPath,
 } from "../utils/get-config.js";
+import { getInstalledRemotionVersion } from "../utils/get-installed-remotion-version.js";
 
 export type DoctorCheck = {
   name: string;
@@ -111,12 +112,7 @@ export async function runDoctor(cwd: string): Promise<DoctorReport> {
 
   const pkgPath = path.join(cwd, "package.json");
   if (await fs.pathExists(pkgPath)) {
-    const pkg = (await fs.readJson(pkgPath)) as {
-      dependencies?: Record<string, string>;
-      devDependencies?: Record<string, string>;
-    };
-    const remotionVersion =
-      pkg.dependencies?.remotion ?? pkg.devDependencies?.remotion;
+    const remotionVersion = await getInstalledRemotionVersion(cwd);
 
     if (!remotionVersion) {
       checks.push({

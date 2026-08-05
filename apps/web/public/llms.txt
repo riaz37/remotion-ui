@@ -45,6 +45,8 @@ npx remotion-ui@latest search -q caption
 npx remotion-ui@latest add social-clip caption-highlight lower-third
 ```
 
+Every command supports `--json` for structured output. An MCP server (`remotion-ui-mcp`) and an installable Claude Code skill (`remotion-ui init --agent-skill`) are also available — see https://remotionui.com/docs/ai.
+
 ## Agent rules
 
 - Use Remotion docs for framework fundamentals: https://www.remotion.dev/docs

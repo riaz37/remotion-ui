@@ -1,5 +1,6 @@
 import defaultMdxComponents from "fumadocs-ui/mdx";
 import type { MDXComponents } from "mdx/types";
+import { AgentStarter } from "@/components/docs/agent-starter";
 import { CodeSnippet } from "@/components/docs/code-snippet";
 import { DocsCodeBlock } from "@/components/docs/docs-code-block";
 import { ComponentPage } from "@/components/component-page";
@@ -14,6 +15,7 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
   return {
     ...defaultMdxComponents,
     pre: (props) => <DocsCodeBlock {...props} />,
+    AgentStarter,
     ComponentPage,
     DocsBinCard,
     DocsIntro,

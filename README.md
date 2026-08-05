@@ -28,20 +28,21 @@ Production-ready motion for Remotion. Source you own. Docs: [remotionui.com](htt
 
 - **108 components**: 51 primitives + 57 scenes and compositions (captions, charts, AI composers, social clips, creator reels)
 - **Source you own**: components land in your repo; edit every frame
-- **CLI workflow**: `init`, `add`, `doctor`, `search`, `diff`, `update`, `list`
-- **AI-ready**: [agent index](https://remotionui.com/ai/components.json), [llms.txt](https://remotionui.com/llms.txt)
+- **CLI workflow**: `init`, `add`, `doctor`, `search`, `diff`, `update`, `list` — all support `--json` for agent/script consumption
+- **AI-ready**: [agent index](https://remotionui.com/ai/components.json), [llms.txt](https://remotionui.com/llms.txt), an [MCP server](packages/remotion-ui-mcp/README.md), and an installable Claude Code skill (`remotion-ui init --agent-skill`)
 
 ## Monorepo Structure
 
 ```
 remotionui/
-├── apps/web/              # Docs site + component registry host
-├── packages/remotion-ui/  # CLI (published to npm)
+├── apps/web/                  # Docs site + component registry host
+├── packages/remotion-ui/      # CLI (published to npm)
+├── packages/remotion-ui-mcp/  # MCP server exposing the registry as agent tools
 ├── packages/typescript-config/
 ├── packages/eslint-config/
-├── templates/             # Starter project scaffolds
-├── skills/                # Agent skills (vendored Remotion + RemotionUI-authored)
-└── scripts/               # Repo maintenance scripts
+├── templates/                 # Starter project scaffolds
+├── skills/                    # Agent skills (vendored Remotion + RemotionUI-authored)
+└── scripts/                   # Repo maintenance scripts
 ```
 
 ## Philosophy

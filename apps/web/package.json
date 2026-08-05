@@ -11,6 +11,7 @@
     "brand:generate": "tsx scripts/generate-brand-assets.mts",
     "render:component": "tsx scripts/render-component.mts",
     "render:showcases": "tsx scripts/render-component.mts social-clip --out public/showcases/social-clip.mp4",
+    "test": "vitest run",
     "postinstall": "fumadocs-mdx"
   },
   "dependencies": {
@@ -44,8 +45,10 @@
     "@types/node": "^22.13.4",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
+    "ajv": "^8.17.1",
     "sharp": "^0.34.5",
     "tsx": "^4.19.3",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.5"
   }
 }

@@ -15,9 +15,13 @@ Open the Remotion Studio URL from your terminal, then add your first component:
 
 ## Existing project
 
-Add a `remotion-ui.json` to your project root:
+Run `init --existing` from the root of an existing Remotion project. It writes `remotion-ui.json`, checks your path aliases, and installs the agent skill:
 
-<CodeSnippet label="Config" code={`{
+<CommandRail label="Bootstrap" command="npx remotion-ui@latest init --existing" />
+
+That generates this config, which you can edit afterwards:
+
+<CodeSnippet label="remotion-ui.json" code={`{
   "preset": "default",
   "aliases": {
     "primitives": "@/remotion/primitives",
@@ -38,9 +42,30 @@ Then add components:
   Run `npx remotion-ui@latest add` from your project root so the CLI can read `remotion-ui.json` and resolve aliases.
 </Callout>
 
+Verify the setup at any time:
+
+<CommandRail label="Doctor" command="npx remotion-ui@latest doctor" />
+
+## What `add` does for you
+
+- Installs the component source plus every registry dependency it pulls in, recursively.
+- Installs npm dependencies with your detected package manager.
+- Registers compositions in `Root.tsx` automatically — components that ship composition metadata get their `<Composition />` entry and import added for you. Already-registered ids are left alone, so re-running `add` is safe.
+- Warns when a component declares a Remotion range your project does not satisfy.
+
+## Agent skill
+
+`init --existing` installs a Claude Code skill at `.claude/skills/remotionui-agent/SKILL.md` by default, so agents working in the repo know the install-before-import workflow and the animation rules.
+
+<CodeSnippet label="Control the skill" code={`npx remotion-ui@latest init --existing --no-agent-skill  # skip it
+npx remotion-ui@latest init my-video --agent-skill        # opt in for a new project`} />
+
+New projects do **not** install the skill unless you pass `--agent-skill`.
+
 ## Next steps
 
-- [CLI Reference](/docs/cli): `diff`, `update`, search, and custom registry `build`
+- [CLI Reference](/docs/cli): flags, `--json` output, error codes, and version compatibility
+- [MCP Server](/docs/mcp): expose the registry as agent tools
 - [Authoring scenes](/docs/guides/authoring-scenes): layout patterns for multi-element scenes
 - [Components](/docs/components): browse all motion building blocks
 

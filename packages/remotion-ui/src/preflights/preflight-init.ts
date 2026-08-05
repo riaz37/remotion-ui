@@ -1,6 +1,8 @@
 import fs from "fs-extra";
 import path from "node:path";
 import { remotionUiConfigSchema } from "../schema/index.js";
+import { RemotionUiError } from "../utils/errors.js";
+import { getInstalledRemotionVersion } from "../utils/get-installed-remotion-version.js";
 
 const ROOT_CANDIDATES = [
   "src/Root.tsx",
@@ -9,31 +11,42 @@ const ROOT_CANDIDATES = [
   "src/remotion/Root.tsx",
 ];
 
-export async function bootstrapExistingProject(cwd: string): Promise<void> {
+export type BootstrapExistingProjectOptions = {
+  json?: boolean;
+};
+
+export type BootstrapExistingProjectResult = {
+  configPath: string;
+  root: string;
+};
+
+export async function bootstrapExistingProject(
+  cwd: string,
+  options: BootstrapExistingProjectOptions = {},
+): Promise<BootstrapExistingProjectResult> {
   const pkgPath = path.join(cwd, "package.json");
   if (!(await fs.pathExists(pkgPath))) {
-    throw new Error(
+    throw new RemotionUiError(
+      "CONFIG_NOT_FOUND",
       "No package.json found. Run this command from a Remotion project root.",
     );
   }
 
-  const pkg = (await fs.readJson(pkgPath)) as {
-    dependencies?: Record<string, string>;
-    devDependencies?: Record<string, string>;
-  };
-
-  const remotionVersion =
-    pkg.dependencies?.remotion ?? pkg.devDependencies?.remotion;
+  const remotionVersion = await getInstalledRemotionVersion(cwd);
 
   if (!remotionVersion) {
-    throw new Error(
+    throw new RemotionUiError(
+      "CONFIG_INVALID",
       "This does not look like a Remotion project. remotion is missing from package.json.",
     );
   }
 
   const configPath = path.join(cwd, "remotion-ui.json");
   if (await fs.pathExists(configPath)) {
-    throw new Error("remotion-ui.json already exists in this directory.");
+    throw new RemotionUiError(
+      "TARGET_EXISTS",
+      "remotion-ui.json already exists in this directory.",
+    );
   }
 
   const root = await detectRootPath(cwd);
@@ -60,12 +73,16 @@ export async function bootstrapExistingProject(cwd: string): Promise<void> {
   });
 
   await fs.writeJson(configPath, config, { spaces: 2 });
-  await ensureTsconfigPaths(cwd);
+  await ensureTsconfigPaths(cwd, options);
 
-  console.log(`Created remotion-ui.json`);
-  console.log(`Detected Remotion root: ${root}`);
-  console.log(`\nNext step:`);
-  console.log(`  npx remotion-ui add social-clip`);
+  if (!options.json) {
+    console.log(`Created remotion-ui.json`);
+    console.log(`Detected Remotion root: ${root}`);
+    console.log(`\nNext step:`);
+    console.log(`  npx remotion-ui add social-clip`);
+  }
+
+  return { configPath, root };
 }
 
 async function detectRootPath(cwd: string): Promise<string> {
@@ -77,7 +94,10 @@ async function detectRootPath(cwd: string): Promise<string> {
   return "src/Root.tsx";
 }
 
-async function ensureTsconfigPaths(cwd: string): Promise<void> {
+async function ensureTsconfigPaths(
+  cwd: string,
+  options: BootstrapExistingProjectOptions = {},
+): Promise<void> {
   const tsconfigPath = path.join(cwd, "tsconfig.json");
   if (!(await fs.pathExists(tsconfigPath))) {
     return;
@@ -97,6 +117,8 @@ async function ensureTsconfigPaths(cwd: string): Promise<void> {
   if (!tsconfig.compilerOptions.paths["@/*"]) {
     tsconfig.compilerOptions.paths["@/*"] = ["src/*"];
     await fs.writeJson(tsconfigPath, tsconfig, { spaces: 2 });
-    console.log('Added "@/*": ["src/*"] to tsconfig.json');
+    if (!options.json) {
+      console.log('Added "@/*": ["src/*"] to tsconfig.json');
+    }
   }
 }

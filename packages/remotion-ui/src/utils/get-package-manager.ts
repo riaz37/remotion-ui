@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "node:path";
+import { RemotionUiError } from "./errors.js";
 
 export type PackageManager = "pnpm" | "npm" | "yarn" | "bun";
 export type InstallCommand = {
@@ -52,7 +53,10 @@ function validateDependencySpec(spec: string): string {
   const safePackageSpec = /^(?:@[\w.-]+\/)?[\w.-]+(?:@[\w.~^*+-][\w.~^*+-]*)?$/;
 
   if (trimmed !== spec || !safePackageSpec.test(spec)) {
-    throw new Error(`Invalid dependency spec: ${spec}`);
+    throw new RemotionUiError(
+      "DEPENDENCY_SPEC_INVALID",
+      `Invalid dependency spec: ${spec}`,
+    );
   }
 
   return spec;

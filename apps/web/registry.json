@@ -184,6 +184,9 @@
         "motion-primitive",
         "motion-wrapper"
       ],
+      "compat": {
+        "remotion": "^4.0.0"
+      },
       "files": [
         {
           "path": "registry/bases/default/primitives/fade-in.tsx",
@@ -591,6 +594,9 @@
         "width": 1920,
         "height": 1080,
         "importPath": "@/compositions/intro/index"
+      },
+      "compat": {
+        "remotion": "^4.0.0"
       },
       "files": [
         {
@@ -1245,6 +1251,9 @@
         "width": 1080,
         "height": 1920,
         "importPath": "@/compositions/social-clip/index"
+      },
+      "compat": {
+        "remotion": "^4.0.0"
       },
       "files": [
         {

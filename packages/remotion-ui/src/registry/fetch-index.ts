@@ -2,6 +2,7 @@ import fs from "fs-extra";
 import path from "node:path";
 import { registryIndexSchema, type RegistryIndex } from "../schema/index.js";
 import { DEFAULT_REGISTRY_URL } from "./fetch-item.js";
+import { RemotionUiError } from "../utils/errors.js";
 
 export type RegistryIndexAtlas = {
   lane: string;
@@ -23,7 +24,10 @@ export async function fetchRegistryIndex(
   if (isLocalRegistry(registryUrl)) {
     const filePath = path.join(path.resolve(registryUrl), "index.json");
     if (!(await fs.pathExists(filePath))) {
-      throw new Error(`Registry index not found at ${filePath}`);
+      throw new RemotionUiError(
+        "REGISTRY_FETCH_FAILED",
+        `Registry index not found at ${filePath}`,
+      );
     }
     const raw = await fs.readFile(filePath, "utf-8");
     return parseRegistryIndex(JSON.parse(raw));
@@ -33,7 +37,10 @@ export async function fetchRegistryIndex(
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch registry index from ${url}`);
+    throw new RemotionUiError(
+      "REGISTRY_FETCH_FAILED",
+      `Failed to fetch registry index from ${url}`,
+    );
   }
 
   return parseRegistryIndex(await response.json());
@@ -42,7 +49,8 @@ export async function fetchRegistryIndex(
 function parseRegistryIndex(value: unknown): RegistryIndex {
   const result = registryIndexSchema.safeParse(value);
   if (!result.success) {
-    throw new Error(
+    throw new RemotionUiError(
+      "REGISTRY_INDEX_INVALID",
       `Invalid registry index: ${result.error.issues
         .map((issue) => issue.path.join(".") || issue.message)
         .join(", ")}`,

@@ -18,6 +18,22 @@ description: remotion-ui commands for init, add, doctor, and custom registries.
 | `view <name>` | View registry item metadata |
 | `build [registry.json]` | Build a custom registry to `public/r/` |
 
+Every command accepts `--json`. Commands that read the registry also accept `-r, --registry-url <url>` and `--preset <preset>`.
+
+## Flags by command
+
+| Command | Flags |
+|---------|-------|
+| `init [name]` | `-y, --yes`, `--existing`, `--agent-skill`, `--no-agent-skill`, `--json` |
+| `add <name...>` | `-r, --registry-url`, `--preset`, `-y, --yes`, `--json` |
+| `doctor` | `--json` |
+| `list` | `-r, --registry-url`, `--json` |
+| `search` | `-q, --query`, `--lane`, `--tier`, `-r, --registry-url`, `--json` |
+| `view <name>` | `-r, --registry-url`, `--preset`, `--json` |
+| `update <name...>` | `-r, --registry-url`, `--preset`, `-y, --yes`, `--json` |
+| `diff <name>` | `-r, --registry-url`, `--preset`, `--json` |
+| `build [registry.json]` | `-o, --output`, `--preset`, `--json` |
+
 ## Diagnose setup
 
 <CommandRail label="Doctor" command="npx remotion-ui@latest doctor" />
@@ -30,18 +46,83 @@ Checks `remotion-ui.json`, `tsconfig` path aliases, install directories, and Rem
 npx remotion-ui@latest init --existing
 npx remotion-ui@latest add social-clip`} />
 
+`init --existing` writes `remotion-ui.json` and installs the agent skill into `.claude/skills/remotionui-agent/`. Pass `--no-agent-skill` to skip it.
+
 ## New project
 
 <CodeSnippet label="New project" code={`npx remotion-ui@latest init my-video
 cd my-video && npm run dev
 npx remotion-ui@latest add social-clip`} />
 
+New projects skip the agent skill unless you pass `--agent-skill`.
+
+## Composition registration
+
+When a registry item carries composition metadata, `add` patches `Root.tsx` for you — it inserts the import and a `<Composition />` entry with the item's `id`, `durationInFrames`, `fps`, `width`, and `height`. If an id is already present, the file is left untouched, so re-running `add` or `update` never duplicates entries.
+
+## Filter the registry
+
+<CodeSnippet label="Search filters" code={`npx remotion-ui@latest search -q caption
+npx remotion-ui@latest search --lane atoms
+npx remotion-ui@latest search --tier core --lane reels`} />
+
+Lanes: `atoms`, `signals`, `vectors`, `spatial`, `blocks`, `cuts`, `reels`. Tiers: `core`, `advanced`.
+
 ## Script output
+
+Pass `--json` to any command for machine-readable output — useful for agents and CI.
 
 <CodeSnippet label="JSON output" code={`npx remotion-ui@latest doctor --json
 npx remotion-ui@latest search -q social --json
 npx remotion-ui@latest view social-clip --json
-npx remotion-ui@latest list --json`} />
+npx remotion-ui@latest list --json
+npx remotion-ui@latest add social-clip --json
+npx remotion-ui@latest diff fade-in --json`} />
+
+## Error codes
+
+With `--json`, failures print a structured envelope on stdout and exit non-zero:
+
+<CodeSnippet label="Error shape" code={`{
+  "ok": false,
+  "error": {
+    "code": "CONFIG_NOT_FOUND",
+    "message": "No remotion-ui.json found in /path/to/project. Run \\"remotion-ui init\\" first."
+  }
+}`} />
+
+| Code | Meaning |
+|------|---------|
+| `CONFIG_NOT_FOUND` | No `remotion-ui.json` (or no `package.json` during `init --existing`) in the working directory |
+| `CONFIG_INVALID` | `remotion-ui.json` failed schema validation |
+| `REGISTRY_ITEM_NOT_FOUND` | No registry item with that name |
+| `REGISTRY_FETCH_FAILED` | Network or HTTP failure reaching the registry |
+| `REGISTRY_ITEM_INVALID` | Fetched item failed schema validation |
+| `REGISTRY_INDEX_INVALID` | Fetched index failed schema validation |
+| `TEMPLATE_NOT_FOUND` | Project template missing from the CLI package |
+| `TARGET_EXISTS` | Target directory already exists |
+| `INVALID_ARGS` | Missing or malformed command arguments |
+| `DEPENDENCY_SPEC_INVALID` | A dependency string could not be parsed |
+| `UNKNOWN` | Anything not mapped to a specific code |
+
+## Remotion version compatibility
+
+Registry items may declare a supported Remotion range:
+
+<CodeSnippet label="compat" code={`{
+  "name": "map-flight",
+  "compat": { "remotion": "^4.0.0" }
+}`} />
+
+At install time, `add` reads the Remotion version from your `package.json` and warns when the range is not satisfied. The install still proceeds — the check is advisory, and it only runs at install time, not continuously. `doctor` reports your installed Remotion version alongside config and alias checks.
+
+## Component props
+
+Prop metadata is published per component as JSON, for agents and tooling that need signatures without reading source:
+
+<CodeSnippet label="Prop metadata" code={`https://remotionui.com/ai/components/lower-third.json`} />
+
+Each entry carries `name`, `type`, `required`, `default`, and `description`, plus usage snippets and related components. See [AI Usage](/docs/ai) for the full set of agent-readable endpoints.
 
 ## Workflow: staying up to date
 

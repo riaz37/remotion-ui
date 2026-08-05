@@ -5,6 +5,12 @@ description: How coding agents should use RemotionUI with Remotion.
 
 RemotionUI is the **component layer for Remotion**: production-ready source you install with the CLI. Use [Remotion](https://www.remotion.dev/docs) for framework fundamentals, rendering, Studio, Player, and APIs. Use RemotionUI when you need ready-made components for captions, charts, scenes, transitions, and composition templates.
 
+## Starter prompt
+
+For an agent with no MCP server and no installed skill, paste this and go:
+
+<AgentStarter />
+
 ## Agent workflow
 
 1. Create or open a Remotion project.
@@ -37,7 +43,16 @@ import { LowerThird } from "@/remotion/scenes/lower-third";`} />
 - [`/llms.txt`](/llms.txt): short agent entry point
 - [`/llms-full.txt`](/llms-full.txt): full usage guide for LLMs
 - [`/ai/components.json`](/ai/components.json): component discovery index
+- `/ai/components/<name>.json`: per-component detail — props (`name`, `type`, `required`, `default`, `description`), usage snippets, install command, import path, and related components
 - [`/ai/remotionui-agent.md`](/ai/remotionui-agent.md): reusable agent prompt
+- `/llms.mdx/docs/<path>`: any docs page as raw Markdown — the **Copy page for AI** button at the top of each page copies exactly this
+
+## Agent-native tooling
+
+- `npx remotion-ui init --agent-skill` installs a Claude Code skill into the project at `.claude/skills/remotionui-agent/SKILL.md`, covering the CLI workflow and animation rules above.
+- Every CLI command supports `--json` for structured output and structured `{code, message}` errors — safe for agents to parse instead of scraping stdout.
+- `remotion-ui-mcp` is an MCP server exposing the registry as agent tools (`list-components`, `search-components`, `get-component-detail`, `get-install-command`) over stdio, for MCP-capable agents. See [MCP Server](/docs/mcp) for install and config.
+- Registry items may declare `compat.remotion`; `add` warns on a mismatch with the installed Remotion version. See [Remotion version compatibility](/docs/cli#remotion-version-compatibility).
 
 ## Start with compositions
 

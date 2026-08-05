@@ -49,6 +49,10 @@ export const atlasMetaSchema = z.object({
   tags: z.array(z.string()).optional(),
 });
 
+export const compatMetaSchema = z.object({
+  remotion: z.string().optional(),
+});
+
 export const registryItemSchema = z.object({
   name: z.string(),
   type: z.string(),
@@ -57,6 +61,7 @@ export const registryItemSchema = z.object({
   registryDependencies: z.array(z.string()).optional(),
   atlas: atlasMetaSchema.optional(),
   composition: compositionMetaSchema.optional(),
+  compat: compatMetaSchema.optional(),
   files: z.array(
     z.object({
       path: z.string(),

@@ -4,6 +4,7 @@ import {
   remotionUiConfigSchema,
   type RemotionUiConfig,
 } from "../schema/index.js";
+import { RemotionUiError } from "./errors.js";
 
 const explorer = cosmiconfig("remotion-ui", {
   searchPlaces: ["remotion-ui.json", ".remotion-uirc", ".remotion-uirc.json"],
@@ -24,7 +25,8 @@ export async function getConfig(cwd: string): Promise<RemotionUiConfig> {
   const result = await explorer.search(cwd);
 
   if (!result) {
-    throw new Error(
+    throw new RemotionUiError(
+      "CONFIG_NOT_FOUND",
       `No remotion-ui.json found in ${cwd}. Run "remotion-ui init" first.`,
     );
   }
@@ -94,7 +96,8 @@ function assertInsideDirectory(
     relative.startsWith(`..${path.sep}`) ||
     path.isAbsolute(relative)
   ) {
-    throw new Error(
+    throw new RemotionUiError(
+      "CONFIG_INVALID",
       `Resolved install path is outside the ${label}: ${targetPath}`,
     );
   }
@@ -122,7 +125,10 @@ export function resolveInstallPath(
 
   const alias = getAliasForType(config, file.type, file.path);
   if (!alias) {
-    throw new Error(`No alias configured for registry type "${file.type}"`);
+    throw new RemotionUiError(
+      "CONFIG_INVALID",
+      `No alias configured for registry type "${file.type}"`,
+    );
   }
 
   const baseDir = resolveAliasPath(cwd, alias);

@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import os from "node:os";
 import path from "node:path";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { buildCommand } from "./build.js";
 
 describe("buildCommand", () => {
@@ -46,5 +46,47 @@ describe("buildCommand", () => {
 
     const index = await fs.readJson(path.join(outputDir, "index.json"));
     expect(index.items).toHaveLength(1);
+  });
+
+  it("non-json error text is unchanged for a missing registry.json", async () => {
+    await expect(
+      buildCommand("does-not-exist.json", { cwd: tempDir }),
+    ).rejects.toThrow();
+  });
+
+  it("--json + a missing registry.json produces a valid {ok:false} JSON blob on stdout", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+    await expect(
+      buildCommand("does-not-exist.json", { cwd: tempDir, json: true }),
+    ).rejects.toThrow();
+
+    const stdout = logSpy.mock.calls.map((call) => call.join(" ")).join("\n");
+    const parsed = JSON.parse(stdout);
+    expect(parsed.ok).toBe(false);
+    expect(parsed.error.code).toBe("UNKNOWN");
+
+    logSpy.mockRestore();
+  });
+
+  it("--json + a successful build produces a single valid JSON object on stdout", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const outputDir = path.join(tempDir, "out", "r");
+
+    await buildCommand("registry.json", {
+      cwd: tempDir,
+      outputDir,
+      preset: "default",
+      json: true,
+    });
+
+    expect(logSpy).toHaveBeenCalledTimes(1);
+    const stdout = logSpy.mock.calls[0]?.join(" ") ?? "";
+    const parsed = JSON.parse(stdout);
+    expect(parsed.ok).toBe(true);
+    expect(parsed.itemCount).toBe(1);
+    expect(parsed.filesWritten).toEqual(["timing"]);
+
+    logSpy.mockRestore();
   });
 });

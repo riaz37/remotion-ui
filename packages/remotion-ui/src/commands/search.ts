@@ -1,6 +1,5 @@
-import fs from "fs-extra";
-import path from "node:path";
 import { fetchRegistryIndex } from "../registry/fetch-index.js";
+import { filterRegistryItems } from "../registry/search-items.js";
 
 export type SearchOptions = {
   query?: string;
@@ -14,25 +13,11 @@ export async function searchCommand(
   options: SearchOptions = {},
 ): Promise<void> {
   const index = await fetchRegistryIndex(options.registryUrl);
-  const query = options.query?.toLowerCase().trim();
-  const lane = options.lane?.toLowerCase().trim();
-  const tier = options.tier?.toLowerCase().trim();
 
-  const results = index.items.filter((item) => {
-    if (lane && item.atlas?.lane !== lane) {
-      return false;
-    }
-    if (tier && item.atlas?.tier !== tier) {
-      return false;
-    }
-    if (!query) return true;
-    return (
-      item.name.toLowerCase().includes(query) ||
-      item.description?.toLowerCase().includes(query) ||
-      item.type.toLowerCase().includes(query) ||
-      item.atlas?.lane.toLowerCase().includes(query) ||
-      item.atlas?.tags?.some((tag) => tag.toLowerCase().includes(query))
-    );
+  const results = filterRegistryItems(index.items, {
+    query: options.query,
+    lane: options.lane,
+    tier: options.tier,
   });
 
   if (options.json) {

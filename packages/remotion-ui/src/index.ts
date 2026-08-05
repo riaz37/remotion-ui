@@ -29,17 +29,36 @@ program
     "--existing",
     "Bootstrap remotion-ui.json in the current Remotion project",
   )
+  .option("--json", "Output machine-readable JSON")
+  .option(
+    "--agent-skill",
+    "Install the RemotionUI agent skill into .claude/skills/",
+  )
+  .option(
+    "--no-agent-skill",
+    "Skip installing the RemotionUI agent skill",
+  )
   .action(
     async (
       projectName: string,
-      options: { yes?: boolean; existing?: boolean },
+      options: {
+        yes?: boolean;
+        existing?: boolean;
+        json?: boolean;
+        agentSkill?: boolean;
+      },
     ) => {
     try {
       await initCommand(projectName, {
         yes: options.yes,
         existing: options.existing,
+        json: options.json,
+        agentSkill: options.agentSkill,
       });
     } catch (error) {
+      if (options.json) {
+        process.exit(1);
+      }
       console.error(
         error instanceof Error ? error.message : "Failed to initialize project",
       );
@@ -58,14 +77,19 @@ program
   )
   .option("--preset <preset>", "Registry preset", "default")
   .option("-y, --yes", "Skip confirmation prompts")
+  .option("--json", "Output machine-readable JSON")
   .action(async (components: string[], options) => {
     try {
       await addCommand(components, {
         registryUrl: options.registryUrl,
         preset: options.preset,
         yes: options.yes,
+        json: options.json,
       });
     } catch (error) {
+      if (options.json) {
+        process.exit(1);
+      }
       console.error(
         error instanceof Error ? error.message : "Failed to add components",
       );
@@ -181,14 +205,19 @@ program
   )
   .option("--preset <preset>", "Registry preset", "default")
   .option("-y, --yes", "Skip confirmation prompts")
+  .option("--json", "Output machine-readable JSON")
   .action(async (components: string[], options) => {
     try {
       await updateCommand(components, {
         registryUrl: options.registryUrl,
         preset: options.preset,
         yes: options.yes,
+        json: options.json,
       });
     } catch (error) {
+      if (options.json) {
+        process.exit(1);
+      }
       console.error(
         error instanceof Error ? error.message : "Failed to update components",
       );
@@ -205,13 +234,18 @@ program
     "Registry base URL or local path to public/r/",
   )
   .option("--preset <preset>", "Registry preset", "default")
+  .option("--json", "Output machine-readable JSON")
   .action(async (name: string, options) => {
     try {
       await diffCommand(name, {
         registryUrl: options.registryUrl,
         preset: options.preset,
+        json: options.json,
       });
     } catch (error) {
+      if (options.json) {
+        process.exit(1);
+      }
       console.error(
         error instanceof Error ? error.message : "Diff failed",
       );
@@ -225,13 +259,18 @@ program
   .argument("[registry]", "path to registry.json", "registry.json")
   .option("-o, --output <dir>", "output directory for built registry")
   .option("--preset <preset>", "registry preset name", "default")
+  .option("--json", "Output machine-readable JSON")
   .action(async (registry: string, options) => {
     try {
       await buildCommand(registry, {
         outputDir: options.output,
         preset: options.preset,
+        json: options.json,
       });
     } catch (error) {
+      if (options.json) {
+        process.exit(1);
+      }
       console.error(
         error instanceof Error ? error.message : "Build failed",
       );

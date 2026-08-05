@@ -2,6 +2,26 @@
 
 ## Unreleased
 
+## 0.8.0
+
+### Added
+
+- **Structured JSON output on every command** — `--json` on `init`, `add`, `doctor`, `list`, `search`, `view`, `update`, `diff`, and `build`. Failures print `{ ok: false, error: { code, message } }` and exit non-zero, so agents and CI can branch on a code instead of scraping stdout. Eleven codes: `CONFIG_NOT_FOUND`, `CONFIG_INVALID`, `REGISTRY_ITEM_NOT_FOUND`, `REGISTRY_FETCH_FAILED`, `REGISTRY_ITEM_INVALID`, `REGISTRY_INDEX_INVALID`, `TEMPLATE_NOT_FOUND`, `TARGET_EXISTS`, `INVALID_ARGS`, `DEPENDENCY_SPEC_INVALID`, `UNKNOWN`.
+- **Agent skill installation** — `init --existing` writes a Claude Code skill to `.claude/skills/remotionui-agent/SKILL.md` covering the install-before-import workflow and the frame-API-only animation rules. `--agent-skill` opts a new project in; `--no-agent-skill` opts out.
+- **`remotion-ui-mcp`** — an MCP server exposing the registry as four agent tools (`list-components`, `search-components`, `get-component-detail`, `get-install-command`) over stdio, sharing the CLI's registry client. Not published to npm; build it from a checkout and point your MCP client at `dist/index.js`.
+- **Remotion version compatibility metadata** — registry items may declare `compat.remotion` as a semver range. `add` compares it against the Remotion version in your `package.json` and warns on a mismatch. The check is advisory and runs at install time only.
+- **Registry search filters** — `search --lane <lane>` and `search --tier <tier>` alongside `-q`.
+- **Docs pages as Markdown** — every docs page is served at `/llms.mdx/docs/<path>`, and each page carries a "Copy page for AI" button plus Open in Claude / ChatGPT links.
+
+### Changed
+
+- **Errors are typed end to end** — commands and preflights throw `RemotionUiError` with a code instead of bare `Error`, which is what makes the `--json` envelope possible. Human-readable output is unchanged.
+- **Docs rewritten for the real flow** — the existing-project path is now `init --existing` rather than hand-writing `remotion-ui.json`; the CLI reference documents every flag, the error codes, compat checking, and automatic composition registration; a new MCP page covers install and config; a copy-paste starter prompt for agents sits on the Introduction and AI Usage pages.
+
+### Notes for maintainers
+
+- Deploy the docs site (`pnpm registry:build && pnpm --filter web build`) **before** publishing the CLI so `https://remotionui.com/r` serves the new registry JSON.
+
 ## 0.7.0
 
 ### Removed

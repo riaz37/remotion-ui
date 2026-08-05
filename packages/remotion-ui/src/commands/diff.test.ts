@@ -66,4 +66,51 @@ describe("diffCommand", () => {
     expect(output).toContain("-export const Old");
     expect(output).toContain("+export const FadeIn");
   });
+
+  it("non-json error text is unchanged for a missing component", async () => {
+    await expect(
+      diffCommand("does-not-exist", {
+        cwd: tempDir,
+        registryUrl: registryDir,
+      }),
+    ).rejects.toThrow(/Registry item "does-not-exist" not found at/);
+  });
+
+  it("--json + a missing component produces a valid {ok:false} JSON blob on stdout", async () => {
+    await expect(
+      diffCommand("does-not-exist", {
+        cwd: tempDir,
+        registryUrl: registryDir,
+        json: true,
+      }),
+    ).rejects.toThrow(/Registry item "does-not-exist" not found at/);
+
+    const stdout = consoleSpy.mock.calls.map((call) => call.join(" ")).join("\n");
+    const parsed = JSON.parse(stdout);
+    expect(parsed.ok).toBe(false);
+    expect(parsed.error.code).toBe("REGISTRY_ITEM_NOT_FOUND");
+  });
+
+  it("--json + a diff produces a single valid JSON object on stdout", async () => {
+    await fs.writeFile(
+      path.join(tempDir, "src/remotion/primitives/fade-in.tsx"),
+      "export const Old = () => null;\n",
+      "utf-8",
+    );
+
+    await diffCommand("fade-in", {
+      cwd: tempDir,
+      registryUrl: registryDir,
+      json: true,
+    });
+
+    expect(consoleSpy).toHaveBeenCalledTimes(1);
+    const stdout = consoleSpy.mock.calls[0]?.join(" ") ?? "";
+    const parsed = JSON.parse(stdout);
+    expect(parsed.ok).toBe(true);
+    expect(parsed.name).toBe("fade-in");
+    expect(parsed.changed).toEqual([
+      { path: "src/remotion/primitives/fade-in.tsx", status: "changed" },
+    ]);
+  });
 });

@@ -94,6 +94,10 @@ type AtlasMeta = {
   tags?: string[];
 };
 
+type CompatMeta = {
+  remotion?: string;
+};
+
 type RegistryItem = {
   name: string;
   type: string;
@@ -101,6 +105,7 @@ type RegistryItem = {
   dependencies?: string[];
   registryDependencies?: string[];
   atlas?: AtlasMeta;
+  compat?: CompatMeta;
   files: RegistryFile[];
 };
 
@@ -334,6 +339,7 @@ async function buildAiFiles(registry: Registry): Promise<void> {
           }
         : {}),
       ...(item.composition ? { composition: item.composition } : {}),
+      ...(item.compat ? { compat: item.compat } : {}),
       aiRules: [
         "Install with the CLI before importing.",
         "Import from local source paths, not from the remotion-ui npm package.",
@@ -448,6 +454,8 @@ cd my-video
 npx remotion-ui@latest search -q caption
 npx remotion-ui@latest add social-clip caption-highlight lower-third
 \`\`\`
+
+Every command supports \`--json\` for structured output. An MCP server (\`remotion-ui-mcp\`) and an installable Claude Code skill (\`remotion-ui init --agent-skill\`) are also available — see ${siteUrl}/docs/ai.
 
 ## Agent rules
 

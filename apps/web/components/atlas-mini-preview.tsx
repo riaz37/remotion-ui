@@ -269,6 +269,16 @@ function LivePreview({
   const aspectRatio =
     aspectRatioProp ?? (height > width ? "9 / 16" : "16 / 9");
 
+  // Some previews (audiogram, waveform, …) read browser-only audio data
+  // synchronously on their first client render, which never matches the
+  // server's placeholder markup. Deferring the Player to a post-mount
+  // effect keeps it out of SSR output entirely, so there's nothing for
+  // hydration to mismatch against.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     const player = playerRef.current;
     if (!player) return;
@@ -327,22 +337,24 @@ function LivePreview({
       onMouseMove={scrubOnHover ? handleScrub : undefined}
       onMouseLeave={scrubOnHover ? handleLeave : undefined}
     >
-      <Player
-        ref={playerRef}
-        component={component}
-        durationInFrames={duration}
-        fps={30}
-        compositionWidth={width}
-        compositionHeight={height}
-        style={{ width: "100%", height: "100%", display: "block" }}
-        controls={false}
-        loop
-        autoPlay={!playWhenVisible}
-        clickToPlay={false}
-        initiallyMuted
-        showPosterWhenUnplayed={false}
-        acknowledgeRemotionLicense
-      />
+      {mounted ? (
+        <Player
+          ref={playerRef}
+          component={component}
+          durationInFrames={duration}
+          fps={30}
+          compositionWidth={width}
+          compositionHeight={height}
+          style={{ width: "100%", height: "100%", display: "block" }}
+          controls={false}
+          loop
+          autoPlay={!playWhenVisible}
+          clickToPlay={false}
+          initiallyMuted
+          showPosterWhenUnplayed={false}
+          acknowledgeRemotionLicense
+        />
+      ) : null}
     </div>
   );
 }

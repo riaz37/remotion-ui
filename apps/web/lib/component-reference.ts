@@ -1,9 +1,14 @@
+// `type` (free-text display string) and `schema` (JSON Schema fragment) describe the
+// same prop from two angles — keep them in sync whenever either is edited. `schema` is
+// hand-authored only for the flagship components (social-clip, creator-reel, intro,
+// fade-in, caption-highlight); it is partial coverage, not present on every component.
 export type PropDefinition = {
   name: string;
   type: string;
   default?: string;
   required?: boolean;
   description: string;
+  schema?: Record<string, unknown>;
 };
 
 export type ComponentReference = {
@@ -82,6 +87,31 @@ const motionChildProps: PropDefinition[] = [
   },
 ];
 
+// JSON Schema fragments for the shared `motionChildProps`, keyed by prop name. Kept
+// separate from `motionChildProps` itself so `schema` can be attached only where a
+// component is explicitly authored for it (fade-in) without mutating the shared array
+// that other, not-yet-authored primitives (slide-up, slide-left, scale-in, blur-in,
+// rotate-in, spring-in) also spread from.
+const motionChildPropSchemas: Record<string, Record<string, unknown>> = {
+  children: {},
+  durationInFrames: { type: "number" },
+  delayInFrames: { type: "number" },
+  spring: {
+    oneOf: [
+      { type: "string", enum: ["smooth", "snappy", "bouncy"] },
+      { type: "boolean" },
+      { type: "object" },
+    ],
+  },
+  exit: { type: "boolean" },
+  exitInFrames: { type: "number" },
+  exitAtInFrames: { type: "number" },
+  exitTravel: { type: "number" },
+  exitDirection: { type: "string", enum: ["reverse", "continue"] },
+  block: { type: "boolean" },
+  style: { type: "object" },
+};
+
 export const componentReference: Record<string, ComponentReference> = {
   "fade-in": {
     category: "primitive",
@@ -91,18 +121,23 @@ export const componentReference: Record<string, ComponentReference> = {
   <div>Hello world</div>
 </FadeIn>`,
     props: [
-      ...motionChildProps,
+      ...motionChildProps.map((prop) => ({
+        ...prop,
+        schema: motionChildPropSchemas[prop.name] ?? {},
+      })),
       {
         name: "from",
         type: "number",
         default: "0",
         description: "Opacity the fade starts from.",
+        schema: { type: "number" },
       },
       {
         name: "to",
         type: "number",
         default: "1",
         description: "Opacity the fade settles on.",
+        schema: { type: "number" },
       },
     ],
     note: "Opacity runs the full duration here; the transform primitives finish theirs at 55% so the element lands solid.",
@@ -1068,10 +1103,10 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <Intro title="My Product" subtitle="Launch video" />`,
     props: [
-      { name: "title", type: "string", default: '"RemotionUI"', description: "Main title." },
-      { name: "subtitle", type: "string", description: "Tagline under the title." },
-      { name: "backgroundColor", type: "string", description: "Page background behind the intro." },
-      { name: "accentColor", type: "string", description: "Accent used by the progress bar and title." },
+      { name: "title", type: "string", default: '"RemotionUI"', description: "Main title.", schema: { type: "string" } },
+      { name: "subtitle", type: "string", description: "Tagline under the title.", schema: { type: "string" } },
+      { name: "backgroundColor", type: "string", description: "Page background behind the intro.", schema: { type: "string" } },
+      { name: "accentColor", type: "string", description: "Accent used by the progress bar and title.", schema: { type: "string" } },
     ],
     note: "Full intro sequence with staggered title, subtitle, and progress bar.",
     related: ["showcase", "title-card"],
@@ -1110,15 +1145,15 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <CaptionHighlight page={page} activeColor="#60a5fa" />`,
     props: [
-      { name: "page", type: "TikTokPage", required: true, description: "Caption page from createTikTokStyleCaptions." },
-      { name: "activeColor", type: "string", default: '"#ff6b00"', description: "Highlight color for the active word." },
-      { name: "inactiveColor", type: "string", default: '"#111111"', description: "Color for inactive words." },
-      { name: "fontSize", type: "number", default: "64 (scaled)", description: "Caption font size in pixels." },
-      { name: "fontWeight", type: "number | string", default: "650", description: "Resting weight." },
-      { name: "activeWeight", type: "number | string", default: "800", description: "Weight the active word steps to." },
-      { name: "emphasisScale", type: "number", default: "EMPHASIS.subtle (1.05)", description: "Peak scale of the active word." },
-      { name: "textAlign", type: '"left" | "center"', default: '"center"', description: "Line alignment." },
-      { name: "frame", type: "number", description: "Frame override — pass the parent frame inside a Sequence." },
+      { name: "page", type: "TikTokPage", required: true, description: "Caption page from createTikTokStyleCaptions.", schema: { type: "object" } },
+      { name: "activeColor", type: "string", default: '"#ff6b00"', description: "Highlight color for the active word.", schema: { type: "string" } },
+      { name: "inactiveColor", type: "string", default: '"#111111"', description: "Color for inactive words.", schema: { type: "string" } },
+      { name: "fontSize", type: "number", default: "64 (scaled)", description: "Caption font size in pixels.", schema: { type: "number" } },
+      { name: "fontWeight", type: "number | string", default: "650", description: "Resting weight.", schema: { oneOf: [{ type: "number" }, { type: "string" }] } },
+      { name: "activeWeight", type: "number | string", default: "800", description: "Weight the active word steps to.", schema: { oneOf: [{ type: "number" }, { type: "string" }] } },
+      { name: "emphasisScale", type: "number", default: "EMPHASIS.subtle (1.05)", description: "Peak scale of the active word.", schema: { type: "number" } },
+      { name: "textAlign", type: '"left" | "center"', default: '"center"', description: "Line alignment.", schema: { type: "string", enum: ["left", "center"] } },
+      { name: "frame", type: "number", description: "Frame override — pass the parent frame inside a Sequence.", schema: { type: "number" } },
     ],
     note: "Advanced. Installs @remotion/captions.",
     related: ["caption-scene", "caption-utils"],
@@ -1952,15 +1987,15 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <SocialClip audioSrc={staticFile("podcast.wav")} captions={captions} />`,
     props: [
-      { name: "audioSrc", type: "string", required: true, description: "Podcast audio source." },
-      { name: "captions", type: "Caption[]", required: true, description: "Synced caption array." },
-      { name: "hookTitle", type: "string", description: "Opening hook headline." },
-      { name: "hookSubtitle", type: "string", description: "Supporting line under the hook." },
-      { name: "podcastTitle", type: "string", default: '"Weekly Brief"', description: "Show name shown over the audiogram body." },
-      { name: "logoSrc", type: "string", description: "Optional brand mark shown in hook, body, and end card." },
-      { name: "ctaTitle", type: "string", default: '"Hear the full episode"', description: "End card headline." },
-      { name: "ctaLabel", type: "string", description: "End card CTA pill label." },
-      { name: "ctaUrl", type: "string", description: "URL shown on the end card." },
+      { name: "audioSrc", type: "string", required: true, description: "Podcast audio source.", schema: { type: "string" } },
+      { name: "captions", type: "Caption[]", required: true, description: "Synced caption array.", schema: { type: "array", items: { type: "object" } } },
+      { name: "hookTitle", type: "string", description: "Opening hook headline.", schema: { type: "string" } },
+      { name: "hookSubtitle", type: "string", description: "Supporting line under the hook.", schema: { type: "string" } },
+      { name: "podcastTitle", type: "string", default: '"Weekly Brief"', description: "Show name shown over the audiogram body.", schema: { type: "string" } },
+      { name: "logoSrc", type: "string", description: "Optional brand mark shown in hook, body, and end card.", schema: { type: "string" } },
+      { name: "ctaTitle", type: "string", default: '"Hear the full episode"', description: "End card headline.", schema: { type: "string" } },
+      { name: "ctaLabel", type: "string", description: "End card CTA pill label.", schema: { type: "string" } },
+      { name: "ctaUrl", type: "string", description: "URL shown on the end card.", schema: { type: "string" } },
     ],
     note: "9:16 social template (1080×1920). Advanced tier.",
     related: ["caption-scene", "audiogram-scene", "auto-fit-title"],
@@ -1975,23 +2010,23 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
   captions={captions}
 />`,
     props: [
-      { name: "hookHeadline", type: "string", description: "Opening hook headline (auto-fit in portrait)." },
-      { name: "hookSubtitle", type: "string", description: "Supporting line under the hook." },
-      { name: "mediaSrc", type: "string", description: "Speaker image or video source." },
-      { name: "mediaFit", type: '"cover" | "contain"', default: '"cover"', description: "Speaker media object-fit behavior." },
-      { name: "audioSrc", type: "string", description: "Optional audio source for waveform visuals." },
-      { name: "captions", type: "Caption[]", description: "Synced captions layered over the talking-head scene." },
-      { name: "talkingHeadEyebrow", type: "string", description: "Eyebrow label above the talking-head title." },
-      { name: "talkingHeadTitle", type: "string", description: "Short title in the talking-head layout." },
-      { name: "comment", type: "string", description: "Comment callout body text." },
-      { name: "author", type: "string", description: "Comment author display name." },
-      { name: "handle", type: "string", description: "Comment author handle." },
-      { name: "bRollItems", type: "BRollItem[]", description: "Media cards for the proof/b-roll section." },
-      { name: "bRollTitle", type: "string", description: "Headline beside the b-roll stack." },
-      { name: "bRollKicker", type: "string", default: '"Proof beats"', description: "Eyebrow above the b-roll headline." },
-      { name: "accentColor", type: "string", description: "Accent used across hook, captions, and end card." },
-      { name: "ctaTitle", type: "string", description: "End card headline (separate from hook)." },
-      { name: "ctaLabel", type: "string", description: "End card CTA pill label." },
+      { name: "hookHeadline", type: "string", description: "Opening hook headline (auto-fit in portrait).", schema: { type: "string" } },
+      { name: "hookSubtitle", type: "string", description: "Supporting line under the hook.", schema: { type: "string" } },
+      { name: "mediaSrc", type: "string", description: "Speaker image or video source.", schema: { type: "string" } },
+      { name: "mediaFit", type: '"cover" | "contain"', default: '"cover"', description: "Speaker media object-fit behavior.", schema: { type: "string", enum: ["cover", "contain"] } },
+      { name: "audioSrc", type: "string", description: "Optional audio source for waveform visuals.", schema: { type: "string" } },
+      { name: "captions", type: "Caption[]", description: "Synced captions layered over the talking-head scene.", schema: { type: "array", items: { type: "object" } } },
+      { name: "talkingHeadEyebrow", type: "string", description: "Eyebrow label above the talking-head title.", schema: { type: "string" } },
+      { name: "talkingHeadTitle", type: "string", description: "Short title in the talking-head layout.", schema: { type: "string" } },
+      { name: "comment", type: "string", description: "Comment callout body text.", schema: { type: "string" } },
+      { name: "author", type: "string", description: "Comment author display name.", schema: { type: "string" } },
+      { name: "handle", type: "string", description: "Comment author handle.", schema: { type: "string" } },
+      { name: "bRollItems", type: "BRollItem[]", description: "Media cards for the proof/b-roll section.", schema: { type: "array", items: { type: "object" } } },
+      { name: "bRollTitle", type: "string", description: "Headline beside the b-roll stack.", schema: { type: "string" } },
+      { name: "bRollKicker", type: "string", default: '"Proof beats"', description: "Eyebrow above the b-roll headline.", schema: { type: "string" } },
+      { name: "accentColor", type: "string", description: "Accent used across hook, captions, and end card.", schema: { type: "string" } },
+      { name: "ctaTitle", type: "string", description: "End card headline (separate from hook).", schema: { type: "string" } },
+      { name: "ctaLabel", type: "string", description: "End card CTA pill label.", schema: { type: "string" } },
     ],
     note: "9:16 creator template. Advanced tier.",
     related: ["hook-card", "talking-head-layout", "comment-callout"],

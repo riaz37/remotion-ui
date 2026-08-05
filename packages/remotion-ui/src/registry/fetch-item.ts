@@ -2,6 +2,7 @@ import fs from "fs-extra";
 import path from "node:path";
 import { registryItemSchema } from "../schema/index.js";
 import type { RegistryItemJson } from "./index.js";
+import { RemotionUiError } from "../utils/errors.js";
 
 export const DEFAULT_REGISTRY_URL = "https://remotionui.com/r";
 
@@ -29,7 +30,10 @@ export async function fetchRegistryItem(
     );
 
     if (!(await fs.pathExists(filePath))) {
-      throw new Error(`Registry item "${name}" not found at ${filePath}`);
+      throw new RemotionUiError(
+        "REGISTRY_ITEM_NOT_FOUND",
+        `Registry item "${name}" not found at ${filePath}`,
+      );
     }
 
     const raw = await fs.readFile(filePath, "utf-8");
@@ -40,7 +44,10 @@ export async function fetchRegistryItem(
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch registry item "${name}" from ${url}`);
+    throw new RemotionUiError(
+      "REGISTRY_FETCH_FAILED",
+      `Failed to fetch registry item "${name}" from ${url}`,
+    );
   }
 
   return parseRegistryItem(await response.json(), name);
@@ -49,7 +56,8 @@ export async function fetchRegistryItem(
 function parseRegistryItem(value: unknown, name: string): RegistryItemJson {
   const result = registryItemSchema.safeParse(value);
   if (!result.success) {
-    throw new Error(
+    throw new RemotionUiError(
+      "REGISTRY_ITEM_INVALID",
       `Invalid registry item "${name}": ${result.error.issues
         .map((issue) => issue.path.join(".") || issue.message)
         .join(", ")}`,

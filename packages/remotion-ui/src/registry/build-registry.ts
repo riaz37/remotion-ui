@@ -52,7 +52,7 @@ async function readFileContent(
 
 export async function buildRegistry(
   options: BuildRegistryOptions,
-): Promise<{ itemCount: number; outputDir: string }> {
+): Promise<{ itemCount: number; outputDir: string; items: string[] }> {
   const registryPath = path.resolve(options.registryPath);
   const appRoot = path.dirname(registryPath);
   const preset = options.preset ?? "default";
@@ -116,5 +116,9 @@ export async function buildRegistry(
     "utf-8",
   );
 
-  return { itemCount: registry.items.length, outputDir };
+  return {
+    itemCount: registry.items.length,
+    outputDir,
+    items: index.map((entry) => entry.name),
+  };
 }

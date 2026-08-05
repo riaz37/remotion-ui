@@ -1,9 +1,12 @@
 {
+  "name": "remotion-ui-test-fixtures",
   "items": [
     { "name": "timing", "type": "registry:lib", "description": "Frame timing helpers" },
     { "name": "fade-in", "type": "registry:ui", "description": "Fade in animation" },
     { "name": "slide-left", "type": "registry:ui", "description": "Slide left animation" },
     { "name": "lower-third", "type": "registry:block", "description": "Lower third scene" },
-    { "name": "intro", "type": "registry:block", "description": "Intro composition" }
+    { "name": "intro", "type": "registry:block", "description": "Intro composition" },
+    { "name": "compat-warn", "type": "registry:ui", "description": "Compat mismatch fixture" },
+    { "name": "compat-ok", "type": "registry:ui", "description": "Compat match fixture" }
   ]
 }

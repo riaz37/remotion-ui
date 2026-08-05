@@ -126,4 +126,103 @@ describe("addCommand", () => {
 
     logSpy.mockRestore();
   });
+
+  it("non-json error text is unchanged when the component is missing", async () => {
+    await expect(
+      addCommand(["does-not-exist"], {
+        cwd: tempDir,
+        registryUrl: registryDir,
+      }),
+    ).rejects.toThrow(/Registry item "does-not-exist" not found at/);
+  });
+
+  it("--json + a missing component produces a valid {ok:false} JSON blob on stdout", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+    await expect(
+      addCommand(["does-not-exist"], {
+        cwd: tempDir,
+        registryUrl: registryDir,
+        json: true,
+      }),
+    ).rejects.toThrow(/Registry item "does-not-exist" not found at/);
+
+    const stdout = logSpy.mock.calls.map((call) => call.join(" ")).join("\n");
+    const parsed = JSON.parse(stdout);
+    expect(parsed.ok).toBe(false);
+    expect(parsed.error.code).toBe("REGISTRY_ITEM_NOT_FOUND");
+    expect(parsed.error.message).toMatch(/does-not-exist/);
+
+    logSpy.mockRestore();
+  });
+
+  it("--json + a successful add produces a single valid JSON object on stdout", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+    await addCommand(["fade-in"], {
+      cwd: tempDir,
+      registryUrl: registryDir,
+      json: true,
+    });
+
+    expect(logSpy).toHaveBeenCalledTimes(1);
+    const stdout = logSpy.mock.calls[0]?.join(" ") ?? "";
+    const parsed = JSON.parse(stdout);
+    expect(parsed).toEqual({
+      ok: true,
+      installed: ["fade-in"],
+      dependencies: ["remotion"],
+    });
+
+    logSpy.mockRestore();
+  });
+
+  it("warns when an item's compat.remotion range does not satisfy the installed remotion version", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    await addCommand(["compat-warn"], {
+      cwd: tempDir,
+      registryUrl: registryDir,
+    });
+
+    expect(warnSpy.mock.calls.flat().join("\n")).toContain(
+      '"compat-warn" expects remotion ^5.0.0, but ^4.0.505 is installed.',
+    );
+
+    warnSpy.mockRestore();
+  });
+
+  it("does not warn when an item's compat.remotion range satisfies the installed remotion version", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    await addCommand(["compat-ok"], {
+      cwd: tempDir,
+      registryUrl: registryDir,
+    });
+
+    expect(
+      warnSpy.mock.calls
+        .flat()
+        .some((line) => typeof line === "string" && line.includes("compat-ok")),
+    ).toBe(false);
+
+    warnSpy.mockRestore();
+  });
+
+  it("does not warn when an item has no compat field", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    await addCommand(["fade-in"], {
+      cwd: tempDir,
+      registryUrl: registryDir,
+    });
+
+    expect(
+      warnSpy.mock.calls
+        .flat()
+        .some((line) => typeof line === "string" && line.includes("fade-in")),
+    ).toBe(false);
+
+    warnSpy.mockRestore();
+  });
 });

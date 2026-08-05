@@ -1,0 +1,14 @@
+{
+  "name": "compat-warn",
+  "type": "registry:ui",
+  "dependencies": ["remotion"],
+  "registryDependencies": [],
+  "compat": { "remotion": "^5.0.0" },
+  "files": [
+    {
+      "path": "registry/bases/default/primitives/compat-warn.tsx",
+      "type": "registry:ui",
+      "content": "export const CompatWarn = () => null;\n"
+    }
+  ]
+}

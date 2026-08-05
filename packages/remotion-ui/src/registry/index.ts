@@ -15,6 +15,10 @@ export type CompositionMetaJson = {
   importPath?: string;
 };
 
+export type CompatMetaJson = {
+  remotion?: string;
+};
+
 export type RegistryItemJson = {
   name: string;
   type: string;
@@ -22,6 +26,7 @@ export type RegistryItemJson = {
   dependencies?: string[];
   registryDependencies?: string[];
   composition?: CompositionMetaJson;
+  compat?: CompatMetaJson;
   files: RegistryFile[];
 };
 
@@ -30,3 +35,12 @@ export {
   fetchRegistryItem,
 } from "./fetch-item.js";
 export type { FetchRegistryOptions } from "./fetch-item.js";
+
+export { fetchRegistryIndex } from "./fetch-index.js";
+export type { RegistryIndexAtlas, RegistryIndexItem } from "./fetch-index.js";
+
+export { filterRegistryItems } from "./search-items.js";
+export type { FilterRegistryItemsOptions } from "./search-items.js";
+
+export { RemotionUiError } from "../utils/errors.js";
+export type { ErrorCode, ErrorJson } from "../utils/errors.js";

@@ -7,7 +7,9 @@ import {
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { PageAiActions } from "@/components/docs/page-ai-actions";
 import { getMDXComponents } from "@/mdx-components";
+import { getPageMarkdown } from "@/lib/page-markdown";
 import { source } from "@/lib/source";
 import { siteConfig } from "@/lib/site-config";
 import { faqPageJsonLd, docsFaqJsonLdBySlug } from "@/lib/site-metadata";
@@ -23,6 +25,8 @@ export default async function Page(props: {
   const slugKey = (params.slug ?? []).join("/");
   const faqEntries = docsFaqJsonLdBySlug[slugKey];
   const faqJsonLd = faqEntries ? faqPageJsonLd(faqEntries) : null;
+  const markdown = await getPageMarkdown(page);
+  const markdownUrl = `${siteConfig.url}/llms.mdx${page.url}`;
 
   return (
     <DocsPage toc={page.data.toc} full={page.data.full}>
@@ -36,6 +40,11 @@ export default async function Page(props: {
         {page.data.title}
       </DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
+      <PageAiActions
+        markdown={markdown}
+        markdownUrl={markdownUrl}
+        title={page.data.title}
+      />
       <DocsBody>
         <MDX
           components={getMDXComponents({
