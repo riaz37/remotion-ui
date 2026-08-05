@@ -50,8 +50,10 @@ export function getTokenEmphasis(
   fps: number,
   options?: { enterFrames?: number; exitFrames?: number },
 ) {
-  const enterFrames = options?.enterFrames ?? 6;
-  const exitFrames = options?.exitFrames ?? 6;
+  // A word holds for 200-800ms, so emphasis has to arrive fast and release
+  // slower — a symmetric ramp reads as a flicker on short tokens.
+  const enterFrames = options?.enterFrames ?? 4;
+  const exitFrames = options?.exitFrames ?? 9;
   const { startFrame, endFrame } = getTokenRelativeFrames(token, page, fps);
   const absoluteTimeMs = getAbsoluteTimeMs(page, frame, fps);
   const active = isTokenActive(token, absoluteTimeMs);
@@ -67,6 +69,8 @@ export function getTokenEmphasis(
     },
   );
 
+  // Releasing emphasis is a settle, not an exit — accelerating away would snap
+  // the word back to its resting size.
   const exit = interpolate(
     frame,
     [endFrame, endFrame + exitFrames],
@@ -74,11 +78,17 @@ export function getTokenEmphasis(
     {
       extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
-      easing: EASING.enter,
+      easing: EASING.editorial,
     },
   );
 
-  return active ? enter : exit;
+  if (active) {
+    return enter;
+  }
+
+  // Tokens that have not been spoken yet sit at rest — the exit ramp clamps to
+  // 1 before its own end frame, so it must not be read for future words.
+  return frame < startFrame ? 0 : exit;
 }
 
 export function getPageSequenceTiming(

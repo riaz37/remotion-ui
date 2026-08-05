@@ -2,7 +2,7 @@ import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from "remo
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
 import { EASING_ENTER } from "@/remotion/lib/timing";
 
-const ITEMS = ["Components", "Recipes", "Render queue", "Docs"];
+const ITEMS = ["Components", "Compositions", "Render queue", "Docs"];
 
 export const ToolMenuSlide: React.FC = () => {
   const frame = useCurrentFrame();

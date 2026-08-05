@@ -1,12 +1,18 @@
 ---
 title: Path Draw
-description: SVG stroke reveal along a path.
+description: SVG stroke reveal with auto-fit framing and multi-path stagger.
 ---
 
 import { PathDrawPreview } from '@/components/previews/path-draw';
 
-<ComponentPage name="path-draw" preview={PathDrawPreview} durationInFrames={90}>
+<ComponentPage name="path-draw" preview={PathDrawPreview}>
 
-Animates SVG stroke reveal using `@remotion/paths` `evolvePath()`.
+Reveals a stroke with `@remotion/paths` `evolvePath()`, and rides a bright head
+along the tip while it draws. Pass an array to `d` to draw several paths in
+sequence — each starts `staggerInFrames` after the last.
+
+Omit `viewBox` and the artwork is framed from its own bounding box, so a path
+exported anywhere on its canvas still lands centred and filling the frame. Set
+`fill` to flood colour in once the outline closes.
 
 </ComponentPage>

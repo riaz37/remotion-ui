@@ -21,7 +21,6 @@ Use RemotionUI when the user asks for ready-made captions, charts, transitions, 
 5. Use Remotion frame APIs for render-time motion.
 6. Do not use CSS transitions or Tailwind animation classes for video motion.
 7. Customize copied files directly when the user asks for design changes.
-8. Prefer recipes before raw search when building a complete video.
 
 ## Primary commands
 
@@ -86,11 +85,9 @@ npx remotion-ui@latest add lower-third title-card stat-card quote-card callout-s
 
 Use for lower thirds, speaker labels, stat callouts, title cards, and quote scenes.
 
-## Complete recipes
+## Complete videos
 
-Read machine-readable recipes at https://remotionui.com/ai/recipes.json.
-
-Recommended mapping:
+Recommended component sets by goal:
 
 - Captioned social video: `social-clip`, `caption-scene`, `caption-highlight`, `audiogram-scene`, `end-card`
 - Data story: `data-story`, `animated-bar-chart`, `metric-ticker`, `timeline-steps`, `caption-bumper`
@@ -101,8 +98,8 @@ Recommended mapping:
 ## AI workflow
 
 1. Determine the user's video goal.
-2. Choose the closest recipe.
-3. Install the recipe components with `npx remotion-ui@latest add`.
+2. Choose the closest flagship composition and its supporting components.
+3. Install them with `npx remotion-ui@latest add`.
 4. Import from local source paths.
 5. Compose scenes with Remotion `Composition`, `Sequence`, `useCurrentFrame()`, `interpolate()`, and `spring()`.
 6. Keep readable text inside safe areas.
@@ -112,6 +109,5 @@ Recommended mapping:
 
 - Short LLM guide: https://remotionui.com/llms.txt
 - Component index: https://remotionui.com/ai/components.json
-- Recipe index: https://remotionui.com/ai/recipes.json
 - Reusable agent prompt: https://remotionui.com/ai/remotionui-agent.md
 - Registry index: https://remotionui.com/r/index.json

@@ -1,13 +1,23 @@
 ---
 title: Grid Pixelate Wipe
-description: Grid cell opacity stagger wipe for TransitionSeries.
+description: The next scene arrives one grid cell at a time.
 ---
 
 import { TransitionGridPixelateWipePreview } from "@/components/previews/transition-grid-pixelate-wipe";
 
 <ComponentPage name="grid-pixelate-wipe" preview={TransitionGridPixelateWipePreview} durationInFrames={90}>
 
-Exports `transitionGridPixelateWipe()` and `getTransitionGridPixelateWipeDuration()` for use with `TransitionSeries.Transition`.
+The incoming scene is revealed through a `cols` × `rows` mask whose cells light
+up in turn, with the outgoing scene holding whole underneath so the gaps between
+cells always show the old frame rather than the background.
+
+`order` picks where the fill starts — an edge, the diagonal, or the centre —
+and `stagger` sets how far the cells spread apart in time: `0` pops them all at
+once, `1` spreads them across the whole window. `shape: "dot"` grows each cell
+as a point instead of filling it as a block.
+
+Exports `transitionGridPixelateWipe()` and `getTransitionGridPixelateWipeDuration()`
+for use with `TransitionSeries.Transition`.
 
 Requires `@remotion/transitions`. Run `npx remotion add @remotion/transitions` if not already installed.
 

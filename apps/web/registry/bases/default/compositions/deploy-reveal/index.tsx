@@ -10,7 +10,17 @@ export const DeployReveal: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: "#080810" }}>
       <Sequence durationInFrames={90} premountFor={premount}>
-        <TerminalSimulator title="Deploy" />
+        {/* 90 frames — sped up so the prompt returns before the cut. */}
+        <TerminalSimulator
+          title="Deploy"
+          command="vercel deploy --prod"
+          steps={[
+            { text: "uploading build output", duration: "1.2s" },
+            { text: "assigning production domain", duration: "340ms" },
+          ]}
+          summary="live in 4.2s"
+          speed={1.7}
+        />
       </Sequence>
       <Sequence from={90} durationInFrames={90} premountFor={premount}>
         <DeviceMockupZoom device="laptop" />

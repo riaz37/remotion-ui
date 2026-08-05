@@ -1,12 +1,14 @@
 ---
 title: Stagger Children
-description: Wrapper that offsets delayInFrames per child for staggered entrances.
+description: Offset children onto their own sequences — forward, reverse, centre or edge order, in and out.
 ---
 
 import { StaggerChildrenPreview } from '@/components/previews/stagger-children';
 
-<ComponentPage name="stagger-children" preview={StaggerChildrenPreview} durationInFrames={90}>
+<ComponentPage name="stagger-children" preview={StaggerChildrenPreview}>
 
-Clones each child and adds a cumulative `delayInFrames` based on index. Works with any primitive that accepts `delayInFrames`.
+Wraps each child in a `<Sequence layout="none">` on its own slot, so every child animates from its local frame 0 and needs no delay of its own.
+
+`order` changes which child goes first: `center` runs outwards from the middle, `edges` runs inwards — both read as one gesture across a row rather than a queue. `exitStaggerInFrames` moves each child's exit earlier in the order it arrived, without cutting its slot short, so nothing unmounts under the layout.
 
 </ComponentPage>

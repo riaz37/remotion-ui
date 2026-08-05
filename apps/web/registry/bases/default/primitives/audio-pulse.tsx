@@ -1,9 +1,4 @@
-import { useCurrentFrame, useVideoConfig } from "remotion";
-import {
-  DEFAULT_AUDIO_WINDOW_SECONDS,
-  scaleFrequenciesForDisplay,
-  useSpectrumBars,
-} from "@/remotion/lib/audio-viz-utils";
+import { bandEnergy, useAudioBands } from "@/remotion/lib/audio-viz-utils";
 
 export type AudioPulseProps = {
   src: string;
@@ -35,36 +30,23 @@ export const AudioPulse: React.FC<AudioPulseProps> = ({
   sensitivity = 1,
   frame: frameOverride,
 }) => {
-  const frame = frameOverride ?? useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const { frequencies } = useSpectrumBars({
+  // 24 bands keeps the low end resolved enough to separate a kick from the
+  // body of the mix; the pulse only reads the bottom third of them.
+  const { bands, frame, fps } = useAudioBands({
     src,
-    numberOfSamples: 128,
-    windowInSeconds: DEFAULT_AUDIO_WINDOW_SECONDS,
-    frame,
+    bandCount: 24,
+    frame: frameOverride,
   });
-  const scaled = frequencies ? scaleFrequenciesForDisplay(frequencies) : null;
 
-  const energy = scaled
-    ? scaled
-        .slice(0, 28)
-        .reduce((sum, value) => sum + value, 0) / 28
-    : null;
+  const low = bandEnergy(bands, 0, 8);
+  const full = bandEnergy(bands);
+  // Weighted toward the bass so the orb pumps on the beat rather than on hats.
+  const raw = clamp01((low * 0.72 + full * 0.28) * sensitivity);
 
-  // Deterministic fallback when audio isn't available (e.g. during loading / remote audio blocked).
-  // Uses the provided/derived `frame`, so it stays stable inside `<Sequence from={...}>`.
-  const fallback =
-    0.28 +
-    0.22 * Math.sin((frame / fps) * Math.PI * 2 * 0.85) +
-    0.08 * Math.sin((frame / fps) * Math.PI * 2 * 2.1 + 1.4);
-
-  const raw = clamp01(((energy ?? fallback) * sensitivity) / 0.9);
-
-  // Smooth + compress: reduces jitter while keeping punch on peaks.
-  const compressed = Math.pow(raw, 0.72);
-  const intensity = smoothstep(compressed);
+  // Compress: keeps quiet passages visible without flattening the transients.
+  const intensity = smoothstep(Math.pow(raw, 0.78));
   const idle = 0.5 + 0.5 * Math.sin((frame / fps) * Math.PI * 2 * 0.18);
-  const breathe = 0.035 * idle * (scaled ? 0.55 : 1);
+  const breathe = 0.03 * idle;
 
   return (
     <div style={{ width: size, height: size, position: "relative" }}>

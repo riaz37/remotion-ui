@@ -1,10 +1,11 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
-import { DELAY, DURATION, EASING, STAGGER } from "@/remotion/lib/motion-tokens";
+import { CODE_THEMES } from "@/remotion/lib/code-syntax";
+import { getSafeAreaPadding } from "@/remotion/lib/layout";
+import { EASING } from "@/remotion/lib/motion-tokens";
 
 const { fontFamily } = loadFont("normal", {
-  weights: ["500", "600", "700"],
+  weights: ["400", "500", "600", "700"],
   subsets: ["latin"],
 });
 
@@ -14,80 +15,226 @@ export type ChatMessage = {
 };
 
 export type ChatToPreviewProps = {
+  /** The exchange, in order. User turns type and send; assistant turns stream. */
   messages?: ChatMessage[];
+  /** Title the finished preview renders. */
   previewTitle?: string;
+  /** Supporting line under the preview title. */
   previewCaption?: string;
-  morphStartFrame?: number;
-  backgroundColor?: string;
+  /** Name of the preview surface, shown in its header. */
+  previewLabel?: string;
+  /** Placeholder in the composer before anything is typed. */
+  placeholder?: string;
   accentColor?: string;
+  backgroundColor?: string;
+  theme?: "dark" | "light";
+  /** Animation speed multiplier. */
+  speed?: number;
 };
 
-const COLORS = {
-  bg: "#080810",
-  panel: "rgba(10,12,20,0.94)",
-  border: "rgba(148,163,184,0.14)",
-  user: "#1a1f2d",
-  assistant: "rgba(232,184,109,0.12)",
-  text: "#f4f4f5",
-  muted: "#94a3b8",
-  accent: "#e8b86d",
-  teal: "#2dd4bf",
-} as const;
-
 const DEFAULT_MESSAGES: ChatMessage[] = [
-  { role: "user", text: "Show the title card with a phosphor accent." },
-  { role: "assistant", text: "Rendering a centered title scene with rim light." },
+  { role: "user", text: "Open on a title card with a phosphor accent." },
+  { role: "assistant", text: "Building a centred title scene with rim light." },
 ];
 
+/** Characters typed per second in the composer. */
+const TYPE_CPS = 38;
+/** Words streamed per second by the assistant. */
+const STREAM_WPS = 8;
+
+/** Beat plan in seconds. */
+const T = {
+  /** First keystroke. */
+  start: 0.5,
+  /** Held after the composer fills, before the send. */
+  beforeSend: 0.2,
+  /** Bubble flight from the composer into the thread. */
+  send: 0.34,
+  /** Assistant pause before it starts answering. */
+  think: 0.62,
+  /** Gap after a turn finishes. */
+  turnGap: 0.24,
+  /** How long the preview takes to assemble once the answer starts. */
+  build: 1.9,
+  /** Fade from wireframe to the rendered result. */
+  resolve: 0.5,
+} as const;
+
+const clamp = {
+  extrapolateLeft: "clamp",
+  extrapolateRight: "clamp",
+} as const;
+
+type Turn = {
+  message: ChatMessage;
+  /** Composer typing window (user turns only). */
+  typeFrom: number;
+  /** When the bubble exists in the thread. */
+  landAt: number;
+  /** Streaming window start (assistant turns only). */
+  streamFrom: number;
+};
+
+/** Lay the exchange out on one clock, so no beat needs a magic frame number. */
+function schedule(messages: ChatMessage[]): Turn[] {
+  let cursor = T.start;
+  return messages.map((message) => {
+    if (message.role === "user") {
+      const typeFrom = cursor;
+      const landAt = typeFrom + message.text.length / TYPE_CPS + T.beforeSend;
+      cursor = landAt + T.send + T.turnGap;
+      return { message, typeFrom, landAt, streamFrom: 0 };
+    }
+    const landAt = cursor;
+    const streamFrom = landAt + T.think;
+    cursor = streamFrom + message.text.split(/\s+/).length / STREAM_WPS + T.turnGap;
+    return { message, typeFrom: 0, landAt, streamFrom };
+  });
+}
+
+const CheckGlyph: React.FC<{
+  size: number;
+  color: string;
+  progress: number;
+}> = ({ size, color, progress }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <path
+      d="M4.8 12.6l4.9 4.9 9.5-10.4"
+      stroke={color}
+      strokeWidth={2.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeDasharray={22}
+      strokeDashoffset={22 * (1 - progress)}
+    />
+  </svg>
+);
+
+const SendGlyph: React.FC<{ size: number; color: string }> = ({
+  size,
+  color,
+}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <path
+      d="M4 11.6 20 4l-7.6 16-2.1-6.3L4 11.6Z"
+      stroke={color}
+      strokeWidth={1.8}
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+/** Rotating arc — a spinner that renders identically on every platform. */
+const Spinner: React.FC<{ size: number; color: string; turn: number }> = ({
+  size,
+  color,
+  turn,
+}) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    style={{ transform: `rotate(${turn * 360}deg)` }}
+  >
+    <circle
+      cx={12}
+      cy={12}
+      r={9}
+      stroke={color}
+      strokeWidth={2.2}
+      strokeLinecap="round"
+      strokeDasharray={`${2 * Math.PI * 9 * 0.28} ${2 * Math.PI * 9}`}
+    />
+  </svg>
+);
+
+/**
+ * The prompt-to-render loop as it actually plays: the ask is typed into the
+ * composer and sent up into the thread, the answer streams back word by word,
+ * and the preview assembles alongside it — wireframe blocks first, then the
+ * rendered scene — rather than one layout cross-fading into another.
+ */
 export const ChatToPreview: React.FC<ChatToPreviewProps> = ({
   messages = DEFAULT_MESSAGES,
   previewTitle = "Ship the scene",
-  previewCaption = "Chat layout morphs into a live preview frame.",
-  morphStartFrame = DELAY.medium + DURATION.normal,
-  backgroundColor = COLORS.bg,
-  accentColor = COLORS.accent,
+  previewCaption = "Centred title, phosphor rim light",
+  previewLabel = "Preview",
+  placeholder = "Describe the scene…",
+  accentColor = "#E8B86D",
+  backgroundColor,
+  theme = "dark",
+  speed = 1,
 }) => {
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
+  const palette = CODE_THEMES[theme];
   const safe = getSafeAreaPadding({ width, height });
-  const isPortrait = height > width;
-  const contentWidth = width - safe.paddingLeft - safe.paddingRight;
-  const contentHeight = height - safe.paddingTop - safe.paddingBottom;
-  const morph = interpolate(
-    frame,
-    [morphStartFrame, morphStartFrame + DURATION.slow],
-    [0, 1],
-    {
-      easing: EASING.enter,
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    },
+
+  const now = (frame / fps) * speed;
+  const at = (seconds: number) => (seconds * fps) / speed;
+  const ease = (from: number, to: number, easing = EASING.enter) =>
+    interpolate(frame, [at(from), at(to)], [0, 1], { easing, ...clamp });
+
+  const stage = {
+    x: safe.paddingLeft,
+    y: safe.paddingTop,
+    w: width - safe.paddingLeft - safe.paddingRight,
+    h: height - safe.paddingTop - safe.paddingBottom,
+  };
+  const portrait = height > width;
+  const u = Math.min(stage.w / 1120, stage.h / 620);
+  const gap = 26 * u;
+
+  const chat = portrait
+    ? { w: stage.w, h: stage.h * 0.48 }
+    : { w: stage.w * 0.42, h: stage.h };
+  const preview = portrait
+    ? { x: 0, y: chat.h + gap, w: stage.w, h: stage.h - chat.h - gap }
+    : { x: chat.w + gap, y: 0, w: stage.w - chat.w - gap, h: stage.h };
+
+  const turns = schedule(messages);
+  const answer = turns
+    .filter((turn) => turn.message.role === "assistant")
+    .at(-1);
+  /** The preview starts assembling the moment the answer starts coming back. */
+  const buildFrom = answer ? answer.streamFrom : T.start;
+  const build = ease(buildFrom, buildFrom + T.build, EASING.editorial);
+  const resolve = ease(
+    buildFrom + T.build - 0.1,
+    buildFrom + T.build - 0.1 + T.resolve,
   );
-  const chatOpacity = 1 - morph;
-  const previewEnter = spring({
-    frame: frame - morphStartFrame,
+  const ready = ease(buildFrom + T.build + 0.25, buildFrom + T.build + 0.6);
+
+  const panelIn = spring({
+    frame,
     fps,
-    config: { damping: 18, stiffness: 120, mass: 0.85 },
-    durationInFrames: DURATION.normal,
+    config: { damping: 18, stiffness: 120, mass: 0.8 },
   });
-  const layoutGap = scaleFont(isPortrait ? 24 : 32, width);
-  const chatWidth = contentWidth * (1 - morph * 0.42);
-  const previewWidth = contentWidth - chatWidth - layoutGap * (1 - morph);
+
+  /** The user turn currently being typed, if any. */
+  const typing = turns.find(
+    (turn) =>
+      turn.message.role === "user" && now >= turn.typeFrom && now < turn.landAt,
+  );
+  const composerText = typing
+    ? typing.message.text.slice(
+        0,
+        Math.floor((now - typing.typeFrom) * TYPE_CPS),
+      )
+    : "";
+  const caretOn = Math.floor(now * 2) % 2 === 0;
+
+  const chatPad = 22 * u;
+  const composerH = 60 * u;
 
   return (
     <div
       style={{
         width,
         height,
-        paddingLeft: safe.paddingLeft,
-        paddingRight: safe.paddingRight,
-        paddingTop: safe.paddingTop,
-        paddingBottom: safe.paddingBottom,
-        background: `radial-gradient(circle at 18% 16%, ${accentColor}1c, transparent 34%), ${backgroundColor}`,
+        background: backgroundColor ?? palette.page,
         fontFamily,
-        display: "flex",
-        flexDirection: isPortrait ? "column" : "row",
-        gap: layoutGap,
         position: "relative",
         overflow: "hidden",
       }}
@@ -96,150 +243,342 @@ export const ChatToPreview: React.FC<ChatToPreviewProps> = ({
         style={{
           position: "absolute",
           inset: 0,
-          background: `radial-gradient(ellipse 90% 30% at 50% 0%, ${accentColor}14, transparent 70%)`,
-          pointerEvents: "none",
+          background: `radial-gradient(ellipse 60% 60% at ${
+            portrait ? 50 : 72
+          }% ${portrait ? 72 : 45}%, ${accentColor}${
+            build > 0 ? "1E" : "10"
+          }, transparent 70%)`,
         }}
       />
-      <div
-        style={{
-          flex: isPortrait ? `0 0 ${contentHeight * (0.46 - morph * 0.18)}px` : `0 0 ${chatWidth}px`,
-          minWidth: 0,
-          display: "grid",
-          gap: scaleFont(16, width),
-          alignContent: "start",
-          opacity: chatOpacity,
-          transform: `translateY(${(1 - chatOpacity) * scaleFont(-20, width)}px) scale(${1 - morph * 0.04})`,
-        }}
-      >
-        {messages.map((message, index) => {
-          const delay = index * STAGGER.relaxed;
-          const enter = interpolate(
-            frame,
-            [delay, delay + DURATION.fast],
-            [0, 1],
-            {
-              easing: EASING.enter,
-              extrapolateLeft: "clamp",
-              extrapolateRight: "clamp",
-            },
-          );
-
-          return (
-            <div
-              key={`${message.role}-${index}`}
-              style={{
-                justifySelf: message.role === "user" ? "end" : "start",
-                maxWidth: "92%",
-                padding: `${scaleFont(14, width)}px ${scaleFont(18, width)}px`,
-                borderRadius: scaleFont(18, width),
-                background:
-                  message.role === "user" ? COLORS.user : COLORS.assistant,
-                border: `1px solid ${message.role === "user" ? COLORS.border : `${accentColor}33`}`,
-                color: COLORS.text,
-                fontSize: scaleFont(24, width),
-                lineHeight: 1.35,
-                fontWeight: 500,
-                opacity: enter,
-                transform: `translateY(${(1 - enter) * scaleFont(12, width)}px)`,
-              }}
-            >
-              {message.text}
-            </div>
-          );
-        })}
-      </div>
 
       <div
         style={{
-          flex: 1,
-          minWidth: 0,
-          minHeight: isPortrait ? contentHeight * (0.42 + morph * 0.18) : contentHeight,
-          borderRadius: scaleFont(22, width),
-          background: COLORS.panel,
-          border: `1px solid ${COLORS.border}`,
-          overflow: "hidden",
-          opacity: morph > 0.05 ? Math.min(1, previewEnter) : 0,
-          transform: `translateY(${(1 - previewEnter) * scaleFont(24, width)}px) scale(${0.94 + previewEnter * 0.06})`,
-          boxShadow: `inset 0 1px 0 rgba(255,255,255,0.12), 0 ${scaleFont(24, width)}px ${scaleFont(72, width)}px rgba(0,0,0,0.38)`,
-          display: "grid",
-          gridTemplateRows: "auto 1fr auto",
+          position: "absolute",
+          left: stage.x,
+          top: stage.y,
+          width: stage.w,
+          height: stage.h,
         }}
       >
+        {/* Thread */}
         <div
           style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: chat.w,
+            height: chat.h,
+            borderRadius: 22 * u,
+            background: palette.window,
+            border: `1px solid ${palette.border}`,
+            boxShadow: `inset 0 1px 0 ${palette.highlight}, 0 ${24 * u}px ${
+              64 * u
+            }px ${palette.shadow}`,
+            opacity: panelIn,
+            transform: `translateY(${(1 - panelIn) * 18 * u}px)`,
+            padding: chatPad,
+            paddingBottom: chatPad + composerH + 14 * u,
             display: "flex",
-            alignItems: "center",
-            gap: scaleFont(8, width),
-            padding: `${scaleFont(14, width)}px ${scaleFont(18, width)}px`,
-            borderBottom: `1px solid ${COLORS.border}`,
+            flexDirection: "column",
+            justifyContent: "flex-end",
+            gap: 12 * u,
+            overflow: "hidden",
           }}
         >
-          {["#f87171", "#fbbf24", "#34d399"].map((color) => (
-            <div
-              key={color}
-              style={{
-                width: scaleFont(10, width),
-                height: scaleFont(10, width),
-                borderRadius: "50%",
-                background: color,
-              }}
-            />
-          ))}
+          {turns.map((turn, index) => {
+            if (now < turn.landAt) {
+              return null;
+            }
+            const isUser = turn.message.role === "user";
+            // A user bubble flies up out of the composer; an assistant bubble
+            // opens in place beneath it.
+            const land = interpolate(
+              now,
+              [turn.landAt, turn.landAt + T.send],
+              [0, 1],
+              { easing: EASING.enter, ...clamp },
+            );
+            const words = turn.message.text.split(/\s+/);
+            const streamed = Math.floor(
+              Math.max(now - turn.streamFrom, 0) * STREAM_WPS,
+            );
+            const thinking = !isUser && now < turn.streamFrom;
+
+            return (
+              <div
+                key={`${turn.message.role}-${index}`}
+                style={{
+                  alignSelf: isUser ? "flex-end" : "flex-start",
+                  maxWidth: "88%",
+                  padding: `${13 * u}px ${17 * u}px`,
+                  borderRadius: 16 * u,
+                  borderBottomRightRadius: isUser ? 5 * u : 16 * u,
+                  borderBottomLeftRadius: isUser ? 16 * u : 5 * u,
+                  background: isUser ? palette.band : `${accentColor}1A`,
+                  border: `1px solid ${
+                    isUser ? palette.border : `${accentColor}44`
+                  }`,
+                  color: palette.fg,
+                  fontSize: 23 * u,
+                  lineHeight: 1.36,
+                  opacity: land,
+                  transform: `translateY(${
+                    (1 - land) * (isUser ? 46 * u : 12 * u)
+                  }px) scale(${interpolate(land, [0, 1], [0.96, 1])})`,
+                }}
+              >
+                {thinking ? (
+                  <span style={{ display: "flex", gap: 6 * u, padding: 4 * u }}>
+                    {[0, 1, 2].map((dot) => (
+                      <span
+                        key={dot}
+                        style={{
+                          width: 8 * u,
+                          height: 8 * u,
+                          borderRadius: "50%",
+                          background: accentColor,
+                          opacity: interpolate(
+                            Math.sin((now * 6 - dot * 0.6) * Math.PI),
+                            [-1, 1],
+                            [0.25, 1],
+                          ),
+                        }}
+                      />
+                    ))}
+                  </span>
+                ) : (
+                  words
+                    .slice(0, isUser ? words.length : Math.max(streamed, 1))
+                    .join(" ")
+                )}
+              </div>
+            );
+          })}
+
+          {/* Composer */}
           <div
             style={{
-              marginLeft: "auto",
-              color: COLORS.muted,
-              fontSize: scaleFont(16, width),
+              position: "absolute",
+              left: chatPad,
+              right: chatPad,
+              bottom: chatPad,
+              height: composerH,
+              borderRadius: 14 * u,
+              background: palette.band,
+              border: `1px solid ${
+                composerText ? `${accentColor}55` : palette.border
+              }`,
+              display: "flex",
+              alignItems: "center",
+              paddingLeft: 16 * u,
+              paddingRight: 10 * u,
+              gap: 10 * u,
+              color: composerText ? palette.fg : palette.faint,
+              fontSize: 22 * u,
+              overflow: "hidden",
+            }}
+          >
+            <span style={{ whiteSpace: "nowrap" }}>
+              {composerText || placeholder}
+              {typing ? (
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: 2 * u,
+                    height: 22 * u,
+                    marginLeft: 3 * u,
+                    verticalAlign: "-3px",
+                    background: accentColor,
+                    opacity: caretOn ? 1 : 0.15,
+                  }}
+                />
+              ) : null}
+            </span>
+            <span
+              style={{
+                marginLeft: "auto",
+                display: "grid",
+                placeItems: "center",
+                width: 38 * u,
+                height: 38 * u,
+                borderRadius: 10 * u,
+                flexShrink: 0,
+                background: composerText ? accentColor : palette.border,
+              }}
+            >
+              <SendGlyph
+                size={21 * u}
+                color={composerText ? palette.page : palette.faint}
+              />
+            </span>
+          </div>
+        </div>
+
+        {/* Preview surface */}
+        <div
+          style={{
+            position: "absolute",
+            left: preview.x,
+            top: preview.y,
+            width: preview.w,
+            height: preview.h,
+            borderRadius: 22 * u,
+            background: palette.window,
+            border: `1px solid ${
+              build > 0 ? `${accentColor}55` : palette.border
+            }`,
+            boxShadow: `inset 0 1px 0 ${palette.highlight}, 0 ${24 * u}px ${
+              64 * u
+            }px ${palette.shadow}`,
+            opacity: panelIn,
+            transform: `translateY(${(1 - panelIn) * 18 * u}px)`,
+            display: "grid",
+            gridTemplateRows: `${58 * u}px 1fr`,
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 10 * u,
+              padding: `0 ${18 * u}px`,
+              borderBottom: `1px solid ${palette.border}`,
+              color: palette.dim,
+              fontSize: 18 * u,
               fontWeight: 600,
             }}
           >
-            Preview
+            <span>{previewLabel}</span>
+            <span
+              style={{
+                marginLeft: "auto",
+                display: "flex",
+                alignItems: "center",
+                gap: 8 * u,
+                color: ready > 0 ? accentColor : palette.faint,
+                fontWeight: 500,
+              }}
+            >
+              {ready > 0 ? (
+                <>
+                  <CheckGlyph
+                    size={20 * u}
+                    color={accentColor}
+                    progress={ready}
+                  />
+                  Ready
+                </>
+              ) : build > 0 ? (
+                <>
+                  <Spinner size={20 * u} color={accentColor} turn={now * 1.1} />
+                  Rendering
+                </>
+              ) : (
+                "Idle"
+              )}
+            </span>
           </div>
-        </div>
-        <div
-          style={{
-            display: "grid",
-            placeItems: "center",
-            padding: scaleFont(28, width),
-            background: `radial-gradient(circle at 50% 30%, ${accentColor}22, transparent 55%), linear-gradient(180deg, #0d1018, #070912)`,
-          }}
-        >
-          <div
-            style={{
-              width: "72%",
-              height: scaleFont(8, width),
-              borderRadius: 999,
-              background: accentColor,
-              marginBottom: scaleFont(18, width),
-              boxShadow: `0 0 ${scaleFont(18, width)}px ${accentColor}66`,
-              transform: `scaleX(${0.2 + previewEnter * 0.8})`,
-              transformOrigin: "left center",
-            }}
-          />
-          <h2
-            style={{
-              margin: 0,
-              color: COLORS.text,
-              fontSize: scaleFont(isPortrait ? 56 : 48, width),
-              fontWeight: 700,
-              lineHeight: 1.05,
-              letterSpacing: "-0.02em",
-              textAlign: "center",
-            }}
-          >
-            {previewTitle}
-          </h2>
-        </div>
-        <div
-          style={{
-            padding: `${scaleFont(14, width)}px ${scaleFont(18, width)}px`,
-            color: COLORS.teal,
-            fontSize: scaleFont(18, width),
-            fontWeight: 600,
-            borderTop: `1px solid ${COLORS.border}`,
-          }}
-        >
-          {previewCaption}
+
+          <div style={{ position: "relative", overflow: "hidden" }}>
+            {/* Wireframe the scene is assembled from */}
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                padding: 30 * u,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 14 * u,
+                opacity: 1 - resolve,
+              }}
+            >
+              {[0.5, 1, 0.72, 0.55].map((share, index) => {
+                const block = interpolate(
+                  build,
+                  [index * 0.2, index * 0.2 + 0.34],
+                  [0, 1],
+                  clamp,
+                );
+                const isMedia = index === 1;
+                return (
+                  <div
+                    key={share}
+                    style={{
+                      width: `${share * 100}%`,
+                      height: isMedia ? "38%" : 24 * u,
+                      borderRadius: isMedia ? 14 * u : 999,
+                      // The media block is tinted so the wireframe reads as a
+                      // scene taking shape, not as four grey bars.
+                      background: isMedia ? `${accentColor}16` : palette.band,
+                      border: `1px solid ${
+                        isMedia ? `${accentColor}3A` : palette.border
+                      }`,
+                      boxShadow: `inset 0 1px 0 ${palette.highlight}`,
+                      opacity: block,
+                      transform: `scaleX(${interpolate(
+                        block,
+                        [0, 1],
+                        [0.7, 1],
+                      )})`,
+                    }}
+                  />
+                );
+              })}
+            </div>
+
+            {/* The rendered result */}
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 14 * u,
+                padding: 30 * u,
+                textAlign: "center",
+                background: `radial-gradient(ellipse 70% 60% at 50% 38%, ${accentColor}26, transparent 70%)`,
+                opacity: resolve,
+                transform: `scale(${interpolate(resolve, [0, 1], [1.03, 1])})`,
+              }}
+            >
+              <div
+                style={{
+                  color: palette.fg,
+                  fontSize: 52 * u,
+                  fontWeight: 700,
+                  lineHeight: 1.05,
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                {previewTitle}
+              </div>
+              <div style={{ color: palette.dim, fontSize: 22 * u }}>
+                {previewCaption}
+              </div>
+            </div>
+
+            {/* One sheen across the surface as it resolves */}
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                bottom: 0,
+                width: preview.w * 0.4,
+                left: interpolate(
+                  resolve,
+                  [0, 1],
+                  [-preview.w * 0.4, preview.w],
+                ),
+                background: `linear-gradient(90deg, transparent, ${accentColor}22, transparent)`,
+                opacity: resolve > 0 && resolve < 1 ? 1 : 0,
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>

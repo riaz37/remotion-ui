@@ -29,27 +29,15 @@ program
     "--existing",
     "Bootstrap remotion-ui.json in the current Remotion project",
   )
-  .option(
-    "--starter <starter>",
-    "Project starter: default, social, or podcast",
-    "default",
-  )
   .action(
     async (
       projectName: string,
-      options: { yes?: boolean; existing?: boolean; starter?: string },
+      options: { yes?: boolean; existing?: boolean },
     ) => {
     try {
-      const starter = options.starter as "default" | "social" | "podcast";
-      if (!["default", "social", "podcast"].includes(starter)) {
-        throw new Error(
-          `Invalid starter "${options.starter}". Use default, social, or podcast.`,
-        );
-      }
       await initCommand(projectName, {
         yes: options.yes,
         existing: options.existing,
-        starter,
       });
     } catch (error) {
       console.error(
@@ -69,7 +57,6 @@ program
     "Registry base URL or local path to public/r/",
   )
   .option("--preset <preset>", "Registry preset", "default")
-  .option("--recipe <slug>", "Install a task-first recipe by slug")
   .option("-y, --yes", "Skip confirmation prompts")
   .action(async (components: string[], options) => {
     try {
@@ -77,7 +64,6 @@ program
         registryUrl: options.registryUrl,
         preset: options.preset,
         yes: options.yes,
-        recipe: options.recipe,
       });
     } catch (error) {
       console.error(

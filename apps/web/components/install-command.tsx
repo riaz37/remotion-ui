@@ -1,5 +1,5 @@
 import { CommandRail, CompactCommandRail } from "./studio/command-rail";
-import { CLI_PACKAGE, cliAddCommand, cliRecipeCommand } from "@/lib/docs-cli";
+import { CLI_PACKAGE, cliAddCommand } from "@/lib/docs-cli";
 
 function compositionIdToOutputFile(compositionId: string): string {
   return `${compositionId
@@ -11,15 +11,11 @@ function compositionIdToOutputFile(compositionId: string): string {
 export function InstallCommand({
   name,
   label = "Install",
-  recipe = false,
 }: {
   name: string;
   label?: string;
-  recipe?: boolean;
 }) {
-  const command = recipe ? cliRecipeCommand(name) : cliAddCommand(name);
-
-  return <CommandRail label={label} command={command} />;
+  return <CommandRail label={label} command={cliAddCommand(name)} />;
 }
 
 export function SearchCommand({ query }: { query: string }) {
@@ -41,14 +37,10 @@ export function CompactInstallCommand({
   return <CompactCommandRail command={command} className={className} />;
 }
 
-export function InitCommand({ starter }: { starter?: "social" | "podcast" }) {
-  const command =
-    starter === "social"
-      ? `${CLI_PACKAGE} init my-reel --starter social`
-      : starter === "podcast"
-        ? `${CLI_PACKAGE} init my-podcast --starter podcast`
-        : `${CLI_PACKAGE} init my-video`;
-  return <CommandRail label="Quick start" command={command} />;
+export function InitCommand() {
+  return (
+    <CommandRail label="Quick start" command={`${CLI_PACKAGE} init my-video`} />
+  );
 }
 
 export function RenderCommand({

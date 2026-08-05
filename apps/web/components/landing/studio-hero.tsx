@@ -1,70 +1,62 @@
-"use client";
-
 import Link from "next/link";
-import { HeroLoopPreview } from "@/components/previews/hero-loop";
+import type { CSSProperties } from "react";
+import { ProgramMonitor } from "@/components/landing/program-monitor";
 import { CompactCommandRail } from "@/components/studio/command-rail";
-import { EditBayBackdrop } from "@/components/studio/edit-bay-backdrop";
-import { InspectorBin } from "@/components/studio/inspector-bin";
-import { StudioPlayerPanel } from "@/components/studio/studio-player-panel";
+import { componentCount } from "@/lib/registry-facts";
 
 const HERO_INSTALL = "npx remotion-ui@latest add social-clip";
-const DURATION_IN_FRAMES = 450;
-const FPS = 30;
 
+/** Stagger position for the arrival cascade, read by `.hero-rise` in CSS. */
+const rise = (index: number) => ({ "--rise-index": index }) as CSSProperties;
+
+/**
+ * Hero copy.
+ *
+ * Server-rendered on purpose: the headline is the first thing that paints and
+ * it should not wait on the Player's bundle. Everything interactive lives in
+ * ProgramMonitor and the command rail, both client leaves.
+ *
+ * Four elements, no more: headline, one line of subtext, the install command,
+ * one text link. The picture is carrying the rest of the argument.
+ */
 export function StudioHero() {
   return (
-    <section className="relative flex min-h-[85svh] flex-col overflow-hidden border-b border-[var(--bay-border)]">
-      <EditBayBackdrop />
+    <ProgramMonitor>
+      <>
+        <h1
+          id="hero-headline"
+          className="hero-rise text-display-hero"
+          style={rise(0)}
+        >
+          Production-ready motion
+          <span className="block text-[var(--bay-muted)]">for Remotion.</span>
+        </h1>
 
-      <div className="relative mx-auto flex w-full max-w-[1280px] flex-1 flex-col px-6 py-10 lg:py-14">
-        <div className="flex flex-1 flex-col gap-8 lg:flex-row lg:items-center lg:gap-12">
-          <div className="order-1 min-w-0 lg:order-2 lg:-mr-10 lg:flex-1 lg:pl-6">
-            <StudioPlayerPanel
-              label="hero-loop"
-              component={HeroLoopPreview}
-              durationInFrames={DURATION_IN_FRAMES}
-              fps={FPS}
-              width={1920}
-              height={1080}
-              showTimecode
-              interactiveTimecode
-              className="shadow-[0_24px_80px_-12px_rgba(0,0,0,0.55)]"
-            />
-          </div>
+        <p
+          className="hero-rise mt-4 max-w-[46ch] text-[0.9375rem] leading-relaxed text-fd-muted-foreground"
+          style={rise(1)}
+        >
+          Install any of {componentCount} components with the CLI. The source
+          lands in your repo, with no runtime dependency.
+        </p>
 
-          <div className="order-2 lg:order-1 lg:self-center">
-            <InspectorBin label="Composition registry">
-              <h1 className="text-display-xl">
-                Production-ready motion
-                <span className="block text-fd-muted-foreground">
-                  for Remotion.
-                </span>
-              </h1>
-              <p className="mt-5 text-[0.9375rem] leading-relaxed text-fd-muted-foreground">
-                Source you own. Install social clips, data stories, and reels
-                with the CLI — every component copies into your repo.
-              </p>
-              <div className="mt-7">
-                <CompactCommandRail command={HERO_INSTALL} />
-              </div>
-              <div className="mt-7 flex flex-wrap items-center gap-3">
-                <Link
-                  href="/docs/components"
-                  className="inline-flex items-center rounded-sm border border-[var(--bay-border-strong)] bg-[var(--bay-surface-raised)] px-4 py-2.5 text-sm font-medium text-fd-foreground transition-colors hover:border-[var(--bay-phosphor)]"
-                >
-                  Browse components
-                </Link>
-                <Link
-                  href="/docs/installation"
-                  className="link-phosphor inline-flex items-center px-1 py-2.5 text-sm font-medium"
-                >
-                  Get started
-                </Link>
-              </div>
-            </InspectorBin>
-          </div>
+        <div
+          className="hero-rise mt-7 flex flex-wrap items-center gap-x-6 gap-y-3"
+          style={rise(2)}
+        >
+          <CompactCommandRail
+            command={HERO_INSTALL}
+            className="w-full max-w-[26rem] sm:w-auto"
+          />
+          {/* py-3 keeps the tap target at 44px, matching the command rail. */}
+          <Link
+            href="/docs/components"
+            className="link-phosphor inline-flex items-center rounded-sm px-1 py-3 text-sm font-medium transition-transform duration-150 outline-none focus-visible:ring-1 focus-visible:ring-[var(--bay-phosphor)] active:translate-y-px"
+          >
+            Browse components
+          </Link>
         </div>
-      </div>
-    </section>
+      </>
+    </ProgramMonitor>
   );
 }

@@ -1,12 +1,17 @@
 ---
 title: Auto Fit Title
-description: Headline that auto-scales to fit safe area.
+description: A headline sized to the frame it is given, then assembled word by word.
 ---
 
 import { AutoFitTitlePreview } from '@/components/previews/auto-fit-title';
 
-<ComponentPage name="auto-fit-title" preview={AutoFitTitlePreview} durationInFrames={90}>
+<ComponentPage name="auto-fit-title" preview={AutoFitTitlePreview} durationInFrames={130}>
 
-Uses `@remotion/layout-utils` `fitText()` and Inter from `@remotion/google-fonts`.
+The fit is measured before anything animates, then the words land one after
+another out of their own masks — a two-word title and a twelve-word title both
+fill the safe area and both land the same way.
+
+`maxFontSize` and `minFontSize` bound the fit; the subtitle scales with the
+result so the pair keeps its ratio at any length.
 
 </ComponentPage>

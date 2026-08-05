@@ -1,12 +1,14 @@
 ---
 title: Fade In
-description: Fade-in animation for Remotion. Install with npx remotion-ui@latest add fade-in.
+description: Opacity-only entrance for Remotion, with an exit that times itself to the end of its sequence.
 ---
 
 import { FadeInPreview } from '@/components/previews/fade-in';
 
-<ComponentPage name="fade-in" preview={FadeInPreview} durationInFrames={60}>
+<ComponentPage name="fade-in" preview={FadeInPreview}>
 
-Animates opacity from 0 to 1 over `durationInFrames`.
+Animates opacity from `from` to `to` — no transform, so it composes with anything that already moves.
+
+Pass `exit` and the element leaves again on the last frame of the surrounding `<Sequence>`; the exit is shorter than the entrance and accelerates away, because an exit is not an entrance played backwards.
 
 </ComponentPage>

@@ -1,12 +1,18 @@
 ---
 title: Data Flow Pipes
-description: Data Flow Pipes for Remotion.
+description: A pipeline running end to end, with payloads hopping stage to stage.
 ---
 
-import { DataFlowPipesPreview } from '@/components/previews/wave-batch-previews';
+import { DataFlowPipesPreview } from '@/components/previews/data-flow-pipes';
 
-<ComponentPage name="data-flow-pipes" preview={DataFlowPipesPreview} durationInFrames={90}>
+<ComponentPage name="data-flow-pipes" preview={DataFlowPipesPreview} durationInFrames={165}>
 
-Data Flow Pipes.
+Stages come up in dependency order, the pipes draw between them, and a stream of
+payloads travels hop by hop — lighting each stage as it lands, ticking that
+stage's tally, and filling its progress line — until the last stage drains and
+checks off.
+
+`stages` takes two to five `{ label, detail }` entries, `packets` sets how many
+payloads are pushed through, and `unit` names what is being counted.
 
 </ComponentPage>

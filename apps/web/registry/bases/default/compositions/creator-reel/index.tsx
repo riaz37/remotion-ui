@@ -99,6 +99,7 @@ export const CreatorReel: React.FC<CreatorReelProps> = ({
             title={talkingHeadTitle}
             accentColor={COLORS.talkAccent}
             backgroundColor={COLORS.talkBg}
+            speed={1.35}
           />
           {captions && captions.length > 0 ? (
             <CaptionScene
@@ -118,6 +119,7 @@ export const CreatorReel: React.FC<CreatorReelProps> = ({
           handle={handle}
           accentColor={COLORS.commentAccent}
           backgroundColor={COLORS.commentBg}
+          speed={1.7}
         />
       </TransitionSeries.Sequence>
       <TransitionSeries.Transition {...FADE} />
@@ -126,6 +128,9 @@ export const CreatorReel: React.FC<CreatorReelProps> = ({
           items={bRollItems}
           kicker={bRollKicker}
           title={bRollTitle}
+          // The deck has to walk every shot inside a 96-frame window.
+          holdSeconds={0.9}
+          speed={1.5}
           accentColor={COLORS.bRollAccent}
           backgroundColor={COLORS.bRollBg}
         />
@@ -133,6 +138,7 @@ export const CreatorReel: React.FC<CreatorReelProps> = ({
       <TransitionSeries.Transition {...FADE} />
       <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.end}>
         <EndCard
+          speed={1.4}
           title={ctaTitle}
           cta={ctaLabel}
           backgroundColor={COLORS.endBg}

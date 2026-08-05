@@ -12,7 +12,8 @@ type TimecodeBarProps = {
   className?: string;
 };
 
-function formatTimecode(frame: number, fps: number): string {
+/** MM:SS:FF, the readout every timecode surface on the site shares. */
+export function formatTimecode(frame: number, fps: number): string {
   const totalSeconds = frame / fps;
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = Math.floor(totalSeconds % 60);

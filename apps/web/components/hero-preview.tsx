@@ -21,7 +21,7 @@ export function HeroPreview() {
       <Player
         ref={playerRef}
         component={HeroLoopPreview}
-        durationInFrames={450}
+        durationInFrames={360}
         fps={30}
         compositionWidth={1920}
         compositionHeight={1080}

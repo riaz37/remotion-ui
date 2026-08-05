@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { previewMeta } from "./preview-config";
 
 export type ExportSource = {
   importPath: string;
@@ -25,7 +26,8 @@ export const EXPORT_DEFAULTS = {
   renderFlags: [] as string[],
 } as const;
 
-export const MAP_RENDER_FLAGS = ["--gl=angle", "--concurrency=1"] as const;
+/** Components that acquire a WebGL context need the ANGLE backend to render headlessly. */
+export const GL_RENDER_FLAGS = ["--gl=angle", "--concurrency=1"] as const;
 
 /** Per-component overrides when defaults or auto-discovery are not enough. */
 export const EXPORT_OVERRIDES: Record<
@@ -37,20 +39,11 @@ export const EXPORT_OVERRIDES: Record<
     }
   >
 > = {
-  "map-canvas": { renderFlags: [...MAP_RENDER_FLAGS] },
-  "map-flight": { durationInFrames: 150, renderFlags: [...MAP_RENDER_FLAGS] },
-  "map-markers": { renderFlags: [...MAP_RENDER_FLAGS] },
-  "map-route": { renderFlags: [...MAP_RENDER_FLAGS] },
-  "social-clip": {
-    durationInFrames: 228,
-    width: 1080,
-    height: 1920,
-  },
-  "creator-reel": { durationInFrames: 180, width: 1080, height: 1920 },
-  "podcast-clip": { durationInFrames: 180, width: 1080, height: 1920 },
-  "ai-generation-canvas": {
-    durationInFrames: 180,
-  },
+  "map-canvas": { renderFlags: [...GL_RENDER_FLAGS] },
+  "map-flight": { renderFlags: [...GL_RENDER_FLAGS] },
+  "map-markers": { renderFlags: [...GL_RENDER_FLAGS] },
+  "map-route": { renderFlags: [...GL_RENDER_FLAGS] },
+  "transition-light-leak": { renderFlags: [...GL_RENDER_FLAGS] },
   v0: {
     source: {
       importPath: "@/components/previews/ai-composer-previews",
@@ -63,8 +56,32 @@ export const EXPORT_OVERRIDES: Record<
       exportName: "ChatGptPreview",
     },
   },
-  // These three transitions ship under a bare slug but their preview wrappers
-  // carry the `Transition` prefix, so auto-discovery cannot match them.
+  // These transitions ship under a bare slug but their preview wrappers carry
+  // the `Transition` prefix, so auto-discovery cannot match them.
+  "directional-wipe": {
+    source: {
+      importPath: "@/components/previews/transition-directional-wipe",
+      exportName: "TransitionDirectionalWipePreview",
+    },
+  },
+  "spatial-push": {
+    source: {
+      importPath: "@/components/previews/transition-spatial-push",
+      exportName: "TransitionSpatialPushPreview",
+    },
+  },
+  "chromatic-aberration-wipe": {
+    source: {
+      importPath: "@/components/previews/transition-chromatic-aberration-wipe",
+      exportName: "TransitionChromaticAberrationWipePreview",
+    },
+  },
+  "zoom-through": {
+    source: {
+      importPath: "@/components/previews/transition-zoom-through",
+      exportName: "TransitionZoomThroughPreview",
+    },
+  },
   "blur-reveal": {
     source: {
       importPath: "@/components/previews/transition-blur-reveal",
@@ -158,6 +175,15 @@ function buildPreviewIndex(previewsDir: string) {
         continue;
       }
       const slug = previewNameToSlug(exportName);
+      const existing = index.get(slug);
+      if (existing) {
+        // Two files exporting the same preview name means one silently shadows
+        // the other here while the site imports whichever it names directly —
+        // the export harness then renders a component nobody sees.
+        throw new Error(
+          `Duplicate preview for "${slug}": ${existing.importPath} and ${importPath} both export ${exportName}.`,
+        );
+      }
       index.set(slug, { importPath, exportName });
     }
   }
@@ -230,6 +256,15 @@ export function resolveExportConfig(
 
   const compositionId = exportName ?? source.exportName;
 
+  // A preview wrapper is laid out against the docs player's composition, so
+  // rendering it at the raw export defaults would crop or shrink the subject.
+  // Render it at the docs framing and upscale, so the file matches the page.
+  const rendersPreview = source !== registrySource;
+  const base = rendersPreview
+    ? { ...EXPORT_DEFAULTS, ...previewMeta(slug) }
+    : EXPORT_DEFAULTS;
+  const scaleFlags = rendersPreview ? ["--scale=2"] : [];
+
   return {
     slug,
     compositionId,
@@ -237,11 +272,11 @@ export function resolveExportConfig(
     durationInFrames:
       options.durationInFrames ??
       overrides.durationInFrames ??
-      EXPORT_DEFAULTS.durationInFrames,
-    fps: options.fps ?? overrides.fps ?? EXPORT_DEFAULTS.fps,
-    width: options.width ?? overrides.width ?? EXPORT_DEFAULTS.width,
-    height: options.height ?? overrides.height ?? EXPORT_DEFAULTS.height,
-    renderFlags: overrides.renderFlags ?? EXPORT_DEFAULTS.renderFlags,
+      base.durationInFrames,
+    fps: options.fps ?? overrides.fps ?? base.fps,
+    width: options.width ?? overrides.width ?? base.width,
+    height: options.height ?? overrides.height ?? base.height,
+    renderFlags: [...(overrides.renderFlags ?? EXPORT_DEFAULTS.renderFlags), ...scaleFlags],
   };
 }
 

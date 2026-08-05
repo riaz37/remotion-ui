@@ -1,12 +1,17 @@
 ---
-title: B-Roll Stack
-description: Cinematic layered cutaway cards for creator explainers.
+title: B Roll Stack
+description: A deck of supporting shots dealt one at a time behind the narration.
 ---
 
 import { BRollStackPreview } from '@/components/previews/b-roll-stack';
 
-<ComponentPage name="b-roll-stack" preview={BRollStackPreview} durationInFrames={108}>
+<ComponentPage name="b-roll-stack" preview={BRollStackPreview} durationInFrames={165}>
 
-Stack product shots, process clips, and proof moments without hand-positioning every layer.
+Each shot rides to the front of the deck in turn with its own label, the one it
+replaces slides back into the stack, and the deck keeps cycling for as long as
+the scene runs — so a long narration beat never sits on a frozen fan of cards.
+
+`holdSeconds` sets how long a shot owns the front; the headline, kicker and
+caption sit beside the deck (above it in portrait) with a running count.
 
 </ComponentPage>

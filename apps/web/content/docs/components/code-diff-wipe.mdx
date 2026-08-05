@@ -1,12 +1,12 @@
 ---
 title: Code Diff Wipe
-description: Code Diff Wipe for Remotion.
+description: A patch landing line by line — removals collapse, additions open and write themselves in.
 ---
 
-import { CodeDiffWipePreview } from '@/components/previews/wave-batch-previews';
+import { CodeDiffWipePreview } from '@/components/previews/code-diff-wipe';
 
-<ComponentPage name="code-diff-wipe" preview={CodeDiffWipePreview} durationInFrames={90}>
+<ComponentPage name="code-diff-wipe" preview={CodeDiffWipePreview} durationInFrames={135}>
 
-Code Diff Wipe.
+Pass the file before and after the change. The scene diffs the two, then plays an apply front down the listing: removed lines redden, strike through and collapse as it passes; added lines open beneath it and write in. The header tallies the change as it goes.
 
 </ComponentPage>

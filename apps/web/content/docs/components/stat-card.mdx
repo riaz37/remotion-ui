@@ -1,12 +1,17 @@
 ---
 title: Stat Card
-description: Big animated number with label.
+description: A number landing — ring, counter, label, and the change behind it.
 ---
 
 import { StatCardPreview } from '@/components/previews/stat-card';
 
-<ComponentPage name="stat-card" preview={StatCardPreview} durationInFrames={75}>
+<ComponentPage name="stat-card" preview={StatCardPreview} durationInFrames={150}>
 
-Uses `spring-in` and `counter` for a stat highlight moment.
+The ring fills while the counter rolls up under it, the label settles, and
+`delta` lands last — after the number it qualifies has stopped moving.
+
+Pass `max` when the value is a share and the ring becomes a meter filling to
+`value / max`. Leave it out for a count and the ring draws a full sweep instead,
+so "3 dependencies" is not rendered as 3% of something.
 
 </ComponentPage>

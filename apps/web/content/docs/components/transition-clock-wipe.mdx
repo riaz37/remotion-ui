@@ -1,12 +1,24 @@
 ---
 title: Transition Clock Wipe
-description: Clock wipe transition helper for TransitionSeries.
+description: A sweep hand travels the frame and leaves the next scene behind it.
 ---
 
 import { TransitionClockWipePreview } from "@/components/previews/transition-previews";
 
 <ComponentPage name="transition-clock-wipe" preview={TransitionClockWipePreview} durationInFrames={90}>
 
-Exports `transitionClockWipe()` for circular clock-wipe scene transitions.
+`width` and `height` are optional: the presentation reads the composition size
+itself. Previously every caller had to reach for `useVideoConfig()` before it
+could build a transition config — including in places where hooks are not
+available. Pass them explicitly only to sweep a different radius than the frame.
+
+```tsx
+<TransitionSeries.Transition {...transitionClockWipe()} />
+```
+
+Exports `transitionClockWipe()` and `getTransitionClockWipeDuration()` for use
+with `TransitionSeries.Transition`.
+
+Requires `@remotion/transitions`. Run `npx remotion add @remotion/transitions` if not already installed.
 
 </ComponentPage>

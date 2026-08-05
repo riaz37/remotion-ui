@@ -1,12 +1,18 @@
 ---
 title: Zoom Pan Frame
-description: Deterministic zoom and pan media frame.
+description: A camera move on a still, driven by focal points rather than pixel offsets.
 ---
 
 import { ZoomPanFramePreview } from '@/components/previews/zoom-pan-frame';
 
-<ComponentPage name="zoom-pan-frame" preview={ZoomPanFramePreview} durationInFrames={100}>
+<ComponentPage name="zoom-pan-frame" preview={ZoomPanFramePreview} durationInFrames={140}>
 
-Use frame-driven zooms for screenshots and product walkthrough clips.
+`from` and `to` are focal points — `{ x, y, scale }` with `x`/`y` in 0–1 across
+the frame — so the framing lands on the subject at whatever size the composition
+is, instead of guessing pixel offsets per aspect.
+
+The move spans the composition minus a short settle by default, which is what
+keeps it reading as camera work rather than a jump cut. `label` adds a chip that
+rises once the move lands.
 
 </ComponentPage>

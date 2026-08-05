@@ -11,11 +11,6 @@ const QUICK_PATHS = [
     href: "/docs/components",
   },
   {
-    title: "Recipes",
-    description: "Task-first installs for social clips, data stories, and more.",
-    href: "/docs/recipes",
-  },
-  {
     title: "Installation",
     description: "Initialize a project and add your first composition.",
     href: "/docs/installation",
@@ -26,7 +21,7 @@ const HOW_IT_WORKS = [
   {
     step: 1,
     label: "Initialize",
-    command: `${CLI_PACKAGE} init my-video --starter social`,
+    command: `${CLI_PACKAGE} init my-video`,
     showPmTabs: true,
   },
   {
@@ -61,10 +56,6 @@ export function DocsIntro() {
         New here? Start with{" "}
         <Link href="/docs/installation" className="link-phosphor">
           Installation
-        </Link>
-        , pick a{" "}
-        <Link href="/docs/recipes" className="link-phosphor">
-          recipe
         </Link>
         , or open the{" "}
         <Link href="/docs/components" className="link-phosphor">

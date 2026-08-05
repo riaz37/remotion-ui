@@ -1,21 +1,42 @@
-import type { ReactNode } from "react";
-import { useCurrentFrame } from "remotion";
+import { interpolate } from "remotion";
+import {
+  useEnterExit,
+  type MotionPrimitiveProps,
+} from "@/remotion/lib/motion-primitive";
 import { MotionWrapper } from "@/remotion/lib/motion-wrapper";
-import { enterProgress } from "@/remotion/lib/timing";
 
-export type FadeInProps = {
-  children: ReactNode;
-  durationInFrames?: number;
-  delayInFrames?: number;
+export type FadeInProps = MotionPrimitiveProps & {
+  /** Opacity the fade starts from. */
+  from?: number;
+  /** Opacity the fade settles on. */
+  to?: number;
 };
 
+/**
+ * Opacity alone — no transform, so it composes with anything already moving.
+ *
+ * The curve spends the whole duration here instead of leading it the way the
+ * transform primitives do: with nothing travelling underneath, a fade that
+ * finishes early just reads as a short fade.
+ */
 export const FadeIn: React.FC<FadeInProps> = ({
   children,
-  durationInFrames = 30,
-  delayInFrames = 0,
+  from = 0,
+  to = 1,
+  block,
+  style,
+  className,
+  ...motionProps
 }) => {
-  const frame = useCurrentFrame();
-  const opacity = enterProgress(frame, delayInFrames, durationInFrames);
+  const { motion } = useEnterExit(motionProps);
+  const opacity = interpolate(motion, [0, 1], [from, to], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
-  return <MotionWrapper style={{ opacity }}>{children}</MotionWrapper>;
+  return (
+    <MotionWrapper block={block} className={className} style={{ ...style, opacity }}>
+      {children}
+    </MotionWrapper>
+  );
 };

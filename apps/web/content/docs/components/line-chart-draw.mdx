@@ -1,12 +1,17 @@
 ---
 title: Line Chart Draw
-description: SVG line chart draw-on primitive.
+description: SVG line chart that draws itself on.
 ---
 
 import { LineChartDrawPreview } from '@/components/previews/line-chart-draw';
 
 <ComponentPage name="line-chart-draw" preview={LineChartDrawPreview} durationInFrames={90}>
 
-Draw a normalized SVG line chart with optional point reveals.
+A line chart on a rounded value axis, drawn on by a single progress value: the
+stroke evolves along its own length, the gradient fill is wiped in behind it,
+and each dot lands as the tip passes. Curves are a clamped cardinal spline, so
+the line never overshoots past a value that is not in the data.
+
+Set `showAxis={false}` and `includeZero={false}` for a sparkline.
 
 </ComponentPage>

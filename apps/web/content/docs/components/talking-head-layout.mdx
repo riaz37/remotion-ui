@@ -1,12 +1,15 @@
 ---
 title: Talking Head Layout
-description: Caption-safe creator layout for speaker clips.
+description: Speaker frame that opens, names the speaker, and plays the spoken lines.
 ---
 
 import { TalkingHeadLayoutPreview } from '@/components/previews/talking-head-layout';
 
-<ComponentPage name="talking-head-layout" preview={TalkingHeadLayoutPreview} durationInFrames={120} previewWidth={1080} previewHeight={1920}>
+<ComponentPage name="talking-head-layout" preview={TalkingHeadLayoutPreview} durationInFrames={195} previewWidth={1080} previewHeight={1920}>
 
-Frame speaker media with title copy, optional waveform, and reserved caption space.
+The frame opens on the speaker, the name plate slides out from behind its edge, the
+`captions` play through the reserved zone with the waveform moving under them, then the
+plate retreats and leaves the frame clean for burnt-in captions or platform UI. Omit
+`captions` and the zone collapses so the frame takes the height instead.
 
 </ComponentPage>

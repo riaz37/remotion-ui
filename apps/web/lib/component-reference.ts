@@ -33,6 +33,53 @@ const motionChildProps: PropDefinition[] = [
     default: "0",
     description: "Frames to wait before the animation starts.",
   },
+  {
+    name: "spring",
+    type: '"smooth" | "snappy" | "bouncy" | Partial<SpringConfig> | boolean',
+    description: "Drive the entrance with a spring instead of the ease-out curve.",
+  },
+  {
+    name: "exit",
+    type: "boolean",
+    default: "false",
+    description:
+      "Animate back out, landing on the last frame of the surrounding Sequence.",
+  },
+  {
+    name: "exitInFrames",
+    type: "number",
+    default: "70% of durationInFrames",
+    description: "Length of the exit. Exits are shorter than entrances.",
+  },
+  {
+    name: "exitAtInFrames",
+    type: "number",
+    description: "Frame the exit starts on, overriding the end-of-window timing.",
+  },
+  {
+    name: "exitTravel",
+    type: "number",
+    default: "0.6",
+    description: "Share of the enter distance the exit travels.",
+  },
+  {
+    name: "exitDirection",
+    type: '"reverse" | "continue"',
+    default: '"reverse"',
+    description:
+      "reverse leaves the way it came in, continue carries on through.",
+  },
+  {
+    name: "block",
+    type: "boolean",
+    default: "false",
+    description: "Fill the parent's width instead of shrink-wrapping the child.",
+  },
+  {
+    name: "style",
+    type: "CSSProperties",
+    description: "Styles merged onto the wrapper.",
+  },
 ];
 
 export const componentReference: Record<string, ComponentReference> = {
@@ -40,10 +87,25 @@ export const componentReference: Record<string, ComponentReference> = {
     category: "primitive",
     usage: `import { FadeIn } from "@/remotion/primitives/fade-in";
 
-<FadeIn durationInFrames={30}>
+<FadeIn durationInFrames={30} exit>
   <div>Hello world</div>
 </FadeIn>`,
-    props: motionChildProps,
+    props: [
+      ...motionChildProps,
+      {
+        name: "from",
+        type: "number",
+        default: "0",
+        description: "Opacity the fade starts from.",
+      },
+      {
+        name: "to",
+        type: "number",
+        default: "1",
+        description: "Opacity the fade settles on.",
+      },
+    ],
+    note: "Opacity runs the full duration here; the transform primitives finish theirs at 55% so the element lands solid.",
     related: ["fade-out", "slide-up"],
   },
   "fade-out": {
@@ -53,14 +115,58 @@ export const componentReference: Record<string, ComponentReference> = {
 <FadeOut durationInFrames={24}>
   <div>Goodbye</div>
 </FadeOut>`,
-    props: motionChildProps,
+    props: [
+      {
+        name: "children",
+        type: "ReactNode",
+        required: true,
+        description: "Content to fade away.",
+      },
+      {
+        name: "durationInFrames",
+        type: "number",
+        default: "30",
+        description: "Length of the fade in frames.",
+      },
+      {
+        name: "delayInFrames",
+        type: "number",
+        default: "end of the sequence",
+        description:
+          "Frame the fade starts on. Omitted, it lands on the last frame of the surrounding Sequence.",
+      },
+      {
+        name: "from",
+        type: "number",
+        default: "1",
+        description: "Opacity held before the fade.",
+      },
+      {
+        name: "to",
+        type: "number",
+        default: "0",
+        description: "Opacity it ends on.",
+      },
+      {
+        name: "block",
+        type: "boolean",
+        default: "false",
+        description: "Fill the parent's width instead of shrink-wrapping.",
+      },
+      {
+        name: "style",
+        type: "CSSProperties",
+        description: "Styles merged onto the wrapper.",
+      },
+    ],
+    note: "Uses an ease-in curve — an exit accelerates away, it never decelerates into nothing.",
     related: ["fade-in"],
   },
   "slide-up": {
     category: "primitive",
     usage: `import { SlideUp } from "@/remotion/primitives/slide-up";
 
-<SlideUp distance={80}>
+<SlideUp mask exit>
   <h1>Title</h1>
 </SlideUp>`,
     props: [
@@ -68,8 +174,22 @@ export const componentReference: Record<string, ComponentReference> = {
       {
         name: "distance",
         type: "number",
-        default: "60",
-        description: "Vertical offset in pixels at the start of the animation.",
+        default: "scaled 40px",
+        description:
+          "Vertical offset in pixels at the start. Under mask, defaults to the element's own height.",
+      },
+      {
+        name: "mask",
+        type: "boolean",
+        default: "false",
+        description:
+          "Clip the child to its own box so it rises out of a mask instead of fading up.",
+      },
+      {
+        name: "maskPadding",
+        type: "number",
+        default: "0",
+        description: "Extra room inside the mask so descenders are not clipped.",
       },
     ],
     related: ["slide-left", "fade-in"],
@@ -78,7 +198,7 @@ export const componentReference: Record<string, ComponentReference> = {
     category: "primitive",
     usage: `import { SlideLeft } from "@/remotion/primitives/slide-left";
 
-<SlideLeft distance={60}>
+<SlideLeft distance={60} from="left">
   <p>Slide in from the left</p>
 </SlideLeft>`,
     props: [
@@ -86,8 +206,21 @@ export const componentReference: Record<string, ComponentReference> = {
       {
         name: "distance",
         type: "number",
-        default: "60",
-        description: "Horizontal offset in pixels at the start of the animation.",
+        default: "scaled 60px",
+        description:
+          "Horizontal offset in pixels at the start. Under mask, defaults to the element's own width.",
+      },
+      {
+        name: "from",
+        type: '"left" | "right"',
+        default: '"left"',
+        description: "Side the child travels in from.",
+      },
+      {
+        name: "mask",
+        type: "boolean",
+        default: "false",
+        description: "Clip the child to its own box so it slides out of a mask.",
       },
     ],
     related: ["slide-up", "stagger-children"],
@@ -96,10 +229,25 @@ export const componentReference: Record<string, ComponentReference> = {
     category: "primitive",
     usage: `import { ScaleIn } from "@/remotion/primitives/scale-in";
 
-<ScaleIn durationInFrames={24}>
+<ScaleIn from={0.9} spring="snappy">
   <img src={staticFile("logo.png")} />
 </ScaleIn>`,
-    props: motionChildProps,
+    props: [
+      ...motionChildProps,
+      {
+        name: "from",
+        type: "number",
+        default: "0.92",
+        description: "Scale at the start of the entrance.",
+      },
+      {
+        name: "origin",
+        type: "TransformOrigin",
+        default: '"center"',
+        description: "Corner or edge the scale grows out of.",
+      },
+    ],
+    note: "Anything below ~0.85 wants a spring behind it, or the growth reads as a camera zoom.",
     related: ["spring-in", "fade-in"],
   },
   typewriter: {
@@ -123,7 +271,8 @@ export const componentReference: Record<string, ComponentReference> = {
       {
         name: "charFrames",
         type: "number",
-        description: "Frames per character (preferred over durationInFrames).",
+        description:
+          "Frames per character (preferred over durationInFrames). Values below 1 type more than one character a frame.",
       },
       {
         name: "durationInFrames",
@@ -152,35 +301,35 @@ export const componentReference: Record<string, ComponentReference> = {
         name: "showCursor",
         type: "boolean",
         default: "true",
-        description: "Show a blinking cursor while typing.",
+        description: "Show the caret.",
       },
       {
         name: "cursorBlinkFrames",
         type: "number",
         default: "30",
-        description: "Cursor blink cycle length in frames.",
+        description: "Caret blink cycle length in frames, used while it rests.",
       },
       {
         name: "cursorColor",
         type: "string",
-        description: "Cursor color. Defaults to the text color.",
+        description: "Caret colour. Defaults to the text colour.",
       },
       {
         name: "cursorWidth",
         type: "number",
-        description: "Cursor width in pixels (bar/underscore only).",
+        description: "Caret width in pixels (bar/underscore only).",
       },
       {
         name: "cursorStyle",
         type: '"bar" | "block" | "underscore"',
         default: '"bar"',
-        description: "Cursor shape.",
+        description: "Caret shape.",
       },
       {
         name: "humanize",
         type: "boolean",
         default: "false",
-        description: "Add subtle per-character timing variation.",
+        description: "Uneven key rhythm — the difference between typing and a progress bar.",
       },
       {
         name: "respectPunctuation",
@@ -212,40 +361,154 @@ export const componentReference: Record<string, ComponentReference> = {
         default: "1",
         description: "Frames per character when backspacing.",
       },
+      {
+        name: "reserveSpace",
+        type: "boolean",
+        default: "true",
+        description:
+          "Measure the full block up front so a wrapping line never reflows mid-sentence.",
+      },
+      {
+        name: "fontSize",
+        type: "number",
+        default: "scaled 84px",
+        description: "Text size in pixels.",
+      },
+      {
+        name: "fontWeight",
+        type: "number",
+        default: "600",
+        description: "Text weight.",
+      },
+      {
+        name: "color",
+        type: "string",
+        default: '"#ececec"',
+        description: "Text colour.",
+      },
+      {
+        name: "fontFamily",
+        type: "string",
+        description: "Font family for the typed text.",
+      },
+      {
+        name: "style",
+        type: "CSSProperties",
+        description: "Styles merged onto the text span.",
+      },
     ],
-    note: "Inline pause markers like [pause:0.5] are stripped from the rendered text.",
+    note: "The caret holds solid while keys land and only blinks once it rests. Inline [pause:0.5] markers are stripped from the rendered text.",
     related: ["marker-highlight", "counter"],
   },
   counter: {
     category: "primitive",
     usage: `import { Counter } from "@/remotion/primitives/counter";
 
-<Counter from={0} to={100} suffix="%" durationInFrames={45} />`,
+<Counter from={0} to={124000} roll durationInFrames={64} />`,
     props: [
       {
         name: "to",
         type: "number",
         required: true,
-        description: "Target value to count toward.",
+        description: "Value the count lands on.",
       },
       {
         name: "from",
         type: "number",
         default: "0",
-        description: "Starting value.",
+        description: "Value the count starts from.",
       },
       {
         name: "durationInFrames",
         type: "number",
-        default: "30",
-        description: "Frames over which the count animates.",
+        default: "60",
+        description: "Frames over which the value ramps.",
+      },
+      {
+        name: "delayInFrames",
+        type: "number",
+        default: "0",
+        description: "Frames before the ramp starts.",
+      },
+      {
+        name: "decimals",
+        type: "number",
+        default: "0",
+        description: "Fixed decimal places. Also fixes the width, so nothing shifts.",
+      },
+      {
+        name: "grouping",
+        type: "boolean",
+        default: "true",
+        description: "Group thousands with the locale's separator.",
+      },
+      {
+        name: "locale",
+        type: "string",
+        description: "Locale for grouping and decimal marks.",
+      },
+      {
+        name: "format",
+        type: "(value: number) => string",
+        description: "Full override of the number formatting.",
+      },
+      {
+        name: "prefix",
+        type: "string",
+        description: "Text before the number, e.g. a currency mark.",
       },
       {
         name: "suffix",
         type: "string",
-        description: "Text appended after the number (e.g. %, K, M).",
+        description: "Text after the number, e.g. %, K, M.",
+      },
+      {
+        name: "roll",
+        type: "boolean",
+        default: "false",
+        description:
+          "Roll each digit like an odometer. Lower digits spin continuously; higher ones turn over on the carry.",
+      },
+      {
+        name: "spring",
+        type: "MotionSpring",
+        description: "Drive the ramp with a spring instead of the ease-out curve.",
+      },
+      {
+        name: "settle",
+        type: "boolean",
+        default: "true",
+        description: "Small scale pop on the frame the number lands.",
+      },
+      {
+        name: "fontSize",
+        type: "number",
+        default: "scaled 96px",
+        description: "Text size in pixels.",
+      },
+      {
+        name: "fontWeight",
+        type: "number",
+        default: "700",
+        description: "Text weight.",
+      },
+      {
+        name: "color",
+        type: "string",
+        description: "Text colour.",
+      },
+      {
+        name: "fontFamily",
+        type: "string",
+        description: "Font family for the number.",
+      },
+      {
+        name: "style",
+        type: "CSSProperties",
+        description: "Styles merged onto the number.",
       },
     ],
+    note: "The width is reserved from the longest value the ramp can produce, so a centred number never reflows the line around it.",
     related: ["stat-card", "progress-bar"],
   },
   "blur-in": {
@@ -260,20 +523,54 @@ export const componentReference: Record<string, ComponentReference> = {
       {
         name: "maxBlur",
         type: "number",
-        default: "8",
-        description: "Maximum blur radius in pixels at frame 0.",
+        default: "10",
+        description: "Blur radius in pixels at the start.",
+      },
+      {
+        name: "scaleFrom",
+        type: "number",
+        default: "0.98",
+        description: "Scale at the start — the push that sells the pull into focus.",
       },
     ],
+    note: "The blur clears at 80% of the travel; held to the last frame the whole entrance feels soft.",
     related: ["fade-in", "scale-in"],
   },
   "spring-in": {
     category: "primitive",
     usage: `import { SpringIn } from "@/remotion/primitives/spring-in";
 
-<SpringIn durationInFrames={40}>
-  <div>Bouncy entrance</div>
+<SpringIn config="bouncy" durationInFrames={40}>
+  <div>Physical entrance</div>
 </SpringIn>`,
-    props: motionChildProps,
+    props: [
+      ...motionChildProps.filter((prop) => prop.name !== "spring"),
+      {
+        name: "config",
+        type: '"smooth" | "snappy" | "bouncy" | Partial<SpringConfig>',
+        default: '"snappy"',
+        description: "Spring preset, or an override on the snappy config.",
+      },
+      {
+        name: "from",
+        type: "number",
+        default: "0.88",
+        description: "Scale at the start of the entrance.",
+      },
+      {
+        name: "travel",
+        type: "number",
+        default: "scaled 14px",
+        description: "How far it rises as it springs.",
+      },
+      {
+        name: "origin",
+        type: "TransformOrigin",
+        default: '"center"',
+        description: "Point the scale grows from.",
+      },
+    ],
+    note: "`config=\"bouncy\"` overshoots both the scale and the rise, then settles — the reason to use a spring at all.",
     related: ["scale-in", "rotate-in"],
   },
   "stagger-children": {
@@ -281,9 +578,9 @@ export const componentReference: Record<string, ComponentReference> = {
     usage: `import { StaggerChildren } from "@/remotion/primitives/stagger-children";
 import { SlideLeft } from "@/remotion/primitives/slide-left";
 
-<StaggerChildren staggerInFrames={8}>
+<StaggerChildren staggerInFrames={8} exitStaggerInFrames={6}>
   {items.map((item) => (
-    <SlideLeft key={item}><span>{item}</span></SlideLeft>
+    <SlideLeft key={item} exit><span>{item}</span></SlideLeft>
   ))}
 </StaggerChildren>`,
     props: [
@@ -296,17 +593,31 @@ import { SlideLeft } from "@/remotion/primitives/slide-left";
       {
         name: "staggerInFrames",
         type: "number",
-        default: "6",
-        description: "Delay between each child in frames.",
+        default: "8",
+        description: "Frames between one child starting and the next.",
       },
       {
         name: "baseDelayInFrames",
         type: "number",
         default: "0",
-        description: "Initial delay before the first child animates.",
+        description: "Frames before the first child starts.",
+      },
+      {
+        name: "order",
+        type: '"forward" | "reverse" | "center" | "edges"',
+        default: '"forward"',
+        description:
+          "Which child goes first. center runs outwards from the middle, edges runs inwards.",
+      },
+      {
+        name: "exitStaggerInFrames",
+        type: "number",
+        default: "0",
+        description:
+          "Frames between one child leaving and the next, in the order they arrived. 0 lands the group together.",
       },
     ],
-    note: "Installs `motion-wrapper` automatically. Each child should use an enter primitive.",
+    note: "Each child gets a Sequence with layout=\"none\", so it animates from its own frame 0. Inside a bounded window the slot carries an end too, which is what times each child's exit.",
     related: ["slide-left", "fade-in"],
   },
   "marker-highlight": {
@@ -314,10 +625,9 @@ import { SlideLeft } from "@/remotion/primitives/slide-left";
     usage: `import { MarkerHighlight } from "@/remotion/primitives/marker-highlight";
 
 <MarkerHighlight
-  text="Ship faster with RemotionUI"
-  highlightWord="RemotionUI"
+  text="The best motion is code you can read and change."
+  phrase="code you can read and change"
   markerColor="#f97316"
-  invertOnHighlight
 />`,
     props: [
       {
@@ -327,42 +637,81 @@ import { SlideLeft } from "@/remotion/primitives/slide-left";
         description: "Full sentence to render.",
       },
       {
+        name: "phrase",
+        type: "string",
+        description:
+          "Phrase to sweep. Matched case-insensitively and may span several words.",
+      },
+      {
         name: "highlightWord",
         type: "string",
-        required: true,
-        description: "Substring to highlight with an animated wipe.",
+        description: "Single-word form of phrase.",
       },
       {
-        name: "markerColor",
-        type: "string",
-        description: "Fill color for the marker wipe.",
-      },
-      {
-        name: "invertOnHighlight",
-        type: "boolean",
-        description: "Switch highlighted word to dark text once the marker covers it.",
+        name: "variant",
+        type: '"marker" | "knockout" | "underline" | "box"',
+        default: '"marker"',
+        description: "How the emphasis is drawn.",
       },
       {
         name: "durationInFrames",
         type: "number",
-        default: "18",
-        description: "Highlight wipe duration in frames.",
+        default: "12",
+        description: "Length of the sweep across one word.",
       },
       {
         name: "delayInFrames",
         type: "number",
         default: "0",
-        description: "Frames to delay before the wipe begins.",
+        description: "Frames before the first word is struck.",
+      },
+      {
+        name: "staggerInFrames",
+        type: "number",
+        default: "4",
+        description: "Frames between one word being struck and the next.",
+      },
+      {
+        name: "tilt",
+        type: "number",
+        default: "-0.7",
+        description: "Tilt of the stroke in degrees — a hand does not draw level.",
+      },
+      {
+        name: "markerColor",
+        type: "string",
+        default: '"#fbbf24"',
+        description: "Colour of the stroke.",
+      },
+      {
+        name: "invertOnHighlight",
+        type: "boolean",
+        default: "knockout only",
+        description:
+          "Flip the ink under the leading edge of the stroke as it passes.",
+      },
+      {
+        name: "inkColor",
+        type: "string",
+        default: '"#080810"',
+        description: "Ink used over a covered word.",
       },
       {
         name: "color",
         type: "string",
         default: '"#f8fafc"',
-        description: "Base text color.",
+        description: "Base text colour.",
+      },
+      {
+        name: "textAlign",
+        type: '"left" | "center" | "right"',
+        default: '"left"',
+        description: "Alignment of the wrapped words.",
       },
       {
         name: "fontSize",
         type: "number",
+        default: "scaled 84px",
         description: "Text size in pixels.",
       },
       {
@@ -371,59 +720,164 @@ import { SlideLeft } from "@/remotion/primitives/slide-left";
         default: "600",
         description: "Text weight.",
       },
+      {
+        name: "fontFamily",
+        type: "string",
+        description: "Font family for the text.",
+      },
+      {
+        name: "style",
+        type: "CSSProperties",
+        description: "Styles merged onto the wrapper.",
+      },
     ],
+    note: "The stroke crosses each marked word in turn, so it reads as a hand moving rather than a background appearing.",
     related: ["quote-card", "typewriter"],
   },
   "progress-bar": {
     category: "primitive",
     usage: `import { ProgressBar } from "@/remotion/primitives/progress-bar";
 
-<ProgressBar progress={0.75} label="Rendering" color="#f97316" />`,
+<ProgressBar progress={0.75} label="Rendering" showValue segments={4} />`,
     props: [
       {
         name: "progress",
         type: "number",
-        default: "animated 0→1",
-        description: "Fill amount from 0 to 1. Animates when omitted.",
+        default: "1",
+        description: "Value the bar fills to, 0–1.",
+      },
+      {
+        name: "from",
+        type: "number",
+        default: "0",
+        description: "Value the bar starts from, 0–1.",
       },
       {
         name: "durationInFrames",
         type: "number",
-        default: "30",
-        description: "Frames to animate progress when not fixed.",
+        default: "60",
+        description: "Frames the fill takes.",
+      },
+      {
+        name: "delayInFrames",
+        type: "number",
+        default: "0",
+        description: "Frames before the fill starts.",
+      },
+      {
+        name: "spring",
+        type: "MotionSpring",
+        description: "Drive the fill with a spring instead of the ease-out curve.",
+      },
+      {
+        name: "indeterminate",
+        type: "boolean",
+        default: "false",
+        description: "Loop a shuttle across the track — work with no known end.",
       },
       {
         name: "label",
         type: "string",
-        description: "Optional label shown beside the bar.",
+        description: "Label above the track.",
+      },
+      {
+        name: "showValue",
+        type: "boolean",
+        default: "false",
+        description: "Percentage readout on the right of the label row.",
+      },
+      {
+        name: "formatValue",
+        type: "(progress: number) => string",
+        description: "Override the readout text.",
+      },
+      {
+        name: "segments",
+        type: "number",
+        description: "Divide the track into equal steps.",
       },
       {
         name: "color",
         type: "string",
-        description: "Fill color of the progress bar.",
+        default: '"#e8b86d"',
+        description: "Fill colour.",
+      },
+      {
+        name: "trackColor",
+        type: "string",
+        description: "Colour of the empty track.",
+      },
+      {
+        name: "labelColor",
+        type: "string",
+        description: "Colour of the label row.",
       },
       {
         name: "height",
         type: "number",
-        description: "Bar height in pixels.",
+        default: "scaled 12px",
+        description: "Bar thickness in pixels.",
+      },
+      {
+        name: "radius",
+        type: "number",
+        default: "height",
+        description: "Corner radius.",
+      },
+      {
+        name: "glow",
+        type: "boolean",
+        default: "true",
+        description: "Soft light carried by the leading edge of the fill.",
+      },
+      {
+        name: "width",
+        type: "number | string",
+        default: '"100%"',
+        description: "Width of the whole control.",
       },
     ],
+    note: "Lays out inline rather than filling the frame, so it composes inside a card or a stat row.",
     related: ["counter", "intro"],
   },
   "rotate-in": {
     category: "primitive",
     usage: `import { RotateIn } from "@/remotion/primitives/rotate-in";
 
-<RotateIn degrees={-12} durationInFrames={30}>
-  <div>Rotate in</div>
+<RotateIn axis="x" degrees={-24} origin="bottom">
+  <div>Hinge into place</div>
 </RotateIn>`,
     props: [
       ...motionChildProps,
       {
         name: "degrees",
         type: "number",
-        default: "-10",
-        description: "Starting rotation in degrees.",
+        default: "-12",
+        description: "Angle it starts at. Negative tilts anticlockwise.",
+      },
+      {
+        name: "axis",
+        type: '"z" | "x" | "y"',
+        default: '"z"',
+        description: "z spins in plane; x and y hinge in depth.",
+      },
+      {
+        name: "perspective",
+        type: "number",
+        default: "1200",
+        description: "Depth of the 3D projection for the x and y axes.",
+      },
+      {
+        name: "scaleFrom",
+        type: "number",
+        default: "0.96",
+        description: "Scale at the start — a rotation that also grows reads as one gesture.",
+      },
+      {
+        name: "origin",
+        type: "TransformOrigin",
+        default: '"center"',
+        description: "Point the rotation pivots around.",
       },
     ],
     related: ["spring-in", "scale-in"],
@@ -442,8 +896,14 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       {
         name: "durationInFrames",
         type: "number",
-        default: "15",
+        default: "18",
         description: "Overlap duration between scenes.",
+      },
+      {
+        name: "dipTo",
+        type: "string",
+        description:
+          "Colour the cut passes through. Omit to crossfade the scenes directly.",
       },
       {
         name: "variant",
@@ -492,9 +952,13 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     props: [
       { name: "title", type: "string", required: true, description: "Primary line." },
       { name: "subtitle", type: "string", description: "Secondary line." },
-      { name: "accentColor", type: "string", description: "Accent bar color." },
-      { name: "backgroundColor", type: "string", default: '"rgba(5, 7, 15, 0.78)"', description: "Panel background." },
-      { name: "align", type: '"left" | "right"', default: '"left"', description: "Lower-third side." },
+      { name: "badge", type: "string", description: "Small tag on the plate — LIVE, EP 12, the segment." },
+      { name: "align", type: '"left" | "right"', default: '"left"', description: "Edge the plate wipes out from." },
+      { name: "holdSeconds", type: "number", description: "Seconds before the plate retreats. Omit to leave it on screen." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Badge colour." },
+      { name: "backgroundColor", type: "string", description: "Overrides the plate background." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
     note: "Transparent overlay scene designed to sit over footage.",
     related: ["title-card", "end-card"],
@@ -505,10 +969,15 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <TitleCard title="Launch Week" subtitle="Day 1" />`,
     props: [
-      { name: "title", type: "string", required: true, description: "Main heading." },
+      { name: "title", type: "string", required: true, description: "Headline. Newlines honoured; otherwise lines are balanced." },
       { name: "subtitle", type: "string", description: "Supporting line." },
-      { name: "accentColor", type: "string", description: "Accent elements." },
-      { name: "backgroundColor", type: "string", description: "Scene background." },
+      { name: "eyebrow", type: "string", description: "Chip above the headline." },
+      { name: "meta", type: "string", description: "Small line under the subtitle — date, author, run time." },
+      { name: "charsPerLine", type: "number", default: "22", description: "Characters per line the headline balances to." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Chip, glow, and sweep colour." },
+      { name: "backgroundColor", type: "string", description: "Overrides the page background." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
     related: ["intro", "end-card"],
   },
@@ -521,9 +990,12 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
   items={["Own your components", "Live previews", "CLI workflow"]}
 />`,
     props: [
-      { name: "items", type: "string[]", required: true, description: "Bullet list items." },
+      { name: "items", type: "(string | FeatureItem)[]", required: true, description: "Rows, as strings or { label, detail }. Up to five are shown." },
       { name: "title", type: "string", description: "Section heading." },
-      { name: "accentColor", type: "string", description: "Bullet and accent color." },
+      { name: "eyebrow", type: "string", description: "Small label above the heading." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Check and eyebrow colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
     note: "Self-contained scene. Uses layout and motion-tokens helpers only.",
     related: ["stat-card", "showcase"],
@@ -534,11 +1006,19 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <StatCard value={98} label="Satisfaction" suffix="%" />`,
     props: [
-      { name: "value", type: "number", required: true, description: "Number to count up to." },
-      { name: "label", type: "string", required: true, description: "Metric label." },
-      { name: "suffix", type: "string", description: "Appended to the value." },
+      { name: "value", type: "number", default: "98", description: "Number the counter lands on." },
+      { name: "max", type: "number", description: "What the value is out of. With it the ring is a meter; without it the ring draws a full sweep." },
+      { name: "suffix", type: "string", default: '"%"', description: "Unit after the number." },
+      { name: "prefix", type: "string", description: "Unit before the number." },
+      { name: "decimals", type: "number", default: "0", description: "Decimal places while counting and at rest." },
+      { name: "label", type: "string", default: '"Satisfaction"', description: "Metric label." },
+      { name: "caption", type: "string", description: "Line under the label — source, window, cohort." },
+      { name: "delta", type: "number", description: "Change against the previous period; lands after the number settles." },
+      { name: "deltaSuffix", type: "string", default: '"%"', description: "Unit on the delta chip." },
+      { name: "accentColor", type: "string", default: '"#2DD4BF"', description: "Ring, suffix, and delta colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
-    note: "Installs `counter` and `fade-in`.",
     related: ["counter", "feature-list"],
   },
   "quote-card": {
@@ -546,17 +1026,22 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     usage: `import { QuoteCard } from "@/remotion/scenes/quote-card";
 
 <QuoteCard
-  quote="The best way to ship motion graphics"
-  highlightWord="motion"
+  quote="The best motion is code you can read and change"
+  emphasis="motion"
   author="Team"
 />`,
     props: [
       { name: "quote", type: "string", required: true, description: "Quote body." },
-      { name: "highlightWord", type: "string", required: true, description: "Word to highlight." },
-      { name: "author", type: "string", required: true, description: "Attribution line." },
+      { name: "emphasis", type: "string", description: "Phrase swept with a marker; matched over the whole quote, so it may span a line break." },
+      { name: "author", type: "string", description: "Attribution name." },
+      { name: "role", type: "string", description: "Second attribution line — role, company, handle." },
+      { name: "initials", type: "string", description: "Initials in the attribution disc. Defaults to the author's." },
+      { name: "charsPerLine", type: "number", default: "30", description: "Characters per line the quote balances to." },
+      { name: "accentColor", type: "string", default: '"#F472B6"', description: "Mark, marker, and disc colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
-    note: "Installs `marker-highlight`.",
-    related: ["marker-highlight", "title-card"],
+    related: ["text-emphasis", "title-card"],
   },
   "end-card": {
     category: "scene",
@@ -565,9 +1050,15 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 <EndCard title="Thanks for watching" cta="Subscribe" url="youtube.com" />`,
     props: [
       { name: "title", type: "string", required: true, description: "Closing headline." },
-      { name: "cta", type: "string", description: "Call-to-action label." },
-      { name: "url", type: "string", description: "URL shown with the CTA." },
-      { name: "logoSrc", type: "string", description: "Optional brand mark image (staticFile or URL)." },
+      { name: "subtitle", type: "string", description: "Line under the title." },
+      { name: "eyebrow", type: "string", description: "Chip above the title." },
+      { name: "cta", type: "string", description: "Button label. Omit to end on the title alone." },
+      { name: "url", type: "string", description: "Address typed under the button." },
+      { name: "handles", type: "string[]", description: "Handles or channels listed along the foot." },
+      { name: "logoSrc", type: "string", description: "Brand mark image (staticFile or URL)." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Button, pulse, and eyebrow colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
     related: ["title-card", "intro"],
   },
@@ -579,6 +1070,8 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     props: [
       { name: "title", type: "string", default: '"RemotionUI"', description: "Main title." },
       { name: "subtitle", type: "string", description: "Tagline under the title." },
+      { name: "backgroundColor", type: "string", description: "Page background behind the intro." },
+      { name: "accentColor", type: "string", description: "Accent used by the progress bar and title." },
     ],
     note: "Full intro sequence with staggered title, subtitle, and progress bar.",
     related: ["showcase", "title-card"],
@@ -591,8 +1084,13 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     props: [
       { name: "title", type: "string", description: "Opening title." },
       { name: "subtitle", type: "string", description: "Opening subtitle." },
+      { name: "featureTitle", type: "string", default: '"Three layers you own"', description: "Headline on the feature list scene." },
+      { name: "featureItems", type: "string[]", description: "Rows ticked off in the feature list." },
       { name: "statValue", type: "number", default: "3", description: "Counter value for the stat scene." },
       { name: "statLabel", type: "string", default: '"Runtime dependencies"', description: "Stat card label." },
+      { name: "statSuffix", type: "string", default: '""', description: "Unit appended to the stat value, e.g. \"%\"." },
+      { name: "ctaLabel", type: "string", description: "End card CTA pill label." },
+      { name: "ctaUrl", type: "string", description: "URL shown on the end card." },
     ],
     note: "Demo reel using TransitionSeries across multiple scenes.",
     related: ["transition-fade", "feature-list"],
@@ -603,7 +1101,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <HeroLoop />`,
     props: [],
-    note: "15-second silent looping hero video for website embeds. Installs as source and demonstrates the primitives it uses.",
+    note: "12-second silent hero composition for website embeds. The final frame resolves back into frame 0, so it loops without a seam. Installs as source and demonstrates the primitives it uses.",
     related: ["typewriter", "counter", "stagger-children"],
   },
   "caption-highlight": {
@@ -613,9 +1111,14 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 <CaptionHighlight page={page} activeColor="#60a5fa" />`,
     props: [
       { name: "page", type: "TikTokPage", required: true, description: "Caption page from createTikTokStyleCaptions." },
-      { name: "activeColor", type: "string", default: '"#fbbf24"', description: "Highlight color for the active word." },
-      { name: "inactiveColor", type: "string", default: '"#f8fafc"', description: "Color for inactive words." },
-      { name: "fontSize", type: "number", default: "56 (scaled)", description: "Caption font size in pixels." },
+      { name: "activeColor", type: "string", default: '"#ff6b00"', description: "Highlight color for the active word." },
+      { name: "inactiveColor", type: "string", default: '"#111111"', description: "Color for inactive words." },
+      { name: "fontSize", type: "number", default: "64 (scaled)", description: "Caption font size in pixels." },
+      { name: "fontWeight", type: "number | string", default: "650", description: "Resting weight." },
+      { name: "activeWeight", type: "number | string", default: "800", description: "Weight the active word steps to." },
+      { name: "emphasisScale", type: "number", default: "EMPHASIS.subtle (1.05)", description: "Peak scale of the active word." },
+      { name: "textAlign", type: '"left" | "center"', default: '"center"', description: "Line alignment." },
+      { name: "frame", type: "number", description: "Frame override — pass the parent frame inside a Sequence." },
     ],
     note: "Advanced. Installs @remotion/captions.",
     related: ["caption-scene", "caption-utils"],
@@ -643,6 +1146,14 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       { name: "src", type: "string", required: true, description: "Audio file URL or staticFile path." },
       { name: "height", type: "number", default: "120", description: "Bar container height." },
       { name: "barColor", type: "string", default: '"#e8b86d"', description: "Bar fill color." },
+      { name: "barColorEnd", type: "string", description: "Second color for a gradient across the spectrum. Defaults to barColor." },
+      { name: "barGap", type: "number", default: "3", description: "Gap between bars in px." },
+      { name: "numberOfSamples", type: "number", default: "128", description: "FFT size used to sample the spectrum." },
+      { name: "maxBarCount", type: "number", default: "48", description: "Log-spaced bands drawn from the spectrum." },
+      { name: "align", type: '"bottom" | "center"', default: '"bottom"', description: "Grow bars from the baseline or mirror them around it." },
+      { name: "showPeaks", type: "boolean", default: "true", description: "Draw the decaying peak cap above each bar." },
+      { name: "showReflection", type: "boolean", default: "false", description: "Faded mirrored copy below the baseline. Ignored when align is center." },
+      { name: "frame", type: "number", description: "Frame override — pass the parent frame inside a Sequence." },
     ],
     note: "Advanced. Installs @remotion/media-utils.",
     related: ["audiogram-scene"],
@@ -664,26 +1175,41 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     category: "primitive",
     usage: `import { PathDraw } from "@/remotion/primitives/path-draw";
 
-<PathDraw d="M 10 10 L 190 190" durationInFrames={60} />`,
+<PathDraw d={["M 20 180 L 100 20 L 180 180", "M 60 120 L 140 120"]} durationInFrames={60} />`,
     props: [
-      { name: "d", type: "string", required: true, description: "SVG path d attribute." },
-      { name: "durationInFrames", type: "number", default: "60", description: "Draw animation length." },
-      { name: "stroke", type: "string", default: '"#ffffff"', description: "Stroke color." },
+      { name: "d", type: "string | string[]", required: true, description: "One path, or several drawn in order." },
+      { name: "durationInFrames", type: "number", default: "60", description: "Draw length for each path." },
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames before the first path starts." },
+      { name: "staggerInFrames", type: "number", default: "8", description: "Offset between paths when d is an array." },
+      { name: "stroke", type: "string", default: '"#e8b86d"', description: "Stroke color." },
+      { name: "strokeWidth", type: "number", default: "4", description: "Stroke width in path units." },
+      { name: "width", type: "number", default: "200", description: "Rendered SVG width in px." },
+      { name: "height", type: "number", default: "200", description: "Rendered SVG height in px." },
+      { name: "viewBox", type: "string", description: "Omit to frame the artwork from its bounding box." },
+      { name: "fill", type: "string", description: "Fill flooded in once the stroke closes." },
+      { name: "head", type: "boolean", default: "true", description: "Dot riding the tip while it draws." },
+      { name: "glow", type: "boolean", default: "true", description: "Soft bloom around the stroke." },
     ],
     note: "Advanced. Installs @remotion/paths.",
-    related: ["logo-reveal"],
+    related: ["logo-reveal", "cursor-path"],
   },
   "logo-reveal": {
     category: "scene",
     usage: `import { LogoReveal } from "@/remotion/scenes/logo-reveal";
 
-<LogoReveal pathD="M 100 20 L 180 180 L 20 180 Z" />`,
+<LogoReveal pathD="M 100 20 L 180 180 L 20 180 Z" wordmark="Acme" tagline="Ship faster" />`,
     props: [
-      { name: "pathD", type: "string", required: true, description: "SVG path for the logo." },
-      { name: "width", type: "number", default: "200", description: "SVG width." },
-      { name: "height", type: "number", default: "200", description: "SVG height." },
+      { name: "pathD", type: "string | string[]", required: true, description: "Logo path, or paths drawn in sequence." },
+      { name: "viewBox", type: "string", description: "Omit to frame the mark automatically." },
+      { name: "size", type: "number", description: "Mark size in px. Defaults to a share of the short edge." },
+      { name: "wordmark", type: "string", description: "Brand name rising after the mark completes." },
+      { name: "tagline", type: "string", description: "Supporting line, entering last." },
+      { name: "stroke", type: "string", default: '"#e8b86d"', description: "Mark stroke color." },
+      { name: "strokeWidth", type: "number", description: "Defaults to a share of the mark size." },
+      { name: "fill", type: "string", description: "Fill flooded into the mark after the draw." },
+      { name: "backgroundColor", type: "string", default: '"#080810"', description: "Scene background." },
     ],
-    related: ["path-draw"],
+    related: ["path-draw", "title-card"],
   },
   "map-canvas": {
     category: "primitive",
@@ -752,9 +1278,9 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <TransitionSeries.Transition {...transitionClockWipe({ width: 1920, height: 1080 })} />`,
     props: [
-      { name: "durationInFrames", type: "number", default: "24", description: "Transition overlap length." },
-      { name: "width", type: "number", required: true, description: "Composition width." },
-      { name: "height", type: "number", required: true, description: "Composition height." },
+      { name: "durationInFrames", type: "number", default: "26", description: "Transition overlap length." },
+      { name: "width", type: "number", description: "Sweep width. Defaults to the composition width." },
+      { name: "height", type: "number", description: "Sweep height. Defaults to the composition height." },
     ],
     related: ["transition-wipe"],
   },
@@ -766,10 +1292,14 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
   <TransitionLightLeak seed={2} hueShift={45} />
 </TransitionSeries.Overlay>`,
     props: [
+      { name: "durationInFrames", type: "number", description: "Length of the flare. Defaults to the overlay's own length." },
       { name: "seed", type: "number", default: "0", description: "Light leak pattern seed." },
-      { name: "hueShift", type: "number", default: "0", description: "Hue rotation in degrees." },
+      { name: "hueShift", type: "number", default: "28", description: "Hue rotation in degrees — warm amber by default." },
+      { name: "intensity", type: "number", default: "1", description: "Peak opacity of the leak." },
+      { name: "peakAt", type: "number", default: "0.4", description: "Where the flare peaks in its window. Sit it on the cut to hide the seam." },
+      { name: "blendMode", type: '"screen" | "plus-lighter" | "normal"', default: '"screen"', description: "How the leak composites over the frame." },
     ],
-    note: "Advanced. Installs @remotion/light-leaks.",
+    note: "Advanced. Installs @remotion/light-leaks. Rendering needs the ANGLE backend — pass --gl=angle.",
     related: ["transition-fade"],
   },
   "blur-reveal": {
@@ -778,8 +1308,10 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <TransitionSeries.Transition {...transitionBlurReveal({ maxBlur: 24 })} />`,
     props: [
-      { name: "durationInFrames", type: "number", default: "20", description: "Transition overlap length." },
-      { name: "maxBlur", type: "number", default: "24", description: "Peak blur radius in px." },
+      { name: "durationInFrames", type: "number", default: "22", description: "Transition overlap length." },
+      { name: "maxBlur", type: "number", default: "24", description: "Peak blur radius in px, reached only mid-transition." },
+      { name: "scaleBy", type: "number", default: "0.03", description: "Scale headroom the blur rides on. 0 keeps the frame still." },
+      { name: "shouldBlurOutExitingScene", type: "boolean", default: "true", description: "Blur the outgoing scene too. false holds it sharp underneath." },
       { name: "variant", type: '"linear" | "spring" | "editorial"', default: '"editorial"', description: "Timing curve." },
     ],
     related: ["transition-fade", "frosted-glass-wipe"],
@@ -790,10 +1322,12 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <TransitionSeries.Transition {...transitionGridPixelateWipe({ cols: 12, rows: 8 })} />`,
     props: [
-      { name: "durationInFrames", type: "number", default: "24", description: "Transition overlap length." },
+      { name: "durationInFrames", type: "number", default: "26", description: "Transition overlap length." },
       { name: "cols", type: "number", default: "12", description: "Grid column count." },
       { name: "rows", type: "number", default: "8", description: "Grid row count." },
-      { name: "direction", type: '"from-left" | "from-top"', default: '"from-left"', description: "Stagger direction." },
+      { name: "order", type: '"from-left" | "from-top" | "diagonal" | "center"', default: '"from-left"', description: "Which axis or point the cells light up from." },
+      { name: "shape", type: '"square" | "dot"', default: '"square"', description: "Cells fill as blocks, or as points that grow with their own reveal." },
+      { name: "stagger", type: "number", default: "0.82", description: "0 pops every cell together; 1 spreads them across the whole window." },
     ],
     related: ["transition-wipe", "blur-reveal"],
   },
@@ -803,10 +1337,11 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <TransitionSeries.Transition {...transitionFrostedGlassWipe({ blur: 20 })} />`,
     props: [
-      { name: "durationInFrames", type: "number", default: "22", description: "Transition overlap length." },
+      { name: "durationInFrames", type: "number", default: "24", description: "Transition overlap length." },
       { name: "blur", type: "number", default: "20", description: "Frost panel blur radius." },
       { name: "panelWidth", type: "number", default: "0.14", description: "Sweep panel width as fraction of frame." },
-      { name: "direction", type: '"from-left" | "from-right"', default: '"from-left"', description: "Sweep direction." },
+      { name: "direction", type: '"from-left" | "from-right" | "from-top" | "from-bottom"', default: '"from-left"', description: "Sweep direction." },
+      { name: "frostColor", type: "string", default: '"rgba(255,255,255,0.12)"', description: "Tint of the glass panel." },
     ],
     related: ["blur-reveal", "transition-wipe"],
   },
@@ -816,25 +1351,33 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <AutoFitTitle title="Headlines that always fit" subtitle="Any resolution" />`,
     props: [
-      { name: "title", type: "string", required: true, description: "Headline text." },
-      { name: "subtitle", type: "string", description: "Optional subtitle." },
-      { name: "logoSrc", type: "string", description: "Optional brand mark above the headline." },
-      { name: "maxFontSize", type: "number", default: "96", description: "Maximum title size in px." },
+      { name: "title", type: "string", required: true, description: "Headline, fitted to the safe area whatever its length." },
+      { name: "subtitle", type: "string", description: "Subtitle; scales with the fitted headline." },
+      { name: "logoSrc", type: "string", description: "Brand mark above the headline." },
+      { name: "logoSize", type: "number", description: "Logo size in composition pixels." },
+      { name: "maxFontSize", type: "number", default: "128", description: "Ceiling for the fitted size, at a 1080-wide stage." },
+      { name: "minFontSize", type: "number", default: "34", description: "Floor for the fitted size." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Background glow colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
-    note: "Advanced. Installs @remotion/layout-utils and @remotion/google-fonts.",
     related: ["title-card", "social-clip"],
   },
   "waveform-line": {
     category: "primitive",
     usage: `import { WaveformLine } from "@/remotion/primitives/waveform-line";
 
-<WaveformLine src={staticFile("voice.wav")} mirror />`,
+<WaveformLine src={staticFile("voice.wav")} />`,
     props: [
       { name: "src", type: "string", required: true, description: "Audio source." },
+      { name: "width", type: "number", description: "Drawing width. Defaults to the composition width — pass the slot width inside padding." },
       { name: "height", type: "number", default: "144", description: "SVG waveform height." },
-      { name: "mirror", type: "boolean", default: "false", description: "Draw a reflected waveform." },
+      { name: "variant", type: '"envelope" | "line"', default: '"envelope"', description: "Mirrored amplitude band, or the raw oscilloscope trace." },
+      { name: "samples", type: "number", default: "88 / 128", description: "Envelope buckets (88) or trace samples (128)." },
+      { name: "windowInSeconds", type: "number", default: "1.2", description: "Audio window drawn around the current frame." },
+      { name: "mirror", type: "boolean", default: "false", description: "Reflected copy of the trace. Ignored by the envelope variant, which is already mirrored." },
       { name: "progress", type: "number", description: "Optional 0-1 played progress override." },
-      { name: "amplitudeScale", type: "number", default: "0.48", description: "Vertical waveform gain." },
+      { name: "amplitudeScale", type: "number", default: "0.94 / 0.48", description: "Vertical gain — envelope default 0.94, line default 0.48." },
       { name: "normalize", type: "boolean", default: "true", description: "Normalize the visible window for readable quiet audio." },
       { name: "showBaseline", type: "boolean", default: "true", description: "Render the center baseline." },
     ],
@@ -849,7 +1392,10 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     props: [
       { name: "src", type: "string", required: true, description: "Audio source." },
       { name: "size", type: "number", default: "240", description: "Pulse diameter in px." },
+      { name: "color", type: "string", default: '"#e8b86d"', description: "Ring and core color." },
       { name: "ringCount", type: "number", default: "3", description: "Number of reactive rings." },
+      { name: "sensitivity", type: "number", default: "1", description: "Multiplier on the measured level before it drives the rings." },
+      { name: "frame", type: "number", description: "Frame override — pass the parent frame inside a Sequence." },
     ],
     note: "Advanced. Installs @remotion/media-utils.",
     related: ["waveform-line", "audiogram-scene"],
@@ -861,8 +1407,15 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 <KaraokeCaptions page={page} mode="scale" />`,
     props: [
       { name: "page", type: "TikTokPage", required: true, description: "Caption page from @remotion/captions." },
-      { name: "mode", type: '"scale" | "underline"', default: '"scale"', description: "Active word emphasis style." },
-      { name: "fontSize", type: "number", default: "56", description: "Caption size in px." },
+      { name: "mode", type: '"scale" | "underline"', default: '"underline"', description: "Active word emphasis style — both modes also pop and lift the word." },
+      { name: "fontSize", type: "number", default: "66 (scaled)", description: "Caption size in px." },
+      { name: "fontWeight", type: "number | string", default: "800", description: "Caption weight." },
+      { name: "emphasisScale", type: "number", default: "EMPHASIS.subtle (1.05)", description: "Peak scale of the active word." },
+      { name: "activeColor", type: "string", default: '"#ff6b00"', description: "Color the active word crosses to." },
+      { name: "completedColor", type: "string", default: '"#111111"', description: "Color for words already spoken." },
+      { name: "inactiveColor", type: "string", default: '"rgba(17,17,17,0.32)"', description: "Color for words not yet spoken." },
+      { name: "trackColor", type: "string", description: "Underline track behind the wipe. Defaults to inactiveColor." },
+      { name: "frame", type: "number", description: "Frame override — pass the parent frame inside a Sequence." },
     ],
     note: "Use with caption-utils groupCaptionsIntoPages().",
     related: ["caption-highlight", "caption-scene"],
@@ -871,25 +1424,52 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     category: "primitive",
     usage: `import { LineChartDraw } from "@/remotion/primitives/line-chart-draw";
 
-<LineChartDraw points={[{ x: 0, y: 12 }, { x: 1, y: 24 }]} />`,
+<LineChartDraw
+  points={[
+    { x: 0, y: 12000, label: "Jan" },
+    { x: 1, y: 24000, label: "Feb" },
+  ]}
+/>`,
     props: [
-      { name: "points", type: "{ x: number; y: number }[]", required: true, description: "Chart points." },
-      { name: "showDots", type: "boolean", default: "true", description: "Reveal dots along the line." },
+      { name: "points", type: "ChartPoint[]", required: true, description: "Chart points. `label` supplies the x-axis tick." },
+      { name: "width", type: "number", description: "Drawing width. Defaults to the composition width — pass the slot width inside padding." },
+      { name: "height", type: "number", description: "Drawing height. Defaults to 40% of the composition height." },
+      { name: "color", type: "string", default: '"#e8b86d"', description: "Line, area and dot colour." },
+      { name: "strokeWidth", type: "number", description: "Line weight. Scales with the chart width by default." },
+      { name: "variant", type: '"smooth" | "linear"', default: '"smooth"', description: "Clamped cardinal spline, or straight segments." },
+      { name: "showAxis", type: "boolean", default: "true", description: "Gridlines and value labels on rounded ticks." },
+      { name: "showXLabels", type: "boolean", default: "true", description: "Category labels under the plot." },
+      { name: "showArea", type: "boolean", default: "true", description: "Gradient fill, wiped in with the draw." },
+      { name: "showDots", type: "boolean", default: "true", description: "Dot deposited on each point as the line passes it." },
+      { name: "showHead", type: "boolean", default: "true", description: "Glowing dot riding the tip while the line draws." },
+      { name: "showEndLabel", type: "boolean", default: "false", description: "Value callout on the final point." },
+      { name: "includeZero", type: "boolean", default: "true", description: "Anchor the axis at zero. Turn off for sparklines." },
+      { name: "valueFormatter", type: "(value: number) => string", description: "Formats axis ticks and the end label." },
       { name: "durationInFrames", type: "number", default: "70", description: "Draw-on duration." },
+      { name: "delayInFrames", type: "number", default: "0", description: "Delay before the draw starts." },
+      { name: "frame", type: "number", description: "Frame override — pass the parent frame inside a Sequence." },
     ],
-    related: ["animated-bar-chart", "path-draw"],
+    note: "Advanced. Installs @remotion/paths.",
+    related: ["animated-bar-chart", "metric-ticker", "path-draw"],
   },
   "cursor-path": {
     category: "primitive",
     usage: `import { CursorPath } from "@/remotion/primitives/cursor-path";
 
-<CursorPath points={[{ x: 80, y: 120 }, { x: 320, y: 80 }]} />`,
+<CursorPath points={[{ x: 80, y: 120 }, { x: 320, y: 80 }]} clickAt={[1]} />`,
     props: [
-      { name: "points", type: "{ x: number; y: number }[]", required: true, description: "Cursor route points." },
+      { name: "points", type: "{ x: number; y: number }[]", description: "Route waypoints in the parent's coordinates." },
+      { name: "d", type: "string", description: "Authored SVG path to follow instead of points." },
       { name: "durationInFrames", type: "number", default: "90", description: "Travel duration." },
-      { name: "size", type: "number", default: "34", description: "Cursor size." },
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames before the cursor sets off." },
+      { name: "color", type: "string", default: '"#e8b86d"', description: "Trail and ripple color." },
+      { name: "size", type: "number", default: "34", description: "Cursor size in px." },
+      { name: "smoothing", type: "number", default: "0.6", description: "0 hops in straight lines; higher rounds corners." },
+      { name: "trail", type: '"draw" | "guide" | "none"', default: '"draw"', description: "Reveal the route behind the cursor, show it up front, or hide it." },
+      { name: "clickAt", type: "number[]", description: "Waypoint indices that ripple as the cursor arrives." },
     ],
-    related: ["callout-spotlight", "zoom-pan-frame"],
+    note: "Advanced. Installs @remotion/paths.",
+    related: ["simulated-cursor", "callout-spotlight", "zoom-pan-frame"],
   },
   "media-frame": {
     category: "scene",
@@ -898,8 +1478,15 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 <MediaFrame src={staticFile("demo.png")} title="Product demo" />`,
     props: [
       { name: "src", type: "string", required: true, description: "Image or video source." },
-      { name: "fit", type: '"cover" | "contain"', default: '"contain"', description: "Media object-fit behavior. Use contain for UI screenshots." },
-      { name: "caption", type: "string", description: "Optional supporting caption." },
+      { name: "title", type: "string", description: "Headline above the frame; masks up out of its own line." },
+      { name: "caption", type: "string", description: "Supporting line under the frame." },
+      { name: "eyebrow", type: "string", description: "Small label above the title." },
+      { name: "fit", type: '"cover" | "contain"', default: '"contain"', description: "Media object-fit behaviour. Use contain for UI screenshots." },
+      { name: "aspect", type: "number", default: "16 / 9", description: "Aspect the frame is cut to, so contain media fills it." },
+      { name: "radius", type: "number", description: "Corner radius in composition pixels." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Rim light and eyebrow colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
     note: "Advanced. Installs @remotion/media for video sources.",
     related: ["media-sequence", "split-screen"],
@@ -911,8 +1498,13 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 <MediaSequence items={[{ src: staticFile("one.png"), title: "Hook" }]} />`,
     props: [
       { name: "items", type: "MediaItem[]", required: true, description: "Timed media items." },
-      { name: "defaultDurationInFrames", type: "number", default: "90", description: "Fallback item duration." },
-      { name: "transitionDurationInFrames", type: "number", default: "12", description: "Fade overlap." },
+      { name: "defaultDurationInFrames", type: "number", default: "78", description: "Length of an item that sets no duration of its own." },
+      { name: "transitionDurationInFrames", type: "number", default: "14", description: "Overlap between neighbouring items." },
+      { name: "transition", type: '"slide" | "fade"', default: '"slide"', description: "Push the next item on, or dissolve to it." },
+      { name: "showProgress", type: "boolean", default: "true", description: "Chapter strip along the foot." },
+      { name: "aspect", type: "number", default: "16 / 9", description: "Aspect the frames are cut to." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Strip fill and frame rim colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
     ],
     related: ["media-frame", "tutorial-clip"],
   },
@@ -922,9 +1514,14 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <SplitScreen left={{ src: before }} right={{ src: after }} />`,
     props: [
-      { name: "left", type: "SplitScreenPanel", required: true, description: "Left media panel." },
-      { name: "right", type: "SplitScreenPanel", required: true, description: "Right media panel." },
-      { name: "title", type: "string", description: "Optional comparison title." },
+      { name: "left", type: "SplitScreenPanel", required: true, description: "Left panel: { src, label, fit }." },
+      { name: "right", type: "SplitScreenPanel", required: true, description: "Right panel; sits underneath so the wipe uncovers it." },
+      { name: "title", type: "string", description: "Headline above the comparison." },
+      { name: "wipeAtSeconds", type: "number", description: "When the divider travels right to leave the right panel whole." },
+      { name: "split", type: "number", default: "0.5", description: "Where the divider rests before any wipe, 0–1." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Divider and label colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
     related: ["media-frame", "b-roll-stack"],
   },
@@ -942,8 +1539,11 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       { name: "kicker", type: "string", default: '"Supporting visuals"', description: "Short label above the headline." },
       { name: "title", type: "string", description: "Scene headline." },
       { name: "caption", type: "string", description: "Supporting copy below the headline." },
-      { name: "muted", type: "boolean", default: "true", description: "Mute video cards in the stack." },
-      { name: "maxCards", type: "number", default: "4", description: "Maximum cards to layer." },
+      { name: "holdSeconds", type: "number", default: "1.35", description: "Seconds a shot holds at the front before the deck advances." },
+      { name: "aspect", type: "number", default: "16 / 9", description: "Aspect the cards are cut to." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Kicker, card rim, and label colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
     related: ["media-frame", "media-sequence"],
   },
@@ -953,8 +1553,13 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <CaptionBumper text="This is the key moment." />`,
     props: [
-      { name: "text", type: "string", required: true, description: "Large quote or caption text." },
-      { name: "eyebrow", type: "string", default: '"Key moment"', description: "Small label above the text (sentence case)." },
+      { name: "text", type: "string", required: true, description: "The line the bumper exists to land." },
+      { name: "eyebrow", type: "string", description: "Small label above it — segment, chapter, timestamp." },
+      { name: "maxFontSize", type: "number", default: "84", description: "Largest type size at a 1280-wide stage." },
+      { name: "holdSeconds", type: "number", description: "Seconds before the card wipes out. Omit to hold to the end." },
+      { name: "accentColor", type: "string", default: '"#F472B6"', description: "Ground, eyebrow, and rule colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
     related: ["karaoke-captions", "data-story"],
   },
@@ -962,24 +1567,47 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     category: "scene",
     usage: `import { AnimatedBarChart } from "@/remotion/scenes/animated-bar-chart";
 
-<AnimatedBarChart data={[{ label: "Views", value: 120000 }]} />`,
+<AnimatedBarChart
+  title="Views by format"
+  data={[{ label: "Shorts", value: 124000, delta: "+32%" }]}
+  highlightLabel="Shorts"
+/>`,
     props: [
-      { name: "data", type: "ChartDatum[]", required: true, description: "Bar labels and values." },
-      { name: "maxValue", type: "number", description: "Optional fixed max domain." },
-      { name: "valueFormatter", type: "(value: number) => string", description: "Value label formatter." },
+      { name: "data", type: "ChartDatum[]", required: true, description: "Bar labels and values. Optional `color` and `delta` per bar." },
+      { name: "title", type: "string", description: "Scene headline." },
+      { name: "subtitle", type: "string", description: "Supporting line under the title." },
+      { name: "maxValue", type: "number", description: "Fixed axis top. Defaults to a rounded domain above the largest bar." },
+      { name: "valueFormatter", type: "(value: number) => string", default: "formatCompactNumber", description: "Formats the value on the end of each bar." },
+      { name: "highlightLabel", type: "string", description: "Label of the bar that carries accentColor." },
+      { name: "showAxis", type: "boolean", default: "true", description: "Gridlines and the value axis under the bars." },
+      { name: "maxBars", type: "number", default: "6", description: "Bars beyond this count are dropped rather than squeezed." },
+      { name: "barColor", type: "string", default: '"#2dd4bf"', description: "Series colour." },
+      { name: "accentColor", type: "string", default: '"#e8b86d"', description: "Colour for the highlighted bar." },
     ],
-    related: ["metric-ticker", "data-story"],
+    note: "Bars and their counters share one spring, so the number never leads the bar.",
+    related: ["metric-ticker", "line-chart-draw", "data-story"],
   },
   "metric-ticker": {
     category: "scene",
     usage: `import { MetricTicker } from "@/remotion/scenes/metric-ticker";
 
-<MetricTicker metrics={[{ label: "Views", value: 120000, delta: "+32%" }]} />`,
+<MetricTicker
+  title="Channel momentum"
+  metrics={[
+    { label: "Views", value: 124000, delta: "+18%", trend: [62, 84, 96, 124] },
+  ]}
+/>`,
     props: [
-      { name: "metrics", type: "MetricTickerItem[]", required: true, description: "Up to three metric cards." },
+      { name: "metrics", type: "MetricTickerItem[]", required: true, description: "Metric cards — label, value, and optional prefix, suffix, delta, trend, color." },
       { name: "title", type: "string", description: "Scene title." },
+      { name: "eyebrow", type: "string", description: "Short label above the title." },
+      { name: "valueFormatter", type: "(value: number) => string", default: "formatCompactNumber", description: "Formats the counted value." },
+      { name: "maxCards", type: "number", default: "4", description: "Cards beyond this count are dropped rather than squeezed." },
+      { name: "accentColor", type: "string", default: '"#e8b86d"', description: "Value colour, overridable per metric." },
+      { name: "backgroundColor", type: "string", default: '"#080810"', description: "Scene background." },
     ],
-    related: ["animated-bar-chart", "data-story"],
+    note: "A signed delta (+/-) picks the arrow, the chip colour, and the sparkline tint.",
+    related: ["animated-bar-chart", "line-chart-draw", "data-story"],
   },
   "timeline-steps": {
     category: "scene",
@@ -987,8 +1615,13 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <TimelineSteps steps={[{ title: "Record" }, { title: "Render" }]} />`,
     props: [
-      { name: "steps", type: "TimelineStep[]", required: true, description: "Up to four process steps." },
-      { name: "title", type: "string", description: "Timeline title." },
+      { name: "steps", type: "TimelineStep[]", required: true, description: "Steps in order; up to five are walked." },
+      { name: "title", type: "string", description: "Heading above the rail." },
+      { name: "eyebrow", type: "string", description: "Small label above the heading." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Rail, node, and check colour." },
+      { name: "backgroundColor", type: "string", description: "Overrides the page background." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
     related: ["data-story", "feature-list"],
   },
@@ -999,10 +1632,16 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 <CalloutSpotlight kicker="Tutorial" title="Click export" target={{ x: 320, y: 180, width: 420, height: 180 }} />`,
     props: [
       { name: "title", type: "string", required: true, description: "Callout headline." },
-      { name: "kicker", type: "string", description: "Optional label above the headline." },
+      { name: "kicker", type: "string", description: "Small label above the headline." },
       { name: "subtitle", type: "string", description: "Supporting line below the headline." },
-      { name: "target", type: "SpotlightTarget", required: true, description: "Highlighted rectangle; clamped to safe area. Callout flips above target when bottom clearance is low." },
-      { name: "backgroundSrc", type: "string", description: "Optional screenshot or media background." },
+      { name: "target", type: "SpotlightTarget", required: true, description: "Region to spotlight, in source pixels; clamped to the safe area. The card flips above it when bottom clearance is low." },
+      { name: "backgroundSrc", type: "string", description: "Screenshot or capture under the spotlight." },
+      { name: "sourceWidth", type: "number", description: "Size the target was measured against. Defaults to the composition." },
+      { name: "sourceHeight", type: "number", description: "As above, vertically." },
+      { name: "dim", type: "number", default: "0.72", description: "How far the rest of the frame is knocked back, 0–1." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Outline, ping, and connector colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
     related: ["zoom-pan-frame", "tutorial-clip"],
   },
@@ -1010,11 +1649,16 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     category: "scene",
     usage: `import { ZoomPanFrame } from "@/remotion/scenes/zoom-pan-frame";
 
-<ZoomPanFrame src={staticFile("screenshot.png")} toScale={1.25} />`,
+<ZoomPanFrame src={staticFile("screenshot.png")} to={{ x: 0.38, y: 0.4, scale: 1.2 }} />`,
     props: [
-      { name: "src", type: "string", required: true, description: "Image source." },
-      { name: "toScale", type: "number", default: "1.24", description: "Final zoom scale." },
-      { name: "durationInFrames", type: "number", default: "90", description: "Zoom duration." },
+      { name: "src", type: "string", required: true, description: "Image or video source." },
+      { name: "from", type: "FocalPoint", description: "Where the move starts: { x, y, scale } with x/y in 0–1." },
+      { name: "to", type: "FocalPoint", description: "Where the move lands. Defaults to a centred 1.24 push." },
+      { name: "moveInFrames", type: "number", description: "Length of the move. Defaults to the composition minus a short settle." },
+      { name: "label", type: "string", description: "Chip that rises once the move lands." },
+      { name: "vignette", type: "number", default: "0.34", description: "Corner darkening; 0 turns it off." },
+      { name: "fit", type: '"cover" | "contain"', default: '"cover"', description: "Media object-fit behaviour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
     ],
     related: ["callout-spotlight", "cursor-path"],
   },
@@ -1022,34 +1666,51 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     category: "scene",
     usage: `import { CodeReveal } from "@/remotion/scenes/code-reveal";
 
-<CodeReveal code={'npx remotion-ui add media-frame'} highlightedLines={[1]} />`,
+<CodeReveal title="pipeline.ts" code={source} highlightedLines={[4, 5]} />`,
     props: [
-      { name: "code", type: "string", required: true, description: "Code or terminal text." },
-      { name: "highlightedLines", type: "number[]", description: "1-based highlighted line numbers." },
-      { name: "title", type: "string", description: "Scene title." },
+      { name: "code", type: "string", description: "Source shown in the editor; surrounding blank lines are trimmed." },
+      { name: "highlightedLines", type: "number[]", description: "1-based lines focused once the listing finishes writing." },
+      { name: "title", type: "string", default: '"explainer.tsx"', description: "Filename on the editor tab." },
+      { name: "language", type: "string", default: '"tsx"', description: "Language badge on the right of the header." },
+      { name: "startLine", type: "number", default: "1", description: "First line number in the gutter, for excerpts." },
+      { name: "showLineNumbers", type: "boolean", default: "true", description: "Shows the gutter." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Caret, focus band and glow color." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Editor palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
-    related: ["tutorial-clip"],
+    related: ["tutorial-clip", "terminal-simulator", "code-diff-wipe"],
   },
   "terminal-simulator": {
     category: "scene",
     usage: `import { TerminalSimulator } from "@/remotion/scenes/terminal-simulator";
 
-<TerminalSimulator title="Build output" />`,
+<TerminalSimulator command="pnpm build" summary="done in 4.2s" />`,
     props: [
-      { name: "lines", type: "TerminalLine[]", description: "Build log lines with optional tone." },
+      { name: "command", type: "string", default: '"pnpm registry:build"', description: "Command typed at the prompt before anything runs." },
+      { name: "steps", type: "TerminalStep[]", description: "Steps printed in order; each spins, then resolves to a glyph and timing." },
+      { name: "summary", type: "string", default: '"6 blocks · 1.9 MB · done in 4.2s"', description: "Dim line printed after the last step." },
+      { name: "prompt", type: "string", default: '"~/remotion-ui"', description: "Prompt prefix, usually a working directory." },
       { name: "title", type: "string", default: '"Build output"', description: "Terminal window title." },
-      { name: "accentColor", type: "string", default: '"#e8b86d"', description: "Accent and progress color." },
+      { name: "shell", type: "string", default: '"zsh"', description: "Shell label on the right of the header." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Prompt, spinner and glow color." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Terminal palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
-    related: ["code-reveal"],
+    related: ["code-reveal", "claude-code", "opencode"],
   },
   "code-accordion": {
     category: "scene",
     usage: `import { CodeAccordion } from "@/remotion/scenes/code-accordion";
 
-<CodeAccordion activeIndex={1} />`,
+<CodeAccordion sections={sections} />`,
     props: [
-      { name: "sections", type: "AccordionSection[]", description: "Collapsible code sections." },
-      { name: "activeIndex", type: "number", default: "1", description: "Section expanded during the scene." },
+      { name: "sections", type: "AccordionSection[]", description: "Steps played in order; each has a title, code, and optional meta." },
+      { name: "activeIndex", type: "number", description: "Pins one step open instead of walking the list." },
+      { name: "title", type: "string", default: '"Add it to your project"', description: "Label above the steps." },
+      { name: "holdSeconds", type: "number", default: "0.75", description: "Seconds an opened step is held before it closes." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Chevron, fill and glow color." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Panel palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
     related: ["code-reveal", "code-diff-wipe"],
   },
@@ -1057,11 +1718,15 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     category: "scene",
     usage: `import { CodeDiffWipe } from "@/remotion/scenes/code-diff-wipe";
 
-<CodeDiffWipe beforeCode={before} afterCode={after} />`,
+<CodeDiffWipe before={before} after={after} title="render.ts" />`,
     props: [
-      { name: "beforeCode", type: "string", description: "Code shown before the wipe." },
-      { name: "afterCode", type: "string", description: "Code revealed by the wipe." },
-      { name: "wipeStartFrame", type: "number", description: "Frame when the wipe begins." },
+      { name: "before", type: "string", description: "Source before the patch." },
+      { name: "after", type: "string", description: "Source after the patch; the scene diffs the two." },
+      { name: "title", type: "string", default: '"render.ts"', description: "Filename on the window header." },
+      { name: "wipeSeconds", type: "number", default: "1.7", description: "Seconds the apply front takes to travel the file." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Apply front and glow color." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Editor palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
     related: ["code-reveal", "code-accordion"],
   },
@@ -1069,11 +1734,15 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     category: "scene",
     usage: `import { DataFlowPipes } from "@/remotion/scenes/data-flow-pipes";
 
-<DataFlowPipes nodes={nodes} edges={edges} />`,
+<DataFlowPipes stages={[{ label: "Ingest" }, { label: "Deliver" }]} />`,
     props: [
-      { name: "nodes", type: "FlowNode[]", description: "Pipeline nodes with percent x/y positions." },
-      { name: "edges", type: "FlowEdge[]", description: "Connections between node ids." },
-      { name: "title", type: "string", description: "Scene headline." },
+      { name: "stages", type: "PipeStage[]", description: "Stages in order, each { label, detail }. Two to five read best." },
+      { name: "unit", type: "string", default: '"clips"', description: "Unit counted at each stage." },
+      { name: "packets", type: "number", default: "9", description: "Payloads pushed through the pipeline." },
+      { name: "accentColor", type: "string", default: '"#2DD4BF"', description: "Pipe, packet, and node colour." },
+      { name: "backgroundColor", type: "string", description: "Overrides the page background." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
     related: ["timeline-steps", "metric-ticker"],
   },
@@ -1083,10 +1752,20 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <DragDropFlow fileName="hero-loop.tsx" />`,
     props: [
-      { name: "fileName", type: "string", default: '"hero-loop.tsx"', description: "Dragged file label." },
-      { name: "dropLabel", type: "string", description: "Drop zone prompt." },
+      { name: "fileName", type: "string", default: '"hero-take.mp4"', description: "File the cursor picks up." },
+      { name: "fileSize", type: "string", default: '"48.2 MB"', description: "Size shown once the upload completes." },
+      { name: "siblings", type: "string[]", description: "Other rows in the source list." },
+      { name: "sourceLabel", type: "string", default: '"Media library"', description: "Heading on the source panel." },
+      { name: "label", type: "string", default: '"Drop your clip"', description: "Idle prompt in the drop zone." },
+      { name: "hint", type: "string", description: "Second line under the prompt." },
+      { name: "activeLabel", type: "string", default: '"Release to upload"', description: "Prompt while the file is held over the zone." },
+      { name: "doneLabel", type: "string", default: '"Uploaded"', description: "Label once the upload finishes." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Zone, cursor ring, and progress colour." },
+      { name: "backgroundColor", type: "string", description: "Overrides the page background." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
-    related: ["cursor-path", "tutorial-clip"],
+    related: ["cursor-path", "simulated-cursor", "tutorial-clip"],
   },
   "chat-to-preview": {
     category: "scene",
@@ -1094,9 +1773,15 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <ChatToPreview messages={messages} previewTitle="Ship the scene" />`,
     props: [
-      { name: "messages", type: "ChatMessage[]", description: "Chat transcript before morph." },
-      { name: "previewTitle", type: "string", description: "Headline inside the preview frame." },
-      { name: "morphStartFrame", type: "number", description: "Frame when chat morphs to preview." },
+      { name: "messages", type: "ChatMessage[]", description: "The exchange, in order. User turns type and send; assistant turns stream. Drives the whole clock." },
+      { name: "previewTitle", type: "string", default: '"Ship the scene"', description: "Title the finished preview renders." },
+      { name: "previewCaption", type: "string", description: "Supporting line under the preview title." },
+      { name: "previewLabel", type: "string", default: '"Preview"', description: "Name of the preview surface in its header." },
+      { name: "placeholder", type: "string", description: "Composer placeholder before anything is typed." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Assistant bubble, status, and render tint." },
+      { name: "backgroundColor", type: "string", description: "Overrides the page background." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
     related: ["talking-head-layout", "media-frame"],
   },
@@ -1106,15 +1791,13 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <ClaudeChat prompt="Draft a launch tweet for our new release" />`,
     props: [
-      { name: "placeholder", type: "string", description: "Empty composer placeholder text." },
-      { name: "prompt", type: "string", description: "Prompt typed into the chat thread." },
-      { name: "response", type: "string", description: "Assistant response streamed before the artifact appears." },
-      { name: "artifactTitle", type: "string", description: "Title shown in the artifact/code panel." },
-      { name: "projectName", type: "string", description: "Project breadcrumb label in the top bar." },
-      { name: "modelName", type: "string", default: '"Claude 3.5 Sonnet"', description: "Model label in the composer." },
-      { name: "modelTier", type: "string", default: '""', description: "Optional tier label beside the model." },
-      { name: "accentColor", type: "string", default: '"#D97757"', description: "Accent and send button color." },
+      { name: "placeholder", type: "string", default: '"Try: draft an email · summarize a doc · plan your week"', description: "Empty composer placeholder text." },
+      { name: "prompt", type: "string", default: '"Draft a launch tweet for our new release"', description: "Prompt typed into the composer." },
+      { name: "modelName", type: "string", default: '"Opus 4.8"', description: "Model label in the toolbar." },
+      { name: "modelTier", type: "string", default: '"Max"', description: "Tier label beside the model." },
+      { name: "accentColor", type: "string", default: '"#D97757"', description: "Terracotta send button color." },
       { name: "theme", type: '"light" | "dark"', default: '"light"', description: "Light or dark surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
     related: ["chat-gpt", "v0", "chat-to-preview"],
   },
@@ -1124,11 +1807,12 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <ChatGpt prompt="Make a sunset over a calm ocean" />`,
     props: [
-      { name: "greeting", type: "string", description: "Headline above the composer." },
-      { name: "placeholder", type: "string", description: "Empty input placeholder." },
-      { name: "prompt", type: "string", description: "Prompt typed into the ChatGPT composer." },
-      { name: "accentColor", type: "string", default: '"#10a37f"', description: "Accent color for selected tools." },
+      { name: "greeting", type: "string", default: `"What's on your mind today?"`, description: "Headline above the composer." },
+      { name: "placeholder", type: "string", default: '"Ask anything"', description: "Empty input placeholder." },
+      { name: "prompt", type: "string", default: '"Make a sunset over a calm ocean"', description: "Prompt typed into the ChatGPT composer." },
+      { name: "accentColor", type: "string", default: '"#2F6FED"', description: "Voice button color before it morphs to send." },
       { name: "theme", type: '"light" | "dark"', default: '"light"', description: "Light or dark surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
     related: ["claude-chat", "v0", "chat-to-preview"],
   },
@@ -1138,12 +1822,13 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <V0Composer prompt="a landing page for my SaaS with pricing" />`,
     props: [
-      { name: "greeting", type: "string", description: "Headline above the builder." },
-      { name: "placeholder", type: "string", description: "Empty textarea placeholder." },
-      { name: "prompt", type: "string", description: "Build prompt typed into the textarea." },
-      { name: "modelName", type: "string", default: '"v0 Mini"', description: "Model selector label." },
-      { name: "projectName", type: "string", default: '"New Chat"', description: "Top-left chat label." },
-      { name: "theme", type: '"light" | "dark"', default: '"light"', description: "Light or dark surface palette." },
+      { name: "greeting", type: "string", default: '"What do you want to create?"', description: "Bold heading above the box." },
+      { name: "placeholder", type: "string", default: '"Ask v0 to build…"', description: "Empty textarea placeholder." },
+      { name: "prompt", type: "string", default: '"a landing page for my SaaS with pricing and testimonials"', description: "Build prompt typed into the textarea." },
+      { name: "modelName", type: "string", default: '"v0 Max"', description: "Model chip label in the toolbar." },
+      { name: "projectName", type: "string", default: '"Project"', description: "Project selector label." },
+      { name: "theme", type: '"light" | "dark"', default: '"dark"', description: "Light or dark surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
     related: ["claude-chat", "chat-gpt", "chat-to-preview"],
   },
@@ -1153,14 +1838,15 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <ClaudeCode prompt='edit src/theme.ts to add a dark mode toggle' />`,
     props: [
-      { name: "title", type: "string", description: "Terminal window title." },
-      { name: "userName", type: "string", description: "Welcome message name." },
-      { name: "model", type: "string", description: "Active model label." },
-      { name: "cwd", type: "string", description: "Working directory shown in the welcome panel." },
-      { name: "placeholder", type: "string", description: "CLI prompt placeholder before typing." },
-      { name: "prompt", type: "string", description: "Command typed at the CLI prompt." },
+      { name: "title", type: "string", default: '"Claude Code v2.0.0"', description: "Legend label on the dashed welcome box." },
+      { name: "userName", type: "string", default: '"Meaghan"', description: "Welcome message name." },
+      { name: "model", type: "string", default: '"Opus 4.8 • Max 20x"', description: "Active model label." },
+      { name: "cwd", type: "string", default: '"/users/meaghan/code/apps"', description: "Working directory shown in the welcome panel." },
+      { name: "placeholder", type: "string", default: `'Try "edit <filepath> to ..."'`, description: "CLI prompt placeholder before typing." },
+      { name: "prompt", type: "string", default: '"edit src/theme.ts to add a dark mode toggle"', description: "Command typed at the CLI prompt." },
       { name: "accentColor", type: "string", default: '"#D97757"', description: "Dashed border and highlight color." },
       { name: "theme", type: '"light" | "dark"', default: '"dark"', description: "Light or dark terminal palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
     related: ["terminal-simulator", "code-reveal", "opencode"],
   },
@@ -1170,13 +1856,14 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <Opencode query='"What is the tech stack of this project?"' />`,
     props: [
-      { name: "placeholder", type: "string", description: "Muted prefix before the typed query." },
-      { name: "query", type: "string", description: "Query typed after the placeholder." },
+      { name: "placeholder", type: "string", default: '"Ask anything... "', description: "Muted prefix before the typed query." },
+      { name: "query", type: "string", default: `'"What is the tech stack of this project?"'`, description: "Query typed after the placeholder." },
       { name: "agentName", type: "string", default: '"Build"', description: "Active agent label." },
-      { name: "modelName", type: "string", description: "Model name in the status row." },
-      { name: "provider", type: "string", description: "Model provider label." },
+      { name: "modelName", type: "string", default: '"Kimi K2.5"', description: "Model name in the status row." },
+      { name: "provider", type: "string", default: '"Moonshot AI"', description: "Model provider label." },
       { name: "accentColor", type: "string", default: '"#2B7FFF"', description: "Left accent bar and agent color." },
       { name: "theme", type: '"light" | "dark"', default: '"dark"', description: "Light or dark TUI palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
     related: ["claude-code", "terminal-simulator", "chat-gpt"],
   },
@@ -1186,15 +1873,20 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <HookCard
   kicker="Creator insight"
-  headline="Frame registry"
+  headline="Make the first second count"
+  emphasis="first second"
   subtitle="Hook viewers before they scroll"
 />`,
     props: [
-      { name: "headline", type: "string", required: true, description: "Large hook text." },
-      { name: "kicker", type: "string", default: '"Creator insight"', description: "Small label above the headline." },
-      { name: "subtitle", type: "string", description: "Optional supporting line." },
-      { name: "accentColor", type: "string", default: '"#e8b86d"', description: "Accent sweep, label, and glow color." },
-      { name: "backgroundColor", type: "string", default: '"#0c0a09"', description: "Scene background color." },
+      { name: "headline", type: "string", required: true, description: "The hook. Newlines are honoured as written; otherwise it is balanced across lines." },
+      { name: "kicker", type: "string", description: "Small live label that counts in above the hook." },
+      { name: "subtitle", type: "string", description: "Supporting line that settles once the hook has landed." },
+      { name: "emphasis", type: "string", description: "Substring of headline that takes the accent colour and the underline. Matched case-insensitively, and may span a line break." },
+      { name: "align", type: '"left" | "center"', description: "Hook alignment. Default \"left\"." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Label, underline, and bloom colour." },
+      { name: "backgroundColor", type: "string", description: "Overrides the page background." },
+      { name: "theme", type: '"dark" | "light"', description: "Page palette. Default \"dark\"." },
+      { name: "speed", type: "number", description: "Animation speed multiplier for fitting a fixed-length Sequence. Default 1." },
     ],
     related: ["creator-reel", "title-card", "auto-fit-title"],
   },
@@ -1205,14 +1897,23 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 <TalkingHeadLayout
   mediaSrc={staticFile("speaker.mp4")}
   audioSrc={staticFile("voice.wav")}
-  title="Put the speaker first"
+  eyebrow="On camera"
+  title="Maya Okonkwo"
+  subtitle="Founder, Northlight Studio"
+  captions={["Keep the speaker readable.", "Reserve the lower frame."]}
 />`,
     props: [
-      { name: "mediaSrc", type: "string", description: "Optional image or video source for the speaker/media slot." },
-      { name: "audioSrc", type: "string", description: "Optional audio source for the waveform line." },
-      { name: "title", type: "string", description: "Primary title beside or below the media." },
-      { name: "subtitle", type: "string", description: "Supporting copy." },
+      { name: "mediaSrc", type: "string", description: "Speaker image or video. Falls back to a framed placeholder." },
+      { name: "audioSrc", type: "string", description: "Voice track the waveform is drawn from. Omit to hide the waveform." },
+      { name: "eyebrow", type: "string", description: "Small label above the name on the plate, e.g. a role." },
+      { name: "title", type: "string", description: "Name plate headline." },
+      { name: "subtitle", type: "string", description: "Second plate line." },
+      { name: "captions", type: "string[]", description: "Spoken lines. They play one at a time, word by word, in the zone reserved under the frame. Omit and the zone collapses." },
       { name: "fit", type: '"cover" | "contain"', default: '"cover"', description: "Media object-fit behavior." },
+      { name: "accentColor", type: "string", default: '"#2DD4BF"', description: "Plate label, waveform, and ambient light color." },
+      { name: "backgroundColor", type: "string", description: "Overrides the page background behind the frame." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Palette the page and plate are drawn from." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier for shorter Sequences." },
     ],
     note: "Advanced. Installs @remotion/media and waveform-line for optional audio visuals.",
     related: ["creator-reel", "caption-scene", "media-frame"],
@@ -1225,13 +1926,23 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
   author="Mina Lee"
   handle="@minamakes"
   body="Can you turn this into a quick video breakdown?"
+  highlight="a quick video breakdown"
+  reply="Dropping it Thursday — here's the short version."
 />`,
     props: [
-      { name: "body", type: "string", required: true, description: "Comment, question, prompt, or testimonial text." },
-      { name: "author", type: "string", description: "Display name for the comment author." },
-      { name: "handle", type: "string", description: "Social handle or secondary author label." },
-      { name: "initials", type: "string", description: "Avatar initials." },
-      { name: "replyLabel", type: "string", description: "Optional response status label." },
+      { name: "body", type: "string", description: "The viewer comment being answered." },
+      { name: "author", type: "string", description: "Display name of the commenter." },
+      { name: "handle", type: "string", description: "Social handle, also shown on the reply line." },
+      { name: "initials", type: "string", description: "Avatar initials. Defaults to the first two letters of author." },
+      { name: "timestamp", type: "string", description: "Relative time shown after the handle, e.g. \"2h\"." },
+      { name: "highlight", type: "string", description: "Substring of body the marker sweeps across. Matched case-insensitively; omit to skip the beat." },
+      { name: "reply", type: "string", description: "Answer typed into the composer and sent. Pass an empty string to end on the comment." },
+      { name: "replyLabel", type: "string", description: "Label on the reply action. Defaults to \"Reply\"." },
+      { name: "likes", type: "number", description: "Like count before the creator hearts the comment. Default 128." },
+      { name: "accentColor", type: "string", description: "Avatar, marker, heart, and send colour." },
+      { name: "backgroundColor", type: "string", description: "Overrides the page background behind the card." },
+      { name: "theme", type: '"dark" | "light"', description: "Card palette. Default \"dark\"." },
+      { name: "speed", type: "number", description: "Animation speed multiplier for fitting a fixed-length Sequence. Default 1." },
     ],
     related: ["creator-reel", "quote-card", "caption-bumper"],
   },
@@ -1244,7 +1955,11 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       { name: "audioSrc", type: "string", required: true, description: "Podcast audio source." },
       { name: "captions", type: "Caption[]", required: true, description: "Synced caption array." },
       { name: "hookTitle", type: "string", description: "Opening hook headline." },
+      { name: "hookSubtitle", type: "string", description: "Supporting line under the hook." },
+      { name: "podcastTitle", type: "string", default: '"Weekly Brief"', description: "Show name shown over the audiogram body." },
       { name: "logoSrc", type: "string", description: "Optional brand mark shown in hook, body, and end card." },
+      { name: "ctaTitle", type: "string", default: '"Hear the full episode"', description: "End card headline." },
+      { name: "ctaLabel", type: "string", description: "End card CTA pill label." },
       { name: "ctaUrl", type: "string", description: "URL shown on the end card." },
     ],
     note: "9:16 social template (1080×1920). Advanced tier.",
@@ -1273,6 +1988,8 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       { name: "handle", type: "string", description: "Comment author handle." },
       { name: "bRollItems", type: "BRollItem[]", description: "Media cards for the proof/b-roll section." },
       { name: "bRollTitle", type: "string", description: "Headline beside the b-roll stack." },
+      { name: "bRollKicker", type: "string", default: '"Proof beats"', description: "Eyebrow above the b-roll headline." },
+      { name: "accentColor", type: "string", description: "Accent used across hook, captions, and end card." },
       { name: "ctaTitle", type: "string", description: "End card headline (separate from hook)." },
       { name: "ctaLabel", type: "string", description: "End card CTA pill label." },
     ],
@@ -1286,9 +2003,18 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 <TutorialClip mediaSrc={staticFile("demo.png")} />`,
     props: [
       { name: "mediaSrc", type: "string", required: true, description: "Screenshot or video source." },
+      { name: "mediaWidth", type: "number", default: "1280", description: "Pixel width `calloutTarget` was measured against." },
+      { name: "mediaHeight", type: "number", default: "720", description: "Pixel height `calloutTarget` was measured against." },
       { name: "title", type: "string", description: "Opening hook title." },
+      { name: "subtitle", type: "string", description: "Supporting line under the hook." },
+      { name: "calloutTitle", type: "string", default: '"Spotlight the control"', description: "Headline on the spotlight callout card." },
+      { name: "calloutSubtitle", type: "string", description: "Supporting line on the callout card." },
+      { name: "calloutTarget", type: "SpotlightTarget", description: "Region to spotlight, in media pixels." },
       { name: "code", type: "string", description: "Code reveal content." },
+      { name: "ctaTitle", type: "string", description: "End card headline. Defaults to `title`." },
+      { name: "ctaLabel", type: "string", description: "End card CTA pill label." },
     ],
+    note: "9:16 walkthrough template. `calloutTarget` is read in media pixels and mapped through the same cover crop as the background, so pass `mediaWidth`/`mediaHeight` whenever the capture is not the composition size.",
     related: ["media-frame", "callout-spotlight", "code-reveal"],
   },
   "data-story": {
@@ -1321,8 +2047,13 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     props: [
       { name: "audioSrc", type: "string", required: true, description: "Audio source." },
       { name: "captions", type: "Caption[]", required: true, description: "Synced captions." },
-      { name: "title", type: "string", description: "Opening title." },
+      { name: "title", type: "string", description: "Opening title, reused as the episode title." },
+      { name: "subtitle", type: "string", default: '"Pull one quote into a vertical clip"', description: "Supporting line under the opening title." },
+      { name: "showName", type: "string", default: '"Studio Sessions"', description: "Show name above the episode title." },
+      { name: "ctaTitle", type: "string", description: "End card headline. Defaults to `showName`." },
+      { name: "ctaLabel", type: "string", description: "End card CTA pill label." },
     ],
+    note: "9:16 podcast template (1080×1920).",
     related: ["audio-pulse", "waveform-line", "caption-scene"],
   },
   "blur-focus-in": {
@@ -1524,6 +2255,8 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     props: [
       { name: "durationInFrames", type: "number", default: "22", description: "Transition overlap length." },
       { name: "direction", type: '"from-left" | "from-right" | "from-top" | "from-bottom"', default: '"from-left"', description: "Wipe direction." },
+      { name: "edgeSoftness", type: "number", default: "0.12", description: "Soft edge width as a share of the frame. 0 cuts hard." },
+      { name: "depth", type: "number", default: "0.08", description: "Parallax the scenes carry under the wipe." },
       { name: "variant", type: '"linear" | "spring" | "editorial"', default: '"editorial"', description: "Timing curve." },
     ],
     related: ["transition-wipe", "spatial-push"],
@@ -1535,8 +2268,10 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 <TransitionSeries.Transition {...transitionSpatialPush()} />`,
     props: [
       { name: "durationInFrames", type: "number", default: "24", description: "Transition overlap length." },
-      { name: "direction", type: '"from-left" | "from-right"', default: '"from-left"', description: "Push direction." },
-      { name: "pushDepth", type: "number", default: "0.42", description: "Travel depth as fraction of frame." },
+      { name: "direction", type: '"from-left" | "from-right" | "from-top" | "from-bottom"', default: '"from-left"', description: "Push direction." },
+      { name: "pushDepth", type: "number", default: "1", description: "Share of the frame each scene travels. Below 1 leaves background showing mid-push." },
+      { name: "tilt", type: "number", default: "0", description: "Degrees each panel rotates in 3D. Off by default — a tilted full-frame panel uncovers bare background." },
+      { name: "perspective", type: "number", default: "1200", description: "Perspective distance in px, used when tilt is set." },
     ],
     related: ["directional-wipe", "zoom-through"],
   },
@@ -1544,11 +2279,12 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     category: "primitive",
     usage: `import { transitionChromaticAberrationWipe } from "@/remotion/primitives/chromatic-aberration-wipe";
 
-<TransitionSeries.Transition {...transitionChromaticAberrationWipe({ split: 10 })} />`,
+<TransitionSeries.Transition {...transitionChromaticAberrationWipe({ intensity: 12 })} />`,
     props: [
-      { name: "durationInFrames", type: "number", default: "20", description: "Transition overlap length." },
-      { name: "split", type: "number", default: "10", description: "Peak RGB offset in px." },
-      { name: "tint", type: "string", default: '"#e8b86d"', description: "Sweep edge glow color." },
+      { name: "durationInFrames", type: "number", default: "14", description: "Transition overlap length." },
+      { name: "intensity", type: "number", default: "12", description: "Peak channel separation in px, reached in the middle of the cut." },
+      { name: "axis", type: '"horizontal" | "vertical"', default: '"horizontal"', description: "Axis the scenes slide along and the channels separate on." },
+      { name: "slide", type: "number", default: "1", description: "Share of the frame the scenes travel. Below 1 shows background." },
     ],
     related: ["blur-reveal", "directional-wipe"],
   },
@@ -1556,11 +2292,13 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     category: "primitive",
     usage: `import { transitionZoomThrough } from "@/remotion/primitives/zoom-through";
 
-<TransitionSeries.Transition {...transitionZoomThrough({ enterScale: 1.45 })} />`,
+<TransitionSeries.Transition {...transitionZoomThrough({ maxScale: 2.4 })} />`,
     props: [
-      { name: "durationInFrames", type: "number", default: "22", description: "Transition overlap length." },
-      { name: "enterScale", type: "number", default: "1.45", description: "Incoming scene start scale." },
-      { name: "exitScale", type: "number", default: "0.82", description: "Outgoing scene end scale." },
+      { name: "durationInFrames", type: "number", default: "20", description: "Transition overlap length." },
+      { name: "maxScale", type: "number", default: "2.4", description: "Scale the camera travels through." },
+      { name: "blurPeak", type: "number", default: "18", description: "Blur radius in px at full displacement." },
+      { name: "direction", type: '"in" | "out"', default: '"in"', description: "Push the camera through the frame, or pull back from it." },
+      { name: "variant", type: '"linear" | "spring" | "editorial"', default: '"spring"', description: "Timing curve." },
     ],
     related: ["spatial-push", "blur-reveal"],
   },
@@ -1568,13 +2306,22 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     category: "primitive",
     usage: `import { SimulatedCursor } from "@/remotion/primitives/simulated-cursor";
 
-<SimulatedCursor points={[{ x: 20, y: 60, frame: 0 }, { x: 70, y: 40, frame: 30 }]} clickFrames={[30]} />`,
+<SimulatedCursor
+  points={[
+    { x: 20, y: 60, frame: 0 },
+    { x: 70, y: 40, frame: 30, target: 96, label: "Render" },
+  ]}
+  clickFrames={[32]}
+/>`,
     props: [
-      { name: "points", type: "Array<{ x: number; y: number; frame: number }>", description: "Percent-based waypoints with frame timestamps." },
-      { name: "clickFrames", type: "number[]", description: "Frames that trigger click ripples." },
-      { name: "size", type: "number", default: "22", description: "Cursor size in px." },
+      { name: "points", type: "Array<{ x: number; y: number; frame: number; label?: string; target?: number }>", description: "Percent-based waypoints with arrival frames. `label` chips the point, `target` rings the hit area in px." },
+      { name: "clickFrames", type: "number[]", default: "[48]", description: "Frames that press the pointer and fire a ripple." },
+      { name: "color", type: "string", default: '"#f4f4f5"', description: "Pointer fill." },
+      { name: "accent", type: "string", default: '"#e8b86d"', description: "Ripple and target ring color." },
+      { name: "size", type: "number", default: "26", description: "Cursor size in px." },
     ],
-    related: ["cursor-path"],
+    note: "Each hop runs its own spring, so the cursor decelerates into a target instead of gliding at a fixed rate.",
+    related: ["cursor-path", "tutorial-clip"],
   },
   "confetti-burst": {
     category: "primitive",

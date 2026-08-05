@@ -1,157 +1,207 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
-import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
-import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
-import { DURATION, EASING, STAGGER } from "@/remotion/lib/motion-tokens";
+import {
+  AbsoluteFill,
+  interpolate,
+  spring,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
+import { CODE_THEMES } from "@/remotion/lib/code-syntax";
+import { getSafeAreaPadding } from "@/remotion/lib/layout";
+import { EASING } from "@/remotion/lib/motion-tokens";
 
 const { fontFamily } = loadFont("normal", {
-  weights: ["500", "600", "700", "800"],
+  weights: ["400", "500", "600", "700"],
   subsets: ["latin"],
 });
 
 export type LowerThirdProps = {
   title: string;
   subtitle?: string;
+  /** Small tag on the plate — LIVE, EP 12, the segment name. */
+  badge?: string;
+  /** Which edge the plate slides out from. */
+  align?: "left" | "right";
+  /**
+   * Seconds the plate holds before it retreats. Omit to leave it on screen for
+   * the rest of the scene.
+   */
+  holdSeconds?: number;
   accentColor?: string;
   backgroundColor?: string;
-  align?: "left" | "right";
+  theme?: "dark" | "light";
+  /** Animation speed multiplier. */
+  speed?: number;
 };
 
-const COLORS = {
-  panel: "rgba(5, 7, 15, 0.78)",
-  panelSolid: "#080810",
-  border: "rgba(255, 255, 255, 0.12)",
-  title: "#f8fafc",
-  subtitle: "#cbd5e1",
-  muted: "#94a3b8",
-  accent: "#e8b86d",
+/** Beat plan in seconds. */
+const T = {
+  /** Plate wipes out from the frame edge. */
+  plate: 0,
+  plateFor: 0.5,
+  title: 0.22,
+  subtitle: 0.38,
+  badge: 0.5,
+  /** Retreat, once the hold is over. */
+  exitFor: 0.42,
 } as const;
 
-const enter = (frame: number, from: number, to: number) =>
-  interpolate(frame, [from, to], [0, 1], {
-    easing: EASING.enter,
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+const clamp = {
+  extrapolateLeft: "clamp",
+  extrapolateRight: "clamp",
+} as const;
 
+/**
+ * A name plate that plays its whole life: it wipes out from the frame edge, the
+ * name and role settle inside it, it holds, and then it retreats the way it
+ * came — rather than fading on and being left standing for the rest of the cut.
+ */
 export const LowerThird: React.FC<LowerThirdProps> = ({
   title,
   subtitle,
-  accentColor = COLORS.accent,
-  backgroundColor = COLORS.panel,
+  badge,
   align = "left",
+  holdSeconds,
+  accentColor = "#E8B86D",
+  backgroundColor,
+  theme = "dark",
+  speed = 1,
 }) => {
   const frame = useCurrentFrame();
-  const { width, height } = useVideoConfig();
-  const safeArea = getSafeAreaPadding({ width, height });
+  const { fps, width, height } = useVideoConfig();
+  const palette = CODE_THEMES[theme];
+  const safe = getSafeAreaPadding({ width, height });
+
+  const at = (seconds: number) => (seconds * fps) / speed;
+  const ease = (from: number, to: number, easing = EASING.enter) =>
+    interpolate(frame, [at(from), at(to)], [0, 1], { easing, ...clamp });
+
+  const portrait = height > width;
+  const u = portrait
+    ? Math.min(width / 620, height / 1120)
+    : Math.min(width / 1280, height / 720);
   const isRight = align === "right";
 
-  const panelEnter = enter(frame, 0, DURATION.fast);
-  const railEnter = enter(frame, STAGGER.tight, DURATION.fast + STAGGER.tight);
-  const textEnter = enter(frame, STAGGER.normal, DURATION.fast + STAGGER.normal);
-  const subtitleEnter = enter(
-    frame,
-    STAGGER.normal * 2,
-    DURATION.fast + STAGGER.normal * 2,
-  );
+  const plate = spring({
+    frame: frame - at(T.plate),
+    fps,
+    config: { damping: 17, stiffness: 130, mass: 0.8 },
+  });
+  const open = ease(T.plate, T.plate + T.plateFor, EASING.editorial);
+  const titleIn = ease(T.title, T.title + 0.42);
+  const subtitleIn = subtitle ? ease(T.subtitle, T.subtitle + 0.42) : 0;
+  const badgeIn = badge ? ease(T.badge, T.badge + 0.4) : 0;
+  // Exits accelerate away; entrances decelerate in. Never ease-out an exit.
+  const exit =
+    holdSeconds === undefined
+      ? 0
+      : interpolate(
+          frame,
+          [at(holdSeconds), at(holdSeconds + T.exitFor)],
+          [0, 1],
+          { easing: EASING.exit, ...clamp },
+        );
 
-  const maxWidth = Math.min(
-    width - safeArea.paddingLeft - safeArea.paddingRight,
-    scaleFont(720, width),
-  );
-  const railWidth = scaleFont(6, width);
+  const plateW = Math.min(width - safe.paddingLeft - safe.paddingRight, 660 * u);
 
   return (
-    <AbsoluteFill style={{ pointerEvents: "none" }}>
+    <AbsoluteFill style={{ pointerEvents: "none", fontFamily }}>
       <div
         style={{
-          width: "100%",
-          height: "100%",
-          paddingLeft: safeArea.paddingLeft,
-          paddingRight: safeArea.paddingRight,
-          paddingTop: safeArea.paddingTop,
-          paddingBottom: Math.max(safeArea.paddingBottom, scaleFont(76, width)),
+          position: "absolute",
+          left: safe.paddingLeft,
+          right: safe.paddingRight,
+          bottom: Math.max(safe.paddingBottom, 74 * u),
           display: "flex",
-          alignItems: "flex-end",
           justifyContent: isRight ? "flex-end" : "flex-start",
-          fontFamily,
         }}
       >
         <div
           style={{
-            width: maxWidth,
+            // Hugs its content: a name plate stretched to a fixed width leaves
+            // a long empty bar next to a short name.
+            width: "fit-content",
+            maxWidth: plateW,
+            borderRadius: 16 * u,
+            background: backgroundColor ?? `${palette.window}F0`,
+            border: `1px solid ${palette.border}`,
+            boxShadow: `inset 0 1px 0 ${palette.highlight}, 0 ${
+              20 * u
+            }px ${52 * u}px ${palette.shadow}`,
+            padding: `${17 * u}px ${24 * u}px`,
+            // The plate wipes open from its own edge, then retreats the same way.
+            clipPath: `inset(0 ${isRight ? 0 : (1 - open) * 100}% 0 ${
+              isRight ? (1 - open) * 100 : 0
+            }% round ${16 * u}px)`,
+            opacity: 1 - exit,
+            transform: `translateX(${
+              (1 - plate) * (isRight ? 40 : -40) * u +
+              exit * (isRight ? 60 : -60) * u
+            }px)`,
             display: "flex",
-            flexDirection: isRight ? "row-reverse" : "row",
-            alignItems: "stretch",
-            opacity: panelEnter,
-            translate: `${(1 - panelEnter) * (isRight ? 48 : -48)}px 0px`,
-            scale: 0.985 + panelEnter * 0.015,
+            alignItems: "center",
+            gap: 16 * u,
+            overflow: "hidden",
           }}
         >
-          <div
-            style={{
-              width: railWidth,
-              borderRadius: 999,
-              background: accentColor,
-              boxShadow: `0 0 ${scaleFont(28, width)}px ${accentColor}66`,
-              scale: `1 ${railEnter}`,
-              transformOrigin: "bottom center",
-              flexShrink: 0,
-            }}
-          />
-          <div
-            style={{
-              minWidth: 0,
-              maxWidth: "100%",
-              marginLeft: isRight ? 0 : scaleFont(12, width),
-              marginRight: isRight ? scaleFont(12, width) : 0,
-              borderRadius: scaleFont(18, width),
-              background:
-                backgroundColor === "transparent"
-                  ? COLORS.panel
-                  : backgroundColor,
-              border: `1px solid ${COLORS.border}`,
-              boxShadow: `0 ${scaleFont(22, width)}px ${scaleFont(54, width)}px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08)`,
-              padding: `${scaleFont(18, width)}px ${scaleFont(26, width)}px`,
-              display: "flex",
-              flexDirection: "column",
-              gap: subtitle ? scaleFont(6, width) : 0,
-              overflow: "hidden",
-              textAlign: isRight ? "right" : "left",
-            }}
-          >
-            <div
-              style={{
-                color: COLORS.title,
-                fontSize: scaleFont(34, width),
-                lineHeight: 1.05,
-                fontWeight: 800,
-                opacity: textEnter,
-                translate: `${(1 - textEnter) * (isRight ? 18 : -18)}px 0px`,
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              {title}
+          <div style={{ minWidth: 0, flex: 1 }}>
+            {/* Name rises out of its own mask */}
+            <div style={{ overflow: "hidden", paddingBottom: "0.04em" }}>
+              <div
+                style={{
+                  color: palette.fg,
+                  fontSize: 34 * u,
+                  fontWeight: 700,
+                  lineHeight: 1.1,
+                  letterSpacing: "-0.02em",
+                  whiteSpace: "nowrap",
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
+                  transform: `translateY(${(1 - titleIn) * 100}%)`,
+                }}
+              >
+                {title}
+              </div>
             </div>
             {subtitle ? (
               <div
                 style={{
-                  color: COLORS.subtitle,
-                  fontSize: scaleFont(22, width),
-                  lineHeight: 1.18,
-                  fontWeight: 600,
-                  opacity: subtitleEnter,
-                  translate: `${(1 - subtitleEnter) * (isRight ? 14 : -14)}px 0px`,
+                  marginTop: 4 * u,
+                  color: palette.dim,
+                  fontSize: 22 * u,
+                  fontWeight: 500,
                   whiteSpace: "nowrap",
-                  overflow: "hidden",
                   textOverflow: "ellipsis",
+                  overflow: "hidden",
+                  opacity: subtitleIn,
+                  transform: `translateY(${(1 - subtitleIn) * 8 * u}px)`,
                 }}
               >
                 {subtitle}
               </div>
             ) : null}
           </div>
+
+          {badge ? (
+            <div
+              style={{
+                flexShrink: 0,
+                padding: `${7 * u}px ${13 * u}px`,
+                borderRadius: 999,
+                background: `${accentColor}1E`,
+                border: `1px solid ${accentColor}66`,
+                color: accentColor,
+                fontSize: 17 * u,
+                fontWeight: 600,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                opacity: badgeIn,
+                transform: `scale(${interpolate(badgeIn, [0, 1], [0.86, 1])})`,
+              }}
+            >
+              {badge}
+            </div>
+          ) : null}
         </div>
       </div>
     </AbsoluteFill>

@@ -1,12 +1,14 @@
 ---
 title: Spring In
-description: Spring-based scale and opacity entrance animation.
+description: Spring-driven scale and rise, with snappy, smooth and bouncy presets.
 ---
 
 import { SpringInPreview } from '@/components/previews/spring-in';
 
-<ComponentPage name="spring-in" preview={SpringInPreview} durationInFrames={60}>
+<ComponentPage name="spring-in" preview={SpringInPreview}>
 
-Scales and fades children in using Remotion's `spring()` with the shared `springSnappy` config.
+Scale and a short rise driven by `spring()`, so the element carries weight into its stop instead of easing to a halt.
+
+`config="bouncy"` overshoots — both the scale and the rise pass their resting value and settle back, which is the reason to use a spring at all.
 
 </ComponentPage>

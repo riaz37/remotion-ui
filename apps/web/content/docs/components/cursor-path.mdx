@@ -1,12 +1,20 @@
 ---
 title: Cursor Path
-description: Animated cursor movement along points.
+description: Cursor travelling a route, with drawn trail and click ripples.
 ---
 
 import { CursorPathPreview } from '@/components/previews/cursor-path';
 
-<ComponentPage name="cursor-path" preview={CursorPathPreview} durationInFrames={100}>
+<ComponentPage name="cursor-path" preview={CursorPathPreview}>
 
-Pointer motion primitive for product demos and tutorials.
+Moves a pointer along a route built from `points`, or along an SVG path passed
+to `d`. Travel is measured by arc length, so the cursor holds one speed across
+a long hop and a short one, and `smoothing` rounds the corners into a hand-like
+curve.
+
+The trail draws in behind the cursor by default; `trail="guide"` shows the
+whole route up front instead. `clickAt` ripples at the waypoints you name — the
+timing is derived from where each waypoint sits along the path, so clicks stay
+in sync when the duration changes.
 
 </ComponentPage>

@@ -26,10 +26,10 @@ Production-ready motion for Remotion. Source you own. Docs: [remotionui.com](htt
 
 ## What you get
 
-- **120+ components**: primitives, scenes, compositions (captions, charts, AI composers, social clips, creator reels)
+- **108 components**: 51 primitives + 57 scenes and compositions (captions, charts, AI composers, social clips, creator reels)
 - **Source you own**: components land in your repo; edit every frame
 - **CLI workflow**: `init`, `add`, `doctor`, `search`, `diff`, `update`, `list`
-- **AI-ready**: [agent index](https://remotionui.com/ai/components.json), [recipes](https://remotionui.com/ai/recipes.json), [llms.txt](https://remotionui.com/llms.txt)
+- **AI-ready**: [agent index](https://remotionui.com/ai/components.json), [llms.txt](https://remotionui.com/llms.txt)
 
 ## Monorepo Structure
 
@@ -67,7 +67,7 @@ RemotionUI uses [Agent Skills](https://agentskills.io/home) to give AI agents do
 |-------|----------|---------|
 | `remotion-best-practices` + 11 more | `skills/remotion/<skill>/` | Official [Remotion Agent Skills](https://www.remotion.dev/docs/ai/skills), vendored from upstream |
 | `remotion-ui` | `skills/remotion-ui/` | RemotionUI monorepo, CLI, and registry authoring |
-| `remotionui-agent` | `skills/remotionui-agent/` | Building full compositions with RemotionUI recipes |
+| `remotionui-agent` | `skills/remotionui-agent/` | Building full compositions with RemotionUI |
 
 Upstream ships focused skills (`remotion-markup`, `remotion-captions`, `remotion-create`, `remotion-maps`, `remotion-render`, …) with `remotion-best-practices` as the router. `skills/remotion/docs/` is a RemotionUI-maintained mirror of the official docs MDX, refreshed with `pnpm docs:remotion`.
 

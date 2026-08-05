@@ -1,12 +1,24 @@
 ---
 title: Transition Light Leak
-description: Light leak overlay for TransitionSeries.
+description: A film flare that peaks on the cut and hides the seam under it.
 ---
 
 import { TransitionLightLeakPreview } from "@/components/previews/transition-previews";
 
 <ComponentPage name="transition-light-leak" preview={TransitionLightLeakPreview} durationInFrames={90}>
 
-`TransitionLightLeak` component for use inside `TransitionSeries.Overlay`. Requires `@remotion/light-leaks`.
+An overlay rather than a presentation: drop it in a `TransitionSeries.Overlay`
+and the flare blooms over whatever cut is happening underneath. It takes its
+length from the overlay it sits in, so the envelope always finishes exactly when
+the overlay does.
+
+`peakAt` moves the brightest moment inside that window — put it on the cut
+itself so the flare covers the seam rather than arriving after it. `intensity`
+scales the whole envelope and `blendMode` decides how it composites.
+
+Rendering needs the ANGLE backend: pass `--gl=angle` to `remotion render`, or
+set `chromiumOptions: { gl: "angle" }` when using the SSR APIs.
+
+Requires `@remotion/light-leaks`. Run `npx remotion add @remotion/light-leaks` if not already installed.
 
 </ComponentPage>

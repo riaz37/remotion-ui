@@ -1,10 +1,9 @@
 import type { TransitionPresentation } from "@remotion/transitions";
 import { useMemo } from "react";
-import { AbsoluteFill, interpolate } from "remotion";
+import { AbsoluteFill } from "remotion";
 import {
-  layeredEnterProgress,
-  layeredExitProgress,
   resolveTransitionTiming,
+  transitionPhase,
   type TransitionVariant,
 } from "@/remotion/lib/transition-timing";
 
@@ -16,46 +15,43 @@ export type DirectionalWipeDirection =
 
 export type DirectionalWipeProps = {
   direction?: DirectionalWipeDirection;
+  /** Width of the soft edge as a share of the frame, 0→1. 0 cuts hard. */
   edgeSoftness?: number;
+  /** Parallax the scenes carry under the wipe, as a share of the frame. */
   depth?: number;
 };
 
-function clipForDirection(
+const GRADIENT_AXIS: Record<DirectionalWipeDirection, string> = {
+  "from-left": "to right",
+  "from-right": "to left",
+  "from-top": "to bottom",
+  "from-bottom": "to top",
+};
+
+const PARALLAX_AXIS: Record<
+  DirectionalWipeDirection,
+  { axis: "x" | "y"; sign: number }
+> = {
+  "from-left": { axis: "x", sign: -1 },
+  "from-right": { axis: "x", sign: 1 },
+  "from-top": { axis: "y", sign: -1 },
+  "from-bottom": { axis: "y", sign: 1 },
+};
+
+/**
+ * Soft-edged reveal mask. The edge travels from just past the far side of the
+ * frame to just past the near side, so at `displace === 0` the scene is whole
+ * and at `displace === 1` none of it is left — the feather never clips short.
+ */
+function wipeMask(
   direction: DirectionalWipeDirection,
-  progress: number,
+  displace: number,
   softness: number,
 ): string {
-  const edge = (1 - progress) * 100;
-  const feather = softness * 8;
+  const feather = Math.max(softness, 0) * 50;
+  const edge = (1 - displace) * (100 + feather * 2) - feather;
 
-  switch (direction) {
-    case "from-left":
-      return `inset(0 ${edge + feather}% 0 ${Math.max(0, edge - feather)}%)`;
-    case "from-right":
-      return `inset(0 ${Math.max(0, edge - feather)}% 0 ${edge + feather}%)`;
-    case "from-top":
-      return `inset(${Math.max(0, edge - feather)}% 0 ${edge + feather}% 0)`;
-    case "from-bottom":
-      return `inset(${edge + feather}% 0 ${Math.max(0, edge - feather)}% 0)`;
-  }
-}
-
-function offsetForDirection(
-  direction: DirectionalWipeDirection,
-  motion: number,
-  depth: number,
-): { x: number; y: number; scale: number } {
-  const travel = (1 - motion) * depth * 100;
-  switch (direction) {
-    case "from-left":
-      return { x: -travel, y: 0, scale: 0.96 + motion * 0.04 };
-    case "from-right":
-      return { x: travel, y: 0, scale: 0.96 + motion * 0.04 };
-    case "from-top":
-      return { x: 0, y: -travel, scale: 0.96 + motion * 0.04 };
-    case "from-bottom":
-      return { x: 0, y: travel, scale: 0.96 + motion * 0.04 };
-  }
+  return `linear-gradient(${GRADIENT_AXIS[direction]}, #000 ${edge - feather}%, transparent ${edge + feather}%)`;
 }
 
 const DirectionalWipePresentation: React.FC<
@@ -66,28 +62,36 @@ const DirectionalWipePresentation: React.FC<
   children,
   presentationProgress,
   presentationDirection,
-  passedProps: { direction = "from-left", edgeSoftness = 0.35, depth = 0.28 },
+  passedProps: { direction = "from-left", edgeSoftness = 0.12, depth = 0.08 },
 }) => {
-  const isEntering = presentationDirection === "entering";
-  const layered = isEntering
-    ? layeredEnterProgress(presentationProgress)
-    : layeredExitProgress(presentationProgress);
-  const motion = isEntering ? layered.motion : 1 - layered.motion;
-  const opacity = layered.opacity;
+  const phase = transitionPhase(presentationProgress, presentationDirection);
 
   const style = useMemo(() => {
-    const offset = offsetForDirection(direction, motion, depth);
-    const clip = clipForDirection(direction, motion, edgeSoftness);
-    const blur = interpolate(motion, [0, 1], [10, 0]);
+    const { axis, sign } = PARALLAX_AXIS[direction];
+    const travel = sign * phase.displace * depth * 100;
+    const shift =
+      axis === "x"
+        ? `${phase.isEntering ? travel : -travel}% 0%`
+        : `0% ${phase.isEntering ? travel : -travel}%`;
+
+    // The outgoing scene is covered by the incoming one rather than wiped
+    // itself. Masking both would open a hole onto the background mid-cut.
+    if (!phase.isEntering) {
+      return { translate: shift };
+    }
+
+    const mask = wipeMask(direction, phase.displace, edgeSoftness);
 
     return {
-      opacity,
-      clipPath: clip,
-      filter: `blur(${blur}px)`,
-      translate: `${offset.x}% ${offset.y}%`,
-      scale: offset.scale,
+      translate: shift,
+      WebkitMaskImage: mask,
+      maskImage: mask,
+      WebkitMaskSize: "100% 100%",
+      maskSize: "100% 100%",
+      WebkitMaskRepeat: "no-repeat",
+      maskRepeat: "no-repeat",
     };
-  }, [depth, direction, edgeSoftness, motion, opacity]);
+  }, [depth, direction, edgeSoftness, phase.displace, phase.isEntering]);
 
   return <AbsoluteFill style={style}>{children}</AbsoluteFill>;
 };
@@ -113,8 +117,8 @@ export type TransitionDirectionalWipeConfig = {
 export function transitionDirectionalWipe({
   durationInFrames = 22,
   direction = "from-left",
-  edgeSoftness = 0.35,
-  depth = 0.28,
+  edgeSoftness = 0.12,
+  depth = 0.08,
   variant = "editorial",
 }: TransitionDirectionalWipeConfig = {}) {
   return {

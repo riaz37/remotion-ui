@@ -13,6 +13,8 @@ export const CommentCalloutPreview: React.FC = () => (
         handle={DEMO_COPY.creatorComment.handle}
         initials="AC"
         body={DEMO_COPY.creatorComment.body}
+        highlight="how you built that transition"
+        reply="Full breakdown drops Thursday — here's the short version."
       />
     </Sequence>
   </ScenePreviewPlate>

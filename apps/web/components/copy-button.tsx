@@ -5,6 +5,8 @@ import { useState } from "react";
 export function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
 
+  // Resting fill is the darker surface so the muted label clears WCAG AA in
+  // dark mode; the raised surface is the hover state.
   return (
     <button
       type="button"
@@ -13,7 +15,7 @@ export function CopyButton({ text }: { text: string }) {
         setCopied(true);
         window.setTimeout(() => setCopied(false), 2000);
       }}
-      className="inline-flex items-center gap-1.5 rounded-md border border-[var(--bay-border)] bg-[var(--bay-surface-raised)] px-2.5 py-1 text-xs font-medium text-fd-muted-foreground transition-colors hover:bg-[var(--bay-surface)] hover:text-fd-foreground"
+      className="inline-flex items-center gap-1.5 rounded-md border border-[var(--bay-border)] bg-[var(--bay-surface)] px-2.5 py-1 text-xs font-medium text-fd-muted-foreground transition-colors hover:bg-[var(--bay-surface-raised)] hover:text-fd-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--bay-phosphor)]"
       aria-label="Copy to clipboard"
     >
       {copied ? (

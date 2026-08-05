@@ -1,12 +1,17 @@
 ---
 title: Logo Reveal
-description: Brand logo SVG path draw-on reveal.
+description: Logo mark draw-on with wordmark and tagline beats.
 ---
 
 import { LogoRevealPreview } from '@/components/previews/logo-reveal';
 
-<ComponentPage name="logo-reveal" preview={LogoRevealPreview} durationInFrames={90}>
+<ComponentPage name="logo-reveal" preview={LogoRevealPreview}>
 
-Combines `path-draw`, `scale-in`, and `fade-in` for a logo reveal scene.
+Four beats: a bloom settles, the mark draws on with `path-draw`, the wordmark
+springs up, and the tagline follows. Pass an array to `pathD` for a multi-stroke
+mark — the strokes draw in order.
+
+The mark sizes itself from the frame's short edge and grows when no copy is
+supplied, so the scene fills both a 16:9 outro and a 9:16 clip without tuning.
 
 </ComponentPage>

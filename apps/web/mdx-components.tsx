@@ -7,7 +7,6 @@ import { DocsBinCard } from "@/components/docs/docs-bin-card";
 import { DocsIntro } from "@/components/docs/docs-intro";
 import { InstallationSteps } from "@/components/docs/installation-steps";
 import { ComponentsHub } from "@/components/docs/components-hub";
-import { RecipesHub } from "@/components/docs/recipes-hub";
 import { InitCommand, InstallCommand, RenderCommand, SearchCommand, CommandRail } from "@/components/install-command";
 import { ShowcaseVideo } from "@/components/showcase-video";
 
@@ -19,7 +18,6 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     DocsBinCard,
     DocsIntro,
     InstallationSteps,
-    RecipesHub,
     ComponentsHub,
     InstallCommand,
     InitCommand,

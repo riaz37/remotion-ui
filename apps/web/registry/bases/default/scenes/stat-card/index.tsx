@@ -1,155 +1,278 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { Counter } from "@/remotion/primitives/counter";
-import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
-import { DELAY, DURATION, EASING } from "@/remotion/lib/motion-tokens";
+import { CODE_THEMES } from "@/remotion/lib/code-syntax";
+import { getSafeAreaPadding } from "@/remotion/lib/layout";
+import { EASING } from "@/remotion/lib/motion-tokens";
 
 const { fontFamily } = loadFont("normal", {
-  weights: ["500", "700"],
+  weights: ["400", "500", "600", "700"],
   subsets: ["latin"],
 });
 
 export type StatCardProps = {
+  /** The number the counter lands on. */
   value?: number;
-  label?: string;
+  /**
+   * What the number is out of. With it, the ring is a meter filling to
+   * `value / max`; without it the ring draws a full sweep, so a count like
+   * "3 dependencies" is not rendered as 3% of something.
+   */
+  max?: number;
+  /** Unit after the number, e.g. "%" or "k". */
   suffix?: string;
+  /** Unit before the number, e.g. "$". */
+  prefix?: string;
+  /** Decimal places while counting and at rest. */
+  decimals?: number;
+  label?: string;
+  /** Line under the label — the source, the window, the cohort. */
+  caption?: string;
+  /** Change against the previous period, e.g. 12 for "+12%". */
+  delta?: number;
+  /** Unit on the delta chip. */
+  deltaSuffix?: string;
   backgroundColor?: string;
   accentColor?: string;
+  theme?: "dark" | "light";
+  /** Animation speed multiplier. */
+  speed?: number;
 };
 
-const COLORS = {
-  bg: "#080810",
-  label: "#94a3b8",
-  accent: "#2dd4bf",
+/** Beat plan in seconds. */
+const T = {
+  ring: 0.1,
+  ringFor: 1.5,
+  count: 0.16,
+  countFor: 1.4,
+  label: 0.6,
+  caption: 0.78,
+  /** Delta lands after the number has settled. */
+  delta: 1.72,
 } as const;
 
+const clamp = {
+  extrapolateLeft: "clamp",
+  extrapolateRight: "clamp",
+} as const;
+
+/**
+ * A number landing rather than a ring and a digit fading in together: the ring
+ * fills to the share the value represents while the counter rolls up under it,
+ * the label settles, and the change against the last period lands last — once
+ * the number it is qualifying has stopped moving.
+ */
 export const StatCard: React.FC<StatCardProps> = ({
   value = 98,
-  label = "Satisfaction",
+  max,
   suffix = "%",
-  backgroundColor = COLORS.bg,
-  accentColor = COLORS.accent,
+  prefix,
+  decimals = 0,
+  label = "Satisfaction",
+  caption,
+  delta,
+  deltaSuffix = "%",
+  backgroundColor,
+  accentColor = "#2DD4BF",
+  theme = "dark",
+  speed = 1,
 }) => {
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
-  const safeArea = getSafeAreaPadding({ width, height });
-  const ringSize = scaleFont(280, width);
-  const strokeWidth = scaleFont(6, width);
-  const radius = ringSize / 2 - strokeWidth;
-  const circumference = 2 * Math.PI * radius;
-  const center = ringSize / 2;
+  const palette = CODE_THEMES[theme];
+  const safe = getSafeAreaPadding({ width, height });
 
-  const ringDraw = interpolate(frame, [0, DURATION.slow * 2], [0, 1], {
-    easing: EASING.enter,
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const contentEnter = spring({
+  const at = (seconds: number) => (seconds * fps) / speed;
+  const ease = (from: number, to: number, easing = EASING.enter) =>
+    interpolate(frame, [at(from), at(to)], [0, 1], { easing, ...clamp });
+
+  const stage = {
+    w: width - safe.paddingLeft - safe.paddingRight,
+    h: height - safe.paddingTop - safe.paddingBottom,
+  };
+  const portrait = height > width;
+  const u = portrait
+    ? Math.min(stage.w / 620, stage.h / 1120)
+    : Math.min(stage.w / 1120, stage.h / 620);
+
+  const share = max && max > 0 ? Math.min(Math.max(value / max, 0), 1) : 1;
+  const ring = ease(T.ring, T.ring + T.ringFor, EASING.editorial) * share;
+  const counted = ease(T.count, T.count + T.countFor, EASING.editorial) * value;
+  const labelIn = ease(T.label, T.label + 0.45);
+  const captionIn = caption ? ease(T.caption, T.caption + 0.45) : 0;
+  const deltaIn =
+    delta === undefined
+      ? 0
+      : spring({
+          frame: frame - at(T.delta),
+          fps,
+          config: { damping: 13, stiffness: 190, mass: 0.6 },
+        });
+  /** One pulse as the ring closes, so the landing is felt. */
+  const land = interpolate(
     frame,
-    fps,
-    config: { damping: 16, stiffness: 120, mass: 0.85 },
-    delay: DELAY.short,
-  });
-  const labelEnter = interpolate(
-    frame,
-    [DELAY.medium, DELAY.medium + DURATION.fast],
-    [0, 1],
-    {
-      easing: EASING.enter,
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    },
+    [at(T.ring + T.ringFor), at(T.ring + T.ringFor + 0.45)],
+    [1, 0],
+    clamp,
   );
+
+  const size = Math.min(stage.w * 0.62, stage.h * 0.62, 380 * u);
+  const stroke = 9 * u;
+  const radius = size / 2 - stroke;
+  const circumference = 2 * Math.PI * radius;
 
   return (
     <div
       style={{
         width,
         height,
-        backgroundColor,
-        paddingLeft: safeArea.paddingLeft,
-        paddingRight: safeArea.paddingRight,
-        paddingTop: safeArea.paddingTop,
-        paddingBottom: safeArea.paddingBottom,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        background: backgroundColor ?? palette.page,
         fontFamily,
         position: "relative",
+        overflow: "hidden",
+        display: "grid",
+        placeItems: "center",
       }}
     >
       <div
         style={{
           position: "absolute",
           inset: 0,
-          background: `radial-gradient(ellipse 90% 30% at 50% 0%, ${accentColor}14, transparent 70%)`,
-          pointerEvents: "none",
+          background: `radial-gradient(ellipse 55% 50% at 50% 45%, ${accentColor}1A, transparent 72%)`,
         }}
       />
-      <svg
-        width={ringSize}
-        height={ringSize}
-        style={{ position: "absolute", pointerEvents: "none" }}
-      >
-        <circle
-          cx={center}
-          cy={center}
-          r={radius}
-          fill="none"
-          stroke={`${accentColor}33`}
-          strokeWidth={strokeWidth}
-        />
-        <circle
-          cx={center}
-          cy={center}
-          r={radius}
-          fill="none"
-          stroke={accentColor}
-          strokeWidth={strokeWidth}
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          strokeDashoffset={circumference * (1 - ringDraw)}
-          transform={`rotate(-90 ${center} ${center})`}
-          style={{
-            filter: `drop-shadow(0 0 ${scaleFont(12, width)}px ${accentColor}55)`,
-          }}
-        />
-      </svg>
+
       <div
         style={{
-          textAlign: "center",
           position: "relative",
-          opacity: Math.min(1, contentEnter),
-          transform: `scale(${0.9 + contentEnter * 0.1})`,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 18 * u,
         }}
       >
-        <Counter
-          from={0}
-          to={value}
-          suffix={suffix}
-          durationInFrames={DURATION.slow * 2}
-          delayInFrames={DELAY.short}
-          style={{
-            fontSize: scaleFont(96, width),
-            color: accentColor,
-            fontFamily,
-            fontWeight: 700,
-            letterSpacing: "-0.02em",
-          }}
-        />
-        <p
-          style={{
-            color: COLORS.label,
-            fontSize: scaleFont(32, width),
-            marginTop: scaleFont(16, width),
-            marginBottom: 0,
-            fontWeight: 500,
-            opacity: labelEnter,
-            transform: `translateY(${(1 - labelEnter) * 10}px)`,
-          }}
-        >
-          {label}
-        </p>
+        <div style={{ position: "relative", width: size, height: size }}>
+          <svg
+            width={size}
+            height={size}
+            style={{ transform: "rotate(-90deg)" }}
+          >
+            <circle
+              cx={size / 2}
+              cy={size / 2}
+              r={radius}
+              fill="none"
+              stroke={palette.band}
+              strokeWidth={stroke}
+            />
+            <circle
+              cx={size / 2}
+              cy={size / 2}
+              r={radius}
+              fill="none"
+              stroke={accentColor}
+              strokeWidth={stroke}
+              strokeLinecap="round"
+              strokeDasharray={circumference}
+              strokeDashoffset={circumference * (1 - ring)}
+              style={{
+                filter: `drop-shadow(0 0 ${(10 + land * 16) * u}px ${accentColor})`,
+              }}
+            />
+          </svg>
+
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: palette.fg,
+              fontSize: 92 * u,
+              fontWeight: 700,
+              letterSpacing: "-0.03em",
+              fontVariantNumeric: "tabular-nums",
+              transform: `scale(${1 + land * 0.03})`,
+            }}
+          >
+            {prefix ? (
+              <span style={{ fontSize: 54 * u, alignSelf: "flex-start", marginTop: 20 * u }}>
+                {prefix}
+              </span>
+            ) : null}
+            {counted.toFixed(decimals)}
+            {suffix ? (
+              <span style={{ fontSize: 54 * u, color: accentColor }}>
+                {suffix}
+              </span>
+            ) : null}
+          </div>
+        </div>
+
+        {label ? (
+          <div
+            style={{
+              color: palette.fg,
+              fontSize: 34 * u,
+              fontWeight: 600,
+              letterSpacing: "-0.01em",
+              opacity: labelIn,
+              transform: `translateY(${(1 - labelIn) * 12 * u}px)`,
+            }}
+          >
+            {label}
+          </div>
+        ) : null}
+
+        {caption ? (
+          <div
+            style={{
+              marginTop: -8 * u,
+              color: palette.faint,
+              fontSize: 21 * u,
+              opacity: captionIn,
+            }}
+          >
+            {caption}
+          </div>
+        ) : null}
+
+        {delta !== undefined ? (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8 * u,
+              padding: `${8 * u}px ${15 * u}px`,
+              borderRadius: 999,
+              background: `${accentColor}18`,
+              border: `1px solid ${accentColor}55`,
+              color: accentColor,
+              fontSize: 22 * u,
+              fontWeight: 600,
+              fontVariantNumeric: "tabular-nums",
+              opacity: Math.min(deltaIn, 1),
+              transform: `scale(${interpolate(
+                Math.min(deltaIn, 1),
+                [0, 1],
+                [0.86, 1],
+              )})`,
+            }}
+          >
+            <svg width={16 * u} height={16 * u} viewBox="0 0 16 16" fill="none">
+              <path
+                d={delta < 0 ? "M8 3v10m0 0 4-4m-4 4-4-4" : "M8 13V3m0 0 4 4M8 3 4 7"}
+                stroke={accentColor}
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            {delta > 0 ? "+" : ""}
+            {delta}
+            {deltaSuffix}
+          </div>
+        ) : null}
       </div>
     </div>
   );

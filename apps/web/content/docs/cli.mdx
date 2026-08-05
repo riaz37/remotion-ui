@@ -1,6 +1,6 @@
 ---
 title: CLI Reference
-description: remotion-ui commands for init, add, doctor, recipes, and custom registries.
+description: remotion-ui commands for init, add, doctor, and custom registries.
 ---
 
 ## Commands
@@ -8,11 +8,8 @@ description: remotion-ui commands for init, add, doctor, recipes, and custom reg
 | Command | Description |
 |---------|-------------|
 | `init [name]` | Scaffold a new Remotion project |
-| `init --starter social` | New project + captioned social clip recipe pre-installed |
-| `init --starter podcast` | New project + podcast clip recipe pre-installed |
 | `init --existing` | Bootstrap `remotion-ui.json` in an existing Remotion project |
 | `add <name...>` | Install components and dependencies |
-| `add --recipe <slug>` | Install a task-first recipe (components + deps) |
 | `doctor` | Diagnose config, aliases, and Remotion version |
 | `list` | List registry components and installed status |
 | `update <name...>` | Re-install from registry (overwrites files) |
@@ -33,25 +30,11 @@ Checks `remotion-ui.json`, `tsconfig` path aliases, install directories, and Rem
 npx remotion-ui@latest init --existing
 npx remotion-ui@latest add social-clip`} />
 
-## Starter projects
+## New project
 
-Ship a social or podcast clip in one session:
-
-<CodeSnippet label="Social starter" code={`npx remotion-ui@latest init my-reel --starter social
-cd my-reel && npm run dev
-npx remotion render src/Root.tsx SocialClip out/social-clip.mp4`} />
-
-<CodeSnippet label="Podcast starter" code={`npx remotion-ui@latest init my-podcast --starter podcast
-cd my-podcast && npm run dev
-npx remotion render src/Root.tsx PodcastClip out/podcast-clip.mp4`} />
-
-Use `--starter default` (or omit) for the blank Welcome composition template.
-
-## Recipe install
-
-<InstallCommand name="captioned-social-video" recipe />
-
-Recipes are defined in [`/ai/recipes.json`](/ai/recipes.json). Browse goals at [Recipe wizard](/docs/ai/start).
+<CodeSnippet label="New project" code={`npx remotion-ui@latest init my-video
+cd my-video && npm run dev
+npx remotion-ui@latest add social-clip`} />
 
 ## Script output
 

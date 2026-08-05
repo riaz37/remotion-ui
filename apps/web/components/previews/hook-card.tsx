@@ -11,6 +11,7 @@ export const HookCardPreview: React.FC = () => (
       <HookCard
         kicker={DEMO_COPY.creatorHook.eyebrow}
         headline={DEMO_COPY.creatorHook.headline}
+        emphasis="first second"
         subtitle={DEMO_COPY.creatorHook.subtitle}
       />
     </Sequence>

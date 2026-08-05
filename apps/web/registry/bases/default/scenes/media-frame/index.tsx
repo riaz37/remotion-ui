@@ -1,136 +1,255 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
-import { Img, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { Video } from "@remotion/media";
+import { Img, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import { CODE_THEMES } from "@/remotion/lib/code-syntax";
+import { getSafeAreaPadding } from "@/remotion/lib/layout";
+import { EASING } from "@/remotion/lib/motion-tokens";
 import {
   getMediaObjectFitStyle,
   isVideoSource,
   type MediaFit,
 } from "@/remotion/lib/media-utils";
-import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
-import { DURATION, EASING, STAGGER } from "@/remotion/lib/motion-tokens";
 
 const { fontFamily } = loadFont("normal", {
-  weights: ["500", "600", "700"],
+  weights: ["400", "500", "600", "700"],
   subsets: ["latin"],
 });
 
 export type MediaFrameProps = {
   src: string;
+  /** Headline above the frame. */
   title?: string;
+  /** Supporting line under the frame. */
   caption?: string;
+  /** Small label above the title — chapter, source, timestamp. */
+  eyebrow?: string;
   fit?: MediaFit;
+  /**
+   * Aspect the frame itself is cut to. The frame is sized to this and centred,
+   * so `contain` media fills it instead of sitting in a letterbox.
+   */
+  aspect?: number;
+  /** Corner radius in composition pixels. Defaults to a scaled 20. */
+  radius?: number;
   backgroundColor?: string;
   accentColor?: string;
-  radius?: number;
+  theme?: "dark" | "light";
+  /** Animation speed multiplier. */
+  speed?: number;
 };
 
-const COLORS = {
-  bg: "#080810",
-  frame: "#050810",
-  title: "#f8fafc",
-  caption: "#cbd5e1",
-  accent: "#e8b86d",
+/** Beat plan in seconds. */
+const T = {
+  /** Shutter opening on the media. */
+  open: 0,
+  openTo: 0.62,
+  eyebrow: 0.24,
+  title: 0.34,
+  caption: 0.58,
+  /** The slow push runs the whole scene. */
+  push: 6,
 } as const;
 
+const clamp = {
+  extrapolateLeft: "clamp",
+  extrapolateRight: "clamp",
+} as const;
+
+/**
+ * One piece of media actually presented: the frame opens on it like a shutter
+ * while a slow push runs underneath, then the title masks up from the frame's
+ * edge and the caption settles beneath — rather than three elements fading in
+ * over a static box.
+ */
 export const MediaFrame: React.FC<MediaFrameProps> = ({
   src,
   title,
   caption,
+  eyebrow,
   fit = "contain",
-  backgroundColor = COLORS.bg,
-  accentColor = COLORS.accent,
+  aspect = 16 / 9,
   radius,
+  backgroundColor,
+  accentColor = "#E8B86D",
+  theme = "dark",
+  speed = 1,
 }) => {
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
-  const safeArea = getSafeAreaPadding({ width, height });
-  const cornerRadius = radius ?? scaleFont(20, width);
-  const titleEnter = interpolate(frame, [0, DURATION.fast], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: EASING.enter,
-  });
-  const mediaEnter = spring({
-    frame: frame - STAGGER.normal,
-    fps,
-    config: { damping: 18, stiffness: 110, mass: 0.9 },
-    durationInFrames: DURATION.fast,
-  });
-  const captionEnter = interpolate(
-    frame,
-    [STAGGER.normal * 2, STAGGER.normal * 2 + DURATION.fast],
-    [0, 1],
-    {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-      easing: EASING.enter,
-    },
-  );
-  const mediaStyle = getMediaObjectFitStyle(fit);
+  const palette = CODE_THEMES[theme];
+  const safe = getSafeAreaPadding({ width, height });
+
+  const at = (seconds: number) => (seconds * fps) / speed;
+  const ease = (from: number, to: number, easing = EASING.enter) =>
+    interpolate(frame, [at(from), at(to)], [0, 1], { easing, ...clamp });
+
+  const stage = {
+    w: width - safe.paddingLeft - safe.paddingRight,
+    h: height - safe.paddingTop - safe.paddingBottom,
+  };
+  const u = Math.min(stage.w / 1120, stage.h / 620);
+
+  const open = ease(T.open, T.openTo, EASING.editorial);
+  const eyebrowIn = eyebrow ? ease(T.eyebrow, T.eyebrow + 0.4) : 0;
+  const titleIn = title ? ease(T.title, T.title + 0.45) : 0;
+  const captionIn = caption ? ease(T.caption, T.caption + 0.45) : 0;
+  /** Slow push under the frame — the reason the shot feels alive on a hold. */
+  const push = ease(0, T.push, EASING.editorial);
+
+  // Reserve only what is shown: with no title and no caption the frame owns
+  // the whole safe area rather than sitting above an empty band.
+  const titleSize = 46 * u;
+  const eyebrowBlock = eyebrow ? 34 * u : 0;
+  const titleBlock = title ? titleSize * 1.1 + 18 * u : 0;
+  const captionBlock = caption ? 30 * u + 18 * u : 0;
+  const headerH = eyebrowBlock + titleBlock;
+
+  const availableH = stage.h - headerH - captionBlock;
+  const frameW = Math.min(stage.w, availableH * aspect);
+  const frameH = frameW / aspect;
+  const cornerRadius = radius ?? 20 * u;
 
   return (
     <div
       style={{
         width,
         height,
-        background: backgroundColor,
-        paddingLeft: safeArea.paddingLeft,
-        paddingRight: safeArea.paddingRight,
-        paddingTop: safeArea.paddingTop,
-        paddingBottom: safeArea.paddingBottom,
-        display: "flex",
-        flexDirection: "column",
-        gap: scaleFont(16, width),
-        color: COLORS.title,
+        background: backgroundColor ?? palette.page,
         fontFamily,
+        position: "relative",
+        overflow: "hidden",
       }}
     >
-      {title ? (
-        <div
-          style={{
-            fontSize: scaleFont(44, width),
-            fontWeight: 700,
-            lineHeight: 1.05,
-            letterSpacing: "-0.02em",
-            opacity: titleEnter,
-            transform: `translateY(${(1 - titleEnter) * 16}px)`,
-          }}
-        >
-          {title}
-        </div>
-      ) : null}
       <div
         style={{
-          flex: 1,
-          minHeight: 0,
-          borderRadius: cornerRadius,
-          overflow: "hidden",
-          border: `${scaleFont(1, width)}px solid ${accentColor}55`,
-          boxShadow: `0 0 0 ${scaleFont(1, width)}px ${accentColor}12, 0 ${scaleFont(20, width)}px ${scaleFont(64, width)}px rgba(0,0,0,0.35)`,
-          opacity: mediaEnter,
-          transform: `scale(${0.97 + mediaEnter * 0.03})`,
-          background: COLORS.frame,
+          position: "absolute",
+          inset: 0,
+          background: `radial-gradient(ellipse 70% 55% at 50% 45%, ${accentColor}12, transparent 72%)`,
+        }}
+      />
+
+      <div
+        style={{
+          position: "absolute",
+          left: safe.paddingLeft,
+          top: safe.paddingTop,
+          width: stage.w,
+          height: stage.h,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        {isVideoSource(src) ? (
-          <Video src={src} muted loop style={mediaStyle} />
-        ) : (
-          <Img src={src} style={mediaStyle} />
-        )}
-      </div>
-      {caption ? (
+        {eyebrow ? (
+          <div
+            style={{
+              width: frameW,
+              color: accentColor,
+              fontSize: 20 * u,
+              fontWeight: 600,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              height: eyebrowBlock,
+              opacity: eyebrowIn,
+              transform: `translateY(${(1 - eyebrowIn) * 8 * u}px)`,
+            }}
+          >
+            {eyebrow}
+          </div>
+        ) : null}
+
+        {title ? (
+          // Masked so the headline rises out of its own line rather than fading.
+          <div
+            style={{
+              width: frameW,
+              height: titleBlock,
+              overflow: "hidden",
+              display: "flex",
+              alignItems: "flex-start",
+            }}
+          >
+            <div
+              style={{
+                color: palette.fg,
+                fontSize: titleSize,
+                fontWeight: 700,
+                lineHeight: 1.1,
+                letterSpacing: "-0.02em",
+                transform: `translateY(${(1 - titleIn) * titleSize}px)`,
+              }}
+            >
+              {title}
+            </div>
+          </div>
+        ) : null}
+
         <div
           style={{
-            fontSize: scaleFont(26, width),
-            color: COLORS.caption,
-            fontWeight: 500,
-            opacity: captionEnter,
-            transform: `translateY(${(1 - captionEnter) * 10}px)`,
+            width: frameW,
+            height: frameH,
+            borderRadius: cornerRadius,
+            overflow: "hidden",
+            position: "relative",
+            background: palette.window,
+            border: `1px solid ${palette.border}`,
+            boxShadow: `inset 0 1px 0 ${palette.highlight}, 0 ${
+              26 * u
+            }px ${74 * u}px ${palette.shadow}`,
+            // Shutter: the frame opens from its centre line outwards.
+            clipPath: `inset(${(1 - open) * 50}% 0% ${(1 - open) * 50}% 0% round ${cornerRadius}px)`,
+            transform: `scale(${interpolate(open, [0, 1], [0.985, 1])})`,
           }}
         >
-          {caption}
+          {isVideoSource(src) ? (
+            <Video
+              src={src}
+              muted
+              loop
+              style={{
+                ...getMediaObjectFitStyle(fit),
+                transform: `scale(${interpolate(push, [0, 1], [1.06, 1])})`,
+              }}
+            />
+          ) : (
+            <Img
+              src={src}
+              style={{
+                ...getMediaObjectFitStyle(fit),
+                transform: `scale(${interpolate(push, [0, 1], [1.06, 1])})`,
+              }}
+            />
+          )}
+          {/* Grade: a rim of light along the top, weight along the bottom */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: `linear-gradient(180deg, ${accentColor}12, transparent 26%, transparent 72%, ${palette.shadow})`,
+              opacity: open,
+            }}
+          />
         </div>
-      ) : null}
+
+        {caption ? (
+          <div
+            style={{
+              width: frameW,
+              height: captionBlock,
+              display: "flex",
+              alignItems: "flex-end",
+              color: palette.dim,
+              fontSize: 24 * u,
+              fontWeight: 500,
+              opacity: captionIn,
+              transform: `translateY(${(1 - captionIn) * 10 * u}px)`,
+            }}
+          >
+            {caption}
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 };

@@ -1,12 +1,14 @@
 ---
 title: Progress Bar
-description: Animated horizontal progress bar.
+description: Inline progress bar with determinate and indeterminate modes, segments and a value readout.
 ---
 
 import { ProgressBarPreview } from '@/components/previews/progress-bar';
 
-<ComponentPage name="progress-bar" preview={ProgressBarPreview} durationInFrames={60}>
+<ComponentPage name="progress-bar" preview={ProgressBarPreview}>
 
-Interpolates bar width from 0 to `progress` (0–1) over `durationInFrames`.
+Fills from `from` to `progress` on an ease-out, with the leading edge carrying its own light — what separates progress from a rectangle changing width.
+
+It lays out inline rather than filling the frame, so it composes inside a card or a stat row. `indeterminate` loops a shuttle across the track for work with no known end.
 
 </ComponentPage>

@@ -13,7 +13,12 @@ export const ConfettiBurstPreview: React.FC = () => (
       detail={DEMO_COPY.creatorHook.subtitle}
     />
     <Sequence from={8} layout="none">
-      <ConfettiBurst originX={50} originY={36} seed="docs-confetti" />
+      <ConfettiBurst
+        originX={50}
+        originY={36}
+        seed="docs-confetti"
+        durationInFrames={64}
+      />
     </Sequence>
   </PreviewFrame>
 );

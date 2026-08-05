@@ -1,159 +1,197 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
-import { AbsoluteFill, Img, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
-import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
-import { DELAY, DURATION, EASING } from "@/remotion/lib/motion-tokens";
+import { Img, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import { CODE_THEMES } from "@/remotion/lib/code-syntax";
+import { getSafeAreaPadding } from "@/remotion/lib/layout";
+import { EASING } from "@/remotion/lib/motion-tokens";
 import { fitHeadline } from "@/remotion/lib/text-fit-utils";
 
 const { fontFamily } = loadFont("normal", {
-  weights: ["600", "700"],
+  weights: ["400", "500", "600", "700"],
   subsets: ["latin"],
 });
 
 export type AutoFitTitleProps = {
+  /** Headline. Sized to fill the safe area whatever its length. */
   title: string;
   subtitle?: string;
   logoSrc?: string;
   logoSize?: number;
+  /** Ceiling for the fitted size, at a 1080-wide stage. */
   maxFontSize?: number;
+  /** Floor for the fitted size, so a very long title stays legible. */
+  minFontSize?: number;
   accentColor?: string;
   backgroundColor?: string;
+  theme?: "dark" | "light";
+  /** Animation speed multiplier. */
+  speed?: number;
 };
 
-const COLORS = {
-  bg: "#080810",
-  title: "#fafafa",
-  accent: "#e8b86d",
+/** Beat plan in seconds. */
+const T = {
+  logo: 0,
+  title: 0.2,
+  /** Added per word. */
+  wordStagger: 0.06,
+  subtitle: 0.72,
 } as const;
 
-function getTitleSize(
-  title: string,
-  maxWidth: number,
-  maxFontSize: number,
-  fallbackWidth: number,
-) {
-  return fitHeadline({
-    text: title,
-    maxWidth,
-    maxFontSize: Math.min(maxFontSize, scaleFont(96, fallbackWidth)),
-    minFontSize: scaleFont(42, fallbackWidth),
-    fontFamily,
-    fontWeight: "700",
-  });
-}
+const clamp = {
+  extrapolateLeft: "clamp",
+  extrapolateRight: "clamp",
+} as const;
 
+/**
+ * A headline sized to the frame it is given, then set in motion word by word:
+ * the fit is measured before anything animates, so a two-word title and a
+ * twelve-word title both fill the safe area and both land the same way.
+ */
 export const AutoFitTitle: React.FC<AutoFitTitleProps> = ({
   title,
   subtitle,
   logoSrc,
   logoSize,
-  maxFontSize = 96,
-  accentColor = COLORS.accent,
-  backgroundColor = COLORS.bg,
+  maxFontSize = 128,
+  minFontSize = 34,
+  accentColor = "#E8B86D",
+  backgroundColor,
+  theme = "dark",
+  speed = 1,
 }) => {
   const frame = useCurrentFrame();
-  const { width, height } = useVideoConfig();
-  const safeArea = getSafeAreaPadding({ width, height });
-  const maxWidth = width - safeArea.paddingLeft - safeArea.paddingRight;
-  const titleSize = getTitleSize(title, maxWidth, maxFontSize, width);
-  const subtitleSize = Math.min(scaleFont(40, width), titleSize * 0.42);
-  const logoEnter = interpolate(frame, [0, DURATION.fast], [0, 1], {
-    easing: EASING.enter,
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
+  const { fps, width, height } = useVideoConfig();
+  const palette = CODE_THEMES[theme];
+  const safe = getSafeAreaPadding({ width, height });
+
+  const at = (seconds: number) => (seconds * fps) / speed;
+  const ease = (from: number, to: number, easing = EASING.enter) =>
+    interpolate(frame, [at(from), at(to)], [0, 1], { easing, ...clamp });
+
+  const stage = {
+    w: width - safe.paddingLeft - safe.paddingRight,
+    h: height - safe.paddingTop - safe.paddingBottom,
+  };
+  const portrait = height > width;
+  const u = portrait
+    ? Math.min(stage.w / 620, stage.h / 1120)
+    : Math.min(stage.w / 1120, stage.h / 620);
+
+  const words = title.split(/\s+/).filter(Boolean);
+  const fontSize = fitHeadline({
+    text: title,
+    maxWidth: stage.w,
+    maxFontSize: maxFontSize * u,
+    minFontSize: minFontSize * u,
   });
-  const titleEnter = interpolate(
-    frame,
-    [DELAY.short, DELAY.short + DURATION.normal],
-    [0, 1],
-    {
-      easing: EASING.enter,
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    },
-  );
-  const subtitleEnter = interpolate(
-    frame,
-    [DELAY.medium, DELAY.medium + DURATION.fast],
-    [0, 1],
-    {
-      easing: EASING.enter,
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    },
-  );
+
+  const logoIn = logoSrc ? ease(T.logo, T.logo + 0.45) : 0;
+  const subtitleIn = subtitle ? ease(T.subtitle, T.subtitle + 0.5) : 0;
+  /** Slow push, so the card is never dead still on a hold. */
+  const push = ease(0, 7, EASING.editorial);
 
   return (
-    <AbsoluteFill
+    <div
       style={{
-        backgroundColor,
-        backgroundImage: `radial-gradient(circle at 50% 30%, ${accentColor}18, transparent 50%)`,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        paddingLeft: safeArea.paddingLeft,
-        paddingRight: safeArea.paddingRight,
-        paddingTop: safeArea.paddingTop,
-        paddingBottom: safeArea.paddingBottom,
-        textAlign: "center",
-        gap: scaleFont(16, width),
+        width,
+        height,
+        background: backgroundColor ?? palette.page,
         fontFamily,
         position: "relative",
+        overflow: "hidden",
+        display: "grid",
+        placeItems: "center",
       }}
     >
       <div
         style={{
           position: "absolute",
           inset: 0,
-          background: `radial-gradient(ellipse 90% 28% at 50% 0%, ${accentColor}14, transparent 70%)`,
-          pointerEvents: "none",
+          background: `radial-gradient(ellipse 64% 50% at 50% 46%, ${accentColor}1A, transparent 72%)`,
+          transform: `scale(${interpolate(push, [0, 1], [1, 1.1])})`,
         }}
       />
-      {logoSrc ? (
-        <Img
-          src={logoSrc}
-          style={{
-            width: logoSize ?? scaleFont(96, width),
-            height: logoSize ?? scaleFont(96, width),
-            borderRadius: scaleFont(20, width),
-            opacity: logoEnter,
-            transform: `scale(${0.9 + logoEnter * 0.1})`,
-          }}
-        />
-      ) : null}
-      <h1
+
+      <div
         style={{
-          color: COLORS.title,
-          fontSize: titleSize,
-          fontWeight: 700,
-          margin: 0,
-          lineHeight: 1.08,
-          letterSpacing: "-0.03em",
-          maxWidth,
-          overflowWrap: "break-word",
-          wordBreak: "break-word",
-          opacity: titleEnter,
-          transform: `translateY(${(1 - titleEnter) * scaleFont(20, width)}px)`,
+          position: "relative",
+          width: stage.w,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 20 * u,
+          textAlign: "center",
+          transform: `scale(${interpolate(push, [0, 1], [1, 1.02])})`,
         }}
       >
-        {title}
-      </h1>
-      {subtitle ? (
-        <p
+        {logoSrc ? (
+          <Img
+            src={logoSrc}
+            style={{
+              width: logoSize ?? 70 * u,
+              height: logoSize ?? 70 * u,
+              objectFit: "contain",
+              opacity: logoIn,
+              transform: `translateY(${(1 - logoIn) * 12 * u}px)`,
+            }}
+          />
+        ) : null}
+
+        <h1
           style={{
-            color: accentColor,
-            fontSize: subtitleSize,
             margin: 0,
-            fontWeight: 600,
-            maxWidth,
-            overflowWrap: "break-word",
-            opacity: subtitleEnter,
-            transform: `translateY(${(1 - subtitleEnter) * scaleFont(12, width)}px)`,
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            gap: `${0.08 * fontSize}px ${0.26 * fontSize}px`,
+            color: palette.fg,
+            fontSize,
+            fontWeight: 700,
+            lineHeight: 1.04,
+            letterSpacing: "-0.03em",
           }}
         >
-          {subtitle}
-        </p>
-      ) : null}
-    </AbsoluteFill>
+          {words.map((word, index) => {
+            const wordIn = ease(
+              T.title + index * T.wordStagger,
+              T.title + index * T.wordStagger + 0.5,
+            );
+            return (
+              // Word-level masks: the fitted line assembles instead of scaling
+              // in, which would fight the whole point of fitting it first.
+              <span
+                key={`${word}-${index}`}
+                style={{ display: "block", overflow: "hidden" }}
+              >
+                <span
+                  style={{
+                    display: "block",
+                    transform: `translateY(${(1 - wordIn) * 100}%)`,
+                  }}
+                >
+                  {word}
+                </span>
+              </span>
+            );
+          })}
+        </h1>
+
+        {subtitle ? (
+          <p
+            style={{
+              margin: 0,
+              maxWidth: stage.w * 0.74,
+              color: palette.dim,
+              fontSize: Math.max(fontSize * 0.3, 22 * u),
+              fontWeight: 500,
+              lineHeight: 1.35,
+              opacity: subtitleIn,
+              transform: `translateY(${(1 - subtitleIn) * 12 * u}px)`,
+            }}
+          >
+            {subtitle}
+          </p>
+        ) : null}
+      </div>
+    </div>
   );
 };

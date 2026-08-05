@@ -1,13 +1,23 @@
 ---
 title: Zoom Through
-description: Camera push-through zoom transition for TransitionSeries.
+description: The camera pushes through one scene and lands in the next.
 ---
 
 import { TransitionZoomThroughPreview } from "@/components/previews/transition-zoom-through";
 
 <ComponentPage name="zoom-through" preview={TransitionZoomThroughPreview} durationInFrames={90}>
 
-Exports `transitionZoomThrough()` and `getTransitionZoomThroughDuration()` for use with `TransitionSeries.Transition`.
+Both scenes travel the same way through the lens: the outgoing one keeps
+pushing past it, blurring as it goes, while the incoming one arrives out of the
+same move and settles at exactly 1× — no residual scale is left on the scene
+once the cut is over.
+
+`maxScale` is how far the camera travels, `blurPeak` the blur at full
+displacement, and `direction: "out"` inverts the move so the camera pulls back
+from the frame instead of driving through it.
+
+Exports `transitionZoomThrough()` and `getTransitionZoomThroughDuration()` for
+use with `TransitionSeries.Transition`.
 
 Requires `@remotion/transitions`. Run `npx remotion add @remotion/transitions` if not already installed.
 

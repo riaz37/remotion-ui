@@ -3,31 +3,56 @@ import { useMemo } from "react";
 import { AbsoluteFill, Easing, interpolate } from "remotion";
 import {
   resolveTransitionTiming,
+  transitionPhase,
   type TransitionVariant,
 } from "@/remotion/lib/transition-timing";
-import { EASING_ENTER } from "@/remotion/lib/timing";
 
-export type GridPixelateDirection = "from-left" | "from-top";
+export type GridPixelateOrder =
+  | "from-left"
+  | "from-top"
+  | "diagonal"
+  | "center";
+
+export type GridPixelateShape = "square" | "dot";
 
 export type GridPixelateWipeProps = {
   cols?: number;
   rows?: number;
-  direction?: GridPixelateDirection;
+  /** Which corner or axis the cells light up from. */
+  order?: GridPixelateOrder;
+  shape?: GridPixelateShape;
+  /** 0 pops every cell together; 1 spreads them across the whole window. */
   stagger?: number;
 };
 
+function cellRank(
+  order: GridPixelateOrder,
+  col: number,
+  row: number,
+  cols: number,
+  rows: number,
+): number {
+  const u = cols <= 1 ? 0 : col / (cols - 1);
+  const v = rows <= 1 ? 0 : row / (rows - 1);
+
+  switch (order) {
+    case "from-left":
+      return u;
+    case "from-top":
+      return v;
+    case "diagonal":
+      return (u + v) / 2;
+    case "center":
+      return Math.min(1, Math.hypot(u - 0.5, v - 0.5) / 0.7071);
+  }
+}
+
 function cellOpacity(
   progress: number,
-  order: number,
-  total: number,
+  rank: number,
   stagger: number,
 ): number {
-  if (total <= 1) {
-    return progress;
-  }
-
-  const normalized = order / (total - 1);
-  const revealAt = normalized * stagger;
+  const revealAt = rank * stagger;
   const span = Math.max(1 - stagger, 0.001);
   const raw = Math.min(1, Math.max(0, (progress - revealAt) / span));
 
@@ -42,31 +67,45 @@ function buildGridMask(
   progress: number,
   cols: number,
   rows: number,
-  direction: GridPixelateDirection,
+  order: GridPixelateOrder,
+  shape: GridPixelateShape,
   stagger: number,
 ): string {
-  const easedProgress = interpolate(progress, [0, 1], [0, 1], {
-    easing: EASING_ENTER,
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const total = cols * rows;
   const cellW = 100 / cols;
   const cellH = 100 / rows;
-  const rects: string[] = [];
+  const cells: string[] = [];
 
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
-      const order =
-        direction === "from-left" ? row * cols + col : col * rows + row;
-      const opacity = cellOpacity(easedProgress, order, total, stagger);
-      rects.push(
-        `<rect x="${col * cellW}%" y="${row * cellH}%" width="${cellW}%" height="${cellH}%" fill="white" fill-opacity="${opacity.toFixed(3)}"/>`,
+      const opacity = cellOpacity(
+        progress,
+        cellRank(order, col, row, cols, rows),
+        stagger,
+      );
+
+      if (opacity < 0.004) {
+        continue;
+      }
+
+      const alpha = opacity.toFixed(3);
+
+      if (shape === "dot") {
+        // The dot grows with its own reveal, so the frame fills in as a field
+        // of expanding points rather than a grid of fading squares.
+        const r = (Math.min(cellW, cellH) / 2) * opacity;
+        cells.push(
+          `<circle cx="${(col + 0.5) * cellW}" cy="${(row + 0.5) * cellH}" r="${r.toFixed(3)}" fill="white" fill-opacity="${alpha}"/>`,
+        );
+        continue;
+      }
+
+      cells.push(
+        `<rect x="${col * cellW}" y="${row * cellH}" width="${cellW}" height="${cellH}" fill="white" fill-opacity="${alpha}"/>`,
       );
     }
   }
 
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none">${rects.join("")}</svg>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none">${cells.join("")}</svg>`;
   return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
 }
 
@@ -78,33 +117,45 @@ const GridPixelateWipePresentation: React.FC<
   children,
   presentationProgress,
   presentationDirection,
-  passedProps: { cols = 12, rows = 8, direction = "from-left", stagger = 0.82 },
+  passedProps: {
+    cols = 12,
+    rows = 8,
+    order = "from-left",
+    shape = "square",
+    stagger = 0.82,
+  },
 }) => {
-  const progress =
-    presentationDirection === "entering"
-      ? presentationProgress
-      : 1 - presentationProgress;
+  const phase = transitionPhase(presentationProgress, presentationDirection, {
+    lead: 1,
+  });
+  const filled = 1 - phase.displace;
 
-  const style = useMemo(
-    () => ({
-      WebkitMaskImage: buildGridMask(progress, cols, rows, direction, stagger),
-      maskImage: buildGridMask(progress, cols, rows, direction, stagger),
+  const style = useMemo(() => {
+    // Only the arriving scene is masked. Masking the outgoing one as well
+    // would leave both partly transparent mid-cut and show the background
+    // through the gaps between cells.
+    if (!phase.isEntering) {
+      return undefined;
+    }
+
+    // Built once and handed to both mask properties — the previous version
+    // called this twice per frame for identical output.
+    const mask = buildGridMask(filled, cols, rows, order, shape, stagger);
+
+    return {
+      WebkitMaskImage: mask,
+      maskImage: mask,
       WebkitMaskSize: "100% 100%",
       maskSize: "100% 100%",
       WebkitMaskRepeat: "no-repeat",
       maskRepeat: "no-repeat",
-      opacity: interpolate(progress, [0, 0.15, 1], [0.35, 0.85, 1], {
-        extrapolateLeft: "clamp",
-        extrapolateRight: "clamp",
-      }),
-    }),
-    [cols, direction, progress, rows, stagger],
-  );
+    };
+  }, [cols, filled, order, phase.isEntering, rows, shape, stagger]);
 
   return <AbsoluteFill style={style}>{children}</AbsoluteFill>;
 };
 
-/** Grid cell opacity stagger wipe presentation for TransitionSeries */
+/** Grid cell stagger wipe presentation for TransitionSeries */
 export function gridPixelateWipe(
   props: GridPixelateWipeProps = {},
 ): TransitionPresentation<GridPixelateWipeProps> {
@@ -118,7 +169,8 @@ export type TransitionGridPixelateWipeConfig = {
   durationInFrames?: number;
   cols?: number;
   rows?: number;
-  direction?: GridPixelateDirection;
+  order?: GridPixelateOrder;
+  shape?: GridPixelateShape;
   stagger?: number;
   variant?: TransitionVariant;
 };
@@ -128,12 +180,13 @@ export function transitionGridPixelateWipe({
   durationInFrames = 26,
   cols = 12,
   rows = 8,
-  direction = "from-left",
+  order = "from-left",
+  shape = "square",
   stagger = 0.82,
   variant = "editorial",
 }: TransitionGridPixelateWipeConfig = {}) {
   return {
-    presentation: gridPixelateWipe({ cols, rows, direction, stagger }),
+    presentation: gridPixelateWipe({ cols, rows, order, shape, stagger }),
     timing: resolveTransitionTiming({ durationInFrames, variant }),
   };
 }

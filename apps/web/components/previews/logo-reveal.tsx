@@ -8,9 +8,8 @@ export const LogoRevealPreview: React.FC = () => (
   <ScenePreviewPlate direct>
     <LogoReveal
       pathD={DEMO_LOGO_PATH}
-      width={220}
-      height={220}
-      viewBox="0 0 200 200"
+      wordmark="Remotion UI"
+      tagline="Copy-paste motion components"
     />
   </ScenePreviewPlate>
 );

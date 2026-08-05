@@ -1,12 +1,14 @@
 ---
 title: Counter
-description: Animated number counter.
+description: Animated number with grouping, decimals, an odometer roll and a reserved width.
 ---
 
 import { CounterPreview } from '@/components/previews/counter';
 
-<ComponentPage name="counter" preview={CounterPreview} durationInFrames={90}>
+<ComponentPage name="counter" preview={CounterPreview}>
 
-Animated number counter.
+Ramps from `from` to `to` on an ease-out, so the number decelerates into its landing instead of arriving at constant speed.
+
+The width is reserved from the longest value the ramp can produce, so a centred number never reflows the line around it. `roll` turns each digit like an odometer: the ones column spins continuously and every column above it waits for a carry.
 
 </ComponentPage>

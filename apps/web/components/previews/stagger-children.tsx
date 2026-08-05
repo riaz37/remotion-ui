@@ -1,68 +1,61 @@
 "use client";
 
-import { Sequence } from "remotion";
-import { FadeIn, StaggerChildren } from "../registry-exports";
+import { SlideUp, StaggerChildren } from "../registry-exports";
 import { DEMO_COPY } from "@/lib/demo-assets";
-import { PreviewFrame, ProductCard } from "./preview-frame";
+import { PreviewFrame, PreviewKicker } from "./preview-frame";
+import { usePreviewStage } from "./preview-stage";
 
-const staggerBeats = [
-  {
-    kicker: DEMO_COPY.productLaunch.subtitle,
-    title: DEMO_COPY.productLaunch.title,
-    detail: DEMO_COPY.productLaunch.featureItems[0],
-  },
-  {
-    kicker: DEMO_COPY.productLaunch.featureTitle,
-    title: DEMO_COPY.productLaunch.featureItems[1],
-    detail: DEMO_COPY.tutorial.calloutSubtitle,
-  },
-];
+const rows = DEMO_COPY.productLaunch.featureItems;
 
-export const StaggerChildrenPreview: React.FC = () => (
-  <PreviewFrame lane="atoms">
-    <div style={{ display: "grid", placeItems: "center", transform: "scale(0.8)" }}>
-      <div
+const Row: React.FC<{ index: number; label: string }> = ({ index, label }) => {
+  const tokens = usePreviewStage();
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 24,
+        width: 640,
+        padding: "26px 32px",
+        borderRadius: 8,
+        background: tokens.panelFill,
+        border: `1px solid ${tokens.panelBorder}`,
+      }}
+    >
+      <span
         style={{
-          gridArea: "1 / 1",
-          display: "flex",
-          flexDirection: "column",
-          gap: 14,
-          alignItems: "center",
-          opacity: 0.18,
+          color: tokens.muted,
+          fontSize: 26,
+          fontVariantNumeric: "tabular-nums",
         }}
       >
-        {staggerBeats.map((beat) => (
-          <ProductCard
-            key={`ghost-${beat.title}`}
-            kicker={beat.kicker}
-            title={beat.title}
-            detail={beat.detail}
-          />
-        ))}
-      </div>
-      <div style={{ gridArea: "1 / 1" }}>
-        <Sequence from={8} layout="none">
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 14,
-              alignItems: "center",
-            }}
-          >
-            <StaggerChildren staggerInFrames={12}>
-              {staggerBeats.map((beat) => (
-                <FadeIn key={beat.title} durationInFrames={20}>
-                  <ProductCard
-                    kicker={beat.kicker}
-                    title={beat.title}
-                    detail={beat.detail}
-                  />
-                </FadeIn>
-              ))}
-            </StaggerChildren>
-          </div>
-        </Sequence>
+        {String(index + 1).padStart(2, "0")}
+      </span>
+      <span style={{ color: tokens.ink, fontSize: 32, fontWeight: 500 }}>
+        {label}
+      </span>
+    </div>
+  );
+};
+
+/** Rows arrive in order and leave in the same order — one wave, both ways. */
+export const StaggerChildrenPreview: React.FC = () => (
+  <PreviewFrame lane="atoms">
+    <div style={{ display: "grid", gap: 26, justifyItems: "center" }}>
+      <PreviewKicker>{DEMO_COPY.productLaunch.featureTitle}</PreviewKicker>
+      <div style={{ display: "grid", gap: 14 }}>
+        <StaggerChildren
+          staggerInFrames={9}
+          baseDelayInFrames={8}
+          exitStaggerInFrames={6}
+        >
+          {rows.map((label, index) => (
+            <SlideUp key={label} durationInFrames={22} distance={28} exit>
+              <Row index={index} label={label} />
+            </SlideUp>
+          ))}
+        </StaggerChildren>
       </div>
     </div>
   </PreviewFrame>

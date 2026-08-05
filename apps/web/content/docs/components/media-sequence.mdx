@@ -1,12 +1,17 @@
 ---
 title: Media Sequence
-description: Timed media slideshow with transitions.
+description: An edited run of shots with a chapter strip showing where you are.
 ---
 
 import { MediaSequencePreview } from '@/components/previews/media-sequence';
 
-<ComponentPage name="media-sequence" preview={MediaSequencePreview} durationInFrames={186}>
+<ComponentPage name="media-sequence" preview={MediaSequencePreview} durationInFrames={210}>
 
-Sequence multiple media items with consistent framing and fade transitions.
+Each item is pushed on by the next through a `TransitionSeries` of
+[Media Frame](/docs/components/media-frame), and a chapter strip along the foot
+fills through the item that is playing and stays filled behind it.
+
+Set `transition` to `fade` for a dissolve instead of a push, `showProgress` to
+drop the strip, and per-item `durationInFrames` to hold a shot longer.
 
 </ComponentPage>

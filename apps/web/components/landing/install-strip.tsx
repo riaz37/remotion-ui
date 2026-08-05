@@ -5,7 +5,7 @@ const STEPS = [
   {
     step: 1,
     label: "Initialize",
-    command: "npx remotion-ui@latest init my-video --starter social",
+    command: "npx remotion-ui@latest init my-video",
     showPmTabs: true,
   },
   {
@@ -24,8 +24,9 @@ export function InstallStrip() {
   return (
     <LandingSection
       title="Render queue"
-      lead="Init a project, add a composition, export an MP4 — three CLI steps, no editor required."
+      lead="Init a project, add a composition, export an MP4. Three CLI steps, no editor required."
       layout="bin"
+      rhythm="tight"
     >
       <RenderQueueBay steps={STEPS} outputPath="out/social-clip.mp4" />
     </LandingSection>

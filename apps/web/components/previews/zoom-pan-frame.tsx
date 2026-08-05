@@ -6,6 +6,11 @@ import { ScenePreviewPlate } from "./scene-preview-plate";
 
 export const ZoomPanFramePreview: React.FC = () => (
   <ScenePreviewPlate direct>
-    <ZoomPanFrame src={DEMO_MEDIA_SRC} toScale={1.28} toX={-80} toY={36} />
+    <ZoomPanFrame
+      src={DEMO_MEDIA_SRC}
+      from={{ x: 0.5, y: 0.5, scale: 1.02 }}
+      to={{ x: 0.38, y: 0.4, scale: 1.2 }}
+      label="Dashboard · 00:12"
+    />
   </ScenePreviewPlate>
 );

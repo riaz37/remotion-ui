@@ -89,6 +89,9 @@ Thumbs.db
 IDENTITY.md
 STUDIO-DESIGN.md
 
+# Local marketing/launch assets
+launch-screenshots/
+
 # Misc
 *.tgz
 .cache/
@@ -96,3 +99,4 @@ tmp/
 temp/
 var/
 
+.gstack/

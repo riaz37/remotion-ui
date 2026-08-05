@@ -51,6 +51,15 @@ export function laneAccent(lane: AtlasLane): string {
   return `oklch(0.55 0.06 ${hue})`;
 }
 
+/**
+ * Low-alpha lane wash. Used where a lane needs to tint a surface that still
+ * carries foreground text, so it has to read in both themes.
+ */
+export function laneTint(lane: AtlasLane, alpha = 0.16): string {
+  const { hue } = LANE_VISUALS[lane];
+  return `oklch(0.62 0.13 ${hue} / ${alpha})`;
+}
+
 export function laneAccentMuted(lane: AtlasLane): string {
   const { hue } = LANE_VISUALS[lane];
   return `oklch(0.22 0.03 ${hue})`;

@@ -1,14 +1,16 @@
 ---
 title: Typewriter
-description: Character-by-character text reveal with natural rhythm, punctuation pauses, inline pause markers, looping, and a configurable cursor.
+description: Typewriter reveal with rhythm, pauses, looping, and a caret that only blinks at rest.
 ---
 
 import { TypewriterPreview } from '@/components/previews/typewriter';
 
-<ComponentPage name="typewriter" preview={TypewriterPreview} durationInFrames={120}>
+<ComponentPage name="typewriter" preview={TypewriterPreview}>
 
-Character-by-character text reveal with natural rhythm, punctuation pauses, inline pause markers, looping, and a configurable cursor.
+Types a string out under a live caret.
 
-Use `[pause:0.5]` inside `text` to add dramatic pauses at any point. Enable `humanize` for subtle speed variation and `respectPunctuation` for automatic pauses after sentence punctuation.
+The caret holds solid while keys are landing and only blinks once it rests — a caret that blinks mid-word looks like a loading state, not typing. The full block is measured up front, so a wrapping line does not shunt everything under it down a row mid-sentence.
+
+Use `[pause:0.5]` inside `text` to hold at any point. `humanize` varies the key rhythm, `respectPunctuation` rests on sentence punctuation, and `loop` types, holds, deletes and repeats.
 
 </ComponentPage>

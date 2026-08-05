@@ -1,12 +1,17 @@
 ---
 title: Lower Third
-description: Polished Remotion lower third overlay for names and titles. Install with npx remotion-ui@latest add lower-third.
+description: A name plate that wipes on, holds, and retreats the way it came.
 ---
 
 import { LowerThirdPreview } from '@/components/previews/lower-third';
 
-<ComponentPage name="lower-third" preview={LowerThirdPreview} durationInFrames={60}>
+<ComponentPage name="lower-third" preview={LowerThirdPreview} durationInFrames={150}>
 
-Compact transparent overlay for speaker names, roles, and chapter identifiers. Use `align="right"` for right-side interview framing.
+The plate wipes out from the frame edge, the name rises out of its own mask, the
+role and badge settle — and with `holdSeconds` set it retreats the same way
+instead of being left standing for the rest of the cut.
+
+`align` picks the edge it comes from. Overlay it on footage with an
+`AbsoluteFill`; it renders nothing but the plate.
 
 </ComponentPage>

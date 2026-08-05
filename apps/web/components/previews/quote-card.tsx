@@ -8,8 +8,9 @@ export const QuoteCardPreview: React.FC = () => (
   <ScenePreviewPlate direct>
     <QuoteCard
       quote={DEMO_COPY.quote.text}
-      highlightWord="motion"
+      emphasis="motion"
       author={DEMO_COPY.quote.attribution}
+      role="Head of Video, Northwind"
     />
   </ScenePreviewPlate>
 );

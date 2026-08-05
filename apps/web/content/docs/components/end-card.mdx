@@ -1,12 +1,17 @@
 ---
 title: End Card
-description: Closing CTA scene with title, button text, and URL.
+description: The outro, built in the order a viewer acts on it.
 ---
 
 import { EndCardPreview } from '@/components/previews/end-card';
 
-<ComponentPage name="end-card" preview={EndCardPreview} durationInFrames={60}>
+<ComponentPage name="end-card" preview={EndCardPreview} durationInFrames={150}>
 
-Uses `scale-in` and `fade-in` for a polished outro.
+The title rises out of its mask, the button assembles and its label rises out of
+the button, the address types underneath a caret that clears when it completes,
+the channels list, and a single ring pulses off the button.
+
+`cta`, `url`, `handles`, `logoSrc`, `eyebrow` and `subtitle` are each optional —
+omit them and the card ends on what is left.
 
 </ComponentPage>

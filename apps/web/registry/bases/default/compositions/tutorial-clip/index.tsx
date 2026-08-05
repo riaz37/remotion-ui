@@ -31,6 +31,9 @@ export type TutorialClipProps = {
   title?: string;
   subtitle?: string;
   mediaSrc: string;
+  /** Pixel size `calloutTarget` was measured against. Defaults to 1280x720. */
+  mediaWidth?: number;
+  mediaHeight?: number;
   calloutTitle?: string;
   calloutSubtitle?: string;
   calloutTarget?: SpotlightTarget;
@@ -45,9 +48,11 @@ export const TutorialClip: React.FC<TutorialClipProps> = ({
   title = "Walkthrough clip",
   subtitle = "Demo the flow, spotlight the action, show the command",
   mediaSrc,
+  mediaWidth = 1280,
+  mediaHeight = 720,
   calloutTitle = "Spotlight the control",
   calloutSubtitle = "One callout keeps the frame readable.",
-  calloutTarget = { x: 520, y: 260, width: 520, height: 300 },
+  calloutTarget = { x: 470, y: 280, width: 340, height: 200 },
   code = `npx remotion-ui add media-frame\nnpx remotion-ui add callout-spotlight\nnpx remotion-ui add code-reveal`,
   ctaTitle,
   ctaLabel,
@@ -73,20 +78,33 @@ export const TutorialClip: React.FC<TutorialClipProps> = ({
       <TransitionSeries.Transition {...fade} />
       <TransitionSeries.Sequence durationInFrames={SCENE.callout}>
         <CalloutSpotlight
+          // The whole aim-and-callout beat has to fit a 64-frame window.
+          speed={1.7}
           title={calloutTitle}
           subtitle={calloutSubtitle}
           backgroundSrc={mediaSrc}
           target={calloutTarget}
+          sourceWidth={mediaWidth}
+          sourceHeight={mediaHeight}
           backgroundColor={COLORS.calloutBg}
         />
       </TransitionSeries.Sequence>
       <TransitionSeries.Transition {...fade} />
       <TransitionSeries.Sequence durationInFrames={SCENE.code}>
-        <CodeReveal code={code} highlightedLines={[2]} backgroundColor={COLORS.codeBg} />
+        <CodeReveal
+          code={code}
+          highlightedLines={[3]}
+          title="install.sh"
+          language="bash"
+          backgroundColor={COLORS.codeBg}
+          accentColor={COLORS.hookAccent}
+          speed={1.6}
+        />
       </TransitionSeries.Sequence>
       <TransitionSeries.Transition {...fade} />
       <TransitionSeries.Sequence durationInFrames={SCENE.end}>
         <EndCard
+          speed={1.4}
           title={ctaTitle ?? title}
           cta={ctaLabel}
           backgroundColor={COLORS.endBg}

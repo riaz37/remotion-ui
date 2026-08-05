@@ -1,12 +1,14 @@
 ---
 title: Hero Loop
-description: 15-second looping website hero composition.
+description: 12-second seamless-looping website hero composition.
 ---
 
 import { HeroLoopPreview } from "@/components/previews/hero-loop";
 
-<ComponentPage name="hero-loop" preview={HeroLoopPreview} durationInFrames={450}>
+<ComponentPage name="hero-loop" preview={HeroLoopPreview} durationInFrames={360}>
 
-A silent 1920×1080 hero video that demonstrates RemotionUI primitives in the motion itself: CLI typing, counters, staggered primitive pills, code imports, and a loop-safe CTA.
+A silent 1920×1080 hero composition built to run on loop forever. Four beats — title, install, catalog, render queue — and the last frame resolves back into frame 0, so the wrap is invisible.
+
+It demonstrates the primitives it depends on inside the motion itself: `Typewriter` for the CLI line, `Counter` for the registry count, `StaggerChildren` + `SpringIn` for the component clips, `SlideUp` and `FadeIn`/`FadeOut` for the beat transitions. Every size is derived from `useVideoConfig()` through `scaleFont` and `getSafeAreaPadding`, so it holds at 1920×1080, 1280×720, and square or portrait crops.
 
 </ComponentPage>

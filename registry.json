@@ -59,16 +59,44 @@
       "name": "ai-composer-utils",
       "type": "registry:lib",
       "title": "Ai Composer Utils",
-      "description": "Shared typing, morph, and intro helpers for AI composer scenes",
+      "description": "Shared typewriter, caret, morph, and intro helpers for AI composer scenes",
       "dependencies": [
         "remotion"
       ],
-      "registryDependencies": [
-        "springs"
-      ],
+      "registryDependencies": [],
       "files": [
         {
           "path": "apps/web/registry/bases/default/lib/ai-composer-utils.tsx",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "code-syntax",
+      "type": "registry:lib",
+      "title": "Code Syntax",
+      "description": "Syntax tokenizer, editor palettes, and revealable code line renderer for the code scenes",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "apps/web/registry/bases/default/lib/code-syntax.tsx",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "text-emphasis",
+      "type": "registry:lib",
+      "title": "Text Emphasis",
+      "description": "Word-level phrase matching and marker geometry for scenes that sweep emphasis across text",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "apps/web/registry/bases/default/lib/text-emphasis.ts",
           "type": "registry:lib"
         }
       ]
@@ -121,6 +149,25 @@
       ]
     },
     {
+      "name": "motion-primitive",
+      "type": "registry:lib",
+      "title": "Motion Primitive",
+      "description": "Enter/exit motion contract shared by the animation primitives — opacity leads, exits are shorter, and a bounded Sequence times the exit itself",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "springs",
+        "timing"
+      ],
+      "files": [
+        {
+          "path": "apps/web/registry/bases/default/lib/motion-primitive.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "use-stagger",
       "type": "registry:hook",
       "title": "Use Stagger",
@@ -142,12 +189,12 @@
       "name": "fade-in",
       "type": "registry:ui",
       "title": "Fade In",
-      "description": "Fade in animation primitive",
+      "description": "Opacity-only entrance, with an exit that lands on the end of its sequence",
       "dependencies": [
         "remotion"
       ],
       "registryDependencies": [
-        "timing",
+        "motion-primitive",
         "motion-wrapper"
       ],
       "files": [
@@ -161,13 +208,13 @@
       "name": "fade-out",
       "type": "registry:ui",
       "title": "Fade Out",
-      "description": "Fade out animation primitive",
+      "description": "Held exit that accelerates away, timed to the last frame of its sequence by default",
       "dependencies": [
         "remotion"
       ],
       "registryDependencies": [
-        "timing",
-        "motion-wrapper"
+        "motion-wrapper",
+        "timing"
       ],
       "files": [
         {
@@ -180,13 +227,14 @@
       "name": "slide-up",
       "type": "registry:ui",
       "title": "Slide Up",
-      "description": "Slide up with fade animation",
+      "description": "Rise into place, with an optional mask reveal and automatic exit",
       "dependencies": [
         "remotion"
       ],
       "registryDependencies": [
-        "timing",
-        "motion-wrapper"
+        "motion-primitive",
+        "motion-wrapper",
+        "layout"
       ],
       "files": [
         {
@@ -199,13 +247,14 @@
       "name": "slide-left",
       "type": "registry:ui",
       "title": "Slide Left",
-      "description": "Slide left with fade animation",
+      "description": "Slide in from either side, with an optional mask reveal and automatic exit",
       "dependencies": [
         "remotion"
       ],
       "registryDependencies": [
-        "timing",
-        "motion-wrapper"
+        "motion-primitive",
+        "motion-wrapper",
+        "layout"
       ],
       "files": [
         {
@@ -218,12 +267,12 @@
       "name": "scale-in",
       "type": "registry:ui",
       "title": "Scale In",
-      "description": "Scale in with fade animation",
+      "description": "Grow into place from just under full size, with an optional spring and exit",
       "dependencies": [
         "remotion"
       ],
       "registryDependencies": [
-        "timing",
+        "motion-primitive",
         "motion-wrapper"
       ],
       "files": [
@@ -237,11 +286,14 @@
       "name": "typewriter",
       "type": "registry:ui",
       "title": "Typewriter",
-      "description": "Typewriter text reveal with rhythm, punctuation pauses, inline pause markers, looping, and configurable cursor",
+      "description": "Typewriter reveal with rhythm, pauses, looping, and a caret that only blinks at rest",
       "dependencies": [
         "remotion"
       ],
-      "registryDependencies": [],
+      "registryDependencies": [
+        "layout",
+        "timing"
+      ],
       "files": [
         {
           "path": "apps/web/registry/bases/default/primitives/typewriter.tsx",
@@ -253,12 +305,14 @@
       "name": "counter",
       "type": "registry:ui",
       "title": "Counter",
-      "description": "Animated number counter",
+      "description": "Animated number with grouping, decimals, odometer digit roll and a reserved width",
       "dependencies": [
         "remotion"
       ],
       "registryDependencies": [
-        "timing"
+        "motion-primitive",
+        "timing",
+        "layout"
       ],
       "files": [
         {
@@ -271,12 +325,12 @@
       "name": "blur-in",
       "type": "registry:ui",
       "title": "Blur In",
-      "description": "Blur in with fade animation",
+      "description": "Resolve out of a defocus — blur clears before the move lands",
       "dependencies": [
         "remotion"
       ],
       "registryDependencies": [
-        "timing",
+        "motion-primitive",
         "motion-wrapper"
       ],
       "files": [
@@ -290,13 +344,14 @@
       "name": "spring-in",
       "type": "registry:ui",
       "title": "Spring In",
-      "description": "Spring scale-in animation",
+      "description": "Spring-driven scale and rise, with snappy, smooth and bouncy presets",
       "dependencies": [
         "remotion"
       ],
       "registryDependencies": [
-        "springs",
-        "motion-wrapper"
+        "motion-primitive",
+        "motion-wrapper",
+        "layout"
       ],
       "files": [
         {
@@ -309,13 +364,13 @@
       "name": "stagger-children",
       "type": "registry:ui",
       "title": "Stagger Children",
-      "description": "Stagger delayInFrames across children",
+      "description": "Offset children onto their own sequences, in forward, reverse, centre or edge order, in and out",
       "dependencies": [
         "remotion"
       ],
       "registryDependencies": [
-        "timing",
-        "layout"
+        "motion-primitive",
+        "timing"
       ],
       "files": [
         {
@@ -328,13 +383,14 @@
       "name": "marker-highlight",
       "type": "registry:ui",
       "title": "Marker Highlight",
-      "description": "Highlighter-pen-style wipe animation behind the target word",
+      "description": "Highlighter stroke swept word by word across a phrase, with marker, knockout, underline and box variants",
       "dependencies": [
         "remotion"
       ],
       "registryDependencies": [
         "layout",
-        "springs"
+        "motion-tokens",
+        "text-emphasis"
       ],
       "files": [
         {
@@ -347,11 +403,13 @@
       "name": "progress-bar",
       "type": "registry:ui",
       "title": "Progress Bar",
-      "description": "Animated progress bar",
+      "description": "Inline progress bar with determinate and indeterminate modes, segments and a value readout",
       "dependencies": [
         "remotion"
       ],
       "registryDependencies": [
+        "motion-primitive",
+        "motion-tokens",
         "timing",
         "layout"
       ],
@@ -366,12 +424,12 @@
       "name": "rotate-in",
       "type": "registry:ui",
       "title": "Rotate In",
-      "description": "Rotate in with fade animation",
+      "description": "Swing into place in plane or hinged in depth on the x/y axis",
       "dependencies": [
         "remotion"
       ],
       "registryDependencies": [
-        "timing",
+        "motion-primitive",
         "motion-wrapper"
       ],
       "files": [
@@ -423,14 +481,15 @@
       "name": "lower-third",
       "type": "registry:block",
       "title": "Lower Third",
-      "description": "Polished lower third name and subtitle overlay",
+      "description": "Name plate that plays its whole life: wipes out from the frame edge, settles, holds, then retreats the way it came",
       "dependencies": [
         "remotion",
         "@remotion/google-fonts"
       ],
       "registryDependencies": [
-        "motion-tokens",
-        "layout"
+        "code-syntax",
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -443,14 +502,15 @@
       "name": "title-card",
       "type": "registry:block",
       "title": "Title Card",
-      "description": "Centered title card scene",
+      "description": "Opening card where each headline line rises out of its own mask and one sweep of light crosses it as it stands",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/google-fonts"
       ],
       "registryDependencies": [
-        "fade-in",
-        "scale-in",
-        "layout"
+        "code-syntax",
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -463,11 +523,13 @@
       "name": "feature-list",
       "type": "registry:block",
       "title": "Feature List",
-      "description": "Staggered feature bullet list",
+      "description": "List being ticked off: each row arrives in turn, its rule draws across, and its check strokes in behind it",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/google-fonts"
       ],
       "registryDependencies": [
+        "code-syntax",
         "layout",
         "motion-tokens"
       ],
@@ -482,14 +544,15 @@
       "name": "stat-card",
       "type": "registry:block",
       "title": "Stat Card",
-      "description": "Animated stat with counter",
+      "description": "A number landing: the ring fills while the counter rolls, then the label and the change against the last period settle",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/google-fonts"
       ],
       "registryDependencies": [
-        "counter",
-        "spring-in",
-        "layout"
+        "code-syntax",
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -502,14 +565,16 @@
       "name": "quote-card",
       "type": "registry:block",
       "title": "Quote Card",
-      "description": "Quote with highlighted word",
+      "description": "Pull quote read aloud: the mark draws, the quote rises line by line, a marker sweeps the phrase, the attribution lands last",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/google-fonts"
       ],
       "registryDependencies": [
-        "marker-highlight",
-        "fade-in",
-        "layout"
+        "code-syntax",
+        "layout",
+        "motion-tokens",
+        "text-emphasis"
       ],
       "files": [
         {
@@ -522,14 +587,15 @@
       "name": "end-card",
       "type": "registry:block",
       "title": "End Card",
-      "description": "End card with CTA",
+      "description": "Outro built in the order a viewer acts on it: title, button assembling under its label, address typing, channels, one pulse",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/google-fonts"
       ],
       "registryDependencies": [
-        "scale-in",
-        "fade-in",
-        "layout"
+        "code-syntax",
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1160,14 +1226,15 @@
       "name": "auto-fit-title",
       "type": "registry:block",
       "title": "Auto Fit Title",
-      "description": "Headline that auto-scales to fit safe area",
+      "description": "Headline sized to the frame it is given, then assembled word by word so any length lands the same way",
       "dependencies": [
         "remotion",
         "@remotion/google-fonts"
       ],
       "registryDependencies": [
-        "fade-in",
+        "code-syntax",
         "layout",
+        "motion-tokens",
         "text-fit-utils"
       ],
       "files": [
@@ -1339,14 +1406,17 @@
       "name": "media-frame",
       "type": "registry:block",
       "title": "Media Frame",
-      "description": "Safe framed image or video scene",
+      "description": "One piece of media presented: the frame opens like a shutter under a slow push, then the title masks up and the caption settles",
       "dependencies": [
         "remotion",
+        "@remotion/google-fonts",
         "@remotion/media"
       ],
       "registryDependencies": [
+        "code-syntax",
+        "layout",
         "media-utils",
-        "layout"
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1359,16 +1429,20 @@
       "name": "media-sequence",
       "type": "registry:block",
       "title": "Media Sequence",
-      "description": "Timed media slideshow with transitions",
+      "description": "Edited run of shots pushed on one after another, with a chapter strip that fills through the item playing",
       "dependencies": [
         "remotion",
-        "@remotion/media",
+        "@remotion/google-fonts",
         "@remotion/transitions"
       ],
       "registryDependencies": [
-        "media-frame",
+        "code-syntax",
+        "layout",
         "media-utils",
-        "transition-fade"
+        "motion-tokens",
+        "media-frame",
+        "transition-fade",
+        "transition-slide"
       ],
       "files": [
         {
@@ -1381,14 +1455,17 @@
       "name": "split-screen",
       "type": "registry:block",
       "title": "Split Screen",
-      "description": "Two-up media comparison layout",
+      "description": "Before/after that is actually made: panels meet at the divider, labels land, and the divider can travel across to leave one side whole",
       "dependencies": [
         "remotion",
+        "@remotion/google-fonts",
         "@remotion/media"
       ],
       "registryDependencies": [
+        "code-syntax",
+        "layout",
         "media-utils",
-        "layout"
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1401,12 +1478,14 @@
       "name": "b-roll-stack",
       "type": "registry:block",
       "title": "B Roll Stack",
-      "description": "Layered b-roll media stack",
+      "description": "Deck of supporting shots dealt one at a time: each rides to the front with its label while the last slides back into the stack",
       "dependencies": [
-        "@remotion/media",
-        "remotion"
+        "remotion",
+        "@remotion/google-fonts",
+        "@remotion/media"
       ],
       "registryDependencies": [
+        "code-syntax",
         "layout",
         "media-utils",
         "motion-tokens"
@@ -1422,13 +1501,15 @@
       "name": "caption-bumper",
       "type": "registry:block",
       "title": "Caption Bumper",
-      "description": "Large quote or caption emphasis scene",
+      "description": "Between-beats card that punches its line in word by word, draws a rule under it, and wipes out when its hold is over",
       "dependencies": [
         "remotion",
-        "@remotion/layout-utils"
+        "@remotion/google-fonts"
       ],
       "registryDependencies": [
+        "code-syntax",
         "layout",
+        "motion-tokens",
         "text-fit-utils"
       ],
       "files": [
@@ -1480,12 +1561,15 @@
       "name": "timeline-steps",
       "type": "registry:block",
       "title": "Timeline Steps",
-      "description": "Sequenced process timeline scene",
+      "description": "Process walked step by step: the rail draws ahead of a travelling head that lands on each step, works it through a closing ring, then checks it off",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/google-fonts"
       ],
       "registryDependencies": [
-        "layout"
+        "code-syntax",
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1498,12 +1582,15 @@
       "name": "callout-spotlight",
       "type": "registry:block",
       "title": "Callout Spotlight",
-      "description": "Spotlight callout overlay for product demos",
+      "description": "Spotlight that is aimed: the mask closes from the whole frame onto the target, a ring pings it, then a connector draws out to the callout",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/google-fonts"
       ],
       "registryDependencies": [
-        "layout"
+        "code-syntax",
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1516,11 +1603,18 @@
       "name": "zoom-pan-frame",
       "type": "registry:block",
       "title": "Zoom Pan Frame",
-      "description": "Deterministic zoom and pan media frame",
+      "description": "Camera move on a still driven by focal points, settling before the cut, with an optional label chip",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/google-fonts",
+        "@remotion/media"
       ],
-      "registryDependencies": [],
+      "registryDependencies": [
+        "code-syntax",
+        "layout",
+        "media-utils",
+        "motion-tokens"
+      ],
       "files": [
         {
           "path": "apps/web/registry/bases/default/scenes/zoom-pan-frame/index.tsx",
@@ -1532,12 +1626,15 @@
       "name": "code-reveal",
       "type": "registry:block",
       "title": "Code Reveal",
-      "description": "Progressive code reveal with highlighted lines",
+      "description": "Editor window that writes a syntax-highlighted file character by character, then focuses the lines that matter",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/google-fonts"
       ],
       "registryDependencies": [
-        "layout"
+        "ai-composer-utils",
+        "code-syntax",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1550,12 +1647,16 @@
       "name": "hook-card",
       "type": "registry:block",
       "title": "Hook Card",
-      "description": "Short-form opener scene for creator clips",
+      "description": "Short-form opener where the hook rises line by line out of its mask and an underline draws under the promise",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/google-fonts"
       ],
       "registryDependencies": [
-        "layout"
+        "code-syntax",
+        "layout",
+        "motion-tokens",
+        "text-emphasis"
       ],
       "files": [
         {
@@ -1568,14 +1669,17 @@
       "name": "talking-head-layout",
       "type": "registry:block",
       "title": "Talking Head Layout",
-      "description": "Caption-safe creator layout for speaker clips",
+      "description": "Talking-head clip frame that opens on the speaker, slides a name plate out from behind it, and plays the spoken lines in a reserved caption zone with the waveform reacting",
       "dependencies": [
         "remotion",
-        "@remotion/media"
+        "@remotion/media",
+        "@remotion/google-fonts"
       ],
       "registryDependencies": [
+        "code-syntax",
         "layout",
         "media-utils",
+        "motion-tokens",
         "waveform-line"
       ],
       "files": [
@@ -1589,12 +1693,16 @@
       "name": "comment-callout",
       "type": "registry:block",
       "title": "Comment Callout",
-      "description": "Animated viewer comment or Q&A prompt scene",
+      "description": "Viewer comment answered on screen: it lands from the feed, the ask is marked up, the creator hearts it, and the reply is typed and sent",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/google-fonts"
       ],
       "registryDependencies": [
-        "layout"
+        "ai-composer-utils",
+        "code-syntax",
+        "motion-tokens",
+        "text-emphasis"
       ],
       "files": [
         {
@@ -1916,12 +2024,14 @@
       "name": "terminal-simulator",
       "type": "registry:block",
       "title": "Terminal Simulator",
-      "description": "CLI build log simulation with progress bar",
+      "description": "Terminal window that types a command, streams spinner-to-check build steps with timings, then returns the prompt",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/google-fonts"
       ],
       "registryDependencies": [
-        "layout"
+        "ai-composer-utils",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1934,12 +2044,15 @@
       "name": "code-accordion",
       "type": "registry:block",
       "title": "Code Accordion",
-      "description": "Collapsible code block with expanding sections",
+      "description": "Stepped walkthrough where each section opens, writes its code, is checked off, and closes behind the next",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/google-fonts"
       ],
       "registryDependencies": [
-        "layout"
+        "ai-composer-utils",
+        "code-syntax",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1952,12 +2065,15 @@
       "name": "code-diff-wipe",
       "type": "registry:block",
       "title": "Code Diff Wipe",
-      "description": "Before and after code comparison with wipe reveal",
+      "description": "Diff patch landing line by line: an apply front travels the file, removals collapse, additions open and write in",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/google-fonts"
       ],
       "registryDependencies": [
-        "layout"
+        "ai-composer-utils",
+        "code-syntax",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -1970,12 +2086,16 @@
       "name": "data-flow-pipes",
       "type": "registry:block",
       "title": "Data Flow Pipes",
-      "description": "SVG data packets flowing along pipeline pipes",
+      "description": "Pipeline running end to end: stages come up in order, pipes draw between them, and a stream of payloads hops through, lighting each stage and ticking its tally",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/google-fonts"
       ],
       "registryDependencies": [
-        "layout"
+        "code-syntax",
+        "layout",
+        "motion-tokens",
+        "path-utils"
       ],
       "files": [
         {
@@ -1988,12 +2108,16 @@
       "name": "drag-drop-flow",
       "type": "registry:block",
       "title": "Drag Drop Flow",
-      "description": "Animated cursor dragging a file into a drop zone",
+      "description": "Cursor drags a file out of a media library into a drop zone that arms, catches it, and uploads it to completion",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/google-fonts"
       ],
       "registryDependencies": [
-        "layout"
+        "code-syntax",
+        "layout",
+        "motion-tokens",
+        "path-utils"
       ],
       "files": [
         {
@@ -2006,12 +2130,15 @@
       "name": "chat-to-preview",
       "type": "registry:block",
       "title": "Chat To Preview",
-      "description": "Chat layout morphing into a live preview frame",
+      "description": "Prompt-to-render loop: the ask types into the composer and sends into the thread, the answer streams back, and the preview assembles from wireframe to rendered scene",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/google-fonts"
       ],
       "registryDependencies": [
-        "layout"
+        "code-syntax",
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -2248,7 +2375,7 @@
       "name": "claude-chat",
       "type": "registry:block",
       "title": "Claude Chat",
-      "description": "Claude chat interface with artifact split view and streaming response",
+      "description": "Claude composer card with typed prompt and waveform-to-send morph",
       "dependencies": [
         "remotion",
         "@remotion/google-fonts"
@@ -2267,7 +2394,7 @@
       "name": "chat-gpt",
       "type": "registry:block",
       "title": "Chat Gpt",
-      "description": "ChatGPT composer interface with tools menu, suggestion chips, and typed prompt",
+      "description": "ChatGPT composer pill with greeting, suggestion chips, and voice-to-send morph",
       "dependencies": [
         "remotion",
         "@remotion/google-fonts"
@@ -2286,7 +2413,7 @@
       "name": "v0",
       "type": "registry:block",
       "title": "V0",
-      "description": "v0 builder home interface with prompt composer, quick actions, and templates",
+      "description": "v0 composer with greeting, model chip, project selector, and mic-to-send morph",
       "dependencies": [
         "remotion",
         "@remotion/google-fonts"

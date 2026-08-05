@@ -1,57 +1,43 @@
 "use client";
 
 import { useMemo } from "react";
-import { AbsoluteFill, Sequence, useVideoConfig } from "remotion";
+import { AbsoluteFill, Loop, useVideoConfig } from "remotion";
 import { CaptionHighlight } from "../registry-exports";
 import { DEMO_CAPTIONS } from "@/lib/demo-assets";
 import { groupCaptionsIntoPages } from "@/remotion/lib/caption-utils";
-import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
+import { scaleFont } from "@/remotion/lib/layout";
+import { PreviewFrame } from "./preview-frame";
+import { usePreviewStage } from "./preview-stage";
+
+/** Caption span plus a beat of hold, so the loop never lands mid-word. */
+const LOOP_SECONDS = 2.6;
 
 export const CaptionHighlightPreview: React.FC = () => {
-  const { fps, width, height } = useVideoConfig();
-  const pages = useMemo(() => groupCaptionsIntoPages(DEMO_CAPTIONS), []);
+  const { fps, width } = useVideoConfig();
+  const tokens = usePreviewStage();
+  const pages = useMemo(() => groupCaptionsIntoPages(DEMO_CAPTIONS, 2200), []);
   const page = pages[0];
-  const safeArea = getSafeAreaPadding({ width, height });
 
   if (!page) return null;
 
-  const startFrame = Math.round((page.startMs / 1000) * fps);
-  const durationInFrames = Math.round((page.durationMs / 1000) * fps);
-
   return (
-    <AbsoluteFill style={{ background: "#f5f4f2" }}>
-      <AbsoluteFill
-        style={{
-          padding: `${safeArea.paddingTop}px ${safeArea.paddingRight}px ${safeArea.paddingBottom}px ${safeArea.paddingLeft}px`,
-          justifyContent: "center",
-        }}
-      >
-        <div
+    <PreviewFrame padding={0}>
+      <Loop durationInFrames={Math.round(LOOP_SECONDS * fps)}>
+        <AbsoluteFill
           style={{
-            width: "100%",
-            maxWidth: 780,
-            display: "grid",
-            gap: scaleFont(18, width),
+            padding: "56px 72px",
+            justifyContent: "center",
           }}
         >
-          <div
-            style={{
-              width: scaleFont(56, width),
-              height: scaleFont(4, width),
-              background: "#ff6b00",
-            }}
+          <CaptionHighlight
+            page={page}
+            activeColor={tokens.accent}
+            inactiveColor={tokens.ink}
+            fontSize={scaleFont(62, width)}
+            textAlign="center"
           />
-          <Sequence from={startFrame} durationInFrames={durationInFrames} layout="none">
-            <CaptionHighlight
-              page={page}
-              activeColor="#ff6b00"
-              inactiveColor="#111111"
-              fontSize={scaleFont(68, width)}
-              textAlign="left"
-            />
-          </Sequence>
-        </div>
-      </AbsoluteFill>
-    </AbsoluteFill>
+        </AbsoluteFill>
+      </Loop>
+    </PreviewFrame>
   );
 };

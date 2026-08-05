@@ -1,12 +1,17 @@
 ---
 title: Feature List
-description: Staggered bullet list scene with title.
+description: A list being ticked off, row by row.
 ---
 
 import { FeatureListPreview } from '@/components/previews/feature-list';
 
-<ComponentPage name="feature-list" preview={FeatureListPreview} durationInFrames={90}>
+<ComponentPage name="feature-list" preview={FeatureListPreview} durationInFrames={190}>
 
-Composes staggered list motion with an optional section title. No decorative separators.
+Each row arrives in turn: its rule draws across, the row settles in behind it,
+and its check strokes in — so the scene ends on a list that has visibly been
+worked through rather than one that faded in.
+
+`items` takes plain strings or `{ label, detail }` objects when a row needs a
+second line.
 
 </ComponentPage>

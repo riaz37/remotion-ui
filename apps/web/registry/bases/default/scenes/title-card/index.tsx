@@ -1,153 +1,282 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
-import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
-import { DELAY, DURATION, EASING } from "@/remotion/lib/motion-tokens";
+import { interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import { CODE_THEMES } from "@/remotion/lib/code-syntax";
+import { getSafeAreaPadding } from "@/remotion/lib/layout";
+import { EASING } from "@/remotion/lib/motion-tokens";
 
 const { fontFamily } = loadFont("normal", {
-  weights: ["500", "700"],
+  weights: ["400", "500", "600", "700"],
   subsets: ["latin"],
 });
 
 export type TitleCardProps = {
+  /** Headline. Newlines are honoured; otherwise lines are balanced. */
   title: string;
   subtitle?: string;
+  /** Chip above the headline — chapter, series, release. */
+  eyebrow?: string;
+  /** Small line under the subtitle — date, author, run time. */
+  meta?: string;
+  /** Characters per line the headline is balanced to. */
+  charsPerLine?: number;
   backgroundColor?: string;
   accentColor?: string;
+  theme?: "dark" | "light";
+  /** Animation speed multiplier. */
+  speed?: number;
 };
 
-const COLORS = {
-  bg: "#080810",
-  title: "#fafafa",
-  subtitle: "#71717a",
-  accent: "#e8b86d",
-  glow: "rgba(232,184,109,0.22)",
+/** Beat plan in seconds. */
+const T = {
+  eyebrow: 0.12,
+  title: 0.28,
+  /** Added per headline line. */
+  lineStagger: 0.09,
+  subtitle: 0.72,
+  meta: 0.9,
+  /** Sweep across the headline once it is standing. */
+  sweep: 0.95,
+  sweepFor: 0.85,
 } as const;
 
+const clamp = {
+  extrapolateLeft: "clamp",
+  extrapolateRight: "clamp",
+} as const;
+
+/** Greedy wrap that keeps the last line from being a runt. */
+function balanceLines(text: string, target: number): string[] {
+  const words = text.split(/\s+/).filter(Boolean);
+  const lines: string[] = [];
+  let line = "";
+
+  for (const word of words) {
+    const candidate = line ? `${line} ${word}` : word;
+    if (candidate.length > target && line) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = candidate;
+    }
+  }
+  if (line) {
+    lines.push(line);
+  }
+  return lines;
+}
+
+/**
+ * The opening card as a title standing up rather than a block fading in: each
+ * line rises out of its own mask in turn, a single sweep of light crosses the
+ * headline once it is standing, and the whole block holds under a slow push.
+ */
 export const TitleCard: React.FC<TitleCardProps> = ({
   title,
   subtitle,
-  backgroundColor = COLORS.bg,
-  accentColor = COLORS.accent,
+  eyebrow,
+  meta,
+  charsPerLine = 22,
+  backgroundColor,
+  accentColor = "#E8B86D",
+  theme = "dark",
+  speed = 1,
 }) => {
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
-  const safeArea = getSafeAreaPadding({ width, height });
-  const barWidth = scaleFont(72, width);
+  const palette = CODE_THEMES[theme];
+  const safe = getSafeAreaPadding({ width, height });
 
-  const barDraw = interpolate(frame, [0, DURATION.fast], [0, 1], {
-    easing: EASING.enter,
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const titleEnter = spring({
-    frame,
-    fps,
-    config: { damping: 16, stiffness: 110, mass: 0.85 },
-    delay: DELAY.short,
-  });
-  const subtitleEnter = interpolate(
-    frame,
-    [DELAY.medium, DELAY.medium + DURATION.fast],
-    [0, 1],
-    {
-      easing: EASING.enter,
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    },
-  );
+  const at = (seconds: number) => (seconds * fps) / speed;
+  const ease = (from: number, to: number, easing = EASING.enter) =>
+    interpolate(frame, [at(from), at(to)], [0, 1], { easing, ...clamp });
+
+  const stage = {
+    w: width - safe.paddingLeft - safe.paddingRight,
+    h: height - safe.paddingTop - safe.paddingBottom,
+  };
+  const portrait = height > width;
+  const u = portrait
+    ? Math.min(stage.w / 620, stage.h / 1120)
+    : Math.min(stage.w / 1120, stage.h / 620);
+
+  const lines = title.includes("\n")
+    ? title.split("\n")
+    : balanceLines(title, charsPerLine);
+  const titleSize = 80 * u;
+
+  const eyebrowIn = eyebrow ? ease(T.eyebrow, T.eyebrow + 0.45) : 0;
+  const subtitleIn = subtitle ? ease(T.subtitle, T.subtitle + 0.5) : 0;
+  const metaIn = meta ? ease(T.meta, T.meta + 0.5) : 0;
+  const sweep = ease(T.sweep, T.sweep + T.sweepFor, EASING.editorial);
+  /** Slow push under the whole card, so a long hold never sits dead still. */
+  const push = ease(0, 7, EASING.editorial);
 
   return (
     <div
       style={{
         width,
         height,
-        backgroundColor,
-        paddingLeft: safeArea.paddingLeft,
-        paddingRight: safeArea.paddingRight,
-        paddingTop: safeArea.paddingTop,
-        paddingBottom: safeArea.paddingBottom,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        background: backgroundColor ?? palette.page,
         fontFamily,
         position: "relative",
+        overflow: "hidden",
+        display: "grid",
+        placeItems: "center",
       }}
     >
       <div
         style={{
           position: "absolute",
           inset: 0,
-          background: `radial-gradient(ellipse 90% 30% at 50% 0%, ${accentColor}14, transparent 70%)`,
-          pointerEvents: "none",
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          width: "52%",
-          height: "52%",
-          borderRadius: "50%",
-          background: `radial-gradient(circle, ${COLORS.glow} 0%, transparent 72%)`,
-          filter: `blur(${scaleFont(48, width)}px)`,
-          pointerEvents: "none",
+          background: `radial-gradient(ellipse 62% 48% at 50% 46%, ${accentColor}1F, transparent 72%)`,
+          transform: `scale(${interpolate(push, [0, 1], [1, 1.12])})`,
         }}
       />
       <div
         style={{
           position: "absolute",
           inset: 0,
-          background: `linear-gradient(180deg, transparent 60%, ${accentColor}12 100%)`,
-          pointerEvents: "none",
+          background:
+            theme === "dark"
+              ? "radial-gradient(ellipse 120% 90% at 50% 50%, transparent 45%, rgba(0,0,0,0.5) 100%)"
+              : "radial-gradient(ellipse 120% 90% at 50% 50%, transparent 55%, rgba(15,18,25,0.08) 100%)",
         }}
       />
+
       <div
         style={{
+          position: "relative",
+          width: stage.w,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: scaleFont(24, width),
-          maxWidth: "88%",
+          gap: 18 * u,
           textAlign: "center",
-          position: "relative",
+          transform: `scale(${interpolate(push, [0, 1], [1, 1.02])})`,
         }}
       >
-        <div
-          style={{
-            width: barWidth * barDraw,
-            height: scaleFont(4, width),
-            borderRadius: 999,
-            backgroundColor: accentColor,
-            boxShadow: `0 0 ${scaleFont(20, width)}px ${accentColor}66`,
-          }}
-        />
+        {eyebrow ? (
+          <div
+            style={{
+              padding: `${8 * u}px ${16 * u}px`,
+              borderRadius: 999,
+              border: `1px solid ${accentColor}55`,
+              background: `${accentColor}12`,
+              color: accentColor,
+              fontSize: 20 * u,
+              fontWeight: 600,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              opacity: eyebrowIn,
+              transform: `translateY(${(1 - eyebrowIn) * 12 * u}px)`,
+            }}
+          >
+            {eyebrow}
+          </div>
+        ) : null}
+
         <h1
           style={{
-            color: COLORS.title,
-            fontSize: scaleFont(84, width),
-            fontWeight: 700,
             margin: 0,
-            lineHeight: 1.05,
+            position: "relative",
+            color: palette.fg,
+            fontSize: titleSize,
+            fontWeight: 700,
+            lineHeight: 1.06,
             letterSpacing: "-0.03em",
-            opacity: Math.min(1, titleEnter),
-            transform: `translateY(${(1 - titleEnter) * 28}px) scale(${0.94 + titleEnter * 0.06})`,
           }}
         >
-          {title}
+          {lines.map((line, index) => {
+            const lineIn = ease(
+              T.title + index * T.lineStagger,
+              T.title + index * T.lineStagger + 0.55,
+            );
+            return (
+              // Each line owns a mask, so it rises out of the line above it.
+              <span
+                key={`${line}-${index}`}
+                style={{
+                  display: "block",
+                  overflow: "hidden",
+                  paddingBottom: "0.04em",
+                }}
+              >
+                <span
+                  style={{
+                    display: "block",
+                    transform: `translateY(${(1 - lineIn) * 100}%)`,
+                  }}
+                >
+                  {line}
+                </span>
+              </span>
+            );
+          })}
+
+          {/* One sweep of light across the standing headline. A band moved by
+              transform, not a shifted background-position — the latter renders
+              as a hard-edged block once the gradient is scaled up. */}
+          <span
+            style={{
+              position: "absolute",
+              left: 0,
+              right: 0,
+              // Taller than the type: clipping the glow at the text box would
+              // draw its own straight edges across the headline.
+              top: "-45%",
+              bottom: "-45%",
+              overflow: "hidden",
+              pointerEvents: "none",
+              opacity: sweep > 0 && sweep < 1 ? 1 : 0,
+            }}
+          >
+            <span
+              style={{
+                position: "absolute",
+                top: 0,
+                bottom: 0,
+                left: 0,
+                width: "42%",
+                // A soft blob, not a hard-edged band: a linear gradient in a
+                // box shows its own corners once it is blended additively.
+                background: `radial-gradient(ellipse 50% 42% at 50% 50%, ${accentColor}66, transparent 72%)`,
+                filter: `blur(${10 * u}px)`,
+                mixBlendMode: "plus-lighter",
+                transform: `translateX(${interpolate(sweep, [0, 1], [-110, 340])}%)`,
+              }}
+            />
+          </span>
         </h1>
+
         {subtitle ? (
           <p
             style={{
-              color: COLORS.subtitle,
-              fontSize: scaleFont(36, width),
               margin: 0,
-              lineHeight: 1.35,
+              maxWidth: stage.w * 0.76,
+              color: palette.dim,
+              fontSize: 32 * u,
               fontWeight: 500,
-              opacity: subtitleEnter,
-              transform: `translateY(${(1 - subtitleEnter) * 16}px)`,
+              lineHeight: 1.35,
+              opacity: subtitleIn,
+              transform: `translateY(${(1 - subtitleIn) * 14 * u}px)`,
             }}
           >
             {subtitle}
           </p>
+        ) : null}
+
+        {meta ? (
+          <div
+            style={{
+              marginTop: 4 * u,
+              color: palette.faint,
+              fontSize: 20 * u,
+              letterSpacing: "0.06em",
+              opacity: metaIn,
+            }}
+          >
+            {meta}
+          </div>
         ) : null}
       </div>
     </div>

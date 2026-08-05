@@ -1,28 +1,25 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
 import { Video } from "@remotion/media";
-import {
-  Img,
-  interpolate,
-  spring,
-  useCurrentFrame,
-  useVideoConfig,
-} from "remotion";
+import { Img, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import { CODE_THEMES } from "@/remotion/lib/code-syntax";
+import { getSafeAreaPadding } from "@/remotion/lib/layout";
+import { EASING } from "@/remotion/lib/motion-tokens";
 import {
   getMediaObjectFitStyle,
   isVideoSource,
   type MediaFit,
 } from "@/remotion/lib/media-utils";
-import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
-import { DURATION, EASING, STAGGER } from "@/remotion/lib/motion-tokens";
 
 const { fontFamily } = loadFont("normal", {
-  weights: ["400", "500", "600", "700", "800"],
+  weights: ["400", "500", "600", "700"],
   subsets: ["latin"],
 });
 
 export type BRollItem = {
   src: string;
+  /** Label on the card while it is at the front. */
   title?: string;
+  /** Second line under the label. */
   caption?: string;
   fit?: MediaFit;
   backgroundColor?: string;
@@ -30,519 +27,325 @@ export type BRollItem = {
 
 export type BRollStackProps = {
   items?: BRollItem[];
+  /** Headline beside the deck. */
   title?: string;
+  /** Small label above the headline. */
   kicker?: string;
+  /** Supporting line under the headline. */
   caption?: string;
+  /** Seconds each shot holds at the front before the deck advances. */
+  holdSeconds?: number;
+  /** Aspect the cards are cut to. */
+  aspect?: number;
   backgroundColor?: string;
   accentColor?: string;
-  muted?: boolean;
-  maxCards?: number;
+  theme?: "dark" | "light";
+  /** Animation speed multiplier. */
+  speed?: number;
 };
 
-const COLORS = {
-  bg: "#080810",
-  panel: "#10131d",
-  panelDeep: "#070912",
-  text: "#ffffff",
-  muted: "#b9c0cc",
-  accent: "#e8b86d",
-  teal: "#2dd4bf",
-  rose: "#f472b6",
+/** Beat plan in seconds. */
+const T = {
+  header: 0,
+  /** Deck lands after the headline. */
+  deck: 0.28,
+  /** First advance, measured from the deck landing. */
+  firstHold: 1.35,
+  /** Time one card takes to ride to the front. */
+  advance: 0.55,
 } as const;
 
-type StackCard = BRollItem & {
-  tone: string;
-};
+const clamp = {
+  extrapolateLeft: "clamp",
+  extrapolateRight: "clamp",
+} as const;
 
-type CardPlacement = {
-  x: number;
-  y: number;
-  rotate: number;
-  scale: number;
-  zIndex: number;
-};
+/** How a card sits at a given depth in the deck — 0 is the front. */
+const placement = (depth: number, u: number) => ({
+  x: depth * 34 * u,
+  y: depth * -22 * u,
+  scale: 1 - depth * 0.07,
+  rotate: depth * 1.6,
+});
 
-const FALLBACK_ITEMS: StackCard[] = [
-  {
-    src: "",
-    title: "Product screen",
-    caption: "Feature walkthrough",
-    fit: "cover",
-    tone: COLORS.accent,
-  },
-  {
-    src: "",
-    title: "Workflow proof",
-    caption: "Behind the build",
-    fit: "cover",
-    tone: COLORS.teal,
-  },
-  {
-    src: "",
-    title: "Customer result",
-    caption: "Outcome detail",
-    fit: "cover",
-    tone: COLORS.rose,
-  },
-];
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
-}
-
-function fitHeadline(text: string | undefined, width: number, isPortrait: boolean) {
-  if (!text) {
-    return scaleFont(isPortrait ? 70 : 54, width);
-  }
-
-  const longestWord = text.split(/\s+/).reduce((longest, word) => {
-    return word.length > longest.length ? word : longest;
-  }, "");
-
-  const base = scaleFont(isPortrait ? 68 : 54, width);
-  const lengthAdjusted = text.length > 34 ? base * 0.9 : base;
-  const wordAdjusted = longestWord.length > 14 ? base * 0.74 : lengthAdjusted;
-
-  return Math.round(clamp(wordAdjusted, scaleFont(isPortrait ? 44 : 38, width), base));
-}
-
-function getPlacements(isPortrait: boolean, cardCount: number): CardPlacement[] {
-  const landscape: CardPlacement[] = [
-    { x: -10, y: -4, rotate: -3.5, scale: 1, zIndex: 5 },
-    { x: 24, y: 18, rotate: 2.5, scale: 0.94, zIndex: 4 },
-    { x: 48, y: -16, rotate: -1.25, scale: 0.89, zIndex: 3 },
-    { x: 66, y: 30, rotate: 3.5, scale: 0.84, zIndex: 2 },
-  ];
-  const portrait: CardPlacement[] = [
-    { x: 0, y: -4, rotate: -2.25, scale: 1, zIndex: 5 },
-    { x: 18, y: 30, rotate: 2.5, scale: 0.94, zIndex: 4 },
-    { x: -16, y: 58, rotate: -1.25, scale: 0.88, zIndex: 3 },
-    { x: 28, y: 82, rotate: 3.5, scale: 0.82, zIndex: 2 },
-  ];
-  const placements = isPortrait ? portrait : landscape;
-
-  return placements.slice(0, Math.max(1, cardCount));
-}
-
-function getStackCards({
-  items,
-  accentColor,
-  maxCards,
-}: {
-  items: BRollItem[];
-  accentColor: string;
-  maxCards: number;
-}): StackCard[] {
-  const limit = Math.round(clamp(maxCards, 1, 4));
-  const tones = [accentColor, COLORS.teal, COLORS.rose, "#f59e0b"];
-
-  if (items.length === 0) {
-    return FALLBACK_ITEMS.slice(0, limit).map((item, index) => ({
-      ...item,
-      tone: tones[index] ?? accentColor,
-    }));
-  }
-
-  const provided = items.slice(0, limit);
-  const fillerCount = Math.min(Math.max(3 - provided.length, 0), limit - provided.length);
-  const filler = FALLBACK_ITEMS.slice(0, fillerCount).map((item) => ({
-    ...item,
-    src: "",
-    title: undefined,
-    caption: undefined,
-  }));
-
-  return [...provided, ...filler].map((item, index) => ({
-    ...item,
-    tone: tones[index] ?? accentColor,
-  }));
-}
-
-function CardMedia({
-  item,
-  fit,
-  muted,
-}: {
-  item: StackCard;
-  fit: MediaFit;
-  muted: boolean;
-}) {
-  if (!item.src) {
-    return (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          background: `radial-gradient(circle at 24% 20%, ${item.tone}66, transparent 34%), linear-gradient(135deg, #1f2431 0%, #0b0d16 100%)`,
-          display: "grid",
-          gridTemplateRows: "1fr 1fr 1fr",
-          gap: 12,
-          padding: 28,
-          boxSizing: "border-box",
-        }}
-      >
-        <div
-          style={{
-            width: "46%",
-            borderRadius: 999,
-            background: "rgba(255,255,255,0.72)",
-          }}
-        />
-        <div
-          style={{
-            borderRadius: 18,
-            background: "rgba(255,255,255,0.08)",
-            boxShadow: `inset 0 0 0 1px ${item.tone}44`,
-          }}
-        />
-        <div
-          style={{
-            width: "72%",
-            borderRadius: 999,
-            background: item.tone,
-            alignSelf: "center",
-          }}
-        />
-      </div>
-    );
-  }
-
-  const mediaStyle = getMediaObjectFitStyle(fit);
-
-  return isVideoSource(item.src) ? (
-    <Video src={item.src} muted={muted} loop style={mediaStyle} />
-  ) : (
-    <Img src={item.src} style={mediaStyle} />
-  );
-}
-
-function StackCard({
-  item,
-  placement,
-  index,
-  isPortrait,
-  accentColor,
-  muted,
-}: {
-  item: StackCard;
-  placement: CardPlacement;
-  index: number;
-  isPortrait: boolean;
-  accentColor: string;
-  muted: boolean;
-}) {
-  const frame = useCurrentFrame();
-  const { width, fps } = useVideoConfig();
-  const delay = STAGGER.normal + index * STAGGER.tight;
-  const enter = spring({
-    frame: frame - delay,
-    fps,
-    config: {
-      damping: 18,
-      mass: 0.85,
-      stiffness: 120,
-    },
-    durationInFrames: DURATION.normal,
-  });
-  const shimmer = interpolate(
-    frame,
-    [delay + DURATION.fast, delay + DURATION.slow + 16],
-    [-24, 124],
-    {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-      easing: EASING.editorial,
-    },
-  );
-  const cardRadius = scaleFont(isPortrait ? 28 : 18, width);
-  const labelPad = scaleFont(isPortrait ? 18 : 12, width);
-  const titleSize = scaleFont(isPortrait ? 30 : 22, width);
-  const captionSize = scaleFont(isPortrait ? 21 : 16, width);
-  const cardTone = index === 0 ? accentColor : item.tone;
-  const fit = item.fit ?? (isPortrait ? "cover" : "contain");
-  const travelY = isPortrait ? 42 : 34;
-  const travelX = isPortrait ? 0 : 30;
-
-  return (
-    <div
-      style={{
-        position: "absolute",
-        inset: 0,
-        zIndex: placement.zIndex,
-        borderRadius: cardRadius,
-        overflow: "hidden",
-        background: item.backgroundColor ?? COLORS.panel,
-        border: `1px solid rgba(255,255,255,${index === 0 ? 0.2 : 0.12})`,
-        boxShadow: `0 ${scaleFont(24 + index * 10, width)}px ${scaleFont(64 + index * 18, width)}px rgba(0,0,0,0.46)`,
-        opacity: interpolate(enter, [0, 0.25, 1], [0, 1, 1]),
-        transform: [
-          `translateX(${placement.x * enter - (1 - enter) * travelX}px)`,
-          `translateY(${placement.y * enter + (1 - enter) * travelY}px)`,
-          `rotate(${placement.rotate * enter}deg)`,
-          `scale(${0.88 + (placement.scale - 0.88) * enter})`,
-        ].join(" "),
-        transformOrigin: "center center",
-        display: "grid",
-        gridTemplateRows: item.title || item.caption ? "1fr auto" : "1fr",
-      }}
-    >
-      <div
-        style={{
-          minHeight: 0,
-          position: "relative",
-          overflow: "hidden",
-          background: COLORS.panelDeep,
-        }}
-      >
-        <CardMedia item={item} fit={fit} muted={muted} />
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background:
-              "linear-gradient(135deg, rgba(255,255,255,0.12), transparent 38%, rgba(0,0,0,0.24))",
-            pointerEvents: "none",
-          }}
-        />
-        {index === 0 ? (
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              bottom: 0,
-              left: `${shimmer}%`,
-              width: "26%",
-              transform: "skewX(-18deg)",
-              background:
-                "linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent)",
-              opacity: 0.5,
-            }}
-          />
-        ) : null}
-      </div>
-      {item.title || item.caption ? (
-        <div
-          style={{
-            padding: `${labelPad}px ${labelPad + scaleFont(2, width)}px`,
-            background:
-              "linear-gradient(180deg, rgba(13,16,26,0.92), rgba(7,9,18,0.98))",
-            display: "grid",
-            gap: scaleFont(5, width),
-            boxShadow: `inset 0 1px 0 ${cardTone}44`,
-          }}
-        >
-          {item.title ? (
-            <div
-              style={{
-                color: COLORS.text,
-                fontSize: titleSize,
-                fontWeight: 700,
-                lineHeight: 1.08,
-              }}
-            >
-              {item.title}
-            </div>
-          ) : null}
-          {item.caption ? (
-            <div
-              style={{
-                color: COLORS.muted,
-                fontSize: captionSize,
-                fontWeight: 500,
-                lineHeight: 1.2,
-              }}
-            >
-              {item.caption}
-            </div>
-          ) : null}
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
+/**
+ * A deck of supporting shots being dealt rather than three cards fanned out and
+ * held: each shot rides to the front in turn with its own label, the one it
+ * replaces slides back into the stack, and the deck keeps cycling for as long
+ * as the scene runs.
+ */
 export const BRollStack: React.FC<BRollStackProps> = ({
   items = [],
-  title = "Layer cutaways behind the narration",
-  kicker = "Supporting visuals",
-  caption = "Stack proof shots, product screens, and process clips without hand-positioning every layer.",
-  backgroundColor = COLORS.bg,
-  accentColor = COLORS.accent,
-  muted = true,
-  maxCards = 4,
+  title,
+  kicker,
+  caption,
+  holdSeconds = 1.35,
+  aspect = 16 / 9,
+  backgroundColor,
+  accentColor = "#E8B86D",
+  theme = "dark",
+  speed = 1,
 }) => {
   const frame = useCurrentFrame();
-  const { width, height } = useVideoConfig();
+  const { fps, width, height } = useVideoConfig();
+  const palette = CODE_THEMES[theme];
   const safe = getSafeAreaPadding({ width, height });
-  const isPortrait = height > width;
-  const cards = getStackCards({ items, accentColor, maxCards });
-  const placements = getPlacements(isPortrait, cards.length);
-  const gap = scaleFont(isPortrait ? 34 : 24, width);
-  const headlineSize = fitHeadline(title, width, isPortrait);
-  const kickerEnter = interpolate(frame, [0, DURATION.fast], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: EASING.enter,
-  });
-  const titleEnter = interpolate(
-    frame,
-    [STAGGER.tight, STAGGER.tight + DURATION.fast],
+
+  const now = (frame / fps) * speed;
+  const at = (seconds: number) => (seconds * fps) / speed;
+  const ease = (from: number, to: number, easing = EASING.enter) =>
+    interpolate(frame, [at(from), at(to)], [0, 1], { easing, ...clamp });
+
+  const stage = {
+    x: safe.paddingLeft,
+    y: safe.paddingTop,
+    w: width - safe.paddingLeft - safe.paddingRight,
+    h: height - safe.paddingTop - safe.paddingBottom,
+  };
+  const portrait = height > width;
+  // The reference stage turns with the composition — sizing a 9:16 frame off a
+  // landscape reference leaves the headline tiny.
+  const u = portrait
+    ? Math.min(stage.w / 620, stage.h / 1120)
+    : Math.min(stage.w / 1120, stage.h / 620);
+  const count = items.length;
+
+  const headerIn = ease(T.header, T.header + 0.5);
+  const deckIn = ease(T.deck, T.deck + 0.55, EASING.editorial);
+
+  // Continuous front index: it holds on whole numbers and eases between them,
+  // so every card can be placed from this one number instead of per-card state.
+  const cycle = holdSeconds + T.advance;
+  const elapsed = Math.max(now - (T.deck + T.firstHold - holdSeconds), 0);
+  const step = Math.floor(elapsed / cycle);
+  const advance = interpolate(
+    elapsed - step * cycle,
+    [holdSeconds, cycle],
     [0, 1],
-    {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-      easing: EASING.enter,
-    },
+    { easing: EASING.editorial, ...clamp },
   );
-  const captionEnter = interpolate(
-    frame,
-    [STAGGER.normal, STAGGER.normal + DURATION.fast],
-    [0, 1],
-    {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-      easing: EASING.enter,
-    },
-  );
-  const stackWidth = isPortrait
-    ? width - safe.paddingLeft - safe.paddingRight
-    : Math.round(width * 0.46);
-  const stackHeight = isPortrait
-    ? Math.round(height * 0.43)
-    : height - safe.paddingTop - safe.paddingBottom - scaleFont(28, width);
-  const stageInset = scaleFont(isPortrait ? 36 : 32, width);
-  const innerWidth = Math.max(220, stackWidth - stageInset * 2);
-  const innerHeight = Math.max(180, stackHeight - stageInset * 2);
-  const backgroundBeat = interpolate(frame, [0, DURATION.slow], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: EASING.enter,
-  });
+  const front = count > 0 ? step + advance : 0;
+
+  const headerW = portrait ? stage.w : stage.w * 0.36;
+  const deckBox = portrait
+    ? { x: 0, y: stage.h * 0.24, w: stage.w, h: stage.h * 0.5 }
+    : { x: headerW + 40 * u, y: 0, w: stage.w - headerW - 40 * u, h: stage.h };
+  // Room is left for the deepest visible card to sit up and to the right.
+  const cardW = Math.min(deckBox.w - 76 * u, (deckBox.h - 70 * u) * aspect);
+  const cardH = cardW / aspect;
+  const cardX = deckBox.x + (deckBox.w - cardW) / 2 - 34 * u;
+  const cardY = deckBox.y + (deckBox.h - cardH) / 2 + (portrait ? 0 : 22 * u);
 
   return (
     <div
       style={{
         width,
         height,
-        boxSizing: "border-box",
-        background: `radial-gradient(circle at 78% 18%, ${accentColor}28, transparent 30%), linear-gradient(135deg, ${backgroundColor}, #050711 68%)`,
-        color: COLORS.text,
-        paddingLeft: safe.paddingLeft,
-        paddingRight: safe.paddingRight,
-        paddingTop: safe.paddingTop,
-        paddingBottom: safe.paddingBottom,
+        background: backgroundColor ?? palette.page,
         fontFamily,
-        display: "flex",
-        flexDirection: isPortrait ? "column" : "row",
-        gap,
-        alignItems: isPortrait ? "stretch" : "center",
-        justifyContent: "center",
+        position: "relative",
         overflow: "hidden",
       }}
     >
       <div
         style={{
-          flex: isPortrait ? "0 0 auto" : "1 1 0",
-          minWidth: 0,
-          display: "grid",
-          gap: scaleFont(isPortrait ? 14 : 12, width),
-          alignContent: "center",
+          position: "absolute",
+          inset: 0,
+          background: `radial-gradient(ellipse 60% 55% at ${
+            portrait ? 50 : 70
+          }% 45%, ${accentColor}14, transparent 72%)`,
         }}
-      >
-        {kicker ? (
-          <div
-            style={{
-              color: accentColor,
-              fontSize: scaleFont(isPortrait ? 29 : 24, width),
-              fontWeight: 700,
-              lineHeight: 1,
-              opacity: kickerEnter,
-              transform: `translateY(${(1 - kickerEnter) * scaleFont(12, width)}px)`,
-            }}
-          >
-            {kicker}
-          </div>
-        ) : null}
-        {title ? (
-          <h2
-            style={{
-              margin: 0,
-              color: COLORS.text,
-              fontSize: headlineSize,
-              lineHeight: 1.02,
-              fontWeight: 800,
-              maxWidth: isPortrait ? "100%" : scaleFont(390, width),
-              opacity: titleEnter,
-              transform: `translateY(${(1 - titleEnter) * scaleFont(18, width)}px)`,
-            }}
-          >
-            {title}
-          </h2>
-        ) : null}
-        {caption ? (
-          <p
-            style={{
-              margin: 0,
-              color: COLORS.muted,
-              fontSize: scaleFont(isPortrait ? 27 : 20, width),
-              lineHeight: 1.24,
-              fontWeight: 500,
-              maxWidth: isPortrait ? "100%" : scaleFont(360, width),
-              opacity: captionEnter,
-              transform: `translateY(${(1 - captionEnter) * scaleFont(12, width)}px)`,
-            }}
-          >
-            {caption}
-          </p>
-        ) : null}
-      </div>
+      />
 
       <div
         style={{
-          flex: isPortrait ? "1 1 auto" : "0 0 auto",
-          width: isPortrait ? "100%" : stackWidth,
-          height: stackHeight,
-          minHeight: isPortrait ? 0 : stackHeight,
-          position: "relative",
-          display: "grid",
-          placeItems: "center",
+          position: "absolute",
+          left: stage.x,
+          top: stage.y,
+          width: stage.w,
+          height: stage.h,
         }}
       >
         <div
           style={{
             position: "absolute",
-            inset: stageInset * 0.65,
-            borderRadius: scaleFont(34, width),
-            background: `linear-gradient(135deg, ${accentColor}1f, rgba(45,212,191,0.09))`,
-            opacity: backgroundBeat,
-            transform: `scale(${0.92 + backgroundBeat * 0.08}) rotate(${
-              isPortrait ? -2 : -4
-            }deg)`,
-            boxShadow: `0 0 0 1px rgba(255,255,255,0.08), 0 ${scaleFont(
-              28,
-              width,
-            )}px ${scaleFont(90, width)}px rgba(0,0,0,0.34)`,
-          }}
-        />
-        <div
-          style={{
-            width: innerWidth,
-            height: innerHeight,
-            position: "relative",
+            left: 0,
+            top: portrait ? 0 : "50%",
+            width: headerW,
+            transform: portrait ? undefined : "translateY(-50%)",
+            display: "flex",
+            flexDirection: "column",
+            gap: 12 * u,
           }}
         >
-          {cards.map((item, index) => (
-            <StackCard
-              key={`${item.src || item.title || "placeholder"}-${index}`}
-              item={item}
-              placement={placements[index] ?? placements[0]!}
-              index={index}
-              isPortrait={isPortrait}
-              accentColor={accentColor}
-              muted={muted}
-            />
-          ))}
+          {kicker ? (
+            <div
+              style={{
+                color: accentColor,
+                fontSize: 20 * u,
+                fontWeight: 600,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                opacity: headerIn,
+                transform: `translateY(${(1 - headerIn) * 10 * u}px)`,
+              }}
+            >
+              {kicker}
+            </div>
+          ) : null}
+          {title ? (
+            <div
+              style={{
+                color: palette.fg,
+                fontSize: 50 * u,
+                fontWeight: 700,
+                lineHeight: 1.08,
+                letterSpacing: "-0.02em",
+                opacity: headerIn,
+                transform: `translateY(${(1 - headerIn) * 16 * u}px)`,
+              }}
+            >
+              {title}
+            </div>
+          ) : null}
+          {caption ? (
+            <div
+              style={{
+                color: palette.dim,
+                fontSize: 23 * u,
+                lineHeight: 1.4,
+                opacity: ease(T.header + 0.18, T.header + 0.62),
+              }}
+            >
+              {caption}
+            </div>
+          ) : null}
+          {count > 1 ? (
+            <div
+              style={{
+                marginTop: 6 * u,
+                color: palette.faint,
+                fontSize: 20 * u,
+                fontVariantNumeric: "tabular-nums",
+                opacity: deckIn,
+              }}
+            >
+              {String((Math.round(front) % count) + 1).padStart(2, "0")} /{" "}
+              {String(count).padStart(2, "0")}
+            </div>
+          ) : null}
         </div>
+
+        {items.map((item, index) => {
+          // Depth in the deck, wrapping so the card that just left the front
+          // reappears at the back rather than travelling across the frame.
+          const depth =
+            count > 0 ? (((index - front) % count) + count) % count : 0;
+          if (depth > 2.6) {
+            return null;
+          }
+          const spot = placement(depth, u);
+          const isFront = depth < 0.5;
+          // The deepest card fades in as it takes its place, so the wrap is
+          // never seen.
+          const fade = interpolate(depth, [2, 2.6], [1, 0], clamp);
+
+          return (
+            <div
+              key={`${item.src}-${index}`}
+              style={{
+                position: "absolute",
+                left: cardX,
+                top: cardY,
+                width: cardW,
+                height: cardH,
+                borderRadius: 20 * u,
+                overflow: "hidden",
+                background: item.backgroundColor ?? palette.window,
+                border: `1px solid ${
+                  isFront ? `${accentColor}66` : palette.border
+                }`,
+                boxShadow: `0 ${(14 + (2 - depth) * 12) * u}px ${
+                  (40 + (2 - depth) * 26) * u
+                }px ${palette.shadow}`,
+                opacity: deckIn * fade,
+                transform: `translate(${spot.x}px, ${
+                  spot.y + (1 - deckIn) * 40 * u
+                }px) scale(${spot.scale}) rotate(${spot.rotate}deg)`,
+                zIndex: Math.round(100 - depth * 10),
+              }}
+            >
+              {isVideoSource(item.src) ? (
+                <Video
+                  src={item.src}
+                  muted
+                  loop
+                  style={getMediaObjectFitStyle(item.fit ?? "cover")}
+                />
+              ) : (
+                <Img
+                  src={item.src}
+                  style={getMediaObjectFitStyle(item.fit ?? "cover")}
+                />
+              )}
+
+              {/* Cards behind the front one are pushed down so the front card
+                  keeps the eye */}
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: palette.page,
+                  opacity: interpolate(depth, [0, 1], [0, 0.45], clamp),
+                }}
+              />
+
+              {item.title || item.caption ? (
+                <div
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    paddingTop: 64 * u,
+                    paddingLeft: 22 * u,
+                    paddingRight: 22 * u,
+                    paddingBottom: 18 * u,
+                    // Tall enough to sit the label on its own band — a short
+                    // scrim leaves it fighting whatever the shot has at its foot.
+                    background: `linear-gradient(180deg, transparent, ${palette.page}CC 44%, ${palette.page}F5)`,
+                    opacity: interpolate(depth, [0, 0.6], [1, 0], clamp),
+                  }}
+                >
+                  {item.title ? (
+                    <div
+                      style={{
+                        color: "#F5F6F8",
+                        fontSize: 26 * u,
+                        fontWeight: 600,
+                        letterSpacing: "-0.01em",
+                      }}
+                    >
+                      {item.title}
+                    </div>
+                  ) : null}
+                  {item.caption ? (
+                    <div
+                      style={{
+                        marginTop: 4 * u,
+                        color: accentColor,
+                        fontSize: 19 * u,
+                        fontWeight: 500,
+                      }}
+                    >
+                      {item.caption}
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

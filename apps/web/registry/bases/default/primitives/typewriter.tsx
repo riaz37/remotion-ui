@@ -6,11 +6,16 @@ import { EASING_ENTER } from "@/remotion/lib/timing";
 export type CursorStyle = "bar" | "block" | "underscore";
 
 export type TypewriterProps = {
+  /** Text to reveal. `[pause:0.6]` anywhere in the string holds the caret. */
   text: string;
+  /** Frames per character. Values below 1 type more than one character a frame. */
   charFrames?: number;
+  /** Total typing length, used when `charFrames` is omitted. */
   durationInFrames?: number;
   delayInFrames?: number;
+  /** Hold after this substring is typed. */
   pauseAfter?: string;
+  /** Length of the `pauseAfter` hold, in seconds. */
   pauseSeconds?: number;
   showCursor?: boolean;
   cursorBlinkFrames?: number;
@@ -22,13 +27,20 @@ export type TypewriterProps = {
   color?: string;
   fontFamily?: string;
   style?: React.CSSProperties;
-  background?: boolean;
+  /** Uneven key rhythm — the difference between typing and a progress bar. */
   humanize?: boolean;
+  /** Rest on sentence punctuation. */
   respectPunctuation?: boolean;
   punctuationPauseSeconds?: number;
+  /** Type, hold, delete, repeat. */
   loop?: boolean;
   loopPauseSeconds?: number;
   backspaceCharFrames?: number;
+  /**
+   * Reserve the full block up front so the line never reflows as words land.
+   * Turn it off only when the caret must sit against a shrink-wrapped box.
+   */
+  reserveSpace?: boolean;
 };
 
 type ExplicitPause = {
@@ -38,6 +50,7 @@ type ExplicitPause = {
 
 type TypewriterTimeline = {
   displayText: string;
+  /** Frame each character appears on. Fractional, so sub-frame speeds work. */
   appearFrames: number[];
   typeFrames: number;
   loopPauseFrames: number;
@@ -47,6 +60,8 @@ type TypewriterTimeline = {
 
 const PAUSE_MARKER = /\[pause:(\d*\.?\d+)\]/g;
 const PUNCTUATION = /[.!?;:,]/;
+/** A caret that has not moved for this long is resting, and starts blinking. */
+const IDLE_FRAMES = 4;
 
 function parsePauses(
   rawText: string,
@@ -60,10 +75,9 @@ function parsePauses(
   PAUSE_MARKER.lastIndex = 0;
   while ((match = PAUSE_MARKER.exec(rawText)) !== null) {
     displayText += rawText.slice(lastIndex, match.index);
-    const seconds = parseFloat(match[1]);
     pauses.push({
       afterIndex: displayText.length - 1,
-      frames: Math.max(1, Math.round(seconds * fps)),
+      frames: Math.max(1, Math.round(parseFloat(match[1]) * fps)),
     });
     lastIndex = match.index + match[0].length;
   }
@@ -113,13 +127,9 @@ function buildTimeline(
   for (let i = 0; i < displayText.length; i++) {
     appearFrames.push(currentFrame);
 
-    let charFrames = baseCharFrames;
-    if (humanize) {
-      const jitter = (Math.sin(i * 7.3 + 1) + 1) / 2;
-      charFrames = Math.max(1, Math.round(charFrames * (0.7 + jitter * 0.6)));
-    }
-
-    currentFrame += charFrames;
+    /* Deterministic jitter: same string, same rhythm, every render. */
+    const jitter = humanize ? 0.7 + ((Math.sin(i * 7.3 + 1) + 1) / 2) * 0.6 : 1;
+    currentFrame += baseCharFrames * jitter;
 
     for (const pause of pauses) {
       if (pause.afterIndex === i) {
@@ -138,7 +148,6 @@ function buildTimeline(
 
   const typeFrames = currentFrame;
   const backspaceFrames = displayText.length * backspaceCharFrames;
-  const cycleFrames = typeFrames + loopPauseFrames + backspaceFrames;
 
   return {
     displayText,
@@ -146,8 +155,17 @@ function buildTimeline(
     typeFrames,
     loopPauseFrames,
     backspaceFrames,
-    cycleFrames,
+    cycleFrames: typeFrames + loopPauseFrames + backspaceFrames,
   };
+}
+
+function countAppeared(appearFrames: number[], frame: number): number {
+  let visible = 0;
+  for (const appearFrame of appearFrames) {
+    if (appearFrame > frame) break;
+    visible++;
+  }
+  return visible;
 }
 
 function getVisibleChars(
@@ -155,68 +173,54 @@ function getVisibleChars(
   timeline: TypewriterTimeline,
   loop: boolean,
 ): number {
-  if (timeline.displayText.length === 0) {
-    return 0;
-  }
-
-  if (!loop) {
-    let visible = 0;
-    for (const appearFrame of timeline.appearFrames) {
-      if (appearFrame <= frame) {
-        visible++;
-      } else {
-        break;
-      }
-    }
-    return visible;
-  }
+  const total = timeline.displayText.length;
+  if (total === 0) return 0;
+  if (!loop) return countAppeared(timeline.appearFrames, frame);
 
   const cycleFrame = frame % Math.max(1, timeline.cycleFrames);
 
   if (cycleFrame < timeline.typeFrames) {
-    let visible = 0;
-    for (const appearFrame of timeline.appearFrames) {
-      if (appearFrame <= cycleFrame) {
-        visible++;
-      } else {
-        break;
-      }
-    }
-    return visible;
+    return countAppeared(timeline.appearFrames, cycleFrame);
   }
 
   if (cycleFrame < timeline.typeFrames + timeline.loopPauseFrames) {
-    return timeline.displayText.length;
+    return total;
   }
 
-  const backspaceFrame =
-    cycleFrame - timeline.typeFrames - timeline.loopPauseFrames;
-  const charBackspaceFrames = Math.max(
-    1,
-    timeline.backspaceFrames / timeline.displayText.length,
+  const perChar = Math.max(1, timeline.backspaceFrames / total);
+  const deleted = Math.floor(
+    (cycleFrame - timeline.typeFrames - timeline.loopPauseFrames) / perChar,
   );
-  const deleted = Math.min(
-    timeline.displayText.length,
-    Math.floor(backspaceFrame / charBackspaceFrames),
-  );
-  return Math.max(0, timeline.displayText.length - deleted);
+  return Math.max(0, total - Math.min(total, deleted));
 }
 
 const Cursor: React.FC<{
   frame: number;
   blinkFrames: number;
+  blinking: boolean;
   color: string;
   cursorColor?: string;
   cursorWidth?: number;
   cursorStyle: CursorStyle;
   fontSize: number;
-}> = ({ frame, blinkFrames, color, cursorColor, cursorWidth, cursorStyle, fontSize }) => {
+}> = ({
+  frame,
+  blinkFrames,
+  blinking,
+  color,
+  cursorColor,
+  cursorWidth,
+  cursorStyle,
+  fontSize,
+}) => {
   const phase = (frame % Math.max(1, blinkFrames)) / Math.max(1, blinkFrames);
-  const opacity = interpolate(phase, [0, 0.4, 0.5, 1], [1, 0.12, 0.12, 1], {
-    easing: EASING_ENTER,
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  const opacity = blinking
+    ? interpolate(phase, [0, 0.4, 0.5, 1], [1, 0.12, 0.12, 1], {
+        easing: EASING_ENTER,
+        extrapolateLeft: "clamp",
+        extrapolateRight: "clamp",
+      })
+    : 1;
 
   const resolvedColor = cursorColor ?? color;
   const resolvedWidth = cursorWidth ?? Math.max(2, Math.round(fontSize * 0.06));
@@ -232,12 +236,7 @@ const Cursor: React.FC<{
   if (cursorStyle === "block") {
     return (
       <span
-        style={{
-          ...baseStyle,
-          width: "0.55em",
-          height: "1.1em",
-          borderRadius: 2,
-        }}
+        style={{ ...baseStyle, width: "0.55em", height: "1.1em", borderRadius: 2 }}
       />
     );
   }
@@ -258,16 +257,19 @@ const Cursor: React.FC<{
 
   return (
     <span
-      style={{
-        ...baseStyle,
-        width: resolvedWidth,
-        height: "1.1em",
-        borderRadius: 1,
-      }}
+      style={{ ...baseStyle, width: resolvedWidth, height: "1.1em", borderRadius: 1 }}
     />
   );
 };
 
+/**
+ * Types a string out under a live caret.
+ *
+ * Two details carry the illusion. The caret holds solid while keys are landing
+ * and only blinks once it rests — a caret that blinks mid-word looks like a
+ * loading state, not typing. And the full block is measured up front, so a
+ * wrapping line does not shunt everything under it down a row mid-sentence.
+ */
 export const Typewriter: React.FC<TypewriterProps> = ({
   text,
   charFrames,
@@ -285,13 +287,13 @@ export const Typewriter: React.FC<TypewriterProps> = ({
   color = "#ececec",
   fontFamily,
   style,
-  background = false,
   humanize = false,
   respectPunctuation = false,
   punctuationPauseSeconds = 0.25,
   loop = false,
   loopPauseSeconds = 1,
   backspaceCharFrames = 1,
+  reserveSpace = true,
 }) => {
   const frame = useCurrentFrame();
   const { fps, width } = useVideoConfig();
@@ -300,10 +302,10 @@ export const Typewriter: React.FC<TypewriterProps> = ({
   const timeline = useMemo(() => {
     const { displayText, pauses } = parsePauses(text, fps);
     const baseCharFrames =
-      charFrames ?? Math.max(1, Math.floor(durationInFrames / Math.max(1, displayText.length)));
+      charFrames ?? durationInFrames / Math.max(1, displayText.length);
 
     return buildTimeline(displayText, pauses, {
-      baseCharFrames,
+      baseCharFrames: Math.max(0.05, baseCharFrames),
       delayFrames: delayInFrames,
       pauseAfter,
       pauseAfterFrames: pauseAfter ? Math.round(fps * pauseSeconds) : 0,
@@ -311,7 +313,7 @@ export const Typewriter: React.FC<TypewriterProps> = ({
       respectPunctuation,
       punctuationPauseFrames: Math.round(fps * punctuationPauseSeconds),
       loopPauseFrames: loop ? Math.round(fps * loopPauseSeconds) : 0,
-      backspaceCharFrames: Math.max(1, backspaceCharFrames),
+      backspaceCharFrames: Math.max(0.05, backspaceCharFrames),
     });
   }, [
     text,
@@ -332,24 +334,33 @@ export const Typewriter: React.FC<TypewriterProps> = ({
   const visibleChars = getVisibleChars(frame, timeline, loop);
   const typedText = timeline.displayText.slice(0, visibleChars);
 
-  const content = (
-    <span
-      style={{
-        fontSize,
-        fontWeight,
-        lineHeight: 1.2,
-        wordBreak: "break-word",
-        whiteSpace: "pre-wrap",
-        ...(color !== undefined ? { color } : {}),
-        ...(fontFamily !== undefined ? { fontFamily } : {}),
-        ...style,
-      }}
-    >
+  const lastAppear =
+    visibleChars > 0 ? timeline.appearFrames[visibleChars - 1] : -Infinity;
+  const cycleFrame = loop ? frame % Math.max(1, timeline.cycleFrames) : frame;
+  const deleting =
+    loop && cycleFrame >= timeline.typeFrames + timeline.loopPauseFrames;
+  const blinking =
+    !deleting && (visibleChars === 0 || cycleFrame - lastAppear > IDLE_FRAMES);
+
+  const textStyle: React.CSSProperties = {
+    fontSize,
+    fontWeight,
+    lineHeight: 1.2,
+    wordBreak: "break-word",
+    whiteSpace: "pre-wrap",
+    ...(color !== undefined ? { color } : {}),
+    ...(fontFamily !== undefined ? { fontFamily } : {}),
+    ...style,
+  };
+
+  const typed = (
+    <>
       {typedText}
       {showCursor ? (
         <Cursor
           frame={frame}
           blinkFrames={cursorBlinkFrames}
+          blinking={blinking}
           color={color}
           cursorColor={cursorColor}
           cursorWidth={cursorWidth}
@@ -357,25 +368,19 @@ export const Typewriter: React.FC<TypewriterProps> = ({
           fontSize={fontSize}
         />
       ) : null}
-    </span>
+    </>
   );
 
-  if (background) {
-    return (
-      <div
-        style={{
-          display: "inline-block",
-          padding: "0.25em 0.55em",
-          borderRadius: "0.35em",
-          background: "rgba(255, 255, 255, 0.06)",
-          border: "1px solid rgba(255, 255, 255, 0.1)",
-          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
-        }}
-      >
-        {content}
-      </div>
-    );
+  if (!reserveSpace) {
+    return <span style={textStyle}>{typed}</span>;
   }
 
-  return content;
+  return (
+    <span style={{ ...textStyle, display: "inline-grid" }}>
+      <span style={{ gridArea: "1 / 1", visibility: "hidden" }} aria-hidden>
+        {timeline.displayText}
+      </span>
+      <span style={{ gridArea: "1 / 1" }}>{typed}</span>
+    </span>
+  );
 };

@@ -95,6 +95,11 @@ const PreviewBackdrop: React.FC = () => (
 export const LowerThirdPreview: React.FC = () => (
   <ScenePreviewPlate direct>
     <PreviewBackdrop />
-    <LowerThird title="Mina Patel" subtitle="Founder, Northstar Studio" />
+    <LowerThird
+      title="Mina Patel"
+      subtitle="Founder, Northstar Studio"
+      badge="Live"
+      holdSeconds={3.2}
+    />
   </ScenePreviewPlate>
 );

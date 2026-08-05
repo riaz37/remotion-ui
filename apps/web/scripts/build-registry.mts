@@ -110,34 +110,136 @@ type Registry = {
   items: RegistryItem[];
 };
 
-type AiRecipe = {
-  slug: string;
-  title: string;
-  intent: string;
-  components: string[];
-  installCommand: string;
-  docsUrl: string;
-  prompt: string;
-  flagshipComposition?: string;
-  compositionId?: string;
-  renderCommand?: string;
-};
+const heroLoopPath = path.join(
+  appRoot,
+  "registry",
+  "bases",
+  "default",
+  "compositions",
+  "hero-loop",
+  "index.tsx",
+);
 
-type RecipeManifest = {
-  recipes: AiRecipe[];
-};
+/** Cards the hero shows, in order, when they still exist in the registry. */
+const HERO_LOOP_CURATED = [
+  "social-clip",
+  "caption-scene",
+  "typewriter",
+  "audiogram-bars",
+  "lower-third",
+  "path-draw",
+  "metric-ticker",
+  "transition-wipe",
+  "data-story",
+  "karaoke-captions",
+  "code-reveal",
+  "logo-reveal",
+] as const;
 
-async function loadRecipes(): Promise<AiRecipe[]> {
-  const manifestPath = path.join(
-    appRoot,
-    "content",
-    "docs",
-    "recipes",
-    "manifest.json",
+/** The grid is 4 × 3 at wide crops and 2 × 6 at narrow ones. */
+const HERO_LOOP_CARD_COUNT = 12;
+
+const COMPONENT_CATEGORIES = new Set<DerivedCategory>([
+  "primitive",
+  "scene",
+  "composition",
+]);
+
+type HeroLoopCard = { name: string; kind: DerivedCategory; lane: string };
+
+/**
+ * The hero states two facts about the registry — how many components there are
+ * and twelve of their names. Both are generated here so a rename or an added
+ * component can never leave a stale claim on the landing page.
+ *
+ * A curated name that has disappeared is dropped rather than fatal: the deck is
+ * topped up from the registry, round-robin across lanes so the stripes stay
+ * varied. A missing card is a cosmetic loss, not a reason to fail a deploy.
+ */
+function heroLoopCards(registry: Registry): HeroLoopCard[] {
+  const byName = new Map<string, HeroLoopCard>();
+
+  for (const item of registry.items) {
+    const kind = deriveCategory(item);
+    const lane = REGISTRY_ATLAS[item.name]?.lane;
+    if (!kind || !COMPONENT_CATEGORIES.has(kind) || !lane) continue;
+    byName.set(item.name, { name: item.name, kind, lane });
+  }
+
+  const picked: HeroLoopCard[] = [];
+  const taken = new Set<string>();
+
+  for (const name of HERO_LOOP_CURATED) {
+    const card = byName.get(name);
+    if (!card || picked.length >= HERO_LOOP_CARD_COUNT) continue;
+    picked.push(card);
+    taken.add(name);
+  }
+
+  const remainingByLane = LANE_ORDER.map((lane) =>
+    [...byName.values()]
+      .filter((card) => card.lane === lane && !taken.has(card.name))
+      .sort((a, b) => a.name.localeCompare(b.name)),
   );
-  const raw = await fs.readFile(manifestPath, "utf-8");
-  const manifest = JSON.parse(raw) as RecipeManifest;
-  return manifest.recipes;
+
+  for (let round = 0; picked.length < HERO_LOOP_CARD_COUNT; round++) {
+    const slice = remainingByLane.map((lane) => lane[round]).filter(Boolean);
+    if (slice.length === 0) break;
+
+    for (const card of slice) {
+      if (picked.length >= HERO_LOOP_CARD_COUNT) break;
+      picked.push(card);
+      taken.add(card.name);
+    }
+  }
+
+  return picked;
+}
+
+async function syncHeroLoopFacts(registry: Registry): Promise<void> {
+  const count = registry.items.filter((item) => {
+    const category = deriveCategory(item);
+    return category !== undefined && COMPONENT_CATEGORIES.has(category);
+  }).length;
+
+  const cards = heroLoopCards(registry);
+  if (cards.length < HERO_LOOP_CARD_COUNT) {
+    throw new Error(
+      `hero-loop needs ${HERO_LOOP_CARD_COUNT} catalog cards, resolved ${cards.length}`,
+    );
+  }
+
+  const block = [
+    "// #region generated:registry-facts",
+    `const REGISTRY_COUNT = ${count};`,
+    "",
+    "const CATALOG_ITEMS = [",
+    ...cards.map(
+      (card) =>
+        `  { name: "${card.name}", kind: "${card.kind}", stripe: LANE.${card.lane} },`,
+    ),
+    "] as const;",
+    "// #endregion generated:registry-facts",
+  ].join("\n");
+
+  const source = await fs.readFile(heroLoopPath, "utf-8");
+  const region =
+    /\/\/ #region generated:registry-facts[\s\S]*?\/\/ #endregion generated:registry-facts/;
+
+  if (!region.test(source)) {
+    throw new Error(
+      "hero-loop is missing its generated:registry-facts region — see scripts/build-registry.mts",
+    );
+  }
+
+  const next = source.replace(region, block);
+  if (next === source) {
+    console.log(`  ✓ hero-loop registry facts current (${count} components)`);
+    return;
+  }
+
+  await fs.writeFile(heroLoopPath, next, "utf-8");
+  console.log(`  ✓ hero-loop registry facts regenerated (${count} components)`);
 }
 
 async function readFileContent(relativePath: string): Promise<string | null> {
@@ -201,7 +303,6 @@ async function writeJson(filePath: string, data: unknown): Promise<void> {
 }
 
 async function buildAiFiles(registry: Registry): Promise<void> {
-  const recipes = await loadRecipes();
   const components = registry.items.map((item) => {
     const atlas = resolveAtlas(item);
     const firstFile = item.files[0];
@@ -261,14 +362,6 @@ async function buildAiFiles(registry: Registry): Promise<void> {
     components,
   });
 
-  await writeJson(path.join(aiDir, "recipes.json"), {
-    name: "remotionui-recipes",
-    homepage: siteUrl,
-    guidance:
-      "Choose a recipe first when the user asks for a complete video. Install all listed components before importing.",
-    recipes,
-  });
-
   await fs.writeFile(
     path.join(aiDir, "remotionui-agent.md"),
     `# RemotionUI Agent Instructions
@@ -291,14 +384,13 @@ Remotion is the framework. RemotionUI is the component registry: production-read
 ## Useful indexes
 
 - Components: ${siteUrl}/ai/components.json
-- Recipes: ${siteUrl}/ai/recipes.json
 - Registry: ${siteUrl}/r/index.json
 - Full LLM guide: ${siteUrl}/llms-full.txt
 
 ## Recommended workflow
 
 1. Understand the user's video goal.
-2. Choose a recipe from ${siteUrl}/ai/recipes.json.
+2. Find components in ${siteUrl}/ai/components.json.
 3. Install components with \`npx remotion-ui@latest add ...\`.
 4. Import from local source paths.
 5. Compose scenes with Remotion frame APIs.
@@ -311,17 +403,10 @@ Remotion is the framework. RemotionUI is the component registry: production-read
   console.log(`AI files built: public/ai/`);
 }
 
-async function writeLlmsTxt(registry: Registry, recipes: AiRecipe[]): Promise<void> {
+async function writeLlmsTxt(registry: Registry): Promise<void> {
   const compositions = registry.items
     .filter((item) => item.type === "registry:block" && item.files[0]?.path.includes("/compositions/"))
     .map((item) => item.name);
-
-  const recipeLines = recipes
-    .map(
-      (recipe) =>
-        `- ${recipe.title} (\`${recipe.slug}\`): ${recipe.installCommand}`,
-    )
-    .join("\n");
 
   const compositionLines = compositions
     .slice(0, 12)
@@ -340,7 +425,6 @@ async function writeLlmsTxt(registry: Registry, recipes: AiRecipe[]): Promise<vo
 - AI guide: ${siteUrl}/docs/ai
 - Full LLM guide: ${siteUrl}/llms-full.txt
 - Component index: ${siteUrl}/ai/components.json
-- Recipe index: ${siteUrl}/ai/recipes.json
 - Agent prompt: ${siteUrl}/ai/remotionui-agent.md
 - Registry: ${siteUrl}/r/index.json
 
@@ -351,10 +435,6 @@ async function writeLlmsTxt(registry: Registry, recipes: AiRecipe[]): Promise<vo
 - Lower thirds, title cards, quote cards, and callouts
 - Audio visualizers and podcast clips
 - Transitions, intros, showcases, and reel templates
-
-## Recipes (${recipes.length})
-
-${recipeLines}
 
 ## Flagship compositions
 
@@ -460,6 +540,10 @@ async function buildRegistry(): Promise<void> {
 
   await fs.mkdir(outputDir, { recursive: true });
 
+  // Before the copy loop: the generated block has to be in the source that
+  // ships inside hero-loop.json.
+  await syncHeroLoopFacts(registry);
+
   const index: Array<{
     name: string;
     type: string;
@@ -519,8 +603,7 @@ async function buildRegistry(): Promise<void> {
   await buildComponentsMeta(registry);
   assertCategoryAlignment(registry);
   await buildAiFiles(registry);
-  const recipes = await loadRecipes();
-  await writeLlmsTxt(registry, recipes);
+  await writeLlmsTxt(registry);
 }
 
 buildRegistry().catch((error) => {

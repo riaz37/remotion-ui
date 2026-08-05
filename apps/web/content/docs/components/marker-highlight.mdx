@@ -1,12 +1,14 @@
 ---
 title: Marker Highlight
-description: Highlighter-pen-style wipe animation behind the target word.
+description: Highlighter stroke swept word by word, with marker, knockout, underline and box variants.
 ---
 
 import { MarkerHighlightPreview } from '@/components/previews/marker-highlight';
 
-<ComponentPage name="marker-highlight" preview={MarkerHighlightPreview} durationInFrames={60}>
+<ComponentPage name="marker-highlight" preview={MarkerHighlightPreview}>
 
-Finds `highlightWord` in `text` and animates a highlighter-pen-style wipe behind it using `spring()`. Use `markerColor` and `invertOnHighlight` for highlighter-style emphasis.
+Strikes emphasis across `phrase`, one word at a time. Word by word matters: one band appearing behind the whole phrase reads as a background, while a stroke crossing each word in turn reads as a hand moving.
+
+The ink flips under the leading edge of the stroke rather than at a threshold, so covered text is never briefly unreadable. `variant` switches between a translucent marker, a solid knockout, an underline and a box.
 
 </ComponentPage>

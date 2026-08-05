@@ -4,6 +4,7 @@ import { Player, type PlayerRef } from "@remotion/player";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { AtlasLane } from "@/lib/atlas";
 import { laneAccentMuted } from "@/lib/lane-visuals";
+import { previewMeta } from "@/lib/preview-config";
 import { AnimatedBarChartPreview } from "./previews/animated-bar-chart";
 import {
   ChatGptPreview,
@@ -115,171 +116,156 @@ type AtlasMiniPreviewProps = {
   lane: AtlasLane;
   /** Enable hover scrub on filmstrip cards */
   scrubOnHover?: boolean;
+  /**
+   * Only run the player while it is on screen. Sections that mount many
+   * previews at once (the contact sheet, the docs grids) use this so offscreen
+   * compositions are not burning frames.
+   */
+  playWhenVisible?: boolean;
   aspectRatio?: "16 / 9" | "9 / 16";
 };
 
-type PreviewConfig = {
-  component: React.ComponentType;
-  durationInFrames?: number;
-  width?: number;
-  height?: number;
+const PREVIEWS: Record<string, React.ComponentType> = {
+  "animated-bar-chart": AnimatedBarChartPreview,
+  "audio-pulse": AudioPulsePreview,
+  "audiogram-bars": AudiogramBarsPreview,
+  "audiogram-scene": AudiogramScenePreview,
+  "auto-fit-title": AutoFitTitlePreview,
+  "b-roll-stack": BRollStackPreview,
+  "blur-in": BlurInPreview,
+  "callout-spotlight": CalloutSpotlightPreview,
+  "caption-bumper": CaptionBumperPreview,
+  "caption-highlight": CaptionHighlightPreview,
+  "caption-scene": CaptionScenePreview,
+  "chat-to-preview": ChatToPreviewPreview,
+  "claude-chat": ClaudeChatPreview,
+  "chat-gpt": ChatGptPreview,
+  v0: V0ComposerPreview,
+  "claude-code": ClaudeCodePreview,
+  opencode: OpencodePreview,
+  "code-accordion": CodeAccordionPreview,
+  "code-diff-wipe": CodeDiffWipePreview,
+  "code-reveal": CodeRevealPreview,
+  "comment-callout": CommentCalloutPreview,
+  counter: CounterPreview,
+  "creator-reel": CreatorReelPreview,
+  "cursor-path": CursorPathPreview,
+  "data-flow-pipes": DataFlowPipesPreview,
+  "data-story": DataStoryPreview,
+  "drag-drop-flow": DragDropFlowPreview,
+  "end-card": EndCardPreview,
+  "fade-in": FadeInPreview,
+  "fade-out": FadeOutPreview,
+  "feature-list": FeatureListPreview,
+  "hero-loop": HeroLoopPreview,
+  "hero-device-assemble": HeroDeviceAssemblePreview,
+  "ecosystem-orbit": EcosystemOrbitPreview,
+  "bento-pan": BentoPanPreview,
+  "browser-flow": BrowserFlowPreview,
+  "ai-generation-canvas": AiGenerationCanvasPreview,
+  "live-code-split": LiveCodeSplitPreview,
+  "deploy-reveal": DeployRevealPreview,
+  "dashboard-populate": DashboardPopulatePreview,
+  "pricing-focus": PricingFocusPreview,
+  "landing-code-showcase": LandingCodeShowcasePreview,
+  "tool-menu-slide": ToolMenuSlidePreview,
+  "image-expand": ImageExpandPreview,
+  "hook-card": HookCardPreview,
+  intro: IntroPreview,
+  "karaoke-captions": KaraokeCaptionsPreview,
+  "line-chart-draw": LineChartDrawPreview,
+  "logo-reveal": LogoRevealPreview,
+  "lower-third": LowerThirdPreview,
+  "map-canvas": MapCanvasPreview,
+  "map-flight": MapFlightPreview,
+  "map-markers": MapMarkersPreview,
+  "map-route": MapRoutePreview,
+  "media-frame": MediaFramePreview,
+  "media-sequence": MediaSequencePreview,
+  "metric-ticker": MetricTickerPreview,
+  "path-draw": PathDrawPreview,
+  "podcast-clip": PodcastClipPreview,
+  "progress-bar": ProgressBarPreview,
+  "quote-card": QuoteCardPreview,
+  "rotate-in": RotateInPreview,
+  "scale-in": ScaleInPreview,
+  showcase: ShowcasePreview,
+  "slide-left": SlideLeftPreview,
+  "slide-up": SlideUpPreview,
+  "social-clip": SocialClipPreview,
+  "split-screen": SplitScreenPreview,
+  "spring-in": SpringInPreview,
+  "stagger-children": StaggerChildrenPreview,
+  "stat-card": StatCardPreview,
+  "terminal-simulator": TerminalSimulatorPreview,
+  "timeline-steps": TimelineStepsPreview,
+  "title-card": TitleCardPreview,
+  "talking-head-layout": TalkingHeadLayoutPreview,
+  "transition-clock-wipe": TransitionClockWipePreview,
+  "transition-fade": TransitionFadePreview,
+  "transition-light-leak": TransitionLightLeakPreview,
+  "transition-slide": TransitionSlidePreview,
+  "transition-wipe": TransitionWipePreview,
+  "blur-reveal": TransitionBlurRevealPreview,
+  "chromatic-aberration-wipe": TransitionChromaticAberrationWipePreview,
+  "confetti-burst": ConfettiBurstPreview,
+  "device-mockup-zoom": DeviceMockupZoomPreview,
+  "directional-wipe": TransitionDirectionalWipePreview,
+  "dynamic-grid": DynamicGridPreview,
+  "grid-pixelate-wipe": TransitionGridPixelateWipePreview,
+  "frosted-glass-wipe": TransitionFrostedGlassWipePreview,
+  "mesh-gradient-bg": MeshGradientBgPreview,
+  "simulated-cursor": SimulatedCursorPreview,
+  "spatial-push": TransitionSpatialPushPreview,
+  "zoom-through": TransitionZoomThroughPreview,
+  "tutorial-clip": TutorialClipPreview,
+  typewriter: TypewriterPreview,
+  "waveform-line": WaveformLinePreview,
+  "marker-highlight": MarkerHighlightPreview,
+  "zoom-pan-frame": ZoomPanFramePreview,
 };
 
-const PREVIEWS: Record<string, PreviewConfig> = {
-  "animated-bar-chart": { component: AnimatedBarChartPreview },
-  "audio-pulse": { component: AudioPulsePreview, durationInFrames: 120 },
-  "audiogram-bars": { component: AudiogramBarsPreview, durationInFrames: 120 },
-  "audiogram-scene": { component: AudiogramScenePreview, durationInFrames: 150 },
-  "auto-fit-title": { component: AutoFitTitlePreview },
-  "b-roll-stack": { component: BRollStackPreview },
-  "blur-in": { component: BlurInPreview },
-  "callout-spotlight": { component: CalloutSpotlightPreview },
-  "caption-bumper": { component: CaptionBumperPreview },
-  "caption-highlight": { component: CaptionHighlightPreview },
-  "caption-scene": { component: CaptionScenePreview, durationInFrames: 150 },
-  "chat-to-preview": { component: ChatToPreviewPreview, durationInFrames: 110 },
-  "claude-chat": { component: ClaudeChatPreview, durationInFrames: 120 },
-  "chat-gpt": { component: ChatGptPreview, durationInFrames: 120 },
-  v0: { component: V0ComposerPreview, durationInFrames: 120 },
-  "claude-code": { component: ClaudeCodePreview, durationInFrames: 120 },
-  opencode: { component: OpencodePreview, durationInFrames: 120 },
-  "code-accordion": { component: CodeAccordionPreview, durationInFrames: 90 },
-  "code-diff-wipe": { component: CodeDiffWipePreview, durationInFrames: 100 },
-  "code-reveal": { component: CodeRevealPreview },
-  "comment-callout": { component: CommentCalloutPreview },
-  counter: { component: CounterPreview },
-  "creator-reel": {
-    component: CreatorReelPreview,
-    durationInFrames: 180,
-    width: 1080,
-    height: 1920,
-  },
-  "cursor-path": { component: CursorPathPreview },
-  "data-flow-pipes": { component: DataFlowPipesPreview, durationInFrames: 100 },
-  "data-story": { component: DataStoryPreview, durationInFrames: 420 },
-  "drag-drop-flow": { component: DragDropFlowPreview, durationInFrames: 90 },
-  "end-card": { component: EndCardPreview },
-  "fade-in": { component: FadeInPreview },
-  "fade-out": { component: FadeOutPreview },
-  "feature-list": { component: FeatureListPreview },
-  "hero-loop": { component: HeroLoopPreview, durationInFrames: 180 },
-  "hero-device-assemble": { component: HeroDeviceAssemblePreview, durationInFrames: 180 },
-  "ecosystem-orbit": { component: EcosystemOrbitPreview, durationInFrames: 180 },
-  "bento-pan": { component: BentoPanPreview, durationInFrames: 180 },
-  "browser-flow": { component: BrowserFlowPreview, durationInFrames: 180 },
-  "ai-generation-canvas": { component: AiGenerationCanvasPreview, durationInFrames: 180 },
-  "live-code-split": { component: LiveCodeSplitPreview, durationInFrames: 180 },
-  "deploy-reveal": { component: DeployRevealPreview, durationInFrames: 180 },
-  "dashboard-populate": { component: DashboardPopulatePreview, durationInFrames: 180 },
-  "pricing-focus": { component: PricingFocusPreview, durationInFrames: 180 },
-  "landing-code-showcase": { component: LandingCodeShowcasePreview, durationInFrames: 180 },
-  "tool-menu-slide": { component: ToolMenuSlidePreview, durationInFrames: 120 },
-  "image-expand": { component: ImageExpandPreview, durationInFrames: 120 },
-  "hook-card": { component: HookCardPreview },
-  intro: { component: IntroPreview, durationInFrames: 150 },
-  "karaoke-captions": { component: KaraokeCaptionsPreview },
-  "line-chart-draw": { component: LineChartDrawPreview },
-  "logo-reveal": { component: LogoRevealPreview },
-  "lower-third": { component: LowerThirdPreview },
-  "map-canvas": { component: MapCanvasPreview },
-  "map-flight": { component: MapFlightPreview, durationInFrames: 150 },
-  "map-markers": { component: MapMarkersPreview },
-  "map-route": { component: MapRoutePreview },
-  "media-frame": { component: MediaFramePreview },
-  "media-sequence": { component: MediaSequencePreview },
-  "metric-ticker": { component: MetricTickerPreview },
-  "path-draw": { component: PathDrawPreview },
-  "podcast-clip": {
-    component: PodcastClipPreview,
-    durationInFrames: 180,
-    width: 1080,
-    height: 1920,
-  },
-  "progress-bar": { component: ProgressBarPreview },
-  "quote-card": { component: QuoteCardPreview },
-  "rotate-in": { component: RotateInPreview },
-  "scale-in": { component: ScaleInPreview },
-  showcase: { component: ShowcasePreview, durationInFrames: 150 },
-  "slide-left": { component: SlideLeftPreview },
-  "slide-up": { component: SlideUpPreview },
-  "social-clip": {
-    component: SocialClipPreview,
-    durationInFrames: 180,
-    width: 1080,
-    height: 1920,
-  },
-  "split-screen": { component: SplitScreenPreview },
-  "spring-in": { component: SpringInPreview },
-  "stagger-children": { component: StaggerChildrenPreview },
-  "stat-card": { component: StatCardPreview },
-  "terminal-simulator": { component: TerminalSimulatorPreview, durationInFrames: 90 },
-  "timeline-steps": { component: TimelineStepsPreview },
-  "title-card": { component: TitleCardPreview },
-  "talking-head-layout": { component: TalkingHeadLayoutPreview },
-  "transition-clock-wipe": { component: TransitionClockWipePreview },
-  "transition-fade": { component: TransitionFadePreview },
-  "transition-light-leak": { component: TransitionLightLeakPreview },
-  "transition-slide": { component: TransitionSlidePreview },
-  "transition-wipe": { component: TransitionWipePreview },
-  "blur-reveal": { component: TransitionBlurRevealPreview },
-  "chromatic-aberration-wipe": { component: TransitionChromaticAberrationWipePreview },
-  "confetti-burst": { component: ConfettiBurstPreview, durationInFrames: 72 },
-  "device-mockup-zoom": { component: DeviceMockupZoomPreview, durationInFrames: 90 },
-  "directional-wipe": { component: TransitionDirectionalWipePreview },
-  "dynamic-grid": { component: DynamicGridPreview, durationInFrames: 90 },
-  "grid-pixelate-wipe": { component: TransitionGridPixelateWipePreview },
-  "frosted-glass-wipe": { component: TransitionFrostedGlassWipePreview },
-  "mesh-gradient-bg": { component: MeshGradientBgPreview, durationInFrames: 90 },
-  "simulated-cursor": { component: SimulatedCursorPreview, durationInFrames: 72 },
-  "spatial-push": { component: TransitionSpatialPushPreview },
-  "zoom-through": { component: TransitionZoomThroughPreview },
-  "tutorial-clip": {
-    component: TutorialClipPreview,
-    durationInFrames: 180,
-    width: 1080,
-    height: 1920,
-  },
-  typewriter: { component: TypewriterPreview },
-  "waveform-line": { component: WaveformLinePreview },
-  "marker-highlight": { component: MarkerHighlightPreview },
-  "zoom-pan-frame": { component: ZoomPanFramePreview },
-};
 
 export function AtlasMiniPreview({
   slug,
   lane,
   scrubOnHover = false,
+  playWhenVisible = false,
   aspectRatio,
 }: AtlasMiniPreviewProps) {
-  const preview = PREVIEWS[slug];
+  const component = PREVIEWS[slug];
 
-  if (!preview) {
+  if (!component) {
     return <DesignedFallback slug={slug} lane={lane} aspectRatio={aspectRatio} />;
   }
 
   return (
     <LivePreview
-      preview={preview}
+      slug={slug}
+      component={component}
       scrubOnHover={scrubOnHover}
+      playWhenVisible={playWhenVisible}
       aspectRatio={aspectRatio}
     />
   );
 }
 
 function LivePreview({
-  preview,
+  slug,
+  component,
   scrubOnHover,
+  playWhenVisible = false,
   aspectRatio: aspectRatioProp,
 }: {
-  preview: PreviewConfig;
+  slug: string;
+  component: React.ComponentType;
   scrubOnHover: boolean;
+  playWhenVisible?: boolean;
   aspectRatio?: "16 / 9" | "9 / 16";
 }) {
   const playerRef = useRef<PlayerRef>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const width = preview.width ?? 960;
-  const height = preview.height ?? 540;
-  const duration = preview.durationInFrames ?? 120;
+  const { width, height, durationInFrames: duration } = previewMeta(slug);
   const aspectRatio =
     aspectRatioProp ?? (height > width ? "9 / 16" : "16 / 9");
 
@@ -287,9 +273,30 @@ function LivePreview({
     const player = playerRef.current;
     if (!player) return;
     player.setVolume(0);
-    const id = window.requestAnimationFrame(() => player.play());
-    return () => window.cancelAnimationFrame(id);
-  }, []);
+
+    if (!playWhenVisible) {
+      const id = window.requestAnimationFrame(() => player.play());
+      return () => window.cancelAnimationFrame(id);
+    }
+
+    const target = containerRef.current;
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const current = playerRef.current;
+        if (!current) return;
+        if (entry.isIntersecting) {
+          current.play();
+        } else {
+          current.pause();
+        }
+      },
+      { rootMargin: "200px 0px", threshold: 0 },
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [playWhenVisible]);
 
   const handleScrub = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
@@ -322,7 +329,7 @@ function LivePreview({
     >
       <Player
         ref={playerRef}
-        component={preview.component}
+        component={component}
         durationInFrames={duration}
         fps={30}
         compositionWidth={width}
@@ -330,7 +337,7 @@ function LivePreview({
         style={{ width: "100%", height: "100%", display: "block" }}
         controls={false}
         loop
-        autoPlay
+        autoPlay={!playWhenVisible}
         clickToPlay={false}
         initiallyMuted
         showPosterWhenUnplayed={false}

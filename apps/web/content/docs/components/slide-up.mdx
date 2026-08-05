@@ -1,12 +1,14 @@
 ---
 title: Slide Up
-description: Slide up with fade animation.
+description: Rise into place, with an optional mask reveal and an automatic exit.
 ---
 
 import { SlideUpPreview } from '@/components/previews/slide-up';
 
-<ComponentPage name="slide-up" preview={SlideUpPreview} durationInFrames={60}>
+<ComponentPage name="slide-up" preview={SlideUpPreview}>
 
-Slide up with fade animation.
+Rises into place while opacity leads the travel: the fade is finished at 55% of the move, so the element lands solid rather than still resolving as it stops.
+
+`mask` clips the child to its own box so it rises out of a mask instead — the editorial move for a headline. Under a mask the travel defaults to the element's own height, which is the only distance that actually clears it.
 
 </ComponentPage>

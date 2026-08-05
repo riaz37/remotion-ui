@@ -30,7 +30,6 @@ import { LowerThird } from "@/remotion/scenes/lower-third";`} />
 - Import from local project paths such as `@/remotion/primitives/...`, `@/remotion/scenes/...`, or `@/compositions/...`.
 - Use `useCurrentFrame()`, `interpolate()`, `spring()`, and `<Sequence />` for render-time motion.
 - Do not use CSS transitions or Tailwind animation classes for video motion.
-- Prefer recipes before raw component search when the user asks for a complete video.
 - Preserve source ownership: edit copied component files when customization is needed.
 
 ## AI-readable files
@@ -38,15 +37,14 @@ import { LowerThird } from "@/remotion/scenes/lower-third";`} />
 - [`/llms.txt`](/llms.txt): short agent entry point
 - [`/llms-full.txt`](/llms-full.txt): full usage guide for LLMs
 - [`/ai/components.json`](/ai/components.json): component discovery index
-- [`/ai/recipes.json`](/ai/recipes.json): task-first build recipes
 - [`/ai/remotionui-agent.md`](/ai/remotionui-agent.md): reusable agent prompt
 
-## Start with recipes
+## Start with compositions
 
-Browse [Recipes](/docs/recipes) for task-first install commands and composition templates.
+Browse the [component catalog](/docs/components) for flagship compositions and install commands.
 
 <Cards>
-  <Card title="Captioned Social Video" description="Build a vertical clip with captions, audio visuals, and CTA." href="/docs/recipes/captioned-social-video" />
-  <Card title="Data Story" description="Build a chart-led video with metrics and timeline steps." href="/docs/recipes/data-story" />
-  <Card title="Podcast Clip" description="Build an audio-first clip with waveform and synced captions." href="/docs/recipes/podcast-clip" />
+  <Card title="Social Clip" description="A vertical clip with captions, audio visuals, and CTA." href="/docs/components/social-clip" />
+  <Card title="Data Story" description="A chart-led video with metrics and timeline steps." href="/docs/components/data-story" />
+  <Card title="Podcast Clip" description="An audio-first clip with waveform and synced captions." href="/docs/components/podcast-clip" />
 </Cards>

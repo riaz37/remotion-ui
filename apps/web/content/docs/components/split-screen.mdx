@@ -1,12 +1,17 @@
 ---
 title: Split Screen
-description: Two-up media comparison layout.
+description: A before/after that is actually made, not just placed side by side.
 ---
 
 import { SplitScreenPreview } from '@/components/previews/split-screen';
 
-<ComponentPage name="split-screen" preview={SplitScreenPreview} durationInFrames={90}>
+<ComponentPage name="split-screen" preview={SplitScreenPreview} durationInFrames={165}>
 
-Before/after, interview, product comparison, and two-up demo layout.
+The two panels arrive from opposite edges and meet at the divider, their labels
+land, and with `wipeAtSeconds` set the divider travels across to wipe the left
+panel away and leave the right one whole — the move a comparison is for.
+
+The right panel sits underneath, so the wipe uncovers it rather than sliding it.
+`split` sets where the divider rests beforehand.
 
 </ComponentPage>

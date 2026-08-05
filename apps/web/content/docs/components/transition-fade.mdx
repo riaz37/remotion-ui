@@ -1,11 +1,21 @@
 ---
 title: Transition Fade
-description: Fade transition helper for TransitionSeries.
+description: Crossfade between scenes, or dip through a colour on the way.
 ---
 
 import { TransitionFadePreview } from "@/components/previews/transition-previews";
 
 <ComponentPage name="transition-fade" preview={TransitionFadePreview} durationInFrames={90}>
+
+By default the two scenes crossfade directly. Pass `dipTo` and the cut goes
+through that colour instead — the outgoing scene sinks into it, the frame holds
+it for an instant, and the new scene rises back out. Each scene paints its own
+colour layer and reaches full opacity by the midpoint, so the dip is solid
+whatever sits behind the transition.
+
+```tsx
+<TransitionSeries.Transition {...transitionFade({ dipTo: "#000" })} />
+```
 
 Exports `transitionFade()` and `getTransitionFadeDuration()` for use with `TransitionSeries.Transition`.
 

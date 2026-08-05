@@ -1,105 +1,148 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
 import { Img, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
-import { DELAY, DURATION, EASING } from "@/remotion/lib/motion-tokens";
+import { CODE_THEMES } from "@/remotion/lib/code-syntax";
+import { getSafeAreaPadding } from "@/remotion/lib/layout";
+import { EASING } from "@/remotion/lib/motion-tokens";
 
 const { fontFamily } = loadFont("normal", {
-  weights: ["500", "700"],
+  weights: ["400", "500", "600", "700"],
   subsets: ["latin"],
 });
 
 export type EndCardProps = {
   title: string;
+  /** Line under the title. */
+  subtitle?: string;
+  /** Chip above the title. */
+  eyebrow?: string;
+  /** Button label. Omit to end on the title alone. */
   cta?: string;
+  /** Address typed under the button. */
   url?: string;
+  /** Handles or channels listed along the foot. */
+  handles?: string[];
   logoSrc?: string;
   logoSize?: number;
   backgroundColor?: string;
   accentColor?: string;
+  theme?: "dark" | "light";
+  /** Animation speed multiplier. */
+  speed?: number;
 };
 
-const COLORS = {
-  bg: "#080810",
-  title: "#f0fdfa",
-  url: "#e8b86d",
-  muted: "#64748b",
-  accent: "#e8b86d",
+/** Beat plan in seconds. */
+const T = {
+  logo: 0,
+  eyebrow: 0.14,
+  title: 0.26,
+  subtitle: 0.6,
+  /** The button assembles, then its label rises out of it. */
+  button: 0.82,
+  buttonLabel: 0.98,
+  /** Address types under the button. */
+  url: 1.24,
+  handles: 1.6,
+  /** Attention pulse once everything is standing. */
+  pulse: 2.05,
 } as const;
 
+/** Characters per second the address types at. */
+const URL_CPS = 26;
+
+const clamp = {
+  extrapolateLeft: "clamp",
+  extrapolateRight: "clamp",
+} as const;
+
+/**
+ * The outro built in the order a viewer acts on it: the title lands, the button
+ * assembles and its label rises out of it, the address types underneath, the
+ * channels list, and a single ring pulses off the button — rather than a stack
+ * of text fading in together.
+ */
 export const EndCard: React.FC<EndCardProps> = ({
   title,
+  subtitle,
+  eyebrow,
   cta,
   url,
+  handles,
   logoSrc,
   logoSize,
-  backgroundColor = COLORS.bg,
-  accentColor = COLORS.accent,
+  backgroundColor,
+  accentColor = "#E8B86D",
+  theme = "dark",
+  speed = 1,
 }) => {
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
-  const safeArea = getSafeAreaPadding({ width, height });
+  const palette = CODE_THEMES[theme];
+  const safe = getSafeAreaPadding({ width, height });
 
-  const titleEnter = spring({
-    frame,
-    fps,
-    config: { damping: 16, stiffness: 110, mass: 0.85 },
-  });
-  const logoEnter = spring({
-    frame,
-    fps,
-    config: { damping: 18, stiffness: 120, mass: 0.8 },
-    delay: DELAY.short,
-  });
-  const ctaEnter = spring({
-    frame,
-    fps,
-    config: { damping: 14, stiffness: 160, mass: 0.75 },
-    delay: DELAY.medium,
-  });
-  const urlReveal = interpolate(
-    frame,
-    [DELAY.medium + DURATION.fast, DELAY.medium + DURATION.fast + DURATION.normal],
-    [0, 1],
-    {
-      easing: EASING.enter,
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    },
-  );
+  const now = (frame / fps) * speed;
+  const at = (seconds: number) => (seconds * fps) / speed;
+  const ease = (from: number, to: number, easing = EASING.enter) =>
+    interpolate(frame, [at(from), at(to)], [0, 1], { easing, ...clamp });
+
+  const stage = {
+    w: width - safe.paddingLeft - safe.paddingRight,
+    h: height - safe.paddingTop - safe.paddingBottom,
+  };
+  const portrait = height > width;
+  const u = portrait
+    ? Math.min(stage.w / 620, stage.h / 1120)
+    : Math.min(stage.w / 1120, stage.h / 620);
+
+  const logoIn = logoSrc ? ease(T.logo, T.logo + 0.5) : 0;
+  const eyebrowIn = eyebrow ? ease(T.eyebrow, T.eyebrow + 0.45) : 0;
+  const titleIn = ease(T.title, T.title + 0.55);
+  const subtitleIn = subtitle ? ease(T.subtitle, T.subtitle + 0.5) : 0;
+  const button = cta
+    ? spring({
+        frame: frame - at(T.button),
+        fps,
+        config: { damping: 15, stiffness: 160, mass: 0.7 },
+      })
+    : 0;
+  const buttonLabel = cta ? ease(T.buttonLabel, T.buttonLabel + 0.4) : 0;
+  const typed = url
+    ? Math.floor(Math.max(now - T.url, 0) * URL_CPS)
+    : 0;
+  const urlDone = url ? typed >= url.length : false;
+  const handlesIn = handles?.length ? ease(T.handles, T.handles + 0.5) : 0;
+  const pulse = cta
+    ? interpolate(frame, [at(T.pulse), at(T.pulse + 0.7)], [0, 1], clamp)
+    : 0;
 
   return (
     <div
       style={{
         width,
         height,
-        backgroundColor,
-        backgroundImage: `radial-gradient(ellipse 70% 50% at 50% 100%, ${accentColor}18, transparent)`,
-        paddingLeft: safeArea.paddingLeft,
-        paddingRight: safeArea.paddingRight,
-        paddingTop: safeArea.paddingTop,
-        paddingBottom: safeArea.paddingBottom,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        background: backgroundColor ?? palette.page,
         fontFamily,
         position: "relative",
+        overflow: "hidden",
+        display: "grid",
+        placeItems: "center",
       }}
     >
       <div
         style={{
           position: "absolute",
           inset: 0,
-          background: `radial-gradient(ellipse 90% 30% at 50% 0%, ${accentColor}14, transparent 70%)`,
-          pointerEvents: "none",
+          background: `radial-gradient(ellipse 60% 46% at 50% 44%, ${accentColor}1F, transparent 72%)`,
         }}
       />
+
       <div
         style={{
+          position: "relative",
+          width: Math.min(stage.w, 860 * u),
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: scaleFont(20, width),
-          maxWidth: "88%",
+          gap: 16 * u,
           textAlign: "center",
         }}
       >
@@ -107,78 +150,171 @@ export const EndCard: React.FC<EndCardProps> = ({
           <Img
             src={logoSrc}
             style={{
-              width: logoSize ?? scaleFont(112, width),
-              height: logoSize ?? scaleFont(112, width),
-              borderRadius: scaleFont(24, width),
-              display: "block",
-              opacity: Math.min(1, logoEnter),
-              transform: `scale(${0.88 + logoEnter * 0.12})`,
+              width: logoSize ?? 76 * u,
+              height: logoSize ?? 76 * u,
+              objectFit: "contain",
+              opacity: logoIn,
+              transform: `translateY(${(1 - logoIn) * 12 * u}px)`,
             }}
           />
         ) : null}
-        <h1
-          style={{
-            color: COLORS.title,
-            fontSize: scaleFont(logoSrc ? 52 : 84, width),
-            fontWeight: 700,
-            margin: 0,
-            lineHeight: 1.08,
-            letterSpacing: "-0.02em",
-            opacity: Math.min(1, titleEnter),
-            transform: `translateY(${(1 - titleEnter) * 24}px)`,
-          }}
-        >
-          {title}
-        </h1>
-        {cta ? (
+
+        {eyebrow ? (
           <div
             style={{
-              backgroundColor: accentColor,
-              color: COLORS.bg,
-              fontSize: scaleFont(32, width),
-              fontWeight: 700,
-              padding: `${scaleFont(14, width)}px ${scaleFont(32, width)}px`,
-              borderRadius: 999,
-              boxShadow: `0 ${scaleFont(8, width)}px ${scaleFont(24, width)}px ${accentColor}44`,
-              opacity: Math.min(1, ctaEnter),
-              transform: `translateY(${(1 - ctaEnter) * 20}px) scale(${0.92 + ctaEnter * 0.08})`,
+              color: accentColor,
+              fontSize: 20 * u,
+              fontWeight: 600,
+              letterSpacing: "0.14em",
+              textTransform: "uppercase",
+              opacity: eyebrowIn,
+              transform: `translateY(${(1 - eyebrowIn) * 10 * u}px)`,
             }}
           >
-            {cta}
+            {eyebrow}
           </div>
         ) : null}
+
+        {/* The title rises out of its own mask */}
+        <div style={{ overflow: "hidden", paddingBottom: "0.04em" }}>
+          <h2
+            style={{
+              margin: 0,
+              color: palette.fg,
+              fontSize: 68 * u,
+              fontWeight: 700,
+              lineHeight: 1.06,
+              letterSpacing: "-0.03em",
+              transform: `translateY(${(1 - titleIn) * 100}%)`,
+            }}
+          >
+            {title}
+          </h2>
+        </div>
+
+        {subtitle ? (
+          <p
+            style={{
+              margin: 0,
+              maxWidth: stage.w * 0.7,
+              color: palette.dim,
+              fontSize: 28 * u,
+              lineHeight: 1.35,
+              opacity: subtitleIn,
+              transform: `translateY(${(1 - subtitleIn) * 12 * u}px)`,
+            }}
+          >
+            {subtitle}
+          </p>
+        ) : null}
+
+        {cta ? (
+          <div style={{ position: "relative", marginTop: 10 * u }}>
+            {/* Pulse leaves the button edge, so it reads as a prompt */}
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                borderRadius: 999,
+                border: `${2 * u}px solid ${accentColor}`,
+                opacity: pulse > 0 && pulse < 1 ? (1 - pulse) * 0.8 : 0,
+                transform: `scale(${interpolate(pulse, [0, 1], [1, 1.28])})`,
+              }}
+            />
+            <div
+              style={{
+                position: "relative",
+                display: "flex",
+                alignItems: "center",
+                gap: 12 * u,
+                padding: `${17 * u}px ${34 * u}px`,
+                borderRadius: 999,
+                background: accentColor,
+                color: palette.page,
+                fontSize: 27 * u,
+                fontWeight: 700,
+                letterSpacing: "-0.01em",
+                boxShadow: `0 ${14 * u}px ${40 * u}px ${accentColor}44`,
+                opacity: Math.min(button, 1),
+                transform: `scale(${interpolate(
+                  Math.min(button, 1),
+                  [0, 1],
+                  [0.9, 1],
+                )})`,
+                overflow: "hidden",
+              }}
+            >
+              <span
+                style={{
+                  display: "block",
+                  transform: `translateY(${(1 - buttonLabel) * 130}%)`,
+                }}
+              >
+                {cta}
+              </span>
+              <svg
+                width={20 * u}
+                height={20 * u}
+                viewBox="0 0 24 24"
+                fill="none"
+                style={{ opacity: buttonLabel }}
+              >
+                <path
+                  d="M5 12h13m0 0-5.4-5.4M18 12l-5.4 5.4"
+                  stroke={palette.page}
+                  strokeWidth={2.2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+          </div>
+        ) : null}
+
         {url ? (
           <div
             style={{
+              marginTop: 4 * u,
+              color: palette.dim,
+              fontSize: 24 * u,
+              fontWeight: 500,
               display: "flex",
-              flexDirection: "column",
               alignItems: "center",
-              gap: scaleFont(10, width),
-              opacity: urlReveal,
-              transform: `translateY(${(1 - urlReveal) * 12}px)`,
+              opacity: typed > 0 ? 1 : 0,
             }}
           >
-            <p
+            {url.slice(0, typed)}
+            {/* Caret holds while typing, then clears once the address is whole */}
+            <span
               style={{
-                color: COLORS.url,
-                fontSize: scaleFont(28, width),
-                margin: 0,
-                fontWeight: 500,
-                letterSpacing: "0.02em",
-              }}
-            >
-              {url}
-            </p>
-            <div
-              style={{
-                width: `${urlReveal * 100}%`,
-                maxWidth: scaleFont(240, width),
-                height: scaleFont(2, width),
-                borderRadius: 999,
-                backgroundColor: accentColor,
-                opacity: 0.7,
+                display: "inline-block",
+                width: 2 * u,
+                height: 24 * u,
+                marginLeft: 3 * u,
+                background: accentColor,
+                opacity: urlDone ? 0 : 1,
               }}
             />
+          </div>
+        ) : null}
+
+        {handles?.length ? (
+          <div
+            style={{
+              marginTop: 10 * u,
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              gap: `${8 * u}px ${20 * u}px`,
+              color: palette.faint,
+              fontSize: 21 * u,
+              opacity: handlesIn,
+              transform: `translateY(${(1 - handlesIn) * 10 * u}px)`,
+            }}
+          >
+            {handles.map((handle) => (
+              <span key={handle}>{handle}</span>
+            ))}
           </div>
         ) : null}
       </div>

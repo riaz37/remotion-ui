@@ -1,12 +1,15 @@
 ---
 title: Metric Ticker
-description: Animated KPI metric cards.
+description: KPI cards that count themselves in.
 ---
 
 import { MetricTickerPreview } from '@/components/previews/metric-ticker';
 
 <ComponentPage name="metric-ticker" preview={MetricTickerPreview} durationInFrames={100}>
 
-Compact metric cards for performance recaps and launch videos.
+Cards divide the full content width so the row reads as one panel. Values count
+up on the card's own spring; a signed `delta` picks the arrow, the chip colour
+and the tint of the `trend` sparkline underneath, which is drawn by
+[line-chart-draw](/docs/components/line-chart-draw).
 
 </ComponentPage>

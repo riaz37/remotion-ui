@@ -84,6 +84,7 @@ export const SocialClip: React.FC<SocialClipProps> = ({
         <TransitionSeries.Transition {...FADE} />
         <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.end}>
           <EndCard
+            speed={1.4}
             title={ctaTitle}
             cta={ctaLabel}
             logoSrc={logoSrc}

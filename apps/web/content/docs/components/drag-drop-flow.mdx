@@ -1,12 +1,18 @@
 ---
 title: Drag Drop Flow
-description: Drag Drop Flow for Remotion.
+description: Cursor drags a file out of a media library into a drop zone that arms, catches it, and uploads it.
 ---
 
-import { DragDropFlowPreview } from '@/components/previews/wave-batch-previews';
+import { DragDropFlowPreview } from '@/components/previews/drag-drop-flow';
 
-<ComponentPage name="drag-drop-flow" preview={DragDropFlowPreview} durationInFrames={90}>
+<ComponentPage name="drag-drop-flow" preview={DragDropFlowPreview} durationInFrames={150}>
 
-Drag Drop Flow.
+The whole drag beat, not a card sliding into a box. The cursor travels into the
+media library, presses the file, and carries it across; the row it left holds its
+place as a dashed ghost; the drop zone arms while the file is held over it; and
+the release turns into a transfer that fills and completes.
+
+Pass `siblings` to change the rest of the library, `fileName`/`fileSize` for the
+file itself, and `speed` to fit the beat into a fixed sequence.
 
 </ComponentPage>

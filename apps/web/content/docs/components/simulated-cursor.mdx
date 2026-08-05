@@ -1,12 +1,18 @@
 ---
 title: Simulated Cursor
-description: Frame-timed cursor with click pulses for tutorials.
+description: Frame-timed cursor with press, ripples, hit targets and labels.
 ---
 
 import { SimulatedCursorPreview } from "@/components/previews/simulated-cursor";
 
-<ComponentPage name="simulated-cursor" preview={SimulatedCursorPreview} durationInFrames={72}>
+<ComponentPage name="simulated-cursor" preview={SimulatedCursorPreview}>
 
-Overlay a cursor that follows percentage-based waypoints with optional click ripples.
+Drives a pointer across percentage-based waypoints with an arrival frame each.
+Every hop runs its own spring, so the cursor decelerates into a target the way
+a hand does rather than gliding at a fixed rate.
+
+Give a waypoint a `target` to ring the hit area, and a `label` to chip the
+control being used. Frames listed in `clickFrames` press the pointer down and
+fire a ripple.
 
 </ComponentPage>

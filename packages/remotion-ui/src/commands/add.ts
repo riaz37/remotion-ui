@@ -20,7 +20,6 @@ export type AddOptions = {
   registryUrl?: string;
   preset?: string;
   yes?: boolean;
-  recipe?: string;
   showStarPrompt?: boolean;
 };
 
@@ -28,18 +27,7 @@ export async function addCommand(
   components: string[],
   options: AddOptions = {},
 ): Promise<void> {
-  let names = components;
-
-  if (options.recipe) {
-    const { fetchRecipeBySlug } = await import("../registry/fetch-recipes.js");
-    const recipe = await fetchRecipeBySlug(options.recipe, options.registryUrl);
-    if (!recipe) {
-      throw new Error(`Recipe not found: ${options.recipe}`);
-    }
-    console.log(`Installing recipe: ${recipe.title}`);
-    console.log(`  ${recipe.intent}`);
-    names = recipe.components;
-  }
+  const names = components;
 
   if (names.length === 0) {
     throw new Error("Please specify at least one component to add.");

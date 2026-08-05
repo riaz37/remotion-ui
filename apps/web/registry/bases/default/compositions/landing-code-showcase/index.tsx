@@ -16,7 +16,7 @@ export const LandingCodeShowcase: React.FC = () => {
         <TitleCard title="Install. Edit. Render." subtitle="Source you own" />
       </Sequence>
       <Sequence from={75} durationInFrames={105} premountFor={premount}>
-        <CodeReveal code={CODE} title="Terminal" />
+        <CodeReveal code={CODE} title="install.sh" language="bash" />
       </Sequence>
     </AbsoluteFill>
   );

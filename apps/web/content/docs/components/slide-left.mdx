@@ -1,12 +1,14 @@
 ---
 title: Slide Left
-description: Slide left with fade animation.
+description: Slide in from either side, with an optional mask reveal and an automatic exit.
 ---
 
 import { SlideLeftPreview } from '@/components/previews/slide-left';
 
-<ComponentPage name="slide-left" preview={SlideLeftPreview} durationInFrames={60}>
+<ComponentPage name="slide-left" preview={SlideLeftPreview}>
 
-Slide left with fade animation.
+Slides in on the horizontal — the reading axis, so it suits list rows and lower thirds where a rise would fight the line above.
+
+Set `from="right"` to come in from the other side, or `mask` to slide out of a clipped box.
 
 </ComponentPage>

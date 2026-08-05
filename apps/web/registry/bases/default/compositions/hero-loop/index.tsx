@@ -1,825 +1,828 @@
-import { loadFont } from "@remotion/google-fonts/Inter";
+import { loadFont as loadBodyFont } from "@remotion/google-fonts/IBMPlexSans";
+import { loadFont as loadMonoFont } from "@remotion/google-fonts/JetBrainsMono";
+import { loadFont as loadDisplayFont } from "@remotion/google-fonts/Newsreader";
 import type { CSSProperties, ReactNode } from "react";
+import { useMemo } from "react";
 import {
   AbsoluteFill,
-  Easing,
   Sequence,
   interpolate,
-  spring,
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { BlurIn } from "@/remotion/primitives/blur-in";
 import { Counter } from "@/remotion/primitives/counter";
 import { FadeIn } from "@/remotion/primitives/fade-in";
-import { FadeOut } from "@/remotion/primitives/fade-out";
-import { RotateIn } from "@/remotion/primitives/rotate-in";
-import { ScaleIn } from "@/remotion/primitives/scale-in";
 import { SlideUp } from "@/remotion/primitives/slide-up";
 import { SpringIn } from "@/remotion/primitives/spring-in";
 import { StaggerChildren } from "@/remotion/primitives/stagger-children";
 import { Typewriter } from "@/remotion/primitives/typewriter";
-import { MarkerHighlight } from "@/remotion/primitives/marker-highlight";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
+import { EASING } from "@/remotion/lib/motion-tokens";
+import { enterProgress } from "@/remotion/lib/timing";
 
-const { fontFamily: interFamily } = loadFont("normal", {
-  weights: ["400", "500", "600", "700", "800"],
+/**
+ * hero-loop — the landing-page monitor composition.
+ *
+ * Four beats over 360 frames (12s @ 30fps):
+ *   title 0-50 · install 36-150 · catalog 136-258 · render 244-330 · title 316-360
+ *
+ * Every beat travels the same direction — it arrives from below and leaves
+ * upward — so the overlapping handoffs read as one continuous roll instead of a
+ * double exposure of two centred layouts.
+ *
+ * The title beat is a single element driven by the global frame, so its state
+ * at the last frame is its state at frame 0 and the wrap is invisible. The only
+ * moving thing that crosses the seam is the tally light, whose 30-frame period
+ * divides 360 exactly. Everything else lives in a `<Sequence>` so off-screen
+ * beats are unmounted.
+ */
+
+const { fontFamily: displayFamily } = loadDisplayFont("normal", {
+  weights: ["500"],
   subsets: ["latin"],
 });
 
+const { fontFamily: bodyFamily } = loadBodyFont("normal", {
+  weights: ["400", "500"],
+  subsets: ["latin"],
+});
+
+const { fontFamily: monoFamily } = loadMonoFont("normal", {
+  weights: ["400", "500"],
+  subsets: ["latin"],
+});
+
+/** Edit Bay palette. No blue anywhere — phosphor amber is the only accent. */
 const COLORS = {
-  bg: "#080808",
-  stage: "#0d0d0d",
-  surface: "#111111",
-  card: "#0f0f0f",
-  border: "#1a1a1a",
-  borderDim: "#1f1f1f",
-  text: "#ffffff",
-  secondary: "#999999",
-  muted: "#555555",
-  dim: "#333333",
-  accent: "#e8b86d",
-  accentLight: "#f0d4a8",
-  green: "#4ade80",
-  yellow: "#fcd34d",
-  pink: "#f9a8d4",
-  cyan: "#2dd4bf",
-  purpleCode: "#c084fc",
+  stage: "#050505",
+  panel: "#0d0c0b",
+  panelRaised: "#141210",
+  hairline: "rgba(236, 236, 236, 0.09)",
+  hairlineStrong: "rgba(236, 236, 236, 0.16)",
+  ink: "#ececec",
+  muted: "#8b857c",
+  dim: "#575149",
+  phosphor: "#e8b86d",
 } as const;
 
-const font = {
-  sans: interFamily,
-  mono: '"JetBrains Mono", "SFMono-Regular", Consolas, monospace',
+/** Lane stripe hues from the registry atlas — stripe only, never a surface. */
+const LANE = {
+  atoms: "oklch(0.55 0.06 252)",
+  signals: "oklch(0.55 0.06 285)",
+  vectors: "oklch(0.55 0.06 195)",
+  spatial: "oklch(0.55 0.06 155)",
+  blocks: "oklch(0.55 0.06 48)",
+  cuts: "oklch(0.55 0.06 25)",
+  reels: "oklch(0.55 0.06 330)",
+} as const;
+
+/**
+ * Handoff shape, shared by every beat.
+ *
+ * Opacity and travel run on different clocks on purpose. The fade is short and
+ * front-loaded so an outgoing beat is a faint ghost within three frames, while
+ * the longer travel keeps both layouts physically apart for the whole handoff.
+ * Fading and moving on one curve is what turns an overlap into a double
+ * exposure of two centred layouts.
+ */
+const BEAT_ENTER_FADE = 14;
+const BEAT_ENTER_MOVE = 24;
+const BEAT_EXIT_FADE = 12;
+const BEAT_EXIT_MOVE = 18;
+/** The title carries more travel than a panel — it is the only full-bleed beat. */
+const TITLE_ENTER_MOVE = 26;
+/** Frames between one beat starting to leave and the next arriving. */
+const BEAT_OVERLAP = 4;
+
+/** A beat's Sequence has to outlive its fade so the travel can finish. */
+const beat = (from: number, exitAt: number) =>
+  ({ from, exitAt, durationInFrames: exitAt + BEAT_EXIT_MOVE }) as const;
+
+/** Each beat is chained off the previous one so the schedule cannot drift. */
+const TITLE_EXIT = 32;
+const INSTALL = beat(TITLE_EXIT + BEAT_OVERLAP, 96);
+const CATALOG = beat(INSTALL.from + INSTALL.exitAt + BEAT_OVERLAP, 104);
+const RENDER = beat(CATALOG.from + CATALOG.exitAt + BEAT_OVERLAP, 68);
+const TITLE_ENTER = RENDER.from + RENDER.exitAt + BEAT_OVERLAP;
+/** Frame where the title switches from "leaving" to "returning". */
+const TITLE_PIVOT = 180;
+
+const PREMOUNT = 10;
+
+const TITLE_LINES = ["Compositions you own,", "frame by frame."] as const;
+
+const TITLE_SUB = "Install with the CLI. Every frame lands in your repo.";
+
+const INSTALL_COMMAND = "npx remotion-ui@latest add social-clip";
+
+const INSTALL_FILES = [
+  "src/compositions/social-clip/index.tsx",
+  "src/remotion/scenes/caption-scene.tsx",
+  "src/remotion/primitives/typewriter.tsx",
+  "src/remotion/lib/timing.ts",
+] as const;
+
+/**
+ * The two facts the hero states about the registry. Both are written by
+ * `pnpm registry:build` from registry.json + the atlas, so a rename or a new
+ * component can never leave a stale number or a dead name on the landing page.
+ * Edit the curated card order in scripts/build-registry.mts, not here.
+ */
+// #region generated:registry-facts
+const REGISTRY_COUNT = 108;
+
+const CATALOG_ITEMS = [
+  { name: "social-clip", kind: "composition", stripe: LANE.reels },
+  { name: "caption-scene", kind: "scene", stripe: LANE.signals },
+  { name: "typewriter", kind: "primitive", stripe: LANE.atoms },
+  { name: "audiogram-bars", kind: "primitive", stripe: LANE.signals },
+  { name: "lower-third", kind: "scene", stripe: LANE.blocks },
+  { name: "path-draw", kind: "primitive", stripe: LANE.vectors },
+  { name: "metric-ticker", kind: "scene", stripe: LANE.signals },
+  { name: "transition-wipe", kind: "primitive", stripe: LANE.cuts },
+  { name: "data-story", kind: "composition", stripe: LANE.reels },
+  { name: "karaoke-captions", kind: "primitive", stripe: LANE.signals },
+  { name: "code-reveal", kind: "scene", stripe: LANE.blocks },
+  { name: "logo-reveal", kind: "scene", stripe: LANE.vectors },
+] as const;
+// #endregion generated:registry-facts
+
+type Metrics = {
+  /** Scale a 1080p-reference size against the frame's shorter edge. */
+  s: (size: number) => number;
+  safe: ReturnType<typeof getSafeAreaPadding>;
+  contentWidth: number;
+  panelWidth: number;
+  gridWidth: number;
+  gridColumns: number;
+  gridGap: number;
+  cardHeight: number;
+  titleWidth: number;
+  /** Auto-fit so the longest headline never wraps in a narrow crop. */
+  headlineSize: number;
+  mono: number;
+  tick: number;
 };
 
-const cliLines = [
-  { text: "$ npx remotion-ui@latest add counter", color: "#666666" },
-  { text: "✓ Fetching registry...", color: COLORS.green, pulse: true },
-  { text: "✓ Resolving dependencies...", color: COLORS.green, pulse: true },
-  {
-    text: "✓ src/remotion/primitives/counter.tsx",
-    color: COLORS.green,
-    pulse: true,
-  },
-  { text: "ready to import", color: COLORS.accentLight },
-];
+/** Longest title line, in ems, at Newsreader 500 — used to auto-fit the display size. */
+const TITLE_LINE_EMS = 10.6;
 
-const pillItems = [
-  ["FadeIn", COLORS.accentLight],
-  ["SlideUp", "#86efac"],
-  ["Typewriter", COLORS.yellow],
-  ["Counter", COLORS.pink],
-  ["BlurIn", COLORS.cyan],
-  ["SpringIn", "#c4b5fd"],
-] as const;
+function useMetrics(): Metrics {
+  const { width, height } = useVideoConfig();
 
-const valueRows = [
-  ["No runtime dependency", COLORS.green],
-  ["Source you own and edit", COLORS.accentLight],
-  ["shadcn/ui workflow for video", COLORS.yellow],
-] as const;
+  return useMemo(() => {
+    const basis = Math.min(width, height);
+    const s = (size: number) => scaleFont(size, basis);
+    const safe = getSafeAreaPadding({ width, height });
+    const inner = s(36);
+    const contentWidth = Math.max(
+      s(320),
+      width - safe.paddingLeft - safe.paddingRight - inner * 2,
+    );
+    const gridWidth = Math.min(contentWidth, s(1500));
+    const titleWidth = Math.min(contentWidth, s(1300));
+
+    return {
+      s,
+      safe,
+      contentWidth,
+      panelWidth: Math.min(contentWidth, s(1300)),
+      gridWidth,
+      gridColumns: gridWidth >= s(1000) ? 4 : 2,
+      gridGap: s(14),
+      cardHeight: s(94),
+      titleWidth,
+      headlineSize: Math.min(s(92), Math.floor(titleWidth / TITLE_LINE_EMS)),
+      mono: s(26),
+      tick: s(30),
+    };
+  }, [width, height]);
+}
 
 export const HeroLoop: React.FC = () => {
-  const frame = useCurrentFrame();
-  const finalFade = interpolate(frame, [444, 450], [1, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: Easing.out(Easing.linear),
-  });
-  const splitOpacity = interpolate(frame, [352, 368], [1, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  const metrics = useMetrics();
 
   return (
     <AbsoluteFill
       style={{
-        backgroundColor: COLORS.bg,
-        color: COLORS.text,
-        fontFamily: font.sans,
-        opacity: finalFade,
-        overflow: "hidden",
+        backgroundColor: COLORS.stage,
+        color: COLORS.ink,
+        fontFamily: bodyFamily,
       }}
     >
-      <BackgroundTexture />
-      <div style={{ position: "absolute", inset: 0, opacity: splitOpacity }}>
-        <SplitLayout>
-          <LeftColumn>
-            <SceneOneLeft />
-            <Sequence from={90} durationInFrames={154} layout="none">
-              <SceneTwoLeft />
-            </Sequence>
-            <Sequence from={240} durationInFrames={120} layout="none">
-              <SceneThreeLeft />
-            </Sequence>
-          </LeftColumn>
-          <RightColumn>
-            <SceneOneRight />
-            <Sequence from={88} durationInFrames={158} layout="none">
-              <SceneTwoRight />
-            </Sequence>
-            <Sequence from={240} durationInFrames={122} layout="none">
-              <SceneThreeRight />
-            </Sequence>
-          </RightColumn>
-        </SplitLayout>
-      </div>
-      <Sequence from={360} durationInFrames={90}>
-        <SceneFour />
+      <StageChrome m={metrics} />
+      <TitleBeat m={metrics} />
+
+      <Sequence
+        from={INSTALL.from}
+        durationInFrames={INSTALL.durationInFrames}
+        premountFor={PREMOUNT}
+        name="install"
+      >
+        <InstallBeat m={metrics} />
+      </Sequence>
+
+      <Sequence
+        from={CATALOG.from}
+        durationInFrames={CATALOG.durationInFrames}
+        premountFor={PREMOUNT}
+        name="catalog"
+      >
+        <CatalogBeat m={metrics} />
+      </Sequence>
+
+      <Sequence
+        from={RENDER.from}
+        durationInFrames={RENDER.durationInFrames}
+        premountFor={PREMOUNT}
+        name="render"
+      >
+        <RenderBeat m={metrics} />
       </Sequence>
     </AbsoluteFill>
   );
 };
 
-const SplitLayout: React.FC<{ children: ReactNode }> = ({ children }) => (
-  <div
-    style={{
-      position: "absolute",
-      inset: 0,
-      display: "grid",
-      gridTemplateColumns: "50% 50%",
-    }}
-  >
-    {children}
-  </div>
-);
+/**
+ * Safe-area corner ticks plus a two-label slate. Static apart from the tally
+ * light, which is the one thing alive during the title hold.
+ *
+ * The tally blinks on a 30-frame period and 360 divides by 30, so the phase at
+ * the wrap is the phase at frame 0 — the loop stays seamless even though the
+ * frames either side of the seam are no longer pixel-identical.
+ */
+const TALLY_BLINK = 30;
 
-const LeftColumn: React.FC<{ children: ReactNode }> = ({ children }) => (
-  <div
-    style={{
-      position: "relative",
-      minWidth: 0,
-    }}
-  >
-    {children}
-  </div>
-);
-
-const RightColumn: React.FC<{ children: ReactNode }> = ({ children }) => (
-  <div
-    style={{
-      position: "relative",
-      overflow: "hidden",
-      minWidth: 0,
-      backgroundColor: COLORS.stage,
-      borderLeft: `1px solid ${COLORS.border}`,
-    }}
-  >
-    {children}
-  </div>
-);
-
-const SceneOneLeft: React.FC = () => (
-  <LeftSceneSlot>
-    <FadeOut delayInFrames={94} durationInFrames={12}>
-      <div style={{ maxWidth: 590 }}>
-        <BlurIn delayInFrames={20} durationInFrames={25} maxBlur={12}>
-          <p style={eyebrowStyle}>RemotionUI</p>
-        </BlurIn>
-        <SlideUp delayInFrames={40} durationInFrames={30} distance={44}>
-          <h1
-            style={{
-              margin: 0,
-              fontSize: 66,
-              lineHeight: 1.05,
-              fontWeight: 900,
-              letterSpacing: 0,
-            }}
-          >
-            Production-ready motion for Remotion.
-          </h1>
-        </SlideUp>
-        <FadeIn delayInFrames={75} durationInFrames={20}>
-          <p style={{ margin: "28px 0 0", color: "#777777", fontSize: 26 }}>
-            Install as source. Own every line.
-          </p>
-        </FadeIn>
-      </div>
-    </FadeOut>
-  </LeftSceneSlot>
-);
-
-const SceneOneRight: React.FC = () => (
-  <RightSceneSlot>
-    <FadeOut delayInFrames={88} durationInFrames={12}>
-      <SpringIn durationInFrames={34}>
-        <TerminalCard />
-      </SpringIn>
-    </FadeOut>
-  </RightSceneSlot>
-);
-
-const TerminalCard: React.FC = () => (
-  <div style={terminalCardStyle}>
-    <WindowChrome />
-    <div style={{ display: "grid", gap: 12 }}>
-      {cliLines.map((line, index) => (
-        <TerminalLine key={line.text} {...line} delay={8 + index * 18} />
-      ))}
-    </div>
-  </div>
-);
-
-const TerminalLine: React.FC<{
-  text: string;
-  color: string;
-  delay: number;
-  pulse?: boolean;
-}> = ({ text, color, delay, pulse }) => {
+const StageChrome: React.FC<{ m: Metrics }> = ({ m }) => {
   const frame = useCurrentFrame();
-  const pulseOpacity = pulse
-    ? interpolate(frame, [delay, delay + 20], [1, 0], {
-        extrapolateLeft: "clamp",
-        extrapolateRight: "clamp",
-      })
-    : 0;
-
-  return (
-    <div
-      style={{
-        position: "relative",
-        minHeight: 24,
-        paddingLeft: pulse ? 12 : 0,
-        color,
-        fontSize: 18,
-        lineHeight: "24px",
-      }}
-    >
-      {pulse ? (
-        <span
-          style={{
-            position: "absolute",
-            left: 0,
-            top: 2,
-            bottom: 2,
-            width: 2,
-            borderRadius: 2,
-            backgroundColor: COLORS.green,
-            opacity: pulseOpacity,
-          }}
-        />
-      ) : null}
-      <Typewriter
-        text={text}
-        charFrames={2}
-        delayInFrames={delay}
-        showCursor={false}
-        style={{
-          color,
-          fontFamily: font.mono,
-          fontSize: 18,
-          fontWeight: 400,
-        }}
-      />
-    </div>
+  const { width, height, fps } = useVideoConfig();
+  const { safe, tick, s } = m;
+  const labelSize = s(17);
+  const tally = interpolate(
+    (frame % TALLY_BLINK) / TALLY_BLINK,
+    [0, 0.42, 0.5, 0.92, 1],
+    [1, 1, 0.22, 0.22, 1],
+    { easing: EASING.editorial },
   );
-};
-
-const SceneTwoLeft: React.FC = () => (
-  <LeftSceneSlot>
-    <FadeOut delayInFrames={140} durationInFrames={14}>
-      <div>
-        <SlideUp delayInFrames={18} durationInFrames={28} distance={42}>
-          <h2 style={largeLineStyle}>One CLI.</h2>
-        </SlideUp>
-        <SlideUp delayInFrames={36} durationInFrames={28} distance={42}>
-          <h2 style={{ ...largeLineStyle, color: COLORS.accent }}>
-            Every motion primitive.
-          </h2>
-        </SlideUp>
-        <FadeIn delayInFrames={70} durationInFrames={14}>
-          <InlineProgressBar />
-        </FadeIn>
-      </div>
-    </FadeOut>
-  </LeftSceneSlot>
-);
-
-const SceneTwoRight: React.FC = () => (
-  <RightSceneSlot>
-    <FadeIn durationInFrames={12}>
-      <Sequence from={12} durationInFrames={46} layout="none">
-        <CounterDemo />
-      </Sequence>
-      <Sequence from={60} durationInFrames={46} layout="none">
-        <PillsDemo />
-      </Sequence>
-      <Sequence from={108} durationInFrames={48} layout="none">
-        <TypewriterDemo />
-      </Sequence>
-    </FadeIn>
-  </RightSceneSlot>
-);
-
-const CounterDemo: React.FC = () => (
-  <DemoSlot>
-    <FadeOut delayInFrames={40} durationInFrames={8}>
-      <div style={demoCardStyle}>
-        <FadeIn durationInFrames={10}>
-          <p style={demoLabelStyle}>components installed</p>
-        </FadeIn>
-        <Counter
-          from={0}
-          to={9}
-          durationInFrames={36}
-          style={{
-            fontFamily: font.sans,
-            fontSize: 128,
-            fontWeight: 900,
-            lineHeight: 1,
-          }}
-        />
-        <FadeIn delayInFrames={20} durationInFrames={10}>
-          <p style={{ margin: "14px 0 0", color: COLORS.dim, fontSize: 18 }}>
-            +more coming
-          </p>
-        </FadeIn>
-      </div>
-    </FadeOut>
-  </DemoSlot>
-);
-
-const PillsDemo: React.FC = () => (
-  <DemoSlot>
-    <FadeOut delayInFrames={40} durationInFrames={10}>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-          gap: 14,
-          width: 600,
-        }}
-      >
-        <StaggerChildren staggerInFrames={6}>
-          {pillItems.map(([label, color]) => (
-            <SlideUp key={label} distance={24} durationInFrames={24}>
-              <div style={{ ...pillStyle, color }}>{label}</div>
-            </SlideUp>
-          ))}
-        </StaggerChildren>
-      </div>
-    </FadeOut>
-  </DemoSlot>
-);
-
-const TypewriterDemo: React.FC = () => (
-  <DemoSlot>
-    <FadeOut delayInFrames={40} durationInFrames={8}>
-      <div style={{ maxWidth: 620, textAlign: "center" }}>
-        <Typewriter
-          text="Production-ready. Frame-true. Yours."
-          charFrames={2}
-          showCursor={false}
-          style={{
-            color: COLORS.text,
-            fontFamily: font.sans,
-            fontSize: 44,
-            fontWeight: 800,
-            lineHeight: 1.18,
-          }}
-        />
-        <div style={{ marginTop: 18 }}>
-          <MarkerHighlight
-            text="Frame-true motion"
-            highlightWord="Frame-true"
-            delayInFrames={36}
-            durationInFrames={18}
-            color={COLORS.secondary}
-            markerColor="rgba(99, 102, 241, 0.22)"
-            fontSize={24}
-            fontWeight={700}
-          />
-        </div>
-      </div>
-    </FadeOut>
-  </DemoSlot>
-);
-
-const SceneThreeLeft: React.FC = () => (
-  <LeftSceneSlot>
-    <FadeOut delayInFrames={100} durationInFrames={18}>
-      <div style={{ display: "grid", gap: 22 }}>
-        <StaggerChildren staggerInFrames={22} baseDelayInFrames={8}>
-          {valueRows.map(([label, color]) => (
-            <SlideUp key={label} distance={26} durationInFrames={28}>
-              <div style={valueRowStyle}>
-                <span style={{ ...dotStyle, backgroundColor: color }} />
-                <span>{label}</span>
-              </div>
-            </SlideUp>
-          ))}
-        </StaggerChildren>
-      </div>
-    </FadeOut>
-  </LeftSceneSlot>
-);
-
-const SceneThreeRight: React.FC = () => (
-  <RightSceneSlot>
-    <FadeOut delayInFrames={112} durationInFrames={12}>
-      <div style={{ position: "relative" }}>
-        <FadeIn delayInFrames={100} durationInFrames={15}>
-          <div style={codeGlowStyle} />
-        </FadeIn>
-        <SpringIn delayInFrames={2} durationInFrames={34}>
-          <div style={codeCardStyle}>
-            <WindowChrome />
-            <CodeImportLine
-              delay={12}
-              name="FadeIn"
-              path="@/remotion/primitives/fade-in"
-            />
-            <CodeImportLine
-              delay={58}
-              name="Counter"
-              path="@/remotion/primitives/counter"
-            />
-            <CodeImportLine
-              delay={106}
-              name="Typewriter"
-              path="@/remotion/primitives/typewriter"
-            />
-          </div>
-        </SpringIn>
-      </div>
-    </FadeOut>
-  </RightSceneSlot>
-);
-
-const CodeImportLine: React.FC<{
-  name: string;
-  path: string;
-  delay: number;
-}> = ({ name, path, delay }) => (
-  <div style={{ minHeight: 28, fontFamily: font.mono, fontSize: 17 }}>
-    <Typewriter
-      text={`import { ${name} } from "${path}";`}
-      charFrames={1}
-      delayInFrames={delay}
-      showCursor={false}
-      style={{
-        color: COLORS.accentLight,
-        fontFamily: font.mono,
-        fontSize: 17,
-        fontWeight: 400,
-        lineHeight: "28px",
-      }}
-    />
-  </div>
-);
-
-const SceneFour: React.FC = () => {
-  const { width, height } = useVideoConfig();
-  const safe = getSafeAreaPadding({ width, height });
-
-  return (
-    <AbsoluteFill
-      style={{
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: COLORS.bg,
-        backgroundImage:
-          "radial-gradient(ellipse 70% 55% at 50% 50%, rgba(99,102,241,0.1), transparent)",
-        paddingLeft: safe.paddingLeft,
-        paddingRight: safe.paddingRight,
-        paddingTop: safe.paddingTop,
-        paddingBottom: safe.paddingBottom,
-        boxSizing: "border-box",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: scaleFont(28, width),
-          width: "100%",
-          maxWidth: scaleFont(1100, width),
-        }}
-      >
-        <RotateIn durationInFrames={30} degrees={-14}>
-          <p
-            style={{
-              margin: 0,
-              color: COLORS.text,
-              fontSize: scaleFont(84, width),
-              fontWeight: 900,
-              lineHeight: 1.05,
-              letterSpacing: -0.02,
-              textAlign: "center",
-            }}
-          >
-            RemotionUI
-          </p>
-        </RotateIn>
-        <FadeIn delayInFrames={20} durationInFrames={18}>
-          <p
-            style={{
-              margin: 0,
-              color: COLORS.secondary,
-              fontSize: scaleFont(44, width),
-              lineHeight: 1.25,
-              fontWeight: 500,
-              textAlign: "center",
-              maxWidth: scaleFont(920, width),
-            }}
-          >
-            Production-ready motion for Remotion. Source you own.
-          </p>
-        </FadeIn>
-        <ScaleIn delayInFrames={40} durationInFrames={20}>
-          <div
-            style={{
-              ...commandPillStyle,
-              marginTop: 0,
-              maxWidth: "100%",
-              flexWrap: "wrap",
-              justifyContent: "center",
-            }}
-          >
-            <span style={{ color: COLORS.muted }}>$</span>
-            <Typewriter
-              text="npx remotion-ui@latest init my-video"
-              charFrames={2}
-              delayInFrames={8}
-              showCursor={false}
-              style={{
-                color: COLORS.accentLight,
-                fontFamily: font.mono,
-                fontSize: scaleFont(18, width),
-              }}
-            />
-            <BlinkCursor />
-          </div>
-        </ScaleIn>
-      </div>
-    </AbsoluteFill>
-  );
-};
-
-const InlineProgressBar: React.FC = () => {
-  const frame = useCurrentFrame();
-  const progress = interpolate(frame, [70, 120], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: Easing.out(Easing.cubic),
-  });
-
-  return (
-    <div style={{ marginTop: 46, width: 330 }}>
-      <div
-        style={{
-          height: 4,
-          borderRadius: 999,
-          overflow: "hidden",
-          backgroundColor: COLORS.border,
-        }}
-      >
-        <div
-          style={{
-            width: `${progress * 100}%`,
-            height: "100%",
-            borderRadius: 999,
-            background: `linear-gradient(90deg, ${COLORS.accent}, ${COLORS.accentLight})`,
-          }}
-        />
-      </div>
-      <p
-        style={{
-          margin: "14px 0 0",
-          color: "#444444",
-          fontSize: 16,
-          letterSpacing: 0.02,
-        }}
-      >
-        9 primitives. Source-owned.
-      </p>
-    </div>
-  );
-};
-
-const BlinkCursor: React.FC = () => {
-  const frame = useCurrentFrame();
-  const opacity = frame >= 80 && Math.floor(frame / 8) % 2 === 0 ? 1 : 0;
-
-  return (
-    <span
-      style={{
-        width: 2,
-        height: 22,
-        borderRadius: 2,
-        backgroundColor: COLORS.accent,
-        opacity,
-      }}
-    />
-  );
-};
-
-const BackgroundTexture: React.FC = () => {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const drift = spring({
-    frame,
-    fps,
-    config: { mass: 1, damping: 22, stiffness: 24 },
-  });
 
   return (
     <AbsoluteFill>
       <div
         style={{
           position: "absolute",
-          inset: 0,
-          opacity: 0.52,
-          background:
-            "radial-gradient(circle at 18% 42%, rgba(99,102,241,0.12), transparent 32%), radial-gradient(circle at 76% 28%, rgba(165,180,252,0.08), transparent 30%)",
-          transform: `translate3d(${drift * 16}px, ${drift * -10}px, 0)`,
+          left: safe.paddingLeft,
+          right: safe.paddingRight,
+          top: safe.paddingTop,
+          bottom: safe.paddingBottom,
         }}
-      />
+      >
+        <CornerTick size={tick} corner="tl" />
+        <CornerTick size={tick} corner="tr" />
+        <CornerTick size={tick} corner="bl" />
+        <CornerTick size={tick} corner="br" />
+      </div>
+
       <div
         style={{
           position: "absolute",
-          inset: 0,
-          opacity: 0.16,
-          backgroundImage:
-            "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)",
-          backgroundSize: "64px 64px",
+          left: safe.paddingLeft + tick + s(16),
+          top: safe.paddingTop - labelSize,
+          display: "flex",
+          alignItems: "center",
+          gap: s(9),
+          fontFamily: monoFamily,
+          fontSize: labelSize,
+          letterSpacing: "0.01em",
+          color: COLORS.muted,
         }}
-      />
+      >
+        <span
+          style={{
+            width: s(6),
+            height: s(6),
+            backgroundColor: COLORS.phosphor,
+            opacity: tally,
+          }}
+        />
+        remotion-ui
+      </div>
+
+      <div
+        style={{
+          position: "absolute",
+          right: safe.paddingRight + tick + s(16),
+          bottom: safe.paddingBottom - labelSize,
+          fontFamily: monoFamily,
+          fontSize: labelSize,
+          letterSpacing: "0.01em",
+          color: COLORS.dim,
+        }}
+      >
+        {width} × {height} · {fps} fps
+      </div>
     </AbsoluteFill>
   );
 };
 
-const WindowChrome: React.FC = () => (
-  <div style={{ display: "flex", gap: 8, marginBottom: 22 }}>
-    {["#ff5f57", "#ffbd2e", "#28c840"].map((color) => (
+const CornerTick: React.FC<{
+  size: number;
+  corner: "tl" | "tr" | "bl" | "br";
+}> = ({ size, corner }) => {
+  const isTop = corner === "tl" || corner === "tr";
+  const isLeft = corner === "tl" || corner === "bl";
+  const edge = `1px solid ${COLORS.hairlineStrong}`;
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        width: size,
+        height: size,
+        [isTop ? "top" : "bottom"]: 0,
+        [isLeft ? "left" : "right"]: 0,
+        [isTop ? "borderTop" : "borderBottom"]: edge,
+        [isLeft ? "borderLeft" : "borderRight"]: edge,
+      }}
+    />
+  );
+};
+
+/**
+ * The loop anchor. Rendered on every frame from the global clock so the state
+ * at frame 359 is the state at frame 0 — the wrap has nothing to hide.
+ */
+const TitleBeat: React.FC<{ m: Metrics }> = ({ m }) => {
+  const frame = useCurrentFrame();
+  const { s, titleWidth, headlineSize } = m;
+  const returning = frame >= TITLE_PIVOT;
+  const rise = s(130);
+
+  /**
+   * One direction of travel across the whole loop: lines leave upward and
+   * return from below, so the cycle reads as a continuous roll. Both branches
+   * resolve to opacity 1 / offset 0 outside their window, which is what makes
+   * frame 359 and frame 0 the same picture.
+   */
+  const lineStyle = (index: number): CSSProperties => {
+    if (returning) {
+      const at = TITLE_ENTER + index * 4;
+      const fade = enterProgress(frame, at, BEAT_ENTER_FADE);
+      const move = enterProgress(frame, at, TITLE_ENTER_MOVE);
+      return { opacity: fade, translate: `0px ${(1 - move) * rise}px` };
+    }
+
+    const at = TITLE_EXIT + index * 3;
+    const fade = enterProgress(frame, at, BEAT_EXIT_FADE);
+    const move = enterProgress(frame, at, BEAT_EXIT_MOVE, EASING.editorial);
+    return { opacity: 1 - fade, translate: `0px ${move * -rise}px` };
+  };
+
+  return (
+    <AbsoluteFill
+      style={{
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <div style={{ width: titleWidth, textAlign: "center" }}>
+        {TITLE_LINES.map((line, index) => (
+          <h1
+            key={line}
+            style={{
+              margin: 0,
+              fontFamily: displayFamily,
+              fontWeight: 500,
+              fontSize: headlineSize,
+              lineHeight: 1.12,
+              letterSpacing: "-0.01em",
+              color: index === 0 ? COLORS.ink : COLORS.phosphor,
+              ...lineStyle(index),
+            }}
+          >
+            {line}
+          </h1>
+        ))}
+        <p
+          style={{
+            margin: `${s(28)}px 0 0`,
+            fontSize: s(28),
+            lineHeight: 1.5,
+            color: COLORS.muted,
+            ...lineStyle(2),
+          }}
+        >
+          {TITLE_SUB}
+        </p>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+/** Frames, local to the beat, over which the panel opens for its output. */
+const INSTALL_OPEN = [34, 48] as const;
+
+const InstallBeat: React.FC<{ m: Metrics }> = ({ m }) => {
+  const frame = useCurrentFrame();
+  const { s, panelWidth, mono } = m;
+  const rowHeight = Math.round(mono * 1.7);
+  const rowGap = s(8);
+  const filesHeight = rowHeight * INSTALL_FILES.length + rowGap * 3;
+  /**
+   * The output block owns its full height as one eased opening, timed to the
+   * last keystroke. Letting the rows size the panel themselves would re-centre
+   * the whole card four times; reserving the height from frame zero — the
+   * earlier fix — left a terminal that was a mostly-empty box for a second and
+   * a half while the command typed. One growth, once, at the moment output
+   * would actually arrive.
+   */
+  const open = interpolate(frame, INSTALL_OPEN, [0, 1], {
+    easing: EASING.editorial,
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  return (
+    <Beat m={m} exitAt={INSTALL.exitAt}>
+      <div style={{ ...panelStyle, width: panelWidth, borderRadius: s(8) }}>
+        <PanelHeader m={m} label="terminal" trailing="add" />
+
+        <div
+          style={{
+            display: "grid",
+            gap: s(26),
+            padding: `${s(30)}px ${s(34)}px ${s(32)}px`,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "baseline",
+              gap: s(14),
+              height: rowHeight,
+            }}
+          >
+            <span
+              style={{
+                fontFamily: monoFamily,
+                fontSize: mono,
+                color: COLORS.dim,
+              }}
+            >
+              $
+            </span>
+            <Typewriter
+              text={INSTALL_COMMAND}
+              charFrames={1}
+              delayInFrames={6}
+              showCursor
+              cursorStyle="block"
+              cursorColor={COLORS.phosphor}
+              cursorBlinkFrames={TALLY_BLINK}
+              style={{
+                fontFamily: monoFamily,
+                fontSize: mono,
+                fontWeight: 400,
+                color: COLORS.ink,
+                lineHeight: `${rowHeight}px`,
+              }}
+            />
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gap: rowGap,
+              height: filesHeight * open,
+              overflow: "hidden",
+            }}
+          >
+            <StaggerChildren staggerInFrames={6} baseDelayInFrames={42}>
+              {INSTALL_FILES.map((file) => (
+                <SlideUp key={file} durationInFrames={18} distance={s(12)}>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: s(16),
+                      fontFamily: monoFamily,
+                      fontSize: mono,
+                      lineHeight: `${rowHeight}px`,
+                    }}
+                  >
+                    <span style={{ color: COLORS.phosphor }}>+</span>
+                    <span style={{ color: COLORS.muted }}>{file}</span>
+                  </div>
+                </SlideUp>
+              ))}
+            </StaggerChildren>
+          </div>
+
+          <FadeIn delayInFrames={70} durationInFrames={14}>
+            <p
+              style={{
+                margin: 0,
+                fontFamily: monoFamily,
+                fontSize: s(21),
+                color: COLORS.dim,
+              }}
+            >
+              4 files written · 0 runtime dependencies
+            </p>
+          </FadeIn>
+        </div>
+      </div>
+    </Beat>
+  );
+};
+
+const CatalogBeat: React.FC<{ m: Metrics }> = ({ m }) => {
+  const { s, gridWidth, gridColumns, gridGap, cardHeight } = m;
+  const headingSize = s(56);
+  /** Cards arrive inside Sequences, so the track has to be laid out for the
+   *  full set from frame one — otherwise the block re-centres each new row. */
+  const rows = Math.ceil(CATALOG_ITEMS.length / gridColumns);
+
+  return (
+    <Beat m={m} exitAt={CATALOG.exitAt}>
+      <div style={{ width: gridWidth }}>
+        <SlideUp durationInFrames={22} distance={s(20)}>
+          {/* MotionWrapper shrink-wraps, so the heading carries the track
+                width itself to stay centred over the grid. */}
+          <h2
+            style={{
+              width: gridWidth,
+              margin: `0 0 ${s(36)}px`,
+              display: "flex",
+              alignItems: "baseline",
+              justifyContent: "center",
+              gap: s(16),
+              fontFamily: displayFamily,
+              fontWeight: 500,
+              fontSize: headingSize,
+              lineHeight: 1.1,
+              color: COLORS.ink,
+            }}
+          >
+            <Counter
+              from={REGISTRY_COUNT - 18}
+              to={REGISTRY_COUNT}
+              durationInFrames={34}
+              delayInFrames={2}
+              fontSize={headingSize}
+              color={COLORS.phosphor}
+              fontFamily={displayFamily}
+              style={{ fontWeight: 500 }}
+            />
+            components, one registry.
+          </h2>
+        </SlideUp>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))`,
+            gridTemplateRows: `repeat(${rows}, ${cardHeight}px)`,
+            gap: gridGap,
+            height: rows * cardHeight + (rows - 1) * gridGap,
+          }}
+        >
+          <StaggerChildren staggerInFrames={3} baseDelayInFrames={18}>
+            {CATALOG_ITEMS.map((item) => (
+              <SpringIn key={item.name} durationInFrames={22}>
+                <ClipCard m={m} {...item} />
+              </SpringIn>
+            ))}
+          </StaggerChildren>
+        </div>
+      </div>
+    </Beat>
+  );
+};
+
+const ClipCard: React.FC<{
+  m: Metrics;
+  name: string;
+  kind: string;
+  stripe: string;
+}> = ({ m, name, kind, stripe }) => {
+  const { s } = m;
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        width: "100%",
+        height: m.cardHeight,
+        boxSizing: "border-box",
+        borderRadius: s(6),
+        border: `1px solid ${COLORS.hairline}`,
+        backgroundColor: COLORS.panel,
+        overflow: "hidden",
+      }}
+    >
       <span
-        key={color}
         style={{
-          width: 12,
-          height: 12,
-          borderRadius: 999,
-          backgroundColor: color,
+          width: s(4),
+          alignSelf: "stretch",
+          flex: "0 0 auto",
+          backgroundColor: stripe,
         }}
       />
-    ))}
-  </div>
-);
-
-const LeftSceneSlot: React.FC<{ children: ReactNode }> = ({ children }) => (
-  <AbsoluteFill
-    style={{
-      justifyContent: "center",
-      alignItems: "flex-start",
-      paddingLeft: 110,
-      paddingRight: 90,
-      boxSizing: "border-box",
-    }}
-  >
-    {children}
-  </AbsoluteFill>
-);
-
-const RightSceneSlot: React.FC<{ children: ReactNode }> = ({ children }) => (
-  <AbsoluteFill
-    style={{
-      justifyContent: "center",
-      alignItems: "center",
-      padding: "76px 84px",
-      boxSizing: "border-box",
-    }}
-  >
-    {children}
-  </AbsoluteFill>
-);
-
-const DemoSlot: React.FC<{ children: ReactNode }> = ({ children }) => (
-  <AbsoluteFill
-    style={{
-      justifyContent: "center",
-      alignItems: "center",
-    }}
-  >
-    {children}
-  </AbsoluteFill>
-);
-
-const eyebrowStyle: CSSProperties = {
-  margin: "0 0 28px",
-  color: COLORS.muted,
-  fontSize: 16,
-  fontWeight: 700,
-  letterSpacing: 0.02,
-  lineHeight: 1,
+      <div
+        style={{
+          display: "grid",
+          gap: s(7),
+          padding: `${s(18)}px ${s(20)}px`,
+          minWidth: 0,
+        }}
+      >
+        <span
+          style={{
+            fontSize: s(22),
+            fontWeight: 500,
+            color: COLORS.ink,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {name}
+        </span>
+        <span
+          style={{
+            fontFamily: monoFamily,
+            fontSize: s(16),
+            color: COLORS.muted,
+          }}
+        >
+          {kind}
+        </span>
+      </div>
+    </div>
+  );
 };
 
-const largeLineStyle: CSSProperties = {
-  margin: 0,
-  fontSize: 74,
-  lineHeight: 1,
-  fontWeight: 900,
-  letterSpacing: 0,
+const RenderBeat: React.FC<{ m: Metrics }> = ({ m }) => {
+  const frame = useCurrentFrame();
+  const { width, height, fps } = useVideoConfig();
+  const { s, panelWidth, mono } = m;
+
+  const progress = interpolate(frame, [4, 34], [0, 1], {
+    easing: EASING.editorial,
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const percent = Math.round(progress * 100);
+  const rowStyle: CSSProperties = {
+    display: "flex",
+    alignItems: "baseline",
+    justifyContent: "space-between",
+    gap: s(24),
+    fontFamily: monoFamily,
+    fontSize: mono,
+    lineHeight: 1.6,
+  };
+
+  return (
+    <Beat m={m} exitAt={RENDER.exitAt}>
+      <div style={{ ...panelStyle, width: panelWidth, borderRadius: s(8) }}>
+        <PanelHeader
+          m={m}
+          label="render queue"
+          trailing={`h264 · ${fps} fps`}
+        />
+
+        <div
+          style={{
+            display: "grid",
+            gap: s(22),
+            padding: `${s(30)}px ${s(34)}px ${s(32)}px`,
+          }}
+        >
+          <div style={{ ...rowStyle, color: COLORS.dim }}>
+            <span>hero-loop</span>
+            <span>done</span>
+          </div>
+
+          <div style={{ display: "grid", gap: s(14) }}>
+            <div style={rowStyle}>
+              <span style={{ color: COLORS.ink }}>social-clip</span>
+              <span
+                style={{
+                  color: COLORS.phosphor,
+                  fontVariantNumeric: "tabular-nums",
+                }}
+              >
+                {percent}%
+              </span>
+            </div>
+
+            <div
+              style={{
+                height: s(4),
+                borderRadius: s(4),
+                overflow: "hidden",
+                backgroundColor: COLORS.hairline,
+              }}
+            >
+              <div
+                style={{
+                  width: `${progress * 100}%`,
+                  height: "100%",
+                  backgroundColor: COLORS.phosphor,
+                }}
+              />
+            </div>
+          </div>
+
+          <div style={{ height: Math.round(mono * 1.6) }}>
+            <FadeIn delayInFrames={36} durationInFrames={12}>
+              <div style={{ ...rowStyle, width: panelWidth - s(68) }}>
+                <span style={{ color: COLORS.muted }}>out/social-clip.mp4</span>
+                <span style={{ color: COLORS.dim, whiteSpace: "nowrap" }}>
+                  {width} × {height}
+                </span>
+              </div>
+            </FadeIn>
+          </div>
+        </div>
+      </div>
+    </Beat>
+  );
 };
 
-const terminalCardStyle: CSSProperties = {
-  width: 660,
-  borderRadius: 14,
-  border: `1px solid ${COLORS.borderDim}`,
-  backgroundColor: COLORS.surface,
-  padding: "32px 36px",
-  fontFamily: font.mono,
-  boxShadow: "0 28px 90px rgba(0,0,0,0.42)",
+const PanelHeader: React.FC<{
+  m: Metrics;
+  label: string;
+  trailing: string;
+}> = ({ m, label, trailing }) => {
+  const { s } = m;
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: `${s(15)}px ${s(24)}px`,
+        borderBottom: `1px solid ${COLORS.hairline}`,
+        backgroundColor: COLORS.panelRaised,
+        fontFamily: monoFamily,
+        fontSize: s(17),
+        color: COLORS.dim,
+      }}
+    >
+      <span>{label}</span>
+      <span>{trailing}</span>
+    </div>
+  );
 };
 
-const demoCardStyle: CSSProperties = {
-  width: 580,
-  height: 280,
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  borderRadius: 16,
-  border: `1px solid ${COLORS.border}`,
-  backgroundColor: COLORS.surface,
-  boxShadow: "0 24px 80px rgba(0,0,0,0.32)",
+/**
+ * Beat container. Owns the handoff so no beat ever cross-dissolves on top of
+ * the next one at the same coordinates — the outgoing beat is already lifting
+ * away while the incoming beat is still rising into place.
+ */
+const Beat: React.FC<{
+  m: Metrics;
+  exitAt: number;
+  children: ReactNode;
+}> = ({ m, exitAt, children }) => {
+  const frame = useCurrentFrame();
+  const lift = m.s(170);
+  const enterFade = enterProgress(frame, 0, BEAT_ENTER_FADE);
+  const enterMove = enterProgress(frame, 0, BEAT_ENTER_MOVE);
+  const exitFade = enterProgress(frame, exitAt, BEAT_EXIT_FADE);
+  const exitMove = enterProgress(
+    frame,
+    exitAt,
+    BEAT_EXIT_MOVE,
+    EASING.editorial,
+  );
+
+  return (
+    <AbsoluteFill
+      style={{
+        alignItems: "center",
+        justifyContent: "center",
+        paddingLeft: m.safe.paddingLeft,
+        paddingRight: m.safe.paddingRight,
+        paddingTop: m.safe.paddingTop,
+        paddingBottom: m.safe.paddingBottom,
+        boxSizing: "border-box",
+        opacity: enterFade * (1 - exitFade),
+        translate: `0px ${(1 - enterMove) * lift - exitMove * lift}px`,
+      }}
+    >
+      {children}
+    </AbsoluteFill>
+  );
 };
 
-const demoLabelStyle: CSSProperties = {
-  margin: "0 0 12px",
-  color: COLORS.muted,
-  fontSize: 14,
-  fontWeight: 700,
-  letterSpacing: 0.02,
-};
-
-const pillStyle: CSSProperties = {
-  minHeight: 50,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  borderRadius: 999,
-  border: "1px solid #242424",
-  backgroundColor: "#161616",
-  fontSize: 18,
-  fontWeight: 700,
-};
-
-const valueRowStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: 16,
-  color: "#e5e5e5",
-  fontSize: 30,
-  fontWeight: 650,
-};
-
-const dotStyle: CSSProperties = {
-  width: 10,
-  height: 10,
-  flex: "0 0 auto",
-  borderRadius: 999,
-  boxShadow: "0 0 22px currentColor",
-};
-
-const codeCardStyle: CSSProperties = {
-  position: "relative",
-  zIndex: 1,
-  width: 660,
-  minHeight: 340,
-  display: "grid",
-  alignContent: "start",
-  gap: 18,
-  borderRadius: 14,
-  border: `1px solid ${COLORS.borderDim}`,
-  backgroundColor: COLORS.card,
-  padding: "28px 32px",
-  fontFamily: font.mono,
-  boxShadow: "0 28px 90px rgba(0,0,0,0.4)",
-};
-
-const codeGlowStyle: CSSProperties = {
-  position: "absolute",
-  left: "50%",
-  top: "50%",
-  zIndex: 0,
-  width: 760,
-  height: 360,
-  transform: "translate(-50%, -50%)",
-  background:
-    "radial-gradient(ellipse at center, rgba(99,102,241,0.12) 0%, transparent 70%)",
-};
-
-const commandPillStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: 16,
-  minHeight: 58,
-  borderRadius: 10,
-  border: "1px solid #222222",
-  backgroundColor: COLORS.surface,
-  padding: "14px 28px",
-  fontFamily: font.mono,
-  fontSize: 18,
-  boxShadow: "0 18px 70px rgba(0,0,0,0.35)",
+/** No drop shadow: on a #050505 stage it only reads as a grey ghost box while
+ *  the panel springs in from zero opacity. */
+const panelStyle: CSSProperties = {
+  overflow: "hidden",
+  border: `1px solid ${COLORS.hairline}`,
+  backgroundColor: COLORS.panel,
 };

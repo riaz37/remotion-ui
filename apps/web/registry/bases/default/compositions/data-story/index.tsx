@@ -98,6 +98,8 @@ export const DataStory: React.FC<DataStoryProps> = ({
       <TransitionSeries.Transition {...FADE} />
       <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.timeline}>
         <TimelineSteps
+          // Three steps walked inside an 88-frame window.
+          speed={1.5}
           title={timelineTitle}
           steps={steps}
           backgroundColor={COLORS.timelineBg}
@@ -116,6 +118,7 @@ export const DataStory: React.FC<DataStoryProps> = ({
       <TransitionSeries.Transition {...FADE} />
       <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.end}>
         <EndCard
+          speed={1.4}
           title={ctaTitle}
           cta={ctaLabel}
           backgroundColor={COLORS.endBg}

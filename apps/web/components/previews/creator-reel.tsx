@@ -9,6 +9,7 @@ import {
   DEMO_MEDIA_ALT_SRC,
   DEMO_MEDIA_SRC,
   DEMO_MEDIA_THIRD_SRC,
+  DEMO_SPEAKER_SRC,
 } from "@/lib/demo-assets";
 import { siteConfig } from "@/lib/site-config";
 
@@ -19,8 +20,8 @@ export const CreatorReelPreview: React.FC = () => (
       hookSubtitle={DEMO_COPY.creatorHook.subtitle}
       talkingHeadEyebrow={DEMO_COPY.creatorHook.eyebrow}
       talkingHeadTitle={DEMO_COPY.productLaunch.title}
-      mediaSrc={DEMO_MEDIA_ALT_SRC}
-      mediaFit="contain"
+      mediaSrc={DEMO_SPEAKER_SRC}
+      mediaFit="cover"
       audioSrc={DEMO_AUDIO_SRC}
       captions={DEMO_CAPTIONS}
       comment={DEMO_COPY.creatorComment.body}

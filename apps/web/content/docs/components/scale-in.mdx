@@ -1,12 +1,14 @@
 ---
 title: Scale In
-description: Scale in with fade animation.
+description: Grow into place from just under full size, with an optional spring and exit.
 ---
 
 import { ScaleInPreview } from '@/components/previews/scale-in';
 
-<ComponentPage name="scale-in" preview={ScaleInPreview} durationInFrames={60}>
+<ComponentPage name="scale-in" preview={ScaleInPreview}>
 
-Scale in with fade animation.
+Grows from `from` to full size, with opacity leading the scale.
+
+`from` stays close to 1 on purpose: a card scaling up from 0.5 reads as a zoom, which is a camera move rather than an arrival. Anything below ~0.85 wants `spring` behind it.
 
 </ComponentPage>

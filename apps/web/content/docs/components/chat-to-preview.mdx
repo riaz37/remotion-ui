@@ -1,12 +1,19 @@
 ---
 title: Chat To Preview
-description: Chat To Preview for Remotion.
+description: "The prompt-to-render loop: ask typed and sent, answer streamed, preview assembled."
 ---
 
-import { ChatToPreviewPreview } from '@/components/previews/wave-batch-previews';
+import { ChatToPreviewPreview } from '@/components/previews/chat-to-preview';
 
-<ComponentPage name="chat-to-preview" preview={ChatToPreviewPreview} durationInFrames={90}>
+<ComponentPage name="chat-to-preview" preview={ChatToPreviewPreview} durationInFrames={190}>
 
-Chat To Preview.
+The ask types itself into the composer under a caret and flies up into the thread
+on send; the assistant thinks, then streams its answer word by word; and the
+preview surface assembles alongside it — status moving Idle → Rendering → Ready,
+wireframe blocks landing in order, then resolving into the rendered scene under a
+single sheen.
+
+`messages` drives the whole clock: user turns type and send, assistant turns
+stream, and the timing is derived from the text rather than from fixed frames.
 
 </ComponentPage>

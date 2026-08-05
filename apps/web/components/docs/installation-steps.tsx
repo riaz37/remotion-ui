@@ -5,7 +5,7 @@ const STEPS = [
   {
     step: 1,
     label: "Initialize",
-    command: `${CLI_PACKAGE} init my-video --starter social`,
+    command: `${CLI_PACKAGE} init my-video`,
     showPmTabs: true,
   },
   {

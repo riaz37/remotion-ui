@@ -1,15 +1,16 @@
 import type { TransitionPresentation } from "@remotion/transitions";
 import { useMemo } from "react";
-import { AbsoluteFill, interpolate } from "remotion";
+import { AbsoluteFill } from "remotion";
 import {
-  layeredEnterProgress,
-  layeredExitProgress,
   resolveTransitionTiming,
+  transitionPhase,
   type TransitionVariant,
 } from "@/remotion/lib/transition-timing";
 
 export type BlurRevealProps = {
   maxBlur?: number;
+  /** Scale headroom the blur rides on. 0 keeps the frame perfectly still. */
+  scaleBy?: number;
   shouldBlurOutExitingScene?: boolean;
 };
 
@@ -21,37 +22,44 @@ const BlurRevealPresentation: React.FC<
   children,
   presentationProgress,
   presentationDirection,
-  passedProps: { maxBlur = 24, shouldBlurOutExitingScene = true },
+  passedProps: {
+    maxBlur = 24,
+    scaleBy = 0.03,
+    shouldBlurOutExitingScene = true,
+  },
 }) => {
   const isEntering = presentationDirection === "entering";
-  const layered = isEntering
-    ? layeredEnterProgress(presentationProgress, 0.74)
-    : layeredExitProgress(presentationProgress, 0.7);
-  const motion = isEntering ? layered.motion : 1 - layered.motion;
-  const opacity = isEntering
-    ? layered.opacity
-    : shouldBlurOutExitingScene
-      ? layered.opacity
-      : 1;
+  const phase = transitionPhase(presentationProgress, presentationDirection, {
+    lead: isEntering ? 0.74 : 0.7,
+    fade: true,
+  });
+  const isHeld = !isEntering && !shouldBlurOutExitingScene;
 
   const style = useMemo(() => {
-    const blur = isEntering
-      ? interpolate(motion, [0, 0.85, 1], [maxBlur, maxBlur * 0.25, 0])
-      : shouldBlurOutExitingScene
-        ? interpolate(motion, [0, 0.2, 1], [0, maxBlur * 0.35, maxBlur])
-        : 0;
-    const scale = isEntering
-      ? interpolate(motion, [0, 1], [1.03, 1])
-      : shouldBlurOutExitingScene
-        ? interpolate(motion, [0, 1], [1, 0.98])
-        : 1;
+    if (isHeld) {
+      return { opacity: 1 };
+    }
 
+    // `displace` is 0 whenever the scene is at rest, so a scene that is not
+    // mid-transition renders untouched — no blur, no scale.
     return {
-      opacity,
-      filter: `blur(${blur}px)`,
-      scale,
+      opacity: phase.opacity,
+      filter:
+        phase.displace > 0.002
+          ? `blur(${(phase.displace * maxBlur).toFixed(2)}px)`
+          : undefined,
+      scale: phase.isEntering
+        ? 1 + phase.displace * scaleBy
+        : 1 - phase.displace * scaleBy * 0.66,
     };
-  }, [isEntering, maxBlur, motion, opacity, shouldBlurOutExitingScene]);
+  }, [
+    isHeld,
+    maxBlur,
+    phase.displace,
+    phase.isEntering,
+    phase.opacity,
+    scaleBy,
+  ]);
 
   return <AbsoluteFill style={style}>{children}</AbsoluteFill>;
 };
@@ -69,6 +77,7 @@ export function blurReveal(
 export type TransitionBlurRevealConfig = {
   durationInFrames?: number;
   maxBlur?: number;
+  scaleBy?: number;
   variant?: TransitionVariant;
   shouldBlurOutExitingScene?: boolean;
 };
@@ -77,11 +86,12 @@ export type TransitionBlurRevealConfig = {
 export function transitionBlurReveal({
   durationInFrames = 22,
   maxBlur = 24,
+  scaleBy = 0.03,
   variant = "editorial",
   shouldBlurOutExitingScene = true,
 }: TransitionBlurRevealConfig = {}) {
   return {
-    presentation: blurReveal({ maxBlur, shouldBlurOutExitingScene }),
+    presentation: blurReveal({ maxBlur, scaleBy, shouldBlurOutExitingScene }),
     timing: resolveTransitionTiming({ durationInFrames, variant }),
   };
 }

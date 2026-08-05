@@ -1,13 +1,22 @@
 ---
 title: Blur Reveal
-description: Blur and opacity reveal transition for TransitionSeries.
+description: The outgoing scene softens away while the incoming one resolves out of blur.
 ---
 
 import { TransitionBlurRevealPreview } from "@/components/previews/transition-blur-reveal";
 
 <ComponentPage name="blur-reveal" preview={TransitionBlurRevealPreview} durationInFrames={90}>
 
-Exports `transitionBlurReveal()` and `getTransitionBlurRevealDuration()` for use with `TransitionSeries.Transition`.
+The incoming scene resolves out of `maxBlur` under a slight scale settle while
+the outgoing one softens and gives up its opacity. Both are perfectly sharp
+outside the overlap — the blur exists only for the frames the cut is running.
+
+Set `shouldBlurOutExitingScene` to `false` to hold the outgoing scene sharp
+underneath and let the new one resolve on top of it. `scaleBy` controls the
+scale headroom the blur rides on; `0` keeps the frame dead still.
+
+Exports `transitionBlurReveal()` and `getTransitionBlurRevealDuration()` for use
+with `TransitionSeries.Transition`.
 
 Requires `@remotion/transitions`. Run `npx remotion add @remotion/transitions` if not already installed.
 

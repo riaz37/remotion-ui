@@ -1,35 +1,45 @@
 "use client";
 
-import { AbsoluteFill } from "remotion";
+import { AbsoluteFill, Loop, useVideoConfig } from "remotion";
 import { KaraokeCaptions } from "../registry-exports";
 import { DEMO_CAPTIONS } from "@/lib/demo-assets";
 import { groupCaptionsIntoPages } from "@/remotion/lib/caption-utils";
+import { scaleFont } from "@/remotion/lib/layout";
 import { PreviewFrame } from "./preview-frame";
+import { usePreviewStage } from "./preview-stage";
 
 const [page] = groupCaptionsIntoPages(DEMO_CAPTIONS, 2200);
 
-export const KaraokeCaptionsPreview: React.FC = () => (
-  <PreviewFrame backgroundColor="#f5f4f2" padding={0}>
-    <AbsoluteFill>
-      <AbsoluteFill
-        style={{
-          justifyContent: "center",
-          padding: "56px 48px",
-        }}
-      >
-        <div style={{ width: "100%", maxWidth: 960 }}>
-          {page ? (
-            <KaraokeCaptions
-              page={page}
-              mode="underline"
-              activeColor="#ff6b00"
-              completedColor="#111111"
-              inactiveColor="rgba(17,17,17,0.28)"
-              fontSize={64}
-            />
-          ) : null}
-        </div>
-      </AbsoluteFill>
-    </AbsoluteFill>
-  </PreviewFrame>
-);
+/** Caption span plus a beat of hold — the preview outruns the demo timeline,
+ * and without the loop the last third of it is a frozen finished line. */
+const LOOP_SECONDS = 2.6;
+
+export const KaraokeCaptionsPreview: React.FC = () => {
+  const { fps, width } = useVideoConfig();
+  const tokens = usePreviewStage();
+
+  if (!page) return null;
+
+  return (
+    <PreviewFrame padding={0}>
+      <Loop durationInFrames={Math.round(LOOP_SECONDS * fps)}>
+        <AbsoluteFill
+          style={{
+            padding: "56px 64px",
+            justifyContent: "center",
+          }}
+        >
+          <KaraokeCaptions
+            page={page}
+            mode="underline"
+            activeColor={tokens.accent}
+            completedColor={tokens.ink}
+            inactiveColor={tokens.muted}
+            trackColor={tokens.panelBorder}
+            fontSize={scaleFont(62, width)}
+          />
+        </AbsoluteFill>
+      </Loop>
+    </PreviewFrame>
+  );
+};

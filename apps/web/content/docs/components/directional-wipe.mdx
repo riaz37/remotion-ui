@@ -1,13 +1,23 @@
 ---
 title: Directional Wipe
-description: Directional wipe with depth and soft edge for TransitionSeries.
+description: A soft-edged wipe that uncovers the next scene without ever showing the background.
 ---
 
 import { TransitionDirectionalWipePreview } from "@/components/previews/transition-directional-wipe";
 
 <ComponentPage name="directional-wipe" preview={TransitionDirectionalWipePreview} durationInFrames={90}>
 
-Exports `transitionDirectionalWipe()` and `getTransitionDirectionalWipeDuration()` for use with `TransitionSeries.Transition`.
+The incoming scene is revealed by a soft-edged mask travelling from `direction`,
+while the outgoing one holds whole underneath and carries a little counter
+parallax. Only the arriving scene is masked — wiping both at once would open a
+hole onto the background in the middle of the cut.
+
+`edgeSoftness` is the width of the feathered edge as a share of the frame; set
+it to `0` for a hard architectural line. `depth` is the parallax the two scenes
+carry against each other under the wipe.
+
+Exports `transitionDirectionalWipe()` and `getTransitionDirectionalWipeDuration()`
+for use with `TransitionSeries.Transition`.
 
 Requires `@remotion/transitions`. Run `npx remotion add @remotion/transitions` if not already installed.
 

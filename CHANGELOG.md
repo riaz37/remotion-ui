@@ -2,6 +2,30 @@
 
 ## Unreleased
 
+## 0.7.0
+
+### Removed
+
+- **Recipes are gone** — `remotion-ui add --recipe <slug>`, `remotion-ui init --starter social|podcast`, the `/ai/recipes.json` manifest, and the `/docs/recipes/*` pages have all been removed. Recipes were a second, thinner catalog on top of the registry: they duplicated component lists that drifted from the real dependency graph and gave agents two answers to the same question. Install the components or the composition directly instead — `npx remotion-ui add social-clip` does what `--recipe captioned-social-video` did, and `registryDependencies` now pull the rest.
+
+### Added
+
+- **`motion-primitive`** — one enter/exit contract behind every entrance primitive. Opacity finishes at ~55% of the entrance so the tail of the move happens on an opaque element, and an exit is not the entrance reversed: shorter, shorter-travelled, and accelerating away. Inside a `<Sequence>`, `exit` alone lands the element out at the end of its slot.
+- **`text-emphasis`** — shared word/phrase emphasis resolution for caption and typography components.
+- **`code-syntax`** — the tokenizer and theme behind the code scenes, extracted so `code-reveal`, `code-diff-wipe`, `code-accordion`, and the terminal scenes highlight identically.
+
+### Changed
+
+- **Every entrance primitive rebuilt on the shared contract** — the 13 atoms (`fade-in`, `slide-up`, `scale-in`, `blur-in`, `rotate-in`, `spring-in`, and friends) now derive from `motion-primitive` instead of hand-rolling their own curves, so they enter and exit as one system.
+- **Scenes rebuilt across the catalog** — transitions, code and terminal scenes, creator scenes, UI-flow scenes, caption and audio components were re-authored on the current Remotion idiom and re-verified by rendering and sampling real frames, not by inspecting the browser preview.
+- **Docs previews rebuilt on a shared `preview-stage`** — every component page frames its preview the same way, at the composition's real aspect and duration.
+- **Landing page is now a program monitor** — the hero plays the `hero-loop` composition in a real Remotion Player with a scrub bar, poster frame, and keyboard transport, and the component grid became a contact sheet. Registry facts on the page are generated at build time, so the component count can't drift from the registry.
+- **Registry at 126 items** across 112 documented components.
+
+### Notes for maintainers
+
+- Deploy the docs site (`pnpm registry:build && pnpm --filter web build`) **before** publishing the CLI so `https://remotionui.com/r` serves the new registry JSON.
+
 ## 0.6.2
 
 ### Fixed

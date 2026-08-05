@@ -1,7 +1,7 @@
 ---
 name: remotionui-agent
 description: >-
-  Build Remotion videos with RemotionUI: recipes, CLI install workflow,
+  Build Remotion videos with RemotionUI: CLI install workflow,
   composition registration, and agent indexes. Use when the user wants
   captioned social clips, creator reels, data stories, or programmatic video.
 metadata:
@@ -17,7 +17,6 @@ Use this skill when helping users build **full Remotion compositions** with Remo
 - Use [Remotion docs](https://www.remotion.dev/docs) for framework fundamentals.
 - Use RemotionUI for ready-made **source components** copied into the user's repo.
 - Run `npx remotion-ui@latest add <component>` before importing a component.
-- Prefer recipes: `npx remotion-ui@latest add --recipe captioned-social-video`
 - Import from local paths: `@/compositions/...`, `@/remotion/scenes/...`, `@/remotion/primitives/...`
 - **Never** import UI components from the `remotion-ui` npm package.
 - Animate with `useCurrentFrame()`, `interpolate()`, `spring()`, and `<Sequence />`.
@@ -26,9 +25,9 @@ Use this skill when helping users build **full Remotion compositions** with Remo
 ## Workflow
 
 1. Understand the video goal (social clip, podcast, data story, product intro).
-2. Pick a recipe from https://remotionui.com/ai/recipes.json
+2. Pick a flagship composition from https://remotionui.com/ai/components.json
 3. Run `npx remotion-ui doctor` if setup looks broken.
-4. Install: `npx remotion-ui add --recipe <slug>` or `npx remotion-ui add <name>`
+4. Install: `npx remotion-ui add <name>`
 5. Import from local source paths and compose in `Root.tsx`.
 6. Customize copied source for brand, timing, and layout.
 
@@ -36,7 +35,6 @@ Use this skill when helping users build **full Remotion compositions** with Remo
 
 - Components: https://remotionui.com/ai/components.json
 - Per-component detail: https://remotionui.com/ai/components/<name>.json
-- Recipes: https://remotionui.com/ai/recipes.json
 - Full guide: https://remotionui.com/ai/remotionui-agent.md
 - Registry: https://remotionui.com/r/index.json
 
@@ -48,7 +46,7 @@ npx remotion-ui doctor --json            # diagnose setup
 npx remotion-ui search -q caption --json
 npx remotion-ui view social-clip --json
 npx remotion-ui list --json
-npx remotion-ui add --recipe captioned-social-video
+npx remotion-ui add social-clip caption-highlight
 ```
 
 ## Existing Remotion projects
@@ -62,10 +60,10 @@ npm run dev
 
 ## Composition-first defaults
 
-| Goal | Recipe | Flagship composition |
-|------|--------|----------------------|
-| 9:16 social clip | `captioned-social-video` | `social-clip` |
-| Creator reel | (none) | `creator-reel` |
-| Podcast clip | `podcast-clip` | `podcast-clip` |
-| Data explainer | `data-story` | `data-story` |
-| Product launch | `product-intro` | `intro` |
+| Goal | Flagship composition |
+|------|----------------------|
+| 9:16 social clip | `social-clip` |
+| Creator reel | `creator-reel` |
+| Podcast clip | `podcast-clip` |
+| Data explainer | `data-story` |
+| Product launch | `intro` |

@@ -20,13 +20,13 @@ const config = {
   async redirects() {
     return [
       {
-        source: "/docs/ai/recipes",
-        destination: "/docs/recipes/browse",
+        source: "/docs/ai/recipes/:slug*",
+        destination: "/docs/components/browse",
         permanent: true,
       },
       {
-        source: "/docs/ai/recipes/:slug*",
-        destination: "/docs/recipes/:slug*",
+        source: "/docs/ai/start",
+        destination: "/docs/ai",
         permanent: true,
       },
       {
@@ -45,8 +45,8 @@ const config = {
         permanent: true,
       },
       {
-        source: "/docs/recipes",
-        destination: "/docs/recipes/browse",
+        source: "/docs/recipes/:slug*",
+        destination: "/docs/components/browse",
         permanent: true,
       },
       {

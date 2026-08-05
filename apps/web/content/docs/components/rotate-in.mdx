@@ -1,12 +1,14 @@
 ---
 title: Rotate In
-description: Rotate and fade children into place.
+description: Swing into place in plane, or hinged in depth on the x or y axis.
 ---
 
 import { RotateInPreview } from '@/components/previews/rotate-in';
 
-<ComponentPage name="rotate-in" preview={RotateInPreview} durationInFrames={60}>
+<ComponentPage name="rotate-in" preview={RotateInPreview}>
 
-Rotates from `degrees` to 0 while fading opacity from 0 to 1.
+Rotates from `degrees` to 0 while a small scale change ties the two into one gesture.
+
+`axis="x"` and `axis="y"` hinge in depth under `perspective`, which is how a card or a panel should arrive; `z` is the in-plane spin for badges and marks.
 
 </ComponentPage>

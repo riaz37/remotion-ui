@@ -6,6 +6,10 @@ import { ScenePreviewPlate } from "./scene-preview-plate";
 
 export const MetricTickerPreview: React.FC = () => (
   <ScenePreviewPlate direct>
-    <MetricTicker title="Channel momentum" metrics={DEMO_METRICS} />
+    <MetricTicker
+      eyebrow="Quarter recap"
+      title="Channel momentum"
+      metrics={DEMO_METRICS}
+    />
   </ScenePreviewPlate>
 );

@@ -1,74 +1,159 @@
-import { interpolate, useCurrentFrame } from "remotion";
+import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { EASING } from "@/remotion/lib/motion-tokens";
+import { springSnappy } from "@/remotion/lib/springs";
+import {
+  clampProgress,
+  getPathDrawStyles,
+  samplePath,
+  waypointProgress,
+  waypointsToPath,
+  type PathPoint,
+} from "@/remotion/lib/path-utils";
 
-export type CursorPoint = {
-  x: number;
-  y: number;
-};
+export type CursorPoint = PathPoint;
 
 export type CursorPathProps = {
-  points: CursorPoint[];
+  /** Waypoints in the parent's coordinate space. Ignored when `d` is set. */
+  points?: CursorPoint[];
+  /** Drive the cursor along an authored SVG path instead of waypoints. */
+  d?: string;
   durationInFrames?: number;
+  delayInFrames?: number;
   color?: string;
   size?: number;
+  /** 0 hops in straight lines; higher values round the corners. */
+  smoothing?: number;
+  /** `draw` reveals the route behind the cursor, `guide` shows it up front. */
+  trail?: "draw" | "guide" | "none";
+  /** Waypoint indices that get a click ripple as the cursor arrives. */
+  clickAt?: number[];
 };
 
-function interpolatePoint(points: CursorPoint[], progress: number) {
-  if (points.length === 0) return { x: 0, y: 0 };
-  if (points.length === 1) return points[0];
-
-  const segmentProgress = progress * (points.length - 1);
-  const index = Math.min(points.length - 2, Math.floor(segmentProgress));
-  // Ease each hop so the cursor decelerates into a waypoint and accelerates
-  // out of it — a linear sweep across the whole path reads robotic.
-  const localProgress = EASING.editorial(segmentProgress - index);
-  const from = points[index];
-  const to = points[index + 1];
-
-  return {
-    x: from.x + (to.x - from.x) * localProgress,
-    y: from.y + (to.y - from.y) * localProgress,
-  };
-}
+const CLICK_DURATION = 18;
 
 export const CursorPath: React.FC<CursorPathProps> = ({
-  points,
+  points = [],
+  d,
   durationInFrames = 90,
+  delayInFrames = 0,
   color = "#e8b86d",
   size = 34,
+  smoothing = 0.6,
+  trail = "draw",
+  clickAt = [],
 }) => {
   const frame = useCurrentFrame();
-  const progress = interpolate(frame, [0, durationInFrames], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const position = interpolatePoint(points, progress);
-  const trailPath = points
-    .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`)
-    .join(" ");
+  const { fps } = useVideoConfig();
+  const path = d ?? waypointsToPath(points, smoothing);
+
+  if (!path) {
+    return null;
+  }
+
+  // Travel is measured in arc length, not waypoint index, so the cursor holds
+  // one speed across a long hop and a short one.
+  const progress = clampProgress(
+    interpolate(
+      frame,
+      [delayInFrames, delayInFrames + durationInFrames],
+      [0, 1],
+      {
+        extrapolateLeft: "clamp",
+        extrapolateRight: "clamp",
+        easing: EASING.editorial,
+      },
+    ),
+  );
+  const position = samplePath(path, progress);
+  const trailStyles = getPathDrawStyles(progress, path);
+
+  // A click fires on arrival, so its frame comes from where the waypoint sits
+  // along the path rather than from a hand-timed offset.
+  const stops = d ? [] : waypointProgress(path, points);
+  const clicks = clickAt
+    .filter((index) => stops[index] !== undefined)
+    .map((index) => ({
+      point: points[index],
+      startFrame: delayInFrames + stops[index] * durationInFrames,
+    }));
 
   return (
     <svg style={{ position: "absolute", inset: 0, overflow: "visible" }}>
-      <defs>
-        <filter id="cursor-glow">
-          <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor={color} floodOpacity="0.45" />
-        </filter>
-      </defs>
-      <path
-        d={trailPath}
-        fill="none"
-        stroke={color}
-        strokeWidth={2.5}
-        strokeOpacity={0.35}
-        strokeDasharray="6 8"
-        strokeLinecap="round"
-      />
-      <g transform={`translate(${position.x} ${position.y})`} filter="url(#cursor-glow)">
+      {trail === "guide" ? (
         <path
-          d={`M0 0 L0 ${size} L9 ${size - 9} L16 ${size} L22 ${size - 4} L15 ${size - 15} L${size} ${size - 15} Z`}
-          fill="#f8fafc"
+          d={path}
+          fill="none"
           stroke={color}
           strokeWidth={2.5}
+          strokeOpacity={0.28}
+          strokeDasharray="6 10"
+          strokeLinecap="round"
+        />
+      ) : null}
+
+      {trail === "draw" ? (
+        <>
+          <path
+            d={path}
+            fill="none"
+            stroke={color}
+            strokeWidth={3}
+            strokeOpacity={0.18}
+            strokeLinecap="round"
+          />
+          <path
+            d={path}
+            fill="none"
+            stroke={color}
+            strokeWidth={5}
+            strokeOpacity={0.8}
+            strokeLinecap="round"
+            strokeDasharray={trailStyles.strokeDasharray}
+            strokeDashoffset={trailStyles.strokeDashoffset}
+          />
+        </>
+      ) : null}
+
+      {clicks.map(({ point, startFrame }, index) => {
+        const pulse = spring({
+          frame: frame - startFrame,
+          fps,
+          config: springSnappy,
+          durationInFrames: CLICK_DURATION,
+        });
+        if (pulse <= 0 || pulse >= 1) {
+          return null;
+        }
+
+        return (
+          <circle
+            key={`click-${index}`}
+            cx={point.x}
+            cy={point.y}
+            r={6 + pulse * size * 0.9}
+            fill="none"
+            stroke={color}
+            strokeWidth={2}
+            opacity={0.7 - pulse * 0.7}
+          />
+        );
+      })}
+
+      <g transform={`translate(${position.x} ${position.y})`}>
+        <path
+          d={[
+            "M0 0",
+            `L0 ${size}`,
+            `L${size * 0.26} ${size * 0.74}`,
+            `L${size * 0.47} ${size}`,
+            `L${size * 0.65} ${size * 0.88}`,
+            `L${size * 0.44} ${size * 0.56}`,
+            `L${size * 0.74} ${size * 0.56}`,
+            "Z",
+          ].join(" ")}
+          fill="#f8fafc"
+          stroke="#080810"
+          strokeWidth={size * 0.06}
           strokeLinejoin="round"
         />
       </g>

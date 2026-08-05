@@ -1,12 +1,12 @@
 ---
 title: Code Accordion
-description: Code Accordion for Remotion.
+description: Stepped walkthrough where each section opens, writes its code, and is checked off.
 ---
 
-import { CodeAccordionPreview } from '@/components/previews/wave-batch-previews';
+import { CodeAccordionPreview } from '@/components/previews/code-accordion';
 
-<ComponentPage name="code-accordion" preview={CodeAccordionPreview} durationInFrames={90}>
+<ComponentPage name="code-accordion" preview={CodeAccordionPreview} durationInFrames={210}>
 
-Code Accordion.
+Steps play in order: a section opens, writes its code, holds, then closes with a check as the next one takes over. Pass `activeIndex` to pin a single step open instead of walking the list.
 
 </ComponentPage>

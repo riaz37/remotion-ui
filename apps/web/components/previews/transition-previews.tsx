@@ -1,7 +1,7 @@
 "use client";
 
 import type { ComponentProps } from "react";
-import { AbsoluteFill, useVideoConfig } from "remotion";
+import { AbsoluteFill } from "remotion";
 import { TransitionSeries } from "@remotion/transitions";
 import {
   TransitionLightLeak,
@@ -11,28 +11,44 @@ import {
   transitionWipe,
 } from "../registry-exports";
 import { ProductCard, PreviewFrame } from "./preview-frame";
+import { DARK_STAGE, LIGHT_STAGE, PreviewStageProvider } from "./preview-stage";
+import { PREVIEW_DEFAULTS } from "@/lib/preview-config";
 
-const SCENE_DURATION = 54;
 const TRANSITION_FRAMES = 18;
+/**
+ * Two scenes overlapping by TRANSITION_FRAMES must fill the whole 120-frame
+ * preview composition: 69 + 69 - 18 = 120. At 54 the series ran out at frame 90
+ * and every transition tile spent its last quarter on an empty stage.
+ */
+const SCENE_DURATION = (PREVIEW_DEFAULTS.durationInFrames + TRANSITION_FRAMES) / 2;
 
+/**
+ * The two scenes are deliberately opposite in luminance. Two dark cards read as
+ * one continuous frame, which hides which way a wipe travelled, whether a push
+ * moved both scenes, and whether the background ever showed through the cut.
+ */
 const BeforeScene: React.FC = () => (
-  <PreviewFrame lane="cuts">
-    <ProductCard
-      kicker="Before cut"
-      title="Editorial opener"
-      detail="Scene one holds the setup"
-    />
-  </PreviewFrame>
+  <PreviewStageProvider tokens={LIGHT_STAGE}>
+    <PreviewFrame lane="cuts">
+      <ProductCard
+        kicker="Scene one"
+        title="Editorial opener"
+        detail="Holds the setup"
+      />
+    </PreviewFrame>
+  </PreviewStageProvider>
 );
 
 const AfterScene: React.FC = () => (
-  <PreviewFrame lane="cuts">
-    <ProductCard
-      kicker="After cut"
-      title="Feature spotlight"
-      detail="Scene two carries the payoff"
-    />
-  </PreviewFrame>
+  <PreviewStageProvider tokens={DARK_STAGE}>
+    <PreviewFrame lane="cuts">
+      <ProductCard
+        kicker="Scene two"
+        title="Feature spotlight"
+        detail="Carries the payoff"
+      />
+    </PreviewFrame>
+  </PreviewStageProvider>
 );
 
 type TransitionConfig = {
@@ -80,19 +96,13 @@ function OverlaySeriesPreview() {
   );
 }
 
-function ClockWipePreviewInner() {
-  const { width, height } = useVideoConfig();
-
-  return (
-    <TransitionSeriesPreview
-      transition={transitionClockWipe({
-        width,
-        height,
-        durationInFrames: TRANSITION_FRAMES,
-      })}
-    />
-  );
-}
+// `transitionClockWipe` reads the composition size itself, so the preview no
+// longer needs a `useVideoConfig()` wrapper just to hand it width and height.
+export const TransitionClockWipePreview: React.FC = () => (
+  <TransitionSeriesPreview
+    transition={transitionClockWipe({ durationInFrames: TRANSITION_FRAMES })}
+  />
+);
 
 export const TransitionFadePreview: React.FC = () => (
   <TransitionSeriesPreview
@@ -116,10 +126,6 @@ export const TransitionWipePreview: React.FC = () => (
       durationInFrames: TRANSITION_FRAMES,
     })}
   />
-);
-
-export const TransitionClockWipePreview: React.FC = () => (
-  <ClockWipePreviewInner />
 );
 
 export const TransitionLightLeakPreview: React.FC = () => (

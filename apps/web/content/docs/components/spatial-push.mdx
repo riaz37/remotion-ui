@@ -1,13 +1,23 @@
 ---
 title: Spatial Push
-description: Perspective push transition for TransitionSeries.
+description: Two scenes locked edge to edge, shoved across the frame as one move.
 ---
 
 import { TransitionSpatialPushPreview } from "@/components/previews/transition-spatial-push";
 
 <ComponentPage name="spatial-push" preview={TransitionSpatialPushPreview} durationInFrames={90}>
 
-Exports `transitionSpatialPush()` and `getTransitionSpatialPushDuration()` for use with `TransitionSeries.Transition`.
+A push, not two entrances: the outgoing scene is shoved out the far side while
+the incoming one arrives from `direction`, both travelling the same distance at
+the same time so the seam between them never opens onto the background.
+
+`pushDepth` is the share of the frame each scene covers, and it defaults to `1`
+for that reason — lower it only over a solid backdrop you are happy to see.
+`tilt` rakes the panels in 3D and is off by default, because rotating a
+full-frame panel pulls one edge in and uncovers bare background behind it.
+
+Exports `transitionSpatialPush()` and `getTransitionSpatialPushDuration()` for
+use with `TransitionSeries.Transition`.
 
 Requires `@remotion/transitions`. Run `npx remotion add @remotion/transitions` if not already installed.
 

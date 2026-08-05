@@ -10,6 +10,8 @@ export const EndCardPreview: React.FC = () => (
       title="Ready to ship?"
       cta={DEMO_COPY.endCard.ctaLabel}
       url={DEMO_COPY.endCard.ctaUrl}
+      subtitle="Copy the scenes into your repo and render today."
+      handles={["@remotionui", "github.com/remotion-ui"]}
     />
   </ScenePreviewPlate>
 );

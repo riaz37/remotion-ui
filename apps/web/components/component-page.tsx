@@ -7,6 +7,7 @@ import { getComponentDocPath } from "@/lib/component-doc-path";
 import { getComponentReference } from "@/lib/component-reference";
 import { hasCompositionPlayground } from "@/lib/composition-playground";
 import { laneAccent } from "@/lib/lane-visuals";
+import { previewMeta } from "@/lib/preview-config";
 import { CompositionPlaygroundSection } from "./composition-playground-section";
 import { InstallCommand } from "./install-command";
 import { PropsTable } from "./props-table";
@@ -32,20 +33,24 @@ type ComponentPageProps = {
 export function ComponentPage({
   name,
   preview,
-  durationInFrames = 90,
-  previewWidth = 960,
-  previewHeight = 540,
+  durationInFrames,
+  previewWidth,
+  previewHeight,
   previewLoop = true,
   inputProps,
   children,
 }: ComponentPageProps) {
+  // Framing comes from `preview-config`, the same table the atlas tiles and
+  // the render harness read, so a doc page can never play a component at a
+  // size or length nobody else uses.
+  const meta = previewMeta(name);
   const previewNode = preview ? (
     <SceneMonitorPreview
       name={name}
       component={preview}
-      durationInFrames={durationInFrames}
-      previewWidth={previewWidth}
-      previewHeight={previewHeight}
+      durationInFrames={durationInFrames ?? meta.durationInFrames}
+      previewWidth={previewWidth ?? meta.width}
+      previewHeight={previewHeight ?? meta.height}
       previewLoop={previewLoop}
       inputProps={inputProps}
     />

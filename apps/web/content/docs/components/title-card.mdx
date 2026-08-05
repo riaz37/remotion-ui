@@ -1,12 +1,18 @@
 ---
 title: Title Card
-description: Centered title card scene.
+description: An opening card where the headline stands up line by line.
 ---
 
 import { TitleCardPreview } from '@/components/previews/title-card';
 
-<ComponentPage name="title-card" preview={TitleCardPreview} durationInFrames={60}>
+<ComponentPage name="title-card" preview={TitleCardPreview} durationInFrames={140}>
 
-Centered title card scene.
+Each line rises out of its own mask in turn, one sweep of light crosses the
+headline once it is standing, and the whole card holds under a slow push so a
+long title beat never sits dead still.
+
+Newlines in `title` are honoured; otherwise lines are balanced to
+`charsPerLine`. `eyebrow` adds a chip above, `meta` a small line under the
+subtitle.
 
 </ComponentPage>

@@ -21,6 +21,20 @@ export const STAGGER = {
 } as const;
 
 /**
+ * Emphasis scale steps. One word popping inside a line of text carries a lot
+ * less headroom than a card lifting off a page, so emphasis is a named ramp
+ * rather than a per-component magic number — pair with `EASING.pop`.
+ */
+export const EMPHASIS = {
+  /** Type-level accent: a highlighted word inside running copy. */
+  subtle: 1.05,
+  /** Standalone element that owns its own line. */
+  medium: 1.1,
+  /** Hero beat — one per scene at most. */
+  strong: 1.18,
+} as const;
+
+/**
  * Copy-paste Bézier curves from Remotion timing guidance.
  * Curves are shared with `timing.ts` so a component picks the same motion
  * whether it imports the token object or the standalone curve.

@@ -1,13 +1,22 @@
 ---
 title: Frosted Glass Wipe
-description: Progressive frosted glass panel sweep for TransitionSeries.
+description: A pane of frosted glass crosses the frame and leaves the next scene behind it.
 ---
 
 import { TransitionFrostedGlassWipePreview } from "@/components/previews/transition-frosted-glass-wipe";
 
 <ComponentPage name="frosted-glass-wipe" preview={TransitionFrostedGlassWipePreview} durationInFrames={90}>
 
-Exports `transitionFrostedGlassWipe()` and `getTransitionFrostedGlassWipeDuration()` for use with `TransitionSeries.Transition`.
+One panel of blurred glass travels across the frame, and the scene changes
+behind it. Because the panel covers the seam, the cut underneath can be hard —
+the outgoing scene holds whole until the glass has passed over it.
+
+`direction` takes any of the four edges, `panelWidth` is the pane's width as a
+share of the frame, and `frostColor` tints the glass. The pane parks off-frame
+at both ends, so it never sits over a scene that is not moving.
+
+Exports `transitionFrostedGlassWipe()` and `getTransitionFrostedGlassWipeDuration()`
+for use with `TransitionSeries.Transition`.
 
 Requires `@remotion/transitions`. Run `npx remotion add @remotion/transitions` if not already installed.
 

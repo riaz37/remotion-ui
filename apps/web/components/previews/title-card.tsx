@@ -9,6 +9,7 @@ export const TitleCardPreview: React.FC = () => (
     <TitleCard
       title={DEMO_COPY.productLaunch.title}
       subtitle={DEMO_COPY.productLaunch.subtitle}
+      eyebrow="Release 0.7"
     />
   </ScenePreviewPlate>
 );

@@ -2,8 +2,7 @@ import { HomeLayout } from "fumadocs-ui/layouts/home";
 import type { Metadata } from "next";
 import { InstallStrip } from "@/components/landing/install-strip";
 import { EndSlateCta } from "@/components/landing/end-slate-cta";
-import { RecipeRail } from "@/components/landing/recipe-rail";
-import { StoryboardShowcase } from "@/components/landing/storyboard-showcase";
+import { ComponentContactSheet } from "@/components/landing/component-contact-sheet";
 import { StudioHero } from "@/components/landing/studio-hero";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteLogo } from "@/components/site-logo";
@@ -45,8 +44,7 @@ export default function HomePage() {
       className="flex flex-1 flex-col"
     >
       <StudioHero />
-      <RecipeRail />
-      <StoryboardShowcase />
+      <ComponentContactSheet />
       <InstallStrip />
       <EndSlateCta />
       <SiteFooter />

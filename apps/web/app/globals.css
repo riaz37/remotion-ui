@@ -206,6 +206,205 @@ h3 {
   color: var(--bay-phosphor);
 }
 
+/* ---------------------------------------------------------------------------
+   Program monitor (landing hero)
+
+   The monitor is #050505 in both site themes, so it re-declares the bay tokens
+   at their dark values for its own subtree. Scoping this to the monitor alone,
+   rather than to the whole hero, is what keeps the page on one theme: the dark
+   picture is an object sitting in the site's theme, not a section that inverts
+   it. The hero copy and the scrub bar stay on the page's own tokens.
+--------------------------------------------------------------------------- */
+.bay-stage-scope {
+  --bay-bg: #050505;
+  --bay-surface: oklch(0.18 0.005 75);
+  --bay-surface-raised: oklch(0.23 0.006 75);
+  --bay-ink: oklch(0.95 0.005 75);
+  --bay-muted: oklch(0.72 0.014 75);
+  --bay-border: oklch(1 0 0 / 0.13);
+  --bay-border-strong: oklch(1 0 0 / 0.22);
+  --bay-phosphor: oklch(0.83 0.12 75);
+
+  --color-fd-background: var(--bay-bg);
+  --color-fd-foreground: var(--bay-ink);
+  --color-fd-muted-foreground: var(--bay-muted);
+  --color-fd-muted: var(--bay-surface-raised);
+  --color-fd-border: var(--bay-border);
+  --color-fd-ring: var(--bay-phosphor);
+
+  color: var(--bay-ink);
+}
+
+.text-display-hero {
+  font-family: var(--font-display);
+  /* Sized so "Production-ready motion" holds one line from 320px upward. */
+  font-size: clamp(1.75rem, 6.6vw, 3rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.06;
+}
+
+/*
+  Scroll progress for the hero, 0 at rest and 1 when the monitor has opened to
+  the full stage. Written once per frame by Motion onto the sticky stage, then
+  read by the monitor and the copy. Registered so it interpolates as a number
+  rather than as a token.
+*/
+@property --p {
+  syntax: "<number>";
+  initial-value: 0;
+  inherits: true;
+}
+
+/*
+  The monitor.
+
+  At rest it is an object sitting on the page: inset, cornered, flush to the
+  right edge, with the copy beside it. Scroll drives --p and it opens out to
+  fill the stage. Only transform and border-radius move, so the expansion never
+  touches layout and the composition inside never reflows.
+
+  Rest values live here rather than in JS because the whole device is a desktop
+  affordance: below `lg` the monitor is simply a full-width 16:9 block above the
+  copy and every rest value is the identity, so --p has nothing to do.
+*/
+.program-shell {
+  --rest-scale: 1;
+  --rest-x: 0%;
+  --rest-y: 0%;
+  --rest-radius: 0px;
+}
+
+@media (min-width: 1024px) {
+  .program-shell {
+    /*
+      Rest: half size, flush to the stage's right edge, with its baseline on the
+      copy's. Flush right rather than inset is the affordance: the monitor is
+      already touching one edge of the window, so opening it out to the rest
+      reads as the obvious next move.
+    */
+    --rest-scale: 0.5;
+    --rest-x: 25%;
+    --rest-y: -7%;
+    --rest-radius: 12px;
+    /*
+      Expansion is offset from raw scroll on both ends. It waits out the first
+      tenth so the copy has started clearing, and finishes at three quarters so
+      the last stretch of the runway is a hold on the full-screen program rather
+      than a scrub that ends the moment it arrives.
+    */
+    --pm: clamp(0, calc((var(--p) - 0.1) / 0.65), 1);
+
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    /*
+      The monitor is the composition's own 16:9 at every value of --p, so the
+      expansion is one uniform scale and the picture is never distorted or
+      re-cropped. At --p 1 it overhangs the stage top and bottom by exactly the
+      loop's dead margin, which is what makes it read as full screen.
+    */
+    aspect-ratio: 16 / 9;
+    transform:
+      translate(0, -50%)
+      translate(
+        calc(var(--rest-x) * (1 - var(--pm))),
+        calc(var(--rest-y) * (1 - var(--pm)))
+      )
+      scale(calc(var(--rest-scale) + (1 - var(--rest-scale)) * var(--pm)));
+    border-radius: calc(var(--rest-radius) * (1 - var(--pm)));
+    will-change: transform;
+  }
+
+  /*
+    The copy hands the stage over before the picture reaches it. It clears well
+    before --p is halfway, so the two never overlap mid-transition.
+  */
+  .program-copy {
+    opacity: clamp(0, calc(1 - var(--p) * 4), 1);
+    transform: translateY(calc(var(--p) * -40px));
+  }
+}
+
+/*
+  Reduced motion holds the hero in its rest state: monitor inset, copy present,
+  scrub bar live. The runway is removed in the markup, so there is nothing to
+  scroll through and nothing to animate.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .program-shell,
+  .program-copy {
+    --p: 0 !important;
+  }
+}
+
+/*
+  Scroll runway. Its height is how far you travel to open the monitor, and it is
+  the only reason the stage above it is sticky. Driven from CSS rather than from
+  React so the reduced-motion and small-screen cases cannot depend on hydration.
+*/
+.program-runway {
+  display: none;
+  height: 80dvh;
+}
+
+@media (min-width: 1024px) {
+  .program-runway {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .program-runway {
+    display: none;
+  }
+}
+
+/* Hairline that reads as the monitor's bezel, gone once it is the stage. */
+.program-ring {
+  opacity: calc(1 - var(--p));
+  box-shadow: inset 0 0 0 1px var(--bay-border-strong);
+  border-radius: inherit;
+}
+
+/* One tick per second of the loop, drawn behind the scrub track. */
+.program-ruler {
+  background-image: linear-gradient(
+    90deg,
+    var(--bay-border-strong) 0 1px,
+    transparent 1px
+  );
+  background-size: calc(100% / 12) 100%;
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/*
+  Hero arrival. Reading order only: the message, then what it costs to get it.
+  CSS rather than a motion component so the copy stays server-rendered and the
+  headline paints without waiting for hydration.
+*/
+.hero-rise {
+  animation: hero-rise 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--rise-index, 0) * 70ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-rise {
+    animation: none;
+  }
+}
+
 @keyframes queue-panel-in {
   from {
     opacity: 0;

@@ -1,81 +1,169 @@
+import type { CSSProperties } from "react";
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { EASING } from "./motion-tokens";
-import { springSmooth } from "./springs";
 
+/** Frame the prompt starts typing in the chat-style composers. */
 export const AI_TYPING_START = 42;
+/** Frame the prompt starts typing in the terminal-style composers. */
+export const AI_TYPING_START_TUI = 48;
+/** Characters per second for the chat-style composers. */
 export const AI_TYPING_CPS = 22;
 
-export function useTypedPrompt({
-  prompt,
-  startFrame = AI_TYPING_START,
-  cps = AI_TYPING_CPS,
-}: {
-  prompt: string;
-  startFrame?: number;
-  cps?: number;
-}) {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const chars = Math.floor(Math.max(0, frame - startFrame) * (cps / fps));
-  const text = prompt.slice(0, chars);
-  return { text, count: chars, typing: chars < prompt.length };
+export function stageScale(
+  width: number,
+  height: number,
+  refW = 1280,
+  refH = 720,
+): number {
+  return Math.min(width / refW, height / refH);
 }
 
-export function morphProgress(frame: number, fps: number, startFrame = AI_TYPING_START) {
+export interface TypewriterOptions {
+  cps?: number;
+  speed?: number;
+  startFrame?: number;
+}
+
+export interface TypewriterState {
+  text: string;
+  count: number;
+  done: boolean;
+  typing: boolean;
+}
+
+/**
+ * Character-by-character reveal. `typing` is false both before the first
+ * character and after the last one, so a caret bound to `!typing` blinks while
+ * idle and holds solid while text is being revealed.
+ */
+export function useTypewriter(
+  full: string,
+  options: TypewriterOptions = {},
+): TypewriterState {
+  const {
+    cps = AI_TYPING_CPS,
+    speed = 1,
+    startFrame = AI_TYPING_START,
+  } = options;
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const local = frame * speed - startFrame;
+  const over = (full.length / cps) * fps;
+  const count =
+    local <= 0
+      ? 0
+      : over <= 0
+        ? full.length
+        : Math.max(0, Math.min(full.length, Math.floor((local / over) * full.length)));
+
+  return {
+    text: full.slice(0, count),
+    count,
+    done: count >= full.length,
+    typing: count > 0 && count < full.length,
+  };
+}
+
+/** Spring that drives the mic/waveform → send button morph. */
+export function morphProgressAt(
+  frame: number,
+  opts: { startFrame?: number; fps: number; speed?: number },
+): number {
+  const { startFrame = AI_TYPING_START, fps, speed = 1 } = opts;
   const value = spring({
     fps,
-    frame: frame - startFrame,
+    frame: frame * speed - startFrame,
     config: { damping: 14, stiffness: 200, mass: 0.6 },
   });
   return Math.max(0, Math.min(value, 1));
 }
 
-export function introBounce(frame: number, fps: number) {
-  const s = spring({ fps, frame, config: springSmooth });
+export function introBounceIn(
+  frame: number,
+  fps: number,
+): { translateY: number; scale: number } {
+  const s = spring({
+    fps,
+    frame,
+    config: { damping: 14, stiffness: 110, mass: 0.7 },
+  });
   return {
-    translateY: interpolate(s, [0, 1], [24, 0]),
+    translateY: interpolate(s, [0, 1], [28, 0]),
     scale: interpolate(s, [0, 1], [0.97, 1]),
   };
 }
 
-export function fadeUp(frame: number, range: [number, number]) {
+export function fadeUpAt(
+  frame: number,
+  range: [number, number],
+): { opacity: number; translateY: number } {
+  const opts = {
+    extrapolateLeft: "clamp" as const,
+    extrapolateRight: "clamp" as const,
+  };
   return {
-    opacity: interpolate(frame, range, [0, 1], {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-      easing: EASING.enter,
-    }),
-    translateY: interpolate(frame, range, [12, 0], {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-      easing: EASING.enter,
-    }),
+    opacity: interpolate(frame, range, [0, 1], opts),
+    translateY: interpolate(frame, range, [12, 0], opts),
   };
 }
 
-export function stageScale(width: number, height: number, refW = 1280, refH = 720) {
-  return Math.min(width / refW, height / refH);
+export function caretBlinkOpacity(
+  frame: number,
+  opts: { fps: number; blinkPerSecond: number; speed: number },
+): number {
+  const cycles = opts.blinkPerSecond <= 0 ? 1 : opts.blinkPerSecond;
+  const halfPeriod = opts.fps / cycles / 2;
+  if (halfPeriod <= 0) return 1;
+  return Math.floor((frame * opts.speed) / halfPeriod) % 2 === 0 ? 1 : 0;
 }
 
-export const BlockCaret: React.FC<{
-  color: string;
-  blink: boolean;
+export interface CaretProps {
+  color?: string;
+  width?: number;
   height?: number;
-}> = ({ color, blink, height = 22 }) => {
+  radius?: number;
+  opacity?: number;
+  blink?: boolean;
+  blinkPerSecond?: number;
+  speed?: number;
+  marginLeft?: number;
+  style?: CSSProperties;
+}
+
+export function Caret({
+  color = "currentColor",
+  width = 2,
+  height = 18,
+  radius = 1,
+  opacity,
+  blink = false,
+  blinkPerSecond = 1,
+  speed = 1,
+  marginLeft = 0,
+  style,
+}: CaretProps) {
   const frame = useCurrentFrame();
-  const opacity = blink ? (frame % 16 < 8 ? 1 : 0) : 1;
+  const { fps } = useVideoConfig();
+
+  const resolvedOpacity =
+    opacity !== undefined
+      ? opacity
+      : blink
+        ? caretBlinkOpacity(frame, { fps, blinkPerSecond, speed })
+        : 1;
+
   return (
     <span
       style={{
         display: "inline-block",
-        width: 2,
+        flexShrink: 0,
+        width,
         height,
-        marginLeft: 2,
-        backgroundColor: color,
-        opacity,
-        verticalAlign: "text-bottom",
-        transform: "translateY(2px)",
+        borderRadius: radius,
+        background: color,
+        opacity: resolvedOpacity,
+        marginLeft,
+        ...style,
       }}
     />
   );
-};
+}

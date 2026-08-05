@@ -92,7 +92,9 @@ export function CompactCommandRail({
     <div
       className={`not-prose flex items-center justify-between gap-3 overflow-hidden rounded-md border border-[var(--bay-border)] bg-[var(--bay-surface)] px-3 py-2 ${className}`}
     >
-      <code className="min-w-0 truncate font-[family-name:var(--font-mono)] text-[0.8125rem] text-fd-foreground">
+      {/* Steps down a notch on narrow screens so a full install command never
+          truncates: the command is the call to action, not decoration. */}
+      <code className="min-w-0 truncate font-[family-name:var(--font-mono)] text-[0.75rem] text-fd-foreground sm:text-[0.8125rem]">
         <span className="text-[var(--bay-phosphor)]">$ </span>
         {command}
       </code>

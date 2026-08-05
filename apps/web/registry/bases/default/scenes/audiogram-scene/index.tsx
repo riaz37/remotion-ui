@@ -53,9 +53,11 @@ export const AudiogramScene: React.FC<AudiogramSceneProps> = ({
         paddingBottom: safeArea.paddingBottom + scaleFont(28, width),
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between",
+        // Header and bars read as one block; `space-between` left a dead band
+        // across the middle of the frame at every aspect ratio.
+        justifyContent: "center",
         alignItems: "stretch",
-        gap: scaleFont(36, width),
+        gap: scaleFont(64, width),
         fontFamily,
       }}
     >
@@ -123,7 +125,7 @@ export const AudiogramScene: React.FC<AudiogramSceneProps> = ({
             src={src}
             frame={frame}
             barColor={accentColor}
-            height={Math.round(height * 0.14)}
+            height={Math.round(height * 0.18)}
           />
         </div>
       </FadeIn>

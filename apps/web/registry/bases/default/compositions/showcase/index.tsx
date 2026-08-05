@@ -92,6 +92,7 @@ export const Showcase: React.FC<ShowcaseProps> = ({
         <TransitionSeries.Transition {...FADE} />
         <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.end}>
           <EndCard
+            speed={1.4}
             title={title}
             cta={ctaLabel}
             url={ctaUrl}

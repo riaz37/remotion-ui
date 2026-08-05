@@ -285,7 +285,7 @@ function OutputBody({ outputPath }: { outputPath: string }) {
             {outputPath}
           </p>
           <p className="mt-1 text-mono-xs text-fd-muted-foreground">
-            H.264 · 1080×1920 · 30fps
+            H.264 1080×1920 · 30fps
           </p>
         </div>
       </div>
@@ -308,7 +308,7 @@ function OutputBody({ outputPath }: { outputPath: string }) {
           <div className="h-full w-full rounded-full bg-[var(--bay-phosphor)]" />
         </div>
         <p className="mt-3 text-sm leading-relaxed text-fd-muted-foreground">
-          Composition exported — ready to publish.
+          Composition exported. Ready to publish.
         </p>
       </div>
     </div>

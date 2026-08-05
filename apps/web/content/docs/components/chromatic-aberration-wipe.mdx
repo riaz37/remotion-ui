@@ -1,13 +1,25 @@
 ---
 title: Chromatic Aberration Wipe
-description: RGB-split wipe transition for TransitionSeries.
+description: A slide hard enough to pull the colour channels apart.
 ---
 
 import { TransitionChromaticAberrationWipePreview } from "@/components/previews/transition-chromatic-aberration-wipe";
 
 <ComponentPage name="chromatic-aberration-wipe" preview={TransitionChromaticAberrationWipePreview} durationInFrames={90}>
 
-Exports `transitionChromaticAberrationWipe()` and `getTransitionChromaticAberrationWipeDuration()` for use with `TransitionSeries.Transition`.
+The two scenes slide across locked together while the red and blue channels
+separate against the green — an actual per-channel split, isolated with a colour
+matrix and recombined under `screen`, not a coloured shadow dropped behind the
+layer. The separation peaks in the middle of the move and is gone at both ends,
+so nothing is left tinted once the cut lands.
+
+`intensity` is the peak separation in px, `axis` swings the whole thing
+vertical, and `slide` is how far the scenes travel — leave it at `1` unless you
+want the background to show.
+
+Exports `transitionChromaticAberrationWipe()` and
+`getTransitionChromaticAberrationWipeDuration()` for use with
+`TransitionSeries.Transition`.
 
 Requires `@remotion/transitions`. Run `npx remotion add @remotion/transitions` if not already installed.
 

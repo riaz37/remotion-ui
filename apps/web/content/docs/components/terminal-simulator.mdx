@@ -1,12 +1,18 @@
 ---
 title: Terminal Simulator
-description: Terminal Simulator for Remotion.
+description: A terminal window that types a command, streams build steps, and hands the prompt back.
 ---
 
-import { TerminalSimulatorPreview } from '@/components/previews/wave-batch-previews';
+import { TerminalSimulatorPreview } from '@/components/previews/terminal-simulator';
 
-<ComponentPage name="terminal-simulator" preview={TerminalSimulatorPreview} durationInFrames={90}>
+<ComponentPage name="terminal-simulator" preview={TerminalSimulatorPreview} durationInFrames={180}>
 
-Terminal Simulator.
+The scene plays a full shell beat: the command types itself at the prompt, each
+step prints with a spinner, the spinner strokes into a check as the step
+resolves alongside its timing, and the prompt returns with a blinking caret —
+the signal a real terminal gives you when the work is done.
+
+Steps resolve in order. Give a step a longer `work` (in seconds) when it should
+visibly hold, and a `tone` of `warn` or `error` when it should not land clean.
 
 </ComponentPage>
