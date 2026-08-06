@@ -8,6 +8,11 @@ on:
         required: false
         default: false
         type: boolean
+      publish_cli:
+        description: "Publish remotion-ui (the CLI)"
+        required: false
+        default: true
+        type: boolean
       publish_mcp:
         description: "Also publish remotion-ui-mcp"
         required: false
@@ -59,27 +64,29 @@ jobs:
           "
 
       - name: Build CLI
+        if: inputs.publish_cli
         run: pnpm --filter remotion-ui build
 
       - name: Test CLI
+        if: inputs.publish_cli
         run: pnpm --filter remotion-ui test
 
       - name: Publish remotion-ui (dry run)
-        if: inputs.dry_run
+        if: ${{ inputs.publish_cli && inputs.dry_run }}
         working-directory: packages/remotion-ui
         run: npm publish --access public --dry-run
 
       - name: Publish remotion-ui
-        if: ${{ !inputs.dry_run }}
+        if: ${{ inputs.publish_cli && !inputs.dry_run }}
         working-directory: packages/remotion-ui
         run: npm publish --access public
 
       - name: Verify published CLI version
-        if: ${{ !inputs.dry_run }}
+        if: ${{ inputs.publish_cli && !inputs.dry_run }}
         run: npx --yes remotion-ui@latest --version
 
       - name: Verify published registry search
-        if: ${{ !inputs.dry_run }}
+        if: ${{ inputs.publish_cli && !inputs.dry_run }}
         run: npx --yes remotion-ui@latest search -q caption
 
       - name: Build MCP server
