@@ -8,6 +8,11 @@ on:
         required: false
         default: false
         type: boolean
+      publish_mcp:
+        description: "Also publish remotion-ui-mcp"
+        required: false
+        default: true
+        type: boolean
 
 jobs:
   publish:
@@ -76,3 +81,25 @@ jobs:
       - name: Verify published registry search
         if: ${{ !inputs.dry_run }}
         run: npx --yes remotion-ui@latest search -q caption
+
+      - name: Build MCP server
+        if: inputs.publish_mcp
+        run: pnpm --filter remotion-ui-mcp build
+
+      - name: Test MCP server
+        if: inputs.publish_mcp
+        run: pnpm --filter remotion-ui-mcp test
+
+      - name: Publish remotion-ui-mcp (dry run)
+        if: ${{ inputs.publish_mcp && inputs.dry_run }}
+        working-directory: packages/remotion-ui-mcp
+        run: npm publish --access public --dry-run
+
+      - name: Publish remotion-ui-mcp
+        if: ${{ inputs.publish_mcp && !inputs.dry_run }}
+        working-directory: packages/remotion-ui-mcp
+        run: npm publish --access public
+
+      - name: Verify published MCP server version
+        if: ${{ inputs.publish_mcp && !inputs.dry_run }}
+        run: npm view remotion-ui-mcp@latest version

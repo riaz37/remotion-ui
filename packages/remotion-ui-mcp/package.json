@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "remotion-ui": "workspace:*",
+    "remotion-ui": "^0.8.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {

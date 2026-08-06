@@ -175,8 +175,8 @@ importers:
         specifier: ^1.30.0
         version: 1.30.0(zod@3.25.76)
       remotion-ui:
-        specifier: workspace:*
-        version: link:../remotion-ui
+        specifier: ^0.8.0
+        version: 0.8.0(typescript@5.9.3)
       zod:
         specifier: ^3.24.2
         version: 3.25.76
@@ -4391,6 +4391,10 @@ packages:
 
   remark@15.0.1:
     resolution: {integrity: sha512-Eht5w30ruCXgFmxVUSlNWQ9iiimq07URKeFS3hNc8cUWy1llX4KDWfyEDZRycMc+znsN9Ux5/tJ/BFdgdOwA3A==}
+
+  remotion-ui@0.8.0:
+    resolution: {integrity: sha512-ZhPCHaSFrobL5Qzq0aT3ueA0EQJ21sDDmdIINjLHrqd0d2U3oURMf2nAR8+EAzA8IyRY228b54d0aAsjv8uVlw==}
+    hasBin: true
 
   remotion@4.0.505:
     resolution: {integrity: sha512-Lhi03pimw+Tcer2C0iioJD3c5Iy5hmRJRHtR9XvObhKl0Z4Lpi/EDeTFq1tvU9VVeezU75tVlHYeq+S3TDIiPw==}
@@ -10314,6 +10318,16 @@ snapshots:
       unified: 11.0.5
     transitivePeerDependencies:
       - supports-color
+
+  remotion-ui@0.8.0(typescript@5.9.3):
+    dependencies:
+      commander: 13.1.0
+      cosmiconfig: 9.0.1(typescript@5.9.3)
+      fs-extra: 11.3.5
+      semver: 7.8.2
+      zod: 3.25.76
+    transitivePeerDependencies:
+      - typescript
 
   remotion@4.0.505(react-dom@19.2.7(react@19.2.7))(react@19.2.7):
     dependencies:
