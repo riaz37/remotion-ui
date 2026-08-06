@@ -36,8 +36,16 @@ const T = {
   groundFor: 0.4,
   eyebrow: 0.16,
   word: 0.3,
-  /** Added per word. */
+  /** Added per word — capped so long copy still finishes inside `wordsBudget`. */
   wordStagger: 0.055,
+  /**
+   * Total span every word must have started landing within, regardless of
+   * word count. Without this, long copy (or a 2x-length stress test) staggers
+   * so far past the beat that later words are still mid-slide, clipped by
+   * their own reveal mask, when the line is supposed to be fully readable —
+   * the clipped fragment reads as a ghost overlapping the settled words.
+   */
+  wordsBudget: 0.7,
   /** Rule draws under the line once the words have landed. */
   rule: 0.62,
   exitFor: 0.36,
@@ -92,7 +100,14 @@ export const CaptionBumper: React.FC<CaptionBumperProps> = ({
 
   const ground = ease(T.ground, T.ground + T.groundFor, EASING.editorial);
   const eyebrowIn = eyebrow ? ease(T.eyebrow, T.eyebrow + 0.4) : 0;
-  const lastWord = T.word + (words.length - 1) * T.wordStagger + 0.4;
+  // Longer copy gets a tighter per-word stagger so the whole line always
+  // finishes landing inside `wordsBudget`, instead of the reveal stretching
+  // past the beat and leaving trailing words visibly mid-clip at the hold.
+  const wordStagger =
+    words.length > 1
+      ? Math.min(T.wordStagger, T.wordsBudget / (words.length - 1))
+      : 0;
+  const lastWord = T.word + (words.length - 1) * wordStagger + 0.4;
   const rule = ease(Math.max(T.rule, lastWord - 0.1), lastWord + 0.4, EASING.editorial);
   const exit =
     holdSeconds === undefined
@@ -172,8 +187,8 @@ export const CaptionBumper: React.FC<CaptionBumperProps> = ({
         >
           {words.map((word, index) => {
             const wordIn = ease(
-              T.word + index * T.wordStagger,
-              T.word + index * T.wordStagger + 0.4,
+              T.word + index * wordStagger,
+              T.word + index * wordStagger + 0.4,
             );
             return (
               // Each word lands out of its own mask, so the line reads as

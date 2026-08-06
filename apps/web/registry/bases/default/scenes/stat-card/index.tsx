@@ -95,8 +95,15 @@ export const StatCard: React.FC<StatCardProps> = ({
     : Math.min(stage.w / 1120, stage.h / 620);
 
   const share = max && max > 0 ? Math.min(Math.max(value / max, 0), 1) : 1;
-  const ring = ease(T.ring, T.ring + T.ringFor, EASING.editorial) * share;
-  const counted = ease(T.count, T.count + T.countFor, EASING.editorial) * value;
+  // Ease-out (not the symmetric `editorial` curve) so the ring and the count
+  // both make real progress in their first few frames. A host composition
+  // that crossfades this scene in (as `showcase` does, over 12 frames) spends
+  // that whole transition rendering this scene simultaneously with the
+  // outgoing one — with a slow-starting ease, the count is still close to 0
+  // by the time the transition resolves and the card is alone on screen, so
+  // it reads as a dead counter rather than one mid-animation.
+  const ring = ease(T.ring, T.ring + T.ringFor, EASING.enter) * share;
+  const counted = ease(T.count, T.count + T.countFor, EASING.enter) * value;
   const labelIn = ease(T.label, T.label + 0.45);
   const captionIn = caption ? ease(T.caption, T.caption + 0.45) : 0;
   const deltaIn =

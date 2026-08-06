@@ -263,6 +263,7 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   "bento-pan": {lane:"reels",drive:"time",tier:"advanced"},
   "browser-flow": {lane:"reels",drive:"time",tier:"advanced"},
   "ai-generation-canvas": {lane:"reels",drive:"time",tier:"advanced"},
+  "ai-composer-showcase": {lane:"reels",drive:"time",tier:"advanced",tags:["ai"]},
   "live-code-split": {lane:"reels",drive:"time",tier:"advanced"},
   "deploy-reveal": {lane:"reels",drive:"time",tier:"advanced"},
   "dashboard-populate": {lane:"reels",drive:"data",tier:"advanced"},

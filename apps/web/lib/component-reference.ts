@@ -2265,7 +2265,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 <MeshGradientBg />`,
     props: [
       { name: "backgroundColor", type: "string", default: '"#080810"', description: "Stage color." },
-      { name: "colors", type: "[string, string, string]", description: "Blob accent colors." },
+      { name: "colors", type: "[string, string, string]", default: '["#e8b86d", "#2dd4bf", "#f472b6"]', description: "Blob accent colors — solid hex, screen-blended over the stage." },
       { name: "intensity", type: "number", default: "1", description: "Drift amplitude multiplier." },
     ],
     related: ["dynamic-grid"],
@@ -2274,11 +2274,13 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     category: "primitive",
     usage: `import { DynamicGrid } from "@/remotion/primitives/dynamic-grid";
 
-<DynamicGrid spacing={48} />`,
+<DynamicGrid spacing={64} />`,
     props: [
-      { name: "spacing", type: "number", default: "48", description: "Grid cell size in px." },
-      { name: "dotSize", type: "number", default: "2", description: "Dot radius in px." },
-      { name: "drift", type: "number", default: "1", description: "Motion speed multiplier." },
+      { name: "spacing", type: "number", default: "64", description: "Grid cell size in px." },
+      { name: "lineColor", type: "string", default: '"rgba(255,255,255,0.1)"', description: "Grid line color." },
+      { name: "sweepColor", type: "string", default: '"rgba(232,184,109,0.55)"', description: "Diagonal light-sweep color." },
+      { name: "speed", type: "number", default: "0.4", description: "Grid drift speed in px per frame." },
+      { name: "sweepDurationInFrames", type: "number", default: "150", description: "Frames for one full sweep loop." },
     ],
     related: ["mesh-gradient-bg"],
   },
@@ -2455,6 +2457,15 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     note: "Responsive prompt-to-dashboard generation beat with safe-area layout, skeleton shimmer, and card flips.",
     related: ["dashboard-populate", "chat-to-preview"],
   },
+  "ai-composer-showcase": {
+    category: "composition",
+    usage: `import { AiComposerShowcase } from "@/compositions/ai-composer-showcase";
+
+<AiComposerShowcase />`,
+    props: [],
+    note: "1920×1080 showcase reel: title card, five AI composer scenes (ChatGPT, Claude, v0, Claude Code, OpenCode) each with a feature label, then an end card. No props — customize by editing the SCENES list in source.",
+    related: ["chat-gpt", "claude-chat", "v0", "claude-code", "opencode"],
+  },
   "live-code-split": {
     category: "composition",
     usage: `import { LiveCodeSplit } from "@/compositions/live-code-split";
@@ -2479,9 +2490,15 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     category: "composition",
     usage: `import { DashboardPopulate } from "@/compositions/dashboard-populate";
 
-<DashboardPopulate />`,
-    props: [],
-    note: "1920×1080 metric ticker then animated bar chart.",
+<DashboardPopulate metrics={metrics} barData={barData} />`,
+    props: [
+      { name: "metrics", type: "MetricTickerItem[]", description: "Metric cards shown in the opening ticker beat." },
+      { name: "barData", type: "ChartDatum[]", description: "Bars charted in the closing beat." },
+      { name: "metricsTitle", type: "string", default: '"Dashboard waking up"', description: "Title over the metric ticker beat." },
+      { name: "chartTitle", type: "string", default: '"Weekly throughput"', description: "Title over the bar chart beat." },
+      { name: "backgroundColor", type: "string", default: '"#080810"', description: "Scene background color." },
+    ],
+    note: "1920×1080 metric ticker then animated bar chart, fading between beats.",
     related: ["metric-ticker", "animated-bar-chart"],
   },
   "pricing-focus": {

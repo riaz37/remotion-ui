@@ -27,13 +27,23 @@ const COLORS = {
   line: "rgba(232,184,109,0.35)",
 } as const;
 
+/**
+ * One-shot ambient demo, not a seamless loop: the orbit's rotation period
+ * (2π × 38 frames ≈ 239 frames) and the pulse period (2π × 14 ≈ 88 frames)
+ * don't divide the composition's duration cleanly, and the satellites never
+ * complete a full revolution within a typical preview length — so there is
+ * no frame where the motion state repeats. Rather than force a seamless
+ * wrap, the orbit settles to a stop and fades out as a deliberate exit beat.
+ */
+const EXIT_DURATION = 30;
+
 export const EcosystemOrbit: React.FC<EcosystemOrbitProps> = ({
   centerLabel = "RemotionUI",
   satellites = ["CLI", "Scenes", "Reels", "Docs", "Registry"],
   accentColor = COLORS.center,
 }) => {
   const frame = useCurrentFrame();
-  const { fps, width, height } = useVideoConfig();
+  const { fps, width, height, durationInFrames } = useVideoConfig();
   const safe = getSafeAreaPadding({ width, height });
   const cx = width / 2;
   const cy = height / 2;
@@ -44,7 +54,18 @@ export const EcosystemOrbit: React.FC<EcosystemOrbitProps> = ({
     config: { damping: 16, stiffness: 100, mass: 0.9 },
     durationInFrames: 30,
   });
-  const pulse = (Math.sin(frame / 14) + 1) / 2;
+
+  /** Settle: freeze the orbit's motion clock before the fade begins so the
+   *  satellites glide to a rest position instead of vanishing mid-spin. */
+  const exitStart = durationInFrames - EXIT_DURATION;
+  const settledFrame = Math.min(frame, exitStart);
+  const pulse = (Math.sin(settledFrame / 14) + 1) / 2;
+  const exitProgress = interpolate(
+    frame,
+    [exitStart, durationInFrames - 1],
+    [0, 1],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASING.exit },
+  );
 
   return (
     <AbsoluteFill
@@ -52,6 +73,7 @@ export const EcosystemOrbit: React.FC<EcosystemOrbitProps> = ({
         background: COLORS.bg,
         backgroundImage: `radial-gradient(circle at 50% 50%, ${accentColor}12, transparent 55%)`,
         fontFamily,
+        opacity: 1 - exitProgress,
       }}
     >
       <svg
@@ -67,16 +89,19 @@ export const EcosystemOrbit: React.FC<EcosystemOrbitProps> = ({
             config: { damping: 18, stiffness: 90, mass: 1 },
             durationInFrames: 45,
           });
-          const angle = (i / satellites.length) * Math.PI * 2 + frame / 38;
+          const angle =
+            (i / satellites.length) * Math.PI * 2 + settledFrame / 38;
           const x = cx + Math.cos(angle) * radius * sp;
           const y = cy + Math.sin(angle) * radius * sp;
-          const activeIdx = Math.floor(frame / 28) % satellites.length;
+          const activeIdx = Math.floor(settledFrame / 28) % satellites.length;
           const lineOpacity =
             activeIdx === i
-              ? interpolate(frame % 28, [0, 6, 22, 28], [0.2, 0.85, 0.85, 0.2], {
-                  extrapolateLeft: "clamp",
-                  extrapolateRight: "clamp",
-                })
+              ? interpolate(
+                  settledFrame % 28,
+                  [0, 6, 22, 28],
+                  [0.2, 0.85, 0.85, 0.2],
+                  { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+                )
               : 0.15;
           return (
             <line
@@ -122,17 +147,23 @@ export const EcosystemOrbit: React.FC<EcosystemOrbitProps> = ({
           config: { damping: 18, stiffness: 90, mass: 1 },
           durationInFrames: 45,
         });
-        const angle = (i / satellites.length) * Math.PI * 2 + frame / 38;
+        const angle =
+          (i / satellites.length) * Math.PI * 2 + settledFrame / 38;
         const x = cx + Math.cos(angle) * radius * sp - scaleFont(48, width);
         const y = cy + Math.sin(angle) * radius * sp - scaleFont(20, width);
-        const activeIdx = Math.floor(frame / 28) % satellites.length;
+        const activeIdx = Math.floor(settledFrame / 28) % satellites.length;
         const lift =
           activeIdx === i
-            ? interpolate(frame % 28, [0, 8, 20, 28], [1, 1.08, 1.08, 1], {
-                extrapolateLeft: "clamp",
-                extrapolateRight: "clamp",
-                easing: EASING.enter,
-              })
+            ? interpolate(
+                settledFrame % 28,
+                [0, 8, 20, 28],
+                [1, 1.08, 1.08, 1],
+                {
+                  extrapolateLeft: "clamp",
+                  extrapolateRight: "clamp",
+                  easing: EASING.enter,
+                },
+              )
             : 1;
 
         return (

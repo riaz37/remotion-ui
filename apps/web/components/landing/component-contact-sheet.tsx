@@ -5,6 +5,7 @@ import { Reveal } from "@/components/landing/reveal";
 import { getAtlasMeta, type AtlasLane } from "@/lib/atlas";
 import { getComponentDocPath } from "@/lib/component-doc-path";
 import { LANE_VISUALS, laneAccent } from "@/lib/lane-visuals";
+import { previewMeta } from "@/lib/preview-config";
 
 /**
  * A contact sheet: every frame the same size, the subject letterboxed inside,
@@ -40,12 +41,22 @@ function displayName(slug: string): string {
 function Frame({ slug, index }: { slug: string; index: number }) {
   const lane: AtlasLane = getAtlasMeta(slug)?.lane ?? "reels";
   const name = displayName(slug);
+  // Every tile in the sheet defaults to a 16:9 frame, but a handful of
+  // compositions (social clips, reels, etc.) are shot 9:16. Squeezing those
+  // into a 16:9 tile letterboxes the subject, so the tile's own aspect ratio
+  // has to follow the composition's real dimensions instead of a fixed one.
+  const { width, height } = previewMeta(slug);
+  const aspectRatio = height > width ? "9 / 16" : "16 / 9";
 
   return (
     <Reveal
       index={index % 4}
       distance={20}
-      className="bg-[var(--bay-surface)]"
+      // The grid stretches every cell in a row to match its tallest sibling
+      // by default. A taller 9:16 tile would otherwise drag its 16:9 row
+      // neighbors into an oversized cell with dead space under their image,
+      // so each tile opts out of stretching and sizes to its own content.
+      className="self-start bg-[var(--bay-surface)]"
     >
       <Link
         href={getComponentDocPath(slug)}
@@ -60,7 +71,7 @@ function Frame({ slug, index }: { slug: string; index: number }) {
           <AtlasMiniPreview
             slug={slug}
             lane={lane}
-            aspectRatio="16 / 9"
+            aspectRatio={aspectRatio}
             scrubOnHover
             playWhenVisible
           />

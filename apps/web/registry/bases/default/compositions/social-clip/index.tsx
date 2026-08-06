@@ -7,6 +7,7 @@ import { AudiogramScene } from "@/remotion/scenes/audiogram-scene";
 import { AutoFitTitle } from "@/remotion/scenes/auto-fit-title";
 import { CaptionScene } from "@/remotion/scenes/caption-scene";
 import { EndCard } from "@/remotion/scenes/end-card";
+import { DEMO_AUDIO_SRC, DEMO_SOCIAL_CLIP_CAPTIONS } from "@/lib/demo-assets";
 
 const COLORS = {
   bg: "#050508",
@@ -31,8 +32,8 @@ export type SocialClipProps = {
   hookTitle?: string;
   hookSubtitle?: string;
   logoSrc?: string;
-  audioSrc: string;
-  captions: Caption[];
+  audioSrc?: string;
+  captions?: Caption[];
   podcastTitle?: string;
   ctaTitle?: string;
   ctaLabel?: string;
@@ -43,8 +44,8 @@ export const SocialClip: React.FC<SocialClipProps> = ({
   hookTitle = "This line stops the scroll",
   hookSubtitle = "Lead with the sharpest quote from the episode",
   logoSrc,
-  audioSrc,
-  captions,
+  audioSrc = DEMO_AUDIO_SRC,
+  captions = DEMO_SOCIAL_CLIP_CAPTIONS,
   podcastTitle = "Weekly Brief",
   ctaTitle = "Hear the full episode",
   ctaLabel,
@@ -78,6 +79,7 @@ export const SocialClip: React.FC<SocialClipProps> = ({
               placement="lower-third"
               activeColor={COLORS.captionActive}
               mode="karaoke-scale"
+              durationInFrames={SCENE_DURATIONS.body}
             />
           </AbsoluteFill>
         </TransitionSeries.Sequence>

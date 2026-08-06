@@ -1,7 +1,16 @@
-import { AbsoluteFill, Sequence, useVideoConfig } from "remotion";
+import { AbsoluteFill } from "remotion";
+import { TransitionSeries } from "@remotion/transitions";
+import { transitionFade } from "@/remotion/primitives/transition-fade";
+import { DURATION } from "@/remotion/lib/motion-tokens";
 import { DeviceMockupZoom } from "@/remotion/scenes/device-mockup-zoom";
 import { TitleCard } from "@/remotion/scenes/title-card";
-import { DELAY } from "@/remotion/lib/motion-tokens";
+
+const SCENE_DURATIONS = {
+  title: 75,
+  device: 105,
+} as const;
+
+const FADE = transitionFade({ durationInFrames: DURATION.fast });
 
 export type HeroDeviceAssembleProps = {
   title?: string;
@@ -12,17 +21,17 @@ export const HeroDeviceAssemble: React.FC<HeroDeviceAssembleProps> = ({
   title = "Ship on every screen",
   subtitle = "Device layers spring into frame",
 }) => {
-  const { fps } = useVideoConfig();
-  const premount = Math.round(fps * 0.4) + DELAY.short;
-
   return (
     <AbsoluteFill style={{ background: "#080810" }}>
-      <Sequence durationInFrames={75} premountFor={premount}>
-        <TitleCard title={title} subtitle={subtitle} />
-      </Sequence>
-      <Sequence from={75} durationInFrames={105} premountFor={premount}>
-        <DeviceMockupZoom device="laptop" />
-      </Sequence>
+      <TransitionSeries>
+        <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.title}>
+          <TitleCard title={title} subtitle={subtitle} />
+        </TransitionSeries.Sequence>
+        <TransitionSeries.Transition {...FADE} />
+        <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.device}>
+          <DeviceMockupZoom device="laptop" />
+        </TransitionSeries.Sequence>
+      </TransitionSeries>
     </AbsoluteFill>
   );
 };

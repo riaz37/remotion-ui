@@ -36,6 +36,9 @@ const COLORS = {
 
 const fade = transitionFade({ durationInFrames: DURATION.fast });
 
+/** Matches the caption slot's own `TransitionSeries.Sequence` below. */
+const CAPTION_SLOT_DURATION = 90;
+
 export type PodcastClipProps = {
   audioSrc: string;
   captions: Caption[];
@@ -211,13 +214,14 @@ export const PodcastClip: React.FC<PodcastClipProps> = ({
         />
       </TransitionSeries.Sequence>
       <TransitionSeries.Transition {...fade} />
-      <TransitionSeries.Sequence durationInFrames={90}>
+      <TransitionSeries.Sequence durationInFrames={CAPTION_SLOT_DURATION}>
         <CaptionScene
           captions={captions}
           placement="center"
           backgroundColor={COLORS.quoteBg}
           activeColor={COLORS.accent}
           mode="karaoke-scale"
+          durationInFrames={CAPTION_SLOT_DURATION}
         />
       </TransitionSeries.Sequence>
       <TransitionSeries.Transition {...fade} />

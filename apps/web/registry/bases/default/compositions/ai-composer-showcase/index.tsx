@@ -1,5 +1,7 @@
+import { loadFont } from "@remotion/google-fonts/Inter";
 import {
   AbsoluteFill,
+  Easing,
   Img,
   interpolate,
   spring,
@@ -9,43 +11,49 @@ import {
 } from "remotion";
 import { TransitionSeries } from "@remotion/transitions";
 import { transitionFade } from "@/remotion/primitives/transition-fade";
+import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
 import { ChatGpt } from "@/remotion/scenes/chat-gpt";
 import { ClaudeChat } from "@/remotion/scenes/claude-chat";
 import { V0Composer } from "@/remotion/scenes/v0";
 import { ClaudeCode } from "@/remotion/scenes/claude-code";
 import { Opencode } from "@/remotion/scenes/opencode";
 
+const { fontFamily } = loadFont("normal", {
+  weights: ["400", "500", "600", "700"],
+  subsets: ["latin"],
+});
+
 const BG = "#080810";
 const PHOSPHOR = "#e8b86d";
+const ENTER_EASE = Easing.bezier(0.16, 1, 0.3, 1);
+const EXIT_EASE = Easing.in(Easing.cubic);
 
 const FADE = transitionFade({ durationInFrames: 12 });
 
 const TITLE_DUR = 50;
 const SCENE_DUR = 100;
 const END_DUR = 55;
+const END_EXIT_DUR = 18;
 
 /* ─── shared pieces ─── */
 
-const Logo: React.FC<{ size?: number }> = ({ size = 48 }) => (
-  <Img
-    src={staticFile("logo.svg")}
-    style={{ width: size, height: size }}
-  />
+const Logo: React.FC<{ size: number }> = ({ size }) => (
+  <Img src={staticFile("logo.svg")} style={{ width: size, height: size }} />
 );
 
-const GlowDot: React.FC<{ delay: number }> = ({ delay }) => {
+const GlowDot: React.FC<{ delay: number; size: number }> = ({ delay, size }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const progress = spring({ frame, fps, delay, config: { damping: 20 } });
   return (
     <div
       style={{
-        width: 6,
-        height: 6,
+        width: size,
+        height: size,
         borderRadius: "50%",
         background: PHOSPHOR,
         opacity: progress,
-        boxShadow: `0 0 12px 3px ${PHOSPHOR}55`,
+        boxShadow: `0 0 ${size * 2}px ${size * 0.5}px ${PHOSPHOR}55`,
       }}
     />
   );
@@ -55,11 +63,16 @@ const GlowDot: React.FC<{ delay: number }> = ({ delay }) => {
 
 const TitleCard: React.FC = () => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, width } = useVideoConfig();
 
   const logoProgress = spring({ frame, fps, delay: 4, config: { damping: 14 } });
   const titleProgress = spring({ frame, fps, delay: 10, config: { damping: 16 } });
   const subProgress = spring({ frame, fps, delay: 18, config: { damping: 18 } });
+  const exitProgress = interpolate(frame, [TITLE_DUR - 14, TITLE_DUR], [1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: EXIT_EASE,
+  });
 
   return (
     <AbsoluteFill
@@ -69,6 +82,8 @@ const TitleCard: React.FC = () => {
         alignItems: "center",
         backgroundImage:
           "radial-gradient(ellipse 80% 60% at 50% 40%, rgba(232,184,109,0.06), transparent)",
+        opacity: exitProgress,
+        fontFamily,
       }}
     >
       <div style={{ textAlign: "center" }}>
@@ -76,19 +91,18 @@ const TitleCard: React.FC = () => {
           style={{
             display: "flex",
             justifyContent: "center",
-            marginBottom: 24,
+            marginBottom: scaleFont(24, width),
             opacity: logoProgress,
             transform: `scale(${logoProgress})`,
           }}
         >
-          <Logo size={64} />
+          <Logo size={scaleFont(64, width)} />
         </div>
         <div
           style={{
-            fontSize: 68,
+            fontSize: scaleFont(68, width),
             fontWeight: 700,
             color: "#fff",
-            fontFamily: "system-ui, sans-serif",
             letterSpacing: -1,
             opacity: titleProgress,
             transform: `translateY(${interpolate(titleProgress, [0, 1], [16, 0])}px)`,
@@ -98,10 +112,9 @@ const TitleCard: React.FC = () => {
         </div>
         <div
           style={{
-            marginTop: 14,
-            fontSize: 26,
+            marginTop: scaleFont(14, width),
+            fontSize: scaleFont(26, width),
             color: "rgba(255,255,255,0.5)",
-            fontFamily: "system-ui, sans-serif",
             fontWeight: 400,
             opacity: subProgress,
             transform: `translateY(${interpolate(subProgress, [0, 1], [10, 0])}px)`,
@@ -123,11 +136,16 @@ type SceneConfig = {
 
 const SceneLabel: React.FC<{ config: SceneConfig }> = ({ config }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, width, height } = useVideoConfig();
+  const safe = getSafeAreaPadding({ width, height });
 
   const labelProgress = spring({ frame, fps, delay: 6, config: { damping: 16 } });
-  const dotProgress = spring({ frame, fps, delay: 14, config: { damping: 14 } });
   const featureProgress = spring({ frame, fps, delay: 22, config: { damping: 18 } });
+  const exitProgress = interpolate(frame, [SCENE_DUR - 14, SCENE_DUR], [1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: EXIT_EASE,
+  });
 
   return (
     <div
@@ -136,31 +154,38 @@ const SceneLabel: React.FC<{ config: SceneConfig }> = ({ config }) => {
         bottom: 0,
         left: 0,
         right: 0,
-        padding: "32px 48px",
+        paddingTop: scaleFont(48, width),
+        paddingBottom: Math.max(safe.paddingBottom, scaleFont(32, width)),
+        paddingLeft: Math.max(safe.paddingLeft, scaleFont(48, width)),
+        paddingRight: Math.max(safe.paddingRight, scaleFont(48, width)),
         background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%)",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
+        gap: scaleFont(16, width),
+        opacity: exitProgress,
+        fontFamily,
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: scaleFont(12, width), minWidth: 0 }}>
         <div
           style={{
             opacity: labelProgress,
             transform: `translateX(${interpolate(labelProgress, [0, 1], [-12, 0])}px)`,
+            flexShrink: 0,
           }}
         >
-          <GlowDot delay={14} />
+          <GlowDot delay={14} size={scaleFont(6, width)} />
         </div>
         <div
           style={{
-            fontSize: 28,
+            fontSize: scaleFont(28, width),
             fontWeight: 600,
             color: "#fff",
-            fontFamily: "system-ui, sans-serif",
             letterSpacing: -0.3,
             opacity: labelProgress,
             transform: `translateX(${interpolate(labelProgress, [0, 1], [-8, 0])}px)`,
+            whiteSpace: "nowrap",
           }}
         >
           {config.name}
@@ -168,12 +193,12 @@ const SceneLabel: React.FC<{ config: SceneConfig }> = ({ config }) => {
       </div>
       <div
         style={{
-          fontSize: 18,
+          fontSize: scaleFont(18, width),
           fontWeight: 500,
           color: PHOSPHOR,
-          fontFamily: "system-ui, sans-serif",
           opacity: featureProgress,
           transform: `translateX(${interpolate(featureProgress, [0, 1], [12, 0])}px)`,
+          textAlign: "right",
         }}
       >
         {config.feature}
@@ -197,11 +222,17 @@ const SCENES: Array<{
 
 const EndCard: React.FC = () => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, width } = useVideoConfig();
 
   const logoProgress = spring({ frame, fps, delay: 4, config: { damping: 14 } });
   const titleProgress = spring({ frame, fps, delay: 10, config: { damping: 16 } });
   const tagProgress = spring({ frame, fps, delay: 18, config: { damping: 18 } });
+  const exitProgress = interpolate(
+    frame,
+    [END_DUR - END_EXIT_DUR, END_DUR],
+    [1, 0],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EXIT_EASE },
+  );
 
   return (
     <AbsoluteFill
@@ -211,6 +242,8 @@ const EndCard: React.FC = () => {
         alignItems: "center",
         backgroundImage:
           "radial-gradient(ellipse 70% 50% at 50% 50%, rgba(232,184,109,0.05), transparent)",
+        opacity: exitProgress,
+        fontFamily,
       }}
     >
       <div style={{ textAlign: "center" }}>
@@ -218,19 +251,18 @@ const EndCard: React.FC = () => {
           style={{
             display: "flex",
             justifyContent: "center",
-            marginBottom: 20,
+            marginBottom: scaleFont(20, width),
             opacity: logoProgress,
             transform: `scale(${logoProgress})`,
           }}
         >
-          <Logo size={56} />
+          <Logo size={scaleFont(56, width)} />
         </div>
         <div
           style={{
-            fontSize: 48,
+            fontSize: scaleFont(48, width),
             fontWeight: 700,
             color: "#fff",
-            fontFamily: "system-ui, sans-serif",
             letterSpacing: -0.5,
             opacity: titleProgress,
             transform: `translateY(${interpolate(titleProgress, [0, 1], [12, 0])}px)`,
@@ -240,10 +272,9 @@ const EndCard: React.FC = () => {
         </div>
         <div
           style={{
-            marginTop: 12,
-            fontSize: 22,
+            marginTop: scaleFont(12, width),
+            fontSize: scaleFont(22, width),
             color: PHOSPHOR,
-            fontFamily: "system-ui, sans-serif",
             fontWeight: 500,
             opacity: tagProgress,
             transform: `translateY(${interpolate(tagProgress, [0, 1], [8, 0])}px)`,
@@ -265,6 +296,8 @@ export const AiComposerShowcase: React.FC = () => {
         <TransitionSeries.Sequence durationInFrames={TITLE_DUR}>
           <TitleCard />
         </TransitionSeries.Sequence>
+
+        <TransitionSeries.Transition {...FADE} />
 
         {SCENES.map(({ Component, config }, i) => (
           <TransitionSeries.Sequence key={config.name} durationInFrames={SCENE_DUR}>

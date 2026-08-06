@@ -94,6 +94,7 @@ import { TransitionZoomThroughPreview } from "./previews/transition-zoom-through
 import { TutorialClipPreview } from "./previews/tutorial-clip";
 import { TypewriterPreview } from "./previews/typewriter";
 import {
+  AiComposerShowcasePreview,
   AiGenerationCanvasPreview,
   BentoPanPreview,
   BrowserFlowPreview,
@@ -163,6 +164,7 @@ const PREVIEWS: Record<string, React.ComponentType> = {
   "bento-pan": BentoPanPreview,
   "browser-flow": BrowserFlowPreview,
   "ai-generation-canvas": AiGenerationCanvasPreview,
+  "ai-composer-showcase": AiComposerShowcasePreview,
   "live-code-split": LiveCodeSplitPreview,
   "deploy-reveal": DeployRevealPreview,
   "dashboard-populate": DashboardPopulatePreview,

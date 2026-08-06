@@ -1,10 +1,18 @@
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { EASING_EXIT } from "@/remotion/lib/timing";
+
+export type BentoTile = {
+  w: number;
+  h: number;
+  color: string;
+};
 
 export type BentoPanProps = {
   backgroundColor?: string;
+  tiles?: BentoTile[];
 };
 
-const TILES = [
+const DEFAULT_TILES: BentoTile[] = [
   { w: 32, h: 28, color: "rgba(232,184,109,0.2)" },
   { w: 28, h: 36, color: "rgba(45,212,191,0.18)" },
   { w: 36, h: 30, color: "rgba(244,114,182,0.16)" },
@@ -13,17 +21,39 @@ const TILES = [
 
 export const BentoPan: React.FC<BentoPanProps> = ({
   backgroundColor = "#080810",
+  tiles = DEFAULT_TILES,
 }) => {
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
-  const panX = interpolate(frame, [0, 120], [0, -width * 0.22], {
+
+  // Enter + hold-with-life: the camera keeps drifting across the grid for
+  // the whole hold instead of stopping dead once the initial pan lands.
+  const panProgress = interpolate(frame, [0, 130], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const panY = interpolate(frame, [0, 120], [0, -height * 0.12], {
+  const panX = panProgress * -width * 0.26;
+  const panY = panProgress * -height * 0.14;
+
+  // A slow breathing rotation keeps the hold visually alive between the pan
+  // settling and the exit beat kicking in.
+  const breathe = Math.sin((frame / fps) * Math.PI * 0.6) * 0.6;
+
+  // Exit: the grid settles a touch closer and fades through the vignette
+  // rather than freezing on the final pan position. Opacity fades linearly
+  // so the beat reads clearly through the whole window (an ease-in curve
+  // here would keep it near-invisible until the last few frames), and it
+  // fully resolves a few frames before the composition ends.
+  const exitWindowStart = 130;
+  const exitWindowEnd = 172;
+  const exit = interpolate(frame, [exitWindowStart, exitWindowEnd], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
+  const exitScale = interpolate(exit, [0, 1], [1, 1.08], {
+    easing: EASING_EXIT,
+  });
+  const exitOpacity = 1 - exit;
 
   return (
     <AbsoluteFill style={{ background: backgroundColor, overflow: "hidden" }}>
@@ -34,11 +64,12 @@ export const BentoPan: React.FC<BentoPanProps> = ({
           display: "grid",
           gridTemplateColumns: "repeat(4, 1fr)",
           gap: 24,
-          transform: `translate(${panX}px, ${panY}px) rotate(-6deg)`,
+          opacity: exitOpacity,
+          transform: `translate(${panX}px, ${panY}px) scale(${exitScale}) rotate(${-6 + breathe}deg)`,
         }}
       >
         {Array.from({ length: 16 }, (_, i) => {
-          const tile = TILES[i % TILES.length]!;
+          const tile = tiles[i % tiles.length]!;
           const enter = spring({
             frame: frame - i * 3,
             fps,

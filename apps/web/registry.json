@@ -2281,16 +2281,52 @@
       ]
     },
     {
+      "name": "ai-composer-showcase",
+      "type": "registry:block",
+      "description": "Showcase reel cutting through five AI composer interfaces with title and end cards",
+      "dependencies": [
+        "remotion",
+        "@remotion/google-fonts",
+        "@remotion/transitions"
+      ],
+      "registryDependencies": [
+        "layout",
+        "transition-fade",
+        "chat-gpt",
+        "claude-chat",
+        "v0",
+        "claude-code",
+        "opencode"
+      ],
+      "composition": {
+        "id": "AiComposerShowcase",
+        "component": "AiComposerShowcase",
+        "durationInFrames": 533,
+        "fps": 30,
+        "width": 1920,
+        "height": 1080,
+        "importPath": "@/compositions/ai-composer-showcase/index"
+      },
+      "files": [
+        {
+          "path": "registry/bases/default/compositions/ai-composer-showcase/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
       "name": "live-code-split",
       "type": "registry:block",
       "description": "Code editor with live preview",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/transitions"
       ],
       "registryDependencies": [
         "code-reveal",
         "device-mockup-zoom",
-        "motion-tokens"
+        "motion-tokens",
+        "transition-fade"
       ],
       "composition": {
         "id": "LiveCodeSplit",
@@ -2341,12 +2377,14 @@
       "type": "registry:block",
       "description": "Dashboard metrics populate",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/transitions"
       ],
       "registryDependencies": [
         "metric-ticker",
         "animated-bar-chart",
-        "motion-tokens"
+        "motion-tokens",
+        "transition-fade"
       ],
       "composition": {
         "id": "DashboardPopulate",
@@ -2396,12 +2434,14 @@
       "type": "registry:block",
       "description": "Landing with install commands",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/transitions"
       ],
       "registryDependencies": [
         "title-card",
         "code-reveal",
-        "motion-tokens"
+        "motion-tokens",
+        "transition-fade"
       ],
       "composition": {
         "id": "LandingCodeShowcase",

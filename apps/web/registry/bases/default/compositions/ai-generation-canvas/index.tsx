@@ -8,13 +8,15 @@ import {
   useVideoConfig,
 } from "remotion";
 import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
+import { EASING } from "@/remotion/lib/motion-tokens";
 
 const { fontFamily } = loadFont("normal", {
   weights: ["500", "600", "700"],
   subsets: ["latin"],
 });
 
-const ENTER_EASE = Easing.bezier(0.16, 1, 0.3, 1);
+/** Frames over which the whole canvas fades out at the end of the demo. */
+const EXIT_DURATION = 22;
 const DEMO_BG = "#080810";
 
 export type AiGenerationMetric = {
@@ -183,7 +185,8 @@ const MetricCard: React.FC<{
   progress: number;
   radius: number;
   scale: number;
-}> = ({ accentColor, metric, index, progress, radius, scale }) => {
+  width: number;
+}> = ({ accentColor, metric, index, progress, radius, scale, width }) => {
   const variant = index % 3;
 
   return (
@@ -226,7 +229,7 @@ const MetricCard: React.FC<{
         <div>
           <div
             style={{
-              fontSize: scaleFont(20, scale * 1080),
+              fontSize: scaleFont(20, width),
               color: "rgba(255,255,255,0.58)",
               fontWeight: 600,
               fontFamily,
@@ -237,7 +240,7 @@ const MetricCard: React.FC<{
           <div
             style={{
               marginTop: 10 * scale,
-              fontSize: scaleFont(58, scale * 1080),
+              fontSize: scaleFont(58, width),
               lineHeight: 1,
               fontWeight: 700,
               color: "white",
@@ -250,7 +253,7 @@ const MetricCard: React.FC<{
             <div
               style={{
                 marginTop: 10 * scale,
-                fontSize: scaleFont(19, scale * 1080),
+                fontSize: scaleFont(19, width),
                 color: accentColor,
                 fontWeight: 700,
               }}
@@ -289,11 +292,20 @@ export const AiGenerationCanvas: React.FC<AiGenerationCanvasProps> = ({
 }) => {
   const rawFrame = useCurrentFrame();
   const frame = rawFrame * speed;
-  const { fps, width, height } = useVideoConfig();
+  const { fps, width, height, durationInFrames } = useVideoConfig();
   const safe = getSafeAreaPadding({ width, height });
   const isPortrait = height > width;
   const scale = width / 1920;
   const safeWidth = width - safe.paddingLeft - safe.paddingRight;
+
+  /** Exit beat: the dashboard holds, then the whole canvas eases out before the last frame. */
+  const exitStart = durationInFrames - EXIT_DURATION;
+  const exitProgress = interpolate(
+    rawFrame,
+    [exitStart, durationInFrames - 1],
+    [0, 1],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASING.exit },
+  );
 
   const promptEnd = 44;
   const morphEnd = 78;
@@ -323,15 +335,19 @@ export const AiGenerationCanvas: React.FC<AiGenerationCanvasProps> = ({
   const dashboardEnter = interpolate(frame, [morphEnd - 8, skeletonEnd], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
-    easing: ENTER_EASE,
+    easing: EASING.enter,
   });
+  /** Settle the ambient glow and shimmer clocks before the exit fade begins,
+   *  so nothing is mid-cycle when the canvas dissolves. */
+  const settledRawFrame = Math.min(rawFrame, exitStart);
+  const settledFrame = Math.min(frame, exitStart);
   const backgroundPulse = interpolate(
-    rawFrame % 120,
+    settledRawFrame % 120,
     [0, 60, 120],
     [0.74, 1, 0.74],
     { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
   );
-  const shimmer = ((frame * 1.35) % 180) - 38;
+  const shimmer = ((settledFrame * 1.35) % 180) - 38;
 
   const promptSize = fittedPromptSize(prompt, width, isPortrait);
   const headerPromptSize = scaleFont(isPortrait ? 24 : 18, width);
@@ -375,6 +391,7 @@ export const AiGenerationCanvas: React.FC<AiGenerationCanvasProps> = ({
         background: DEMO_BG,
         overflow: "hidden",
         fontFamily,
+        opacity: 1 - exitProgress,
       }}
     >
       <div
@@ -617,7 +634,7 @@ export const AiGenerationCanvas: React.FC<AiGenerationCanvasProps> = ({
               const cardProgress = interpolate(cardSpring, [0.45, 1], [0, 1], {
                 extrapolateLeft: "clamp",
                 extrapolateRight: "clamp",
-                easing: ENTER_EASE,
+                easing: EASING.enter,
               });
 
               return (
@@ -652,6 +669,7 @@ export const AiGenerationCanvas: React.FC<AiGenerationCanvasProps> = ({
                       progress={cardProgress}
                       radius={radius}
                       scale={scale}
+                      width={width}
                     />
                   </div>
                 </div>

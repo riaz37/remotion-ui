@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import {
   AbsoluteFill,
   interpolate,
+  Loop,
   Sequence,
   useCurrentFrame,
   useVideoConfig,
@@ -43,6 +44,13 @@ export type CaptionSceneProps = {
   placement?: CaptionPlacement;
   mode?: CaptionSceneMode;
   label?: string;
+  /**
+   * How long this scene actually plays for. Pass the enclosing `Sequence`'s
+   * `durationInFrames` when the scene is nested inside one (it is shorter
+   * than `useVideoConfig().durationInFrames`, which always reports the full
+   * composition). Falls back to the composition duration when omitted.
+   */
+  durationInFrames?: number;
 };
 
 const COLORS = {
@@ -254,8 +262,16 @@ export const CaptionScene: React.FC<CaptionSceneProps> = ({
   placement = "lower-third",
   mode = "highlight",
   label = "Caption",
+  durationInFrames,
 }) => {
-  const { fps, width, height } = useVideoConfig();
+  const config = useVideoConfig();
+  const { fps, width, height } = config;
+  // `useVideoConfig().durationInFrames` is always the *composition's* total
+  // length. When this scene sits inside a bounded `<Sequence>` (a
+  // TransitionSeries slot, for instance) that slot is shorter, so the caller
+  // must pass its own `durationInFrames` — otherwise the fallback below is
+  // the best available estimate.
+  const targetDuration = durationInFrames ?? config.durationInFrames;
   const safeArea = getSafeAreaPadding({ width, height });
   const fontSize = scaleFont(placement === "center" ? 54 : 48, width);
   const bottomSlot = Math.max(
@@ -272,6 +288,59 @@ export const CaptionScene: React.FC<CaptionSceneProps> = ({
     width - safeArea.paddingLeft - safeArea.paddingRight,
     Math.round(width * (placement === "center" ? 0.74 : 0.82)),
   );
+
+  // The last page's own `getPageSequenceTiming` duration is bounded by its
+  // own spoken span (there is no next page to bound it against) — that is
+  // shorter than however long the parent actually gives this scene to play.
+  // Wrapping every pass in `<Loop>` re-plays the caption pages for the rest
+  // of the assigned duration instead of leaving the scene blank once the
+  // transcript runs out.
+  const naturalDuration = useMemo(() => {
+    if (pages.length === 0) {
+      return 0;
+    }
+    const last = pages[pages.length - 1];
+    return Math.max(
+      1,
+      Math.round(((last.startMs + last.durationMs) / 1000) * fps),
+    );
+  }, [pages, fps]);
+
+  const loopTimes =
+    naturalDuration > 0
+      ? Math.max(1, Math.ceil(targetDuration / naturalDuration))
+      : 0;
+
+  const pageSequences = pages.map((page, index) => {
+    const { startFrame, durationInFrames: pageDuration } =
+      getPageSequenceTiming(pages, index, fps, combineTokensWithinMilliseconds);
+
+    if (pageDuration <= 0) {
+      return null;
+    }
+
+    return (
+      <Sequence
+        key={`${page.startMs}-${index}`}
+        from={Math.round(startFrame)}
+        durationInFrames={Math.round(pageDuration)}
+        layout="none"
+      >
+        <CaptionPage
+          page={page}
+          mode={mode}
+          activeColor={activeColor}
+          inactiveColor={inactiveColor}
+          fontSize={fontSize}
+          placement={placement}
+          captionZoneWidth={captionZoneWidth}
+          safeArea={safeArea}
+          bottomSlot={bottomSlot}
+          label={label}
+        />
+      </Sequence>
+    );
+  });
 
   return (
     <AbsoluteFill style={{ backgroundColor, fontFamily }}>
@@ -290,40 +359,15 @@ export const CaptionScene: React.FC<CaptionSceneProps> = ({
         />
       ) : null}
 
-      {pages.map((page, index) => {
-        const { startFrame, durationInFrames } = getPageSequenceTiming(
-          pages,
-          index,
-          fps,
-          combineTokensWithinMilliseconds,
-        );
-
-        if (durationInFrames <= 0) {
-          return null;
-        }
-
-        return (
-          <Sequence
-            key={`${page.startMs}-${index}`}
-            from={Math.round(startFrame)}
-            durationInFrames={Math.round(durationInFrames)}
-            layout="none"
-          >
-            <CaptionPage
-              page={page}
-              mode={mode}
-              activeColor={activeColor}
-              inactiveColor={inactiveColor}
-              fontSize={fontSize}
-              placement={placement}
-              captionZoneWidth={captionZoneWidth}
-              safeArea={safeArea}
-              bottomSlot={bottomSlot}
-              label={label}
-            />
-          </Sequence>
-        );
-      })}
+      {loopTimes > 0 ? (
+        <Loop
+          durationInFrames={naturalDuration}
+          times={loopTimes}
+          layout="none"
+        >
+          {pageSequences}
+        </Loop>
+      ) : null}
     </AbsoluteFill>
   );
 };

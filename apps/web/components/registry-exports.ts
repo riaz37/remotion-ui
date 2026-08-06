@@ -99,6 +99,7 @@ export { EcosystemOrbit } from "../registry/bases/default/compositions/ecosystem
 export { BentoPan } from "../registry/bases/default/compositions/bento-pan";
 export { BrowserFlow } from "../registry/bases/default/compositions/browser-flow";
 export { AiGenerationCanvas } from "../registry/bases/default/compositions/ai-generation-canvas";
+export { AiComposerShowcase } from "../registry/bases/default/compositions/ai-composer-showcase";
 export { LiveCodeSplit } from "../registry/bases/default/compositions/live-code-split";
 export { DeployReveal } from "../registry/bases/default/compositions/deploy-reveal";
 export { DashboardPopulate } from "../registry/bases/default/compositions/dashboard-populate";

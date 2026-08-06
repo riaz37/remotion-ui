@@ -3,52 +3,62 @@ import { EASING } from "@/remotion/lib/motion-tokens";
 
 export type DynamicGridProps = {
   backgroundColor?: string;
-  dotColor?: string;
+  lineColor?: string;
+  sweepColor?: string;
   spacing?: number;
-  dotSize?: number;
-  drift?: number;
+  speed?: number;
+  sweepDurationInFrames?: number;
 };
 
 export const DynamicGrid: React.FC<DynamicGridProps> = ({
   backgroundColor = "#080810",
-  dotColor = "rgba(255,255,255,0.08)",
-  spacing = 48,
-  dotSize = 2,
-  drift = 1,
+  lineColor = "rgba(255,255,255,0.1)",
+  sweepColor = "rgba(232,184,109,0.55)",
+  spacing = 64,
+  speed = 0.4,
+  sweepDurationInFrames = 150,
 }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const loop = fps * 8;
-  const progress = interpolate(frame % loop, [0, loop], [0, 1], {
+  const { width, height } = useVideoConfig();
+
+  // Wraps every `spacing` px, so the pattern re-aligns with itself on wrap —
+  // a hard modulo on frame instead would snap the drift back to zero.
+  const driftPx = ((frame * speed) % spacing + spacing) % spacing;
+
+  const sweepT = interpolate(frame % sweepDurationInFrames, [0, sweepDurationInFrames], [0, 1], {
     easing: EASING.editorial,
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const offsetX = progress * spacing * drift;
-  const offsetY = progress * spacing * 0.35 * drift;
-  const pulse = 0.75 + Math.sin(frame / (fps * 1.6)) * 0.12;
+  const diag = width + height;
+  const sweepOffset = interpolate(sweepT, [0, 1], [-diag * 0.3, diag * 0.5]);
 
   return (
-    <AbsoluteFill
-      style={{
-        background: backgroundColor,
-        overflow: "hidden",
-      }}
-    >
+    <AbsoluteFill style={{ background: backgroundColor, overflow: "hidden" }}>
       <AbsoluteFill
         style={{
-          opacity: pulse,
-          backgroundImage: `radial-gradient(circle, ${dotColor} ${dotSize}px, transparent ${dotSize}px)`,
+          backgroundImage: `linear-gradient(${lineColor} 1px, transparent 1px), linear-gradient(90deg, ${lineColor} 1px, transparent 1px)`,
           backgroundSize: `${spacing}px ${spacing}px`,
-          backgroundPosition: `${offsetX}px ${offsetY}px`,
+          backgroundPosition: `${driftPx}px ${driftPx}px`,
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          top: -height * 0.5,
+          left: -width * 0.2,
+          width: 260,
+          height: height * 2,
+          transform: `translateX(${sweepOffset}px) rotate(18deg)`,
+          background: `linear-gradient(90deg, transparent, ${sweepColor}, transparent)`,
+          filter: "blur(40px)",
+          mixBlendMode: "screen",
         }}
       />
       <AbsoluteFill
         style={{
-          opacity: 0.35,
-          backgroundImage: `linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)`,
-          backgroundSize: `${spacing * 2}px ${spacing * 2}px`,
-          backgroundPosition: `${-offsetX * 0.5}px ${-offsetY * 0.5}px`,
+          background: "radial-gradient(circle at 50% 50%, transparent 35%, rgba(0,0,0,0.6) 100%)",
+          pointerEvents: "none",
         }}
       />
     </AbsoluteFill>

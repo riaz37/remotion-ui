@@ -8,6 +8,7 @@ type PageAiActionsProps = {
   /** Absolute URL of the Markdown version of this page. */
   markdownUrl: string;
   title: string;
+  className?: string;
 };
 
 const linkClass =
@@ -17,6 +18,7 @@ export function PageAiActions({
   markdown,
   markdownUrl,
   title,
+  className,
 }: PageAiActionsProps) {
   const [copied, setCopied] = useState(false);
   const [open, setOpen] = useState(false);
@@ -43,7 +45,7 @@ export function PageAiActions({
   const prompt = `Read ${markdownUrl} and help me use RemotionUI (${title}). Install components with the remotion-ui CLI before importing them.`;
 
   return (
-    <div className="not-prose mb-8 flex flex-wrap items-center gap-2">
+    <div className={`not-prose flex flex-wrap items-center gap-2 ${className ?? ""}`}>
       <button
         type="button"
         onClick={async () => {
@@ -54,7 +56,7 @@ export function PageAiActions({
         className="inline-flex items-center gap-1.5 rounded-md border border-[var(--bay-border)] bg-[var(--bay-surface)] px-2.5 py-1.5 text-xs font-medium text-fd-muted-foreground transition-colors hover:bg-[var(--bay-surface-raised)] hover:text-fd-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--bay-phosphor)]"
       >
         {copied ? <CheckIcon /> : <CopyIcon />}
-        {copied ? "Copied page" : "Copy page for AI"}
+        {copied ? "Copied" : "Copy page"}
       </button>
 
       <div className="relative" ref={menuRef}>

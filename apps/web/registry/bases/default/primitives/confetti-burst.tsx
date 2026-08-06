@@ -20,18 +20,13 @@ type Particle = {
   size: number;
   color: string;
   wobble: number;
+  shape: "rect" | "circle";
+  popDelay: number;
 };
 
-function createParticles(
-  count: number,
-  spread: number,
-  colors: string[],
-  seed: string,
-): Particle[] {
+function createParticles(count: number, spread: number, colors: string[], seed: string): Particle[] {
   return Array.from({ length: count }, (_, index) => {
-    const angle =
-      -Math.PI / 2 +
-      (random(`${seed}-angle-${index}`) - 0.5) * spread;
+    const angle = -Math.PI / 2 + (random(`${seed}-angle-${index}`) - 0.5) * spread;
     const speed = 220 + random(`${seed}-speed-${index}`) * 380;
 
     return {
@@ -41,6 +36,8 @@ function createParticles(
       size: 6 + random(`${seed}-size-${index}`) * 10,
       color: colors[index % colors.length],
       wobble: random(`${seed}-wobble-${index}`) * 40,
+      shape: random(`${seed}-shape-${index}`) > 0.5 ? "circle" : "rect",
+      popDelay: random(`${seed}-pop-${index}`) * 3,
     };
   });
 }
@@ -58,17 +55,13 @@ export const ConfettiBurst: React.FC<ConfettiBurstProps> = ({
   const { width, height, fps } = useVideoConfig();
   const particles = createParticles(count, spread, colors, seed);
   const gravity = 680;
+  const drag = 1.6;
   const time = frame / fps;
-  const fade = interpolate(
-    frame,
-    [durationInFrames * 0.55, durationInFrames],
-    [1, 0],
-    {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-      easing: EASING.editorial,
-    },
-  );
+  const fade = interpolate(frame, [durationInFrames * 0.55, durationInFrames], [1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: EASING.exit,
+  });
 
   const originPxX = (originX / 100) * width;
   const originPxY = (originY / 100) * height;
@@ -85,22 +78,40 @@ export const ConfettiBurst: React.FC<ConfettiBurstProps> = ({
       {particles.map((particle, index) => {
         const vx = Math.cos(particle.angle) * particle.speed;
         const vy = Math.sin(particle.angle) * particle.speed;
-        const x =
-          originPxX +
-          vx * time +
-          Math.sin(frame / 6 + particle.wobble) * particle.wobble * 0.15;
-        const y = originPxY + vy * time + 0.5 * gravity * time * time;
+        // Air drag decays outward velocity over time; gravity still integrates linearly.
+        const settle = (1 - Math.exp(-drag * time)) / drag;
+        const x = originPxX + vx * settle + Math.sin(frame / 6 + particle.wobble) * particle.wobble * 0.15;
+        const y = originPxY + vy * settle + 0.5 * gravity * time * time;
         const rotation = particle.spin * time;
-        const opacity =
-          y > height + 40 ? 0 : fade * (0.55 + (index % 3) * 0.12);
+
+        const pop = interpolate(frame, [particle.popDelay, particle.popDelay + 5], [0, 1], {
+          extrapolateLeft: "clamp",
+          extrapolateRight: "clamp",
+          easing: EASING.pop,
+        });
+        const opacity = y > height + 40 ? 0 : fade * pop * (0.55 + (index % 3) * 0.12);
+        const size = particle.size * pop;
+
+        if (particle.shape === "circle") {
+          return (
+            <circle
+              key={index}
+              cx={x}
+              cy={y}
+              r={size * 0.5}
+              fill={particle.color}
+              opacity={opacity}
+            />
+          );
+        }
 
         return (
           <rect
             key={index}
             x={x}
             y={y}
-            width={particle.size}
-            height={particle.size * 0.55}
+            width={size}
+            height={size * 0.55}
             fill={particle.color}
             opacity={opacity}
             transform={`rotate(${rotation} ${x} ${y})`}

@@ -2245,11 +2245,13 @@
       "title": "Live Code Split",
       "description": "Code editor with live preview",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/transitions"
       ],
       "registryDependencies": [
         "code-reveal",
-        "device-mockup-zoom"
+        "device-mockup-zoom",
+        "transition-fade"
       ],
       "files": [
         {
@@ -2283,11 +2285,13 @@
       "title": "Dashboard Populate",
       "description": "Dashboard metrics populate",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/transitions"
       ],
       "registryDependencies": [
         "metric-ticker",
-        "animated-bar-chart"
+        "animated-bar-chart",
+        "transition-fade"
       ],
       "files": [
         {
@@ -2321,11 +2325,13 @@
       "title": "Landing Code Showcase",
       "description": "Landing with install commands",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/transitions"
       ],
       "registryDependencies": [
         "title-card",
-        "code-reveal"
+        "code-reveal",
+        "transition-fade"
       ],
       "files": [
         {

@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  AiComposerShowcase,
   AiGenerationCanvas,
   BentoPan,
   BrowserFlow,
@@ -30,6 +31,9 @@ export const BrowserFlowPreview = () => (
 );
 export const AiGenerationCanvasPreview = () => (
   <PreviewFrame lane="reels" padding={0}><AiGenerationCanvas /></PreviewFrame>
+);
+export const AiComposerShowcasePreview = () => (
+  <PreviewFrame lane="reels" padding={0}><AiComposerShowcase /></PreviewFrame>
 );
 export const LiveCodeSplitPreview = () => (
   <PreviewFrame lane="reels" padding={0}><LiveCodeSplit /></PreviewFrame>

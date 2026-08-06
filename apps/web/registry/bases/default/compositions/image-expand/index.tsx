@@ -1,5 +1,5 @@
 import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
-import { EASING_ENTER } from "@/remotion/lib/timing";
+import { EASING_ENTER, EASING_EXIT } from "@/remotion/lib/timing";
 
 export type ImageExpandProps = {
   accentColor?: string;
@@ -9,15 +9,50 @@ export const ImageExpand: React.FC<ImageExpandProps> = ({
   accentColor = "#e8b86d",
 }) => {
   const frame = useCurrentFrame();
-  const { width, height } = useVideoConfig();
+  const { fps, width, height } = useVideoConfig();
+
+  // Enter: the frame expands from a small card to fill the canvas.
   const expand = interpolate(frame, [20, 70], [0, 1], {
     easing: EASING_ENTER,
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
+
+  // Hold-with-life: once expanded, the glow breathes gently instead of
+  // sitting frozen while we wait for the exit beat to begin.
+  const breathe = interpolate(
+    Math.sin((frame / fps) * Math.PI * 1.1),
+    [-1, 1],
+    [0.85, 1],
+  );
+  const holdEnvelope = interpolate(frame, [70, 85, 95, 110], [0, 1, 1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  // Exit: the frame settles inward and fades, closing the beat out. Opacity
+  // fades linearly across the window so the beat reads clearly well before
+  // the end (an ease-in curve would keep it near-invisible until the last
+  // few frames); the shape settle keeps its ease-in curve for feel.
+  const exitWindowStart = 90;
+  const exitWindowEnd = 115;
+  const exit = interpolate(frame, [exitWindowStart, exitWindowEnd], [0, 1], {
+    easing: EASING_EXIT,
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const exitOpacityProgress = interpolate(frame, [exitWindowStart, exitWindowEnd], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
   const w = interpolate(expand, [0, 1], [width * 0.32, width]);
   const h = interpolate(expand, [0, 1], [height * 0.28, height]);
-  const radius = interpolate(expand, [0, 1], [24, 0]);
+  const radius = interpolate(expand, [0, 1], [24, 0]) + exit * 32;
+  const scale = 1 - exit * 0.06;
+  const opacity = 1 - exitOpacityProgress;
+  const glowPulse = interpolate(breathe, [0.85, 1], [1, 1.25]);
+  const glowStrength = 60 * expand * (1 + holdEnvelope * (glowPulse - 1));
 
   return (
     <AbsoluteFill style={{ background: "#080810", display: "grid", placeItems: "center" }}>
@@ -28,7 +63,9 @@ export const ImageExpand: React.FC<ImageExpandProps> = ({
           borderRadius: radius,
           background: `linear-gradient(135deg, ${accentColor}44, rgba(45,212,191,0.2))`,
           border: `1px solid ${accentColor}55`,
-          boxShadow: `0 0 ${60 * expand}px ${accentColor}33`,
+          boxShadow: `0 0 ${glowStrength}px ${accentColor}33`,
+          opacity,
+          transform: `scale(${scale})`,
         }}
       />
     </AbsoluteFill>

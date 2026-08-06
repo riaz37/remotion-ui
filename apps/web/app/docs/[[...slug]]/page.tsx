@@ -36,15 +36,22 @@ export default async function Page(props: {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
         />
       ) : null}
-      <DocsTitle className="text-display-lg font-medium tracking-tight">
-        {page.data.title}
-      </DocsTitle>
-      <DocsDescription>{page.data.description}</DocsDescription>
-      <PageAiActions
-        markdown={markdown}
-        markdownUrl={markdownUrl}
-        title={page.data.title}
-      />
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
+        <div className="min-w-0 flex-1">
+          <DocsTitle className="text-display-lg font-medium tracking-tight">
+            {page.data.title}
+          </DocsTitle>
+          <DocsDescription className="mb-0">
+            {page.data.description}
+          </DocsDescription>
+        </div>
+        <PageAiActions
+          markdown={markdown}
+          markdownUrl={markdownUrl}
+          title={page.data.title}
+          className="mt-1 shrink-0"
+        />
+      </div>
       <DocsBody>
         <MDX
           components={getMDXComponents({
