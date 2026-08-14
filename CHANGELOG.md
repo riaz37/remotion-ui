@@ -4,6 +4,7 @@
 
 ### Added
 
+- **`remotion-ui-mcp@0.1.1`** — README corrected; the npm package page no longer claims the server is unpublished. No code changes from 0.1.0.
 - **`remotion-ui-mcp@0.1.0` is on npm** — `npx remotion-ui-mcp` runs the MCP server directly; no monorepo checkout needed. Four tools over stdio: `list-components`, `search-components`, `get-component-detail`, `get-install-command`. The docs now carry the `npx` config for Claude Code and other stdio clients.
 
 ## 0.8.0
