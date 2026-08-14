@@ -8,9 +8,12 @@ import {
   searchComponentsHandler,
 } from "./tools.js";
 
+/** Injected from package.json at build time — see tsup.config.ts. */
+declare const __MCP_VERSION__: string;
+
 const server = new McpServer({
   name: "remotion-ui-mcp",
-  version: "0.1.0",
+  version: __MCP_VERSION__,
 });
 
 server.registerTool(
