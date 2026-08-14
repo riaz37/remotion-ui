@@ -17,13 +17,9 @@ Errors are returned as `isError` results carrying the same `{ code, message }` e
 
 ## Install & configure
 
-The server is not published standalone yet — run it from a monorepo checkout, or point your MCP client at the built entrypoint.
-
 ```bash
-pnpm --filter remotion-ui-mcp build
+npx remotion-ui-mcp
 ```
-
-This produces `dist/index.js` (stdio server) and `dist/index.d.ts`.
 
 ### Claude Code
 
@@ -33,8 +29,8 @@ Add to `.mcp.json` (project) or `claude mcp add`:
 {
   "mcpServers": {
     "remotion-ui": {
-      "command": "node",
-      "args": ["/absolute/path/to/packages/remotion-ui-mcp/dist/index.js"]
+      "command": "npx",
+      "args": ["-y", "remotion-ui-mcp"]
     }
   }
 }
@@ -42,7 +38,17 @@ Add to `.mcp.json` (project) or `claude mcp add`:
 
 ### Claude Desktop / other MCP clients
 
-Point the client's stdio server config at the same `node dist/index.js` command.
+Point the client's stdio server config at the same `npx remotion-ui-mcp` command.
+
+### From a checkout
+
+To work on the server itself:
+
+```bash
+pnpm --filter remotion-ui-mcp build
+```
+
+This produces `dist/index.js` (stdio server) and `dist/index.d.ts` — point `command: "node"` at it instead.
 
 ## Development
 

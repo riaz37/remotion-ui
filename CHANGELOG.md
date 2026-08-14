@@ -2,13 +2,17 @@
 
 ## Unreleased
 
+### Added
+
+- **`remotion-ui-mcp@0.1.0` is on npm** — `npx remotion-ui-mcp` runs the MCP server directly; no monorepo checkout needed. Four tools over stdio: `list-components`, `search-components`, `get-component-detail`, `get-install-command`. The docs now carry the `npx` config for Claude Code and other stdio clients.
+
 ## 0.8.0
 
 ### Added
 
 - **Structured JSON output on every command** — `--json` on `init`, `add`, `doctor`, `list`, `search`, `view`, `update`, `diff`, and `build`. Failures print `{ ok: false, error: { code, message } }` and exit non-zero, so agents and CI can branch on a code instead of scraping stdout. Eleven codes: `CONFIG_NOT_FOUND`, `CONFIG_INVALID`, `REGISTRY_ITEM_NOT_FOUND`, `REGISTRY_FETCH_FAILED`, `REGISTRY_ITEM_INVALID`, `REGISTRY_INDEX_INVALID`, `TEMPLATE_NOT_FOUND`, `TARGET_EXISTS`, `INVALID_ARGS`, `DEPENDENCY_SPEC_INVALID`, `UNKNOWN`.
 - **Agent skill installation** — `init --existing` writes a Claude Code skill to `.claude/skills/remotionui-agent/SKILL.md` covering the install-before-import workflow and the frame-API-only animation rules. `--agent-skill` opts a new project in; `--no-agent-skill` opts out.
-- **`remotion-ui-mcp`** — an MCP server exposing the registry as four agent tools (`list-components`, `search-components`, `get-component-detail`, `get-install-command`) over stdio, sharing the CLI's registry client. Not published to npm; build it from a checkout and point your MCP client at `dist/index.js`.
+- **`remotion-ui-mcp`** — an MCP server exposing the registry as four agent tools (`list-components`, `search-components`, `get-component-detail`, `get-install-command`) over stdio, sharing the CLI's registry client. Published separately as `remotion-ui-mcp` — see below.
 - **Remotion version compatibility metadata** — registry items may declare `compat.remotion` as a semver range. `add` compares it against the Remotion version in your `package.json` and warns on a mismatch. The check is advisory and runs at install time only.
 - **Registry search filters** — `search --lane <lane>` and `search --tier <tier>` alongside `-q`.
 - **Docs pages as Markdown** — every docs page is served at `/llms.mdx/docs/<path>`, and each page carries a "Copy page for AI" button plus Open in Claude / ChatGPT links.

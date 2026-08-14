@@ -22,15 +22,9 @@ Failures come back as `isError` results carrying the same `{ code, message }` en
 
 ## Install
 
-<Callout type="warn">
-  The server is not published to npm standalone yet. Build it from a monorepo checkout and point your MCP client at the built entrypoint.
-</Callout>
+The server is published to npm — no checkout required.
 
-<CodeSnippet label="Build" code={`git clone https://github.com/riaz37/remotion-ui
-cd remotion-ui && pnpm install
-pnpm --filter remotion-ui-mcp build`} />
-
-That produces `packages/remotion-ui-mcp/dist/index.js`.
+<CodeSnippet label="Run" code={`npx remotion-ui-mcp`} />
 
 ### Claude Code
 
@@ -39,8 +33,8 @@ Add to `.mcp.json` in your project root:
 <CodeSnippet label=".mcp.json" code={`{
   "mcpServers": {
     "remotion-ui": {
-      "command": "node",
-      "args": ["/absolute/path/to/remotion-ui/packages/remotion-ui-mcp/dist/index.js"]
+      "command": "npx",
+      "args": ["-y", "remotion-ui-mcp"]
     }
   }
 }`} />
@@ -48,6 +42,16 @@ Add to `.mcp.json` in your project root:
 ### Other MCP clients
 
 Point any stdio-capable client at the same command. Claude Desktop uses the same `command` / `args` shape in its config file.
+
+### From a checkout
+
+Working on the server itself, or pinning to unreleased changes:
+
+<CodeSnippet label="Build" code={`git clone https://github.com/riaz37/remotion-ui
+cd remotion-ui && pnpm install
+pnpm --filter remotion-ui-mcp build`} />
+
+That produces `packages/remotion-ui-mcp/dist/index.js` — point `command: "node"` at it instead.
 
 ## Agent workflow with MCP
 
