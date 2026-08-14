@@ -1,7 +1,6 @@
 import type { Feature, LineString } from "geojson";
 import { useEffect } from "react";
 import {
-  Easing,
   interpolate,
   useCurrentFrame,
   useDelayRender,
@@ -204,7 +203,7 @@ export const MapRoute: React.FC<MapRouteProps> = ({
     const lineOpacity = interpolate(progress, [0, 0.04], [0, 1], {
       extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
-      easing: Easing.out(Easing.cubic),
+      easing: EASING.enter,
     });
     if (hasMapLayer(map, layerId)) {
       map.setPaintProperty(layerId, "line-opacity", lineOpacity * 0.96);

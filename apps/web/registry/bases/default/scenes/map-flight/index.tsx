@@ -75,7 +75,6 @@ export const MapFlight: React.FC<MapFlightProps> = ({
     );
 
     mapInstance.on("load", () => {
-      mapInstance.jumpTo({ center: from, zoom: 5 });
       mapInstance.once("idle", () => {
         setMap(mapInstance);
         continueRender(loadingHandle);
