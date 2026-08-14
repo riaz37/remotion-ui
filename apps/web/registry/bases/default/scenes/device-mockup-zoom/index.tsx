@@ -518,8 +518,21 @@ const DeviceShell: React.FC<DeviceShellProps> = ({
 }) => {
   const isPhone = device === "phone";
   const isLaptop = device === "laptop";
-  const radius = isPhone ? scaleFont(44, width) : scaleFont(24, width);
-  const chromePad = isPhone ? scaleFont(14, width) : scaleFont(12, width);
+  const isBrowser = device === "browser";
+
+  const radius = isPhone ? scaleFont(56, width) : scaleFont(18, width);
+  const chromePad = isPhone
+    ? scaleFont(9, width)
+    : isBrowser
+      ? scaleFont(10, width)
+      : scaleFont(7, width);
+  const screenRadius = isPhone
+    ? radius - chromePad * 0.7
+    : isBrowser
+      ? scaleFont(12, width)
+      : scaleFont(3, width);
+  const buttonWidth = scaleFont(3, width);
+  const buttonColor = "#0c0e15";
 
   return (
     <div
@@ -532,28 +545,68 @@ const DeviceShell: React.FC<DeviceShellProps> = ({
     >
       <div
         style={{
+          position: "relative",
           width: isLaptop ? "92%" : "100%",
-          aspectRatio: isPhone ? "0.48" : "1.62",
+          aspectRatio: isPhone ? "0.4615" : "1.6",
           borderRadius: radius,
           background: `linear-gradient(145deg, ${COLORS.chromeLight}, ${COLORS.chrome})`,
           padding: chromePad,
           boxShadow: `0 ${scaleFont(34, width)}px ${scaleFont(90, width)}px rgba(0,0,0,0.42), 0 0 ${scaleFont(96, width) * progress}px ${accentColor}33, inset 0 0 0 1px rgba(255,255,255,0.1)`,
           display: "flex",
           flexDirection: "column",
-          gap: isPhone ? scaleFont(10, width) : scaleFont(12, width),
+          gap: isBrowser ? scaleFont(8, width) : 0,
         }}
       >
         {isPhone ? (
-          <div
-            style={{
-              width: "28%",
-              height: scaleFont(7, width),
-              borderRadius: 999,
-              background: "rgba(255,255,255,0.22)",
-              alignSelf: "center",
-            }}
-          />
-        ) : (
+          <>
+            {/* Mute switch + volume rocker */}
+            <div
+              style={{
+                position: "absolute",
+                left: -buttonWidth,
+                top: "16%",
+                width: buttonWidth,
+                height: scaleFont(9, width),
+                borderRadius: `${buttonWidth}px 0 0 ${buttonWidth}px`,
+                background: buttonColor,
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                left: -buttonWidth,
+                top: "26%",
+                width: buttonWidth,
+                height: scaleFont(16, width),
+                borderRadius: `${buttonWidth}px 0 0 ${buttonWidth}px`,
+                background: buttonColor,
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                left: -buttonWidth,
+                top: "37%",
+                width: buttonWidth,
+                height: scaleFont(16, width),
+                borderRadius: `${buttonWidth}px 0 0 ${buttonWidth}px`,
+                background: buttonColor,
+              }}
+            />
+            {/* Power button */}
+            <div
+              style={{
+                position: "absolute",
+                right: -buttonWidth,
+                top: "22%",
+                width: buttonWidth,
+                height: scaleFont(22, width),
+                borderRadius: `0 ${buttonWidth}px ${buttonWidth}px 0`,
+                background: buttonColor,
+              }}
+            />
+          </>
+        ) : isBrowser ? (
           <div
             style={{
               height: scaleFont(32, width),
@@ -586,19 +639,68 @@ const DeviceShell: React.FC<DeviceShellProps> = ({
               }}
             />
           </div>
+        ) : (
+          <div
+            style={{
+              height: scaleFont(15, width),
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <div
+              style={{
+                width: scaleFont(5, width),
+                height: scaleFont(5, width),
+                borderRadius: "50%",
+                background: "#05060a",
+                boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.18)",
+              }}
+            />
+          </div>
         )}
 
         <div
           style={{
             flex: 1,
             minHeight: 0,
-            borderRadius: isPhone ? radius - chromePad * 1.25 : radius * 0.62,
+            position: "relative",
+            borderRadius: screenRadius,
             overflow: "hidden",
             background: COLORS.panel,
             border: "1px solid rgba(255,255,255,0.08)",
           }}
         >
           {children}
+          {isPhone ? (
+            <div
+              style={{
+                position: "absolute",
+                top: "2.6%",
+                left: "50%",
+                transform: "translateX(-50%)",
+                width: "34%",
+                height: scaleFont(9, width),
+                borderRadius: 999,
+                background: "#000",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-end",
+                padding: `0 ${scaleFont(6, width)}px`,
+                pointerEvents: "none",
+              }}
+            >
+              <div
+                style={{
+                  width: scaleFont(4, width),
+                  height: scaleFont(4, width),
+                  borderRadius: "50%",
+                  background: "#1e2230",
+                  boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.06)",
+                }}
+              />
+            </div>
+          ) : null}
         </div>
       </div>
 
@@ -606,25 +708,31 @@ const DeviceShell: React.FC<DeviceShellProps> = ({
         <>
           <div
             style={{
-              width: "100%",
-              height: scaleFont(24, width),
-              marginTop: scaleFont(-2, width),
-              borderRadius: `0 0 ${scaleFont(30, width)}px ${scaleFont(30, width)}px`,
+              width: "104%",
+              height: 2,
               background:
-                "linear-gradient(180deg, #30384b 0%, #171b26 72%, #0b0d14 100%)",
-              boxShadow: `0 ${scaleFont(24, width)}px ${scaleFont(50, width)}px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.18)`,
-              position: "relative",
+                "linear-gradient(90deg, transparent, rgba(0,0,0,0.55) 12%, rgba(0,0,0,0.55) 88%, transparent)",
+            }}
+          />
+          <div
+            style={{
+              width: "104%",
+              height: scaleFont(30, width),
+              borderRadius: `0 0 ${scaleFont(16, width)}px ${scaleFont(16, width)}px`,
+              background:
+                "linear-gradient(180deg, #30384b 0%, #171b26 60%, #0b0d14 100%)",
+              boxShadow: `0 ${scaleFont(24, width)}px ${scaleFont(50, width)}px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.16)`,
+              display: "flex",
+              justifyContent: "center",
             }}
           >
             <div
               style={{
-                position: "absolute",
-                left: "41%",
-                top: 0,
-                width: "18%",
-                height: "36%",
-                borderRadius: `0 0 ${scaleFont(12, width)}px ${scaleFont(12, width)}px`,
-                background: "rgba(255,255,255,0.14)",
+                marginTop: scaleFont(6, width),
+                width: "16%",
+                height: scaleFont(4, width),
+                borderRadius: 3,
+                background: "rgba(255,255,255,0.1)",
               }}
             />
           </div>
