@@ -105,7 +105,10 @@ export const MapFlight: React.FC<MapFlightProps> = ({
     const cameraAltitudeMeters = interpolate(
       timelineProgress,
       [0, 0.28, 0.74, 1],
-      [180000, 2200000, 2200000, 180000],
+      // The cruise altitude has to keep coastline in frame. At 2,200,000 m the
+      // mid-Atlantic leg showed nothing but open water — a flat blue plate with
+      // a line across it, which reads as a failed render rather than a flight.
+      [180000, 4600000, 4600000, 180000],
       {
         extrapolateLeft: "clamp",
         extrapolateRight: "clamp",

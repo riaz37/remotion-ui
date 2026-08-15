@@ -28,6 +28,9 @@ export type MapCanvasProps = {
   animate?: boolean;
 };
 
+const cameraKey = (center: LngLat, zoom: number) =>
+  `${center[0].toFixed(5)},${center[1].toFixed(5)}@${zoom.toFixed(4)}`;
+
 export const MapCanvas: React.FC<MapCanvasProps> = ({
   center,
   zoom = 7,
@@ -46,6 +49,12 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   const frame = useCurrentFrame();
   const reveal = animate ? enterProgress(frame, 0, DURATION.normal) : 1;
 
+  const [lng, lat] = center;
+  /** Camera the instance was built with, so a moving camera does not rebuild it. */
+  const initialCameraRef = useRef({ center, zoom });
+  /** Last camera actually applied, so a static camera costs nothing per frame. */
+  const appliedCameraRef = useRef<string | null>(null);
+
   onMapReadyRef.current = onMapReady;
 
   useEffect(() => {
@@ -53,9 +62,10 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       return;
     }
 
+    const initialCamera = initialCameraRef.current;
     const mapInstance = createMapInstance(containerRef.current, width, height, {
-      center,
-      zoom,
+      center: initialCamera.center,
+      zoom: initialCamera.zoom,
       style,
     });
     mapRef.current = mapInstance;
@@ -65,8 +75,12 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         return;
       }
 
-      mapInstance.jumpTo({ center, zoom });
+      mapInstance.jumpTo(initialCamera);
       mapInstance.once("idle", () => {
+        appliedCameraRef.current = cameraKey(
+          initialCamera.center,
+          initialCamera.zoom,
+        );
         onMapReadyRef.current?.(mapInstance);
         continueRender(loadingHandle);
       });
@@ -77,17 +91,36 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     } else {
       mapInstance.on("load", notifyReady);
     }
-  }, [continueRender, height, loadingHandle, style, width, zoom]);
 
+    return () => {
+      mapRef.current = null;
+      appliedCameraRef.current = null;
+      mapInstance.remove();
+    };
+  }, [continueRender, height, loadingHandle, style, width]);
+
+  /**
+   * A camera driven off the frame has to hold the render open until MapLibre
+   * has drawn the new tiles — `jumpTo` alone captures the previous view. The
+   * key check keeps a fixed camera off this path entirely.
+   */
   useEffect(() => {
     const mapInstance = mapRef.current;
     if (!isMapStyleReady(mapInstance) || !mapInstance.loaded()) {
       return;
     }
 
-    mapInstance.jumpTo({ center, zoom });
+    const key = cameraKey([lng, lat], zoom);
+    if (appliedCameraRef.current === key) {
+      return;
+    }
+    appliedCameraRef.current = key;
+
+    const handle = delayRender("Settling map camera");
+    mapInstance.jumpTo({ center: [lng, lat], zoom });
+    mapInstance.once("idle", () => continueRender(handle));
     mapInstance.triggerRepaint();
-  }, [center, zoom]);
+  }, [continueRender, delayRender, lat, lng, zoom]);
 
   return (
     <AbsoluteFill style={{ backgroundColor, overflow: "hidden" }}>

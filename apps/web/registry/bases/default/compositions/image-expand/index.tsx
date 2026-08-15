@@ -1,11 +1,18 @@
-import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, Img, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { EASING_ENTER, EASING_EXIT } from "@/remotion/lib/timing";
 
 export type ImageExpandProps = {
+  /**
+   * The image the frame opens onto. Without one the frame expands as a tinted
+   * plate — useful as a transition card, but it is not what the component is
+   * named for, and it reads as an empty render.
+   */
+  src?: string;
   accentColor?: string;
 };
 
 export const ImageExpand: React.FC<ImageExpandProps> = ({
+  src,
   accentColor = "#e8b86d",
 }) => {
   const frame = useCurrentFrame();
@@ -34,8 +41,10 @@ export const ImageExpand: React.FC<ImageExpandProps> = ({
   // fades linearly across the window so the beat reads clearly well before
   // the end (an ease-in curve would keep it near-invisible until the last
   // few frames); the shape settle keeps its ease-in curve for feel.
-  const exitWindowStart = 90;
-  const exitWindowEnd = 115;
+  // Centred on the last tenth of the window: an exit that completes earlier
+  // leaves the tile holding an empty frame for the rest of every loop.
+  const exitWindowStart = 96;
+  const exitWindowEnd = 120;
   const exit = interpolate(frame, [exitWindowStart, exitWindowEnd], [0, 1], {
     easing: EASING_EXIT,
     extrapolateLeft: "clamp",
@@ -61,13 +70,21 @@ export const ImageExpand: React.FC<ImageExpandProps> = ({
           width: w,
           height: h,
           borderRadius: radius,
+          overflow: "hidden",
           background: `linear-gradient(135deg, ${accentColor}44, rgba(45,212,191,0.2))`,
           border: `1px solid ${accentColor}55`,
           boxShadow: `0 0 ${glowStrength}px ${accentColor}33`,
           opacity,
           transform: `scale(${scale})`,
         }}
-      />
+      >
+        {src ? (
+          <Img
+            src={src}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
+        ) : null}
+      </div>
     </AbsoluteFill>
   );
 };

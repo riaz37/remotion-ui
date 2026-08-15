@@ -34,6 +34,12 @@ export type StatCardProps = {
   backgroundColor?: string;
   accentColor?: string;
   theme?: "dark" | "light";
+  /**
+   * Seconds after which the scene leaves. Omit to hold — correct inside a
+   * `TransitionSeries`, where the transition covers the tail, and wrong on
+   * its own, where the scene stands still for the rest of the clip.
+   */
+  holdSeconds?: number;
   /** Animation speed multiplier. */
   speed?: number;
 };
@@ -48,6 +54,7 @@ const T = {
   caption: 0.78,
   /** Delta lands after the number has settled. */
   delta: 1.72,
+  exitFor: 0.4,
 } as const;
 
 const clamp = {
@@ -74,6 +81,7 @@ export const StatCard: React.FC<StatCardProps> = ({
   backgroundColor,
   accentColor = "#2DD4BF",
   theme = "dark",
+  holdSeconds,
   speed = 1,
 }) => {
   const frame = useCurrentFrame();
@@ -84,6 +92,16 @@ export const StatCard: React.FC<StatCardProps> = ({
   const at = (seconds: number) => (seconds * fps) / speed;
   const ease = (from: number, to: number, easing = EASING.enter) =>
     interpolate(frame, [at(from), at(to)], [0, 1], { easing, ...clamp });
+  // Exits accelerate away; entrances decelerate in. Never ease-out an exit.
+  const exit =
+    holdSeconds === undefined
+      ? 0
+      : interpolate(
+          frame,
+          [at(holdSeconds), at(holdSeconds + T.exitFor)],
+          [0, 1],
+          { easing: EASING.exit, ...clamp },
+        );
 
   const stage = {
     w: width - safe.paddingLeft - safe.paddingRight,
@@ -155,6 +173,8 @@ export const StatCard: React.FC<StatCardProps> = ({
           flexDirection: "column",
           alignItems: "center",
           gap: 18 * u,
+          opacity: 1 - exit,
+          transform: `translateY(${exit * -26 * u}px)`,
         }}
       >
         <div style={{ position: "relative", width: size, height: size }}>

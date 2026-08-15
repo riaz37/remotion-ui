@@ -39,9 +39,27 @@ const maskedSlideGhostStyle = {
   textAlign: "center" as const,
 };
 
+/**
+ * Preview timing convention for this file.
+ *
+ * The audit samples every preview at 15% / 50% / 90% of its window — on the
+ * default 120-frame window that is frames 18, 60 and 108. A text effect left on
+ * its own short default starts at frame 0 and is finished well before frame 18,
+ * so all three samples land on resolved type and the tile reads as a still
+ * image. Each preview therefore delays its entrance and stretches it so the
+ * effect is mid-flight at the enter sample and settled by the hold sample.
+ */
+const ENTER_SAMPLE_FRAME = 18;
+
 export const BlurFocusInPreview = () => (
   <PreviewFrame lane="atoms" padding={72}>
-    <div style={center}><BlurFocusIn text={sample} /></div>
+    <div style={center}>
+      <BlurFocusIn
+        text={sample}
+        delayInFrames={ENTER_SAMPLE_FRAME - 2}
+        durationInFrames={54}
+      />
+    </div>
   </PreviewFrame>
 );
 
@@ -77,7 +95,15 @@ export const MaskedSlideRevealPreview = () => (
       }
     >
       <div style={maskedSlideGhostStyle}>
-        <MaskedSlideReveal lines={maskedSlideLines} />
+        {/* The 6/16 default landed all three lines by frame 28, so every sample
+            caught a settled headline. Stretched so one line is still climbing
+            out of its mask at each sample. */}
+        <MaskedSlideReveal
+          lines={maskedSlideLines}
+          delayInFrames={10}
+          staggerInFrames={18}
+          durationInFrames={26}
+        />
       </div>
     </PreviewGhostStack>
   </PreviewFrame>
@@ -91,7 +117,13 @@ export const TrackingInPreview = () => (
 
 export const LightSweepTextPreview = () => (
   <PreviewFrame lane="atoms" padding={72}>
-    <div style={center}><LightSweepText text={sample} /></div>
+    {/* A sweep is a travelling highlight, not an entrance: the 48-frame default
+        finished in the first sixth of the window and the tile held dead grey
+        type for the rest. The shine now crosses the whole line across the
+        whole window. */}
+    <div style={center}>
+      <LightSweepText text={sample} delayInFrames={6} durationInFrames={100} />
+    </div>
   </PreviewFrame>
 );
 
@@ -110,10 +142,14 @@ export const MatrixDecodePreview = () => (
 export const RgbGlitchTextPreview = () => (
   <PreviewFrame lane="atoms" padding={72}>
     <div style={center}>
+      {/* Three bursts spread across the window: the first is still tearing at
+          the enter sample, the second peaks past the middle, and the signal has
+          settled by the exit sample. A 34-frame glitch fell entirely between
+          samples and never appeared. */}
       <RgbGlitchText
         text="SIGNAL LOCK"
-        glitchStartFrame={8}
-        glitchDurationInFrames={34}
+        glitchStartFrame={ENTER_SAMPLE_FRAME - 8}
+        glitchDurationInFrames={96}
         maxWidth="100%"
       />
     </div>

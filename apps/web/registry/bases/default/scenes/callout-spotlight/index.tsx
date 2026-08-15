@@ -33,6 +33,12 @@ export type CalloutSpotlightProps = {
   backgroundColor?: string;
   accentColor?: string;
   theme?: "dark" | "light";
+  /**
+   * Seconds after which the scene leaves. Omit to hold — correct inside a
+   * `TransitionSeries`, where the transition covers the tail, and wrong on
+   * its own, where the scene stands still for the rest of the clip.
+   */
+  holdSeconds?: number;
   /** Animation speed multiplier. */
   speed?: number;
 };
@@ -50,6 +56,7 @@ const T = {
   kicker: 1.3,
   title: 1.4,
   subtitle: 1.6,
+  exitFor: 0.4,
 } as const;
 
 const clamp = {
@@ -75,6 +82,7 @@ export const CalloutSpotlight: React.FC<CalloutSpotlightProps> = ({
   backgroundColor,
   accentColor = "#E8B86D",
   theme = "dark",
+  holdSeconds,
   speed = 1,
 }) => {
   const frame = useCurrentFrame();
@@ -85,6 +93,16 @@ export const CalloutSpotlight: React.FC<CalloutSpotlightProps> = ({
   const at = (seconds: number) => (seconds * fps) / speed;
   const ease = (from: number, to: number, easing = EASING.enter) =>
     interpolate(frame, [at(from), at(to)], [0, 1], { easing, ...clamp });
+  // Exits accelerate away; entrances decelerate in. Never ease-out an exit.
+  const exit =
+    holdSeconds === undefined
+      ? 0
+      : interpolate(
+          frame,
+          [at(holdSeconds), at(holdSeconds + T.exitFor)],
+          [0, 1],
+          { easing: EASING.exit, ...clamp },
+        );
 
   const portrait = height > width;
   const u = portrait
@@ -184,10 +202,10 @@ export const CalloutSpotlight: React.FC<CalloutSpotlightProps> = ({
           height: hole.height,
           borderRadius: 14 * u * iris,
           boxShadow: `0 0 0 ${Math.max(width, height)}px rgba(4,5,9,${
-            dim * iris
+            dim * iris * (1 - exit)
           })`,
           border: `${2 * u}px solid ${accentColor}${
-            iris > 0.6 ? "CC" : "00"
+            iris > 0.6 && exit < 0.5 ? "CC" : "00"
           }`,
         }}
       />
@@ -218,7 +236,7 @@ export const CalloutSpotlight: React.FC<CalloutSpotlightProps> = ({
           background: accentColor,
           transformOrigin: cardBelow ? "top center" : "bottom center",
           transform: `scaleY(${connector})`,
-          opacity: 0.85,
+          opacity: 0.85 * (1 - exit),
         }}
       />
       <div
@@ -230,7 +248,7 @@ export const CalloutSpotlight: React.FC<CalloutSpotlightProps> = ({
           height: 10 * u,
           borderRadius: "50%",
           background: accentColor,
-          opacity: connector,
+          opacity: connector * (1 - exit),
         }}
       />
 
@@ -249,9 +267,11 @@ export const CalloutSpotlight: React.FC<CalloutSpotlightProps> = ({
             22 * u
           }px ${56 * u}px ${palette.shadow}`,
           padding: `${20 * u}px ${24 * u}px`,
-          opacity: Math.min(card, 1),
+          opacity: Math.min(card, 1) * (1 - exit),
           transform: `translateY(${
-            (1 - Math.min(card, 1)) * (cardBelow ? 18 : -18) * u
+            ((1 - Math.min(card, 1)) * (cardBelow ? 18 : -18) +
+              exit * (cardBelow ? 18 : -18)) *
+            u
           }px)`,
         }}
       >

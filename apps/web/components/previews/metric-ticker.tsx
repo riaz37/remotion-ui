@@ -10,6 +10,7 @@ export const MetricTickerPreview: React.FC = () => (
       eyebrow="Quarter recap"
       title="Channel momentum"
       metrics={DEMO_METRICS}
+      holdSeconds={3.4}
     />
   </ScenePreviewPlate>
 );

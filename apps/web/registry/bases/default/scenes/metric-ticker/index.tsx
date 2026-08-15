@@ -36,6 +36,12 @@ export type MetricTickerProps = {
   maxCards?: number;
   backgroundColor?: string;
   accentColor?: string;
+  /**
+   * Seconds after which the panel leaves. Omit to hold — correct inside a
+   * `TransitionSeries`, where the transition covers the tail, and wrong on
+   * its own, where the scene stands still for the rest of the clip.
+   */
+  holdSeconds?: number;
 };
 
 const COLORS = {
@@ -68,6 +74,7 @@ export const MetricTicker: React.FC<MetricTickerProps> = ({
   maxCards = 4,
   backgroundColor = COLORS.bg,
   accentColor = COLORS.accent,
+  holdSeconds,
 }) => {
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
@@ -90,6 +97,16 @@ export const MetricTicker: React.FC<MetricTickerProps> = ({
     extrapolateRight: "clamp",
     easing: EASING.enter,
   });
+
+  // Exits accelerate away; entrances decelerate in. Never ease-out an exit.
+  const exit =
+    holdSeconds === undefined
+      ? 0
+      : interpolate(frame, [holdSeconds * fps, (holdSeconds + 0.4) * fps], [0, 1], {
+          extrapolateLeft: "clamp",
+          extrapolateRight: "clamp",
+          easing: EASING.exit,
+        });
 
   return (
     <div
@@ -115,8 +132,11 @@ export const MetricTicker: React.FC<MetricTickerProps> = ({
           style={{
             display: "grid",
             gap: scaleFont(10, width),
-            opacity: headerProgress,
-            transform: `translateY(${(1 - headerProgress) * scaleFont(16, width)}px)`,
+            opacity: headerProgress * (1 - exit),
+            transform: `translateY(${
+              (1 - headerProgress) * scaleFont(16, width) +
+              exit * scaleFont(-26, width)
+            }px)`,
           }}
         >
           {eyebrow ? (
@@ -153,6 +173,8 @@ export const MetricTicker: React.FC<MetricTickerProps> = ({
           display: "grid",
           gridTemplateColumns: `repeat(${columns}, 1fr)`,
           gap,
+          opacity: 1 - exit,
+          transform: `translateY(${exit * scaleFont(-26, width)}px)`,
         }}
       >
         {cards.map((metric, index) => {

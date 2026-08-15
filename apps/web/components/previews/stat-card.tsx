@@ -12,6 +12,7 @@ export const StatCardPreview: React.FC = () => (
       suffix={DEMO_COPY.dataStory.statSuffix}
       caption="Across 1,240 rendered clips"
       delta={12}
+      holdSeconds={3.5}
     />
   </ScenePreviewPlate>
 );

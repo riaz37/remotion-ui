@@ -87,12 +87,20 @@ export const PerspectiveMarquee: React.FC<PerspectiveMarqueeProps> = ({
     [repetitions, text],
   );
 
-  const horizonTop = Math.round(height * 0.34);
+  const horizonTop = Math.round(height * 0.26);
   const planeHeight = Math.round(height * 0.9);
   const gridCellW = Math.round(width * 0.11);
   const gridCellH = Math.round(fontSize * 0.75);
-  const nearTrackBottom = Math.round(planeHeight * 0.38);
-  const farTrackBottom = Math.round(planeHeight * 0.56);
+  /**
+   * Track positions on the floor plane, as a share of its height.
+   *
+   * The plane is taller than the frame and hangs below it, so a track placed
+   * low on the plane lands under the frame edge once the tilt throws it
+   * forward — the near row was being cut through its baseline. Both tracks sit
+   * high enough on the plane that the near row clears the bottom edge whole.
+   */
+  const nearTrackBottom = Math.round(planeHeight * 0.52);
+  const farTrackBottom = Math.round(planeHeight * 0.68);
 
   const trackTypography = {
     fontWeight,

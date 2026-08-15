@@ -107,6 +107,34 @@ export const DEMO_MEDIA_SRC = svgData(`
   <text x="114" y="658" font-family="Arial,sans-serif" font-size="28" fill="${DEMO_PALETTE.phosphor}">Feature story, KPI, and product frame</text>
 </svg>`);
 
+/**
+ * The same product still without the baked headline.
+ *
+ * `DEMO_MEDIA_SRC` carries its own copy in the lower-left band — which is
+ * exactly where a scene puts its label chips, its callout card and its lower
+ * third. Every scene that overlays copy on footage covered that headline and
+ * read as a clipping bug. Scenes that supply their own copy use this one;
+ * scenes where the still *is* the subject keep the titled version.
+ */
+export const DEMO_MEDIA_PLAIN_SRC = svgData(`
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#111827"/>
+      <stop offset="1" stop-color="#1a1510"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#g)"/>
+  <circle cx="1030" cy="146" r="190" fill="${DEMO_PALETTE.phosphor}" opacity=".18"/>
+  <rect x="104" y="96" width="650" height="430" rx="42" fill="#f8fafc" opacity=".12"/>
+  <rect x="154" y="154" width="450" height="38" rx="19" fill="#f8fafc" opacity=".78"/>
+  <rect x="154" y="224" width="312" height="28" rx="14" fill="${DEMO_PALETTE.amber}" opacity=".85"/>
+  <rect x="154" y="306" width="500" height="112" rx="28" fill="#020617" opacity=".42"/>
+  <rect x="804" y="342" width="300" height="118" rx="34" fill="#f8fafc" opacity=".14"/>
+  <rect x="154" y="580" width="380" height="24" rx="12" fill="#f8fafc" opacity=".22"/>
+  <rect x="154" y="628" width="240" height="18" rx="9" fill="#f8fafc" opacity=".12"/>
+</svg>`);
+
 export const DEMO_MEDIA_ALT_SRC = svgData(`
 <svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
   <rect width="1280" height="720" fill="#070812"/>
@@ -116,6 +144,18 @@ export const DEMO_MEDIA_ALT_SRC = svgData(`
   <rect x="804" y="452" width="210" height="36" rx="18" fill="#fdf2f8" opacity=".70"/>
   <text x="110" y="210" font-family="Arial,sans-serif" font-size="70" font-weight="800" fill="#f8fafc">Creator cut</text>
   <text x="112" y="286" font-family="Arial,sans-serif" font-size="34" fill="#f9a8d4">Talking head, captions, and proof clips</text>
+</svg>`);
+
+/** `DEMO_MEDIA_ALT_SRC` without its baked copy — see `DEMO_MEDIA_PLAIN_SRC`. */
+export const DEMO_MEDIA_ALT_PLAIN_SRC = svgData(`
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#070812"/>
+  <path d="M0 520 C180 420 340 580 520 460 C720 326 850 390 1020 250 C1120 170 1210 150 1280 120 L1280 720 L0 720 Z" fill="#ec4899" opacity=".30"/>
+  <rect x="730" y="100" width="350" height="440" rx="58" fill="#fdf2f8" opacity=".12"/>
+  <circle cx="905" cy="292" r="118" fill="#f9a8d4" opacity=".80"/>
+  <rect x="804" y="452" width="210" height="36" rx="18" fill="#fdf2f8" opacity=".70"/>
+  <rect x="110" y="180" width="300" height="30" rx="15" fill="#f8fafc" opacity=".26"/>
+  <rect x="112" y="256" width="200" height="20" rx="10" fill="#f9a8d4" opacity=".34"/>
 </svg>`);
 
 /**

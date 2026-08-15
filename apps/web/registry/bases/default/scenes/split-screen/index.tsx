@@ -222,12 +222,15 @@ export const SplitScreen: React.FC<SplitScreenProps> = ({
         </div>
       ) : null}
 
+      {/* Labels ride at the top of the panels they name. At the bottom they sat
+          exactly where footage carries its own lower third, and the chip
+          covered the shot's headline. */}
       <div
         style={{
           position: "absolute",
           left: safe.paddingLeft,
           right: safe.paddingRight,
-          bottom: safe.paddingBottom,
+          top: safe.paddingTop + (title ? 62 * u : 0),
           display: "flex",
           justifyContent: "space-between",
           opacity: labelsIn,

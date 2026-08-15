@@ -25,7 +25,9 @@ export const ProgressBarPreview: React.FC = () => {
         <ProgressBar
           progress={0.82}
           delayInFrames={6}
-          durationInFrames={54}
+          // Filled in 54 frames the bar was parked at 82% for the back half of
+          // the window — a progress bar that has stopped is not a progress bar.
+          durationInFrames={104}
           label={`Rendering ${DEMO_COPY.productLaunch.title.toLowerCase()}`}
           showValue
           segments={4}

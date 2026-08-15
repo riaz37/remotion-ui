@@ -1,6 +1,6 @@
 import type { FeatureCollection, Point } from "geojson";
 import { useEffect } from "react";
-import { interpolate, useCurrentFrame } from "remotion";
+import { interpolate, useCurrentFrame, useDelayRender } from "remotion";
 import type { GeoJSONSource, Map } from "maplibre-gl";
 import {
   clampProgress,
@@ -72,6 +72,7 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
   revealProgress: revealProgressProp,
 }) => {
   const frame = useCurrentFrame();
+  const { delayRender, continueRender } = useDelayRender();
   const revealProgress =
     revealProgressProp ??
     clampProgress(
@@ -167,13 +168,28 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
     };
   }, [dotColor, dotRadius, glowColor, labelSize, map, markers, sourceId]);
 
+  /**
+   * Painting has to hold the frame open. The layers are added in the effect
+   * above, one commit after the map reports ready, and nothing else keeps the
+   * renderer waiting — the markers were dropping out of whichever frame the
+   * browser happened to capture first.
+   */
   useEffect(() => {
     if (!isMapStyleReady(map)) {
       return;
     }
 
+    const handle = delayRender("Painting map markers");
     applyMarkerReveal({ map, sourceId, dotRadius, revealProgress });
-  }, [dotRadius, map, revealProgress, sourceId]);
+    map.once("idle", () => continueRender(handle));
+  }, [
+    continueRender,
+    delayRender,
+    dotRadius,
+    map,
+    revealProgress,
+    sourceId,
+  ]);
 
   return null;
 };

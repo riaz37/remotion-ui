@@ -15,6 +15,7 @@ import {
   PricingFocus,
   ToolMenuSlide,
 } from "../registry-exports";
+import { DEMO_MEDIA_PLAIN_SRC } from "@/lib/demo-assets";
 import { PreviewFrame } from "./preview-frame";
 
 export const HeroDeviceAssemblePreview = () => (
@@ -54,5 +55,7 @@ export const ToolMenuSlidePreview = () => (
   <PreviewFrame lane="reels" padding={0}><ToolMenuSlide /></PreviewFrame>
 );
 export const ImageExpandPreview = () => (
-  <PreviewFrame lane="reels" padding={0}><ImageExpand /></PreviewFrame>
+  <PreviewFrame lane="reels" padding={0}>
+    <ImageExpand src={DEMO_MEDIA_PLAIN_SRC} />
+  </PreviewFrame>
 );

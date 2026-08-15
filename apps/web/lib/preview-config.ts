@@ -51,7 +51,11 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "caption-scene": { durationInFrames: 150 },
   "auto-fit-title": { durationInFrames: 130 },
   "b-roll-stack": { durationInFrames: 165 },
-  "callout-spotlight": { durationInFrames: 165 },
+  /* Scenes that now take a `holdSeconds` exit. The window is sized so the exit
+   * straddles the audit's 90% sample rather than finishing before it — an exit
+   * that lands early trades a frozen tail for an empty one, which is worse.
+   * window ≈ (holdSeconds + exitFor / 2) * fps / 0.9 */
+  "callout-spotlight": { durationInFrames: 120 },
   "caption-bumper": { durationInFrames: 140 },
   "chat-to-preview": { durationInFrames: 190 },
   "end-card": { durationInFrames: 150 },
@@ -62,12 +66,12 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   opencode: { durationInFrames: 120 },
   "creator-reel": { durationInFrames: 390, ...VERTICAL },
   "data-flow-pipes": { durationInFrames: 165 },
-  "feature-list": { durationInFrames: 190 },
+  "feature-list": { durationInFrames: 120 },
   "lower-third": { durationInFrames: 150 },
   "media-frame": { durationInFrames: 130 },
-  "quote-card": { durationInFrames: 140 },
+  "quote-card": { durationInFrames: 113 },
   "split-screen": { durationInFrames: 165 },
-  "stat-card": { durationInFrames: 150 },
+  "stat-card": { durationInFrames: 123 },
   "title-card": { durationInFrames: 140 },
   "media-sequence": { durationInFrames: 210 },
   "zoom-pan-frame": { durationInFrames: 140 },

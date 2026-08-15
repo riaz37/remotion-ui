@@ -11,6 +11,7 @@ export const QuoteCardPreview: React.FC = () => (
       emphasis="motion"
       author={DEMO_COPY.quote.attribution}
       role="Head of Video, Northwind"
+      holdSeconds={3.2}
     />
   </ScenePreviewPlate>
 );

@@ -24,6 +24,12 @@ export type FeatureListProps = {
   accentColor?: string;
   backgroundColor?: string;
   theme?: "dark" | "light";
+  /**
+   * Seconds after which the scene leaves. Omit to hold — correct inside a
+   * `TransitionSeries`, where the transition covers the tail, and wrong on
+   * its own, where the scene stands still for the rest of the clip.
+   */
+  holdSeconds?: number;
   /** Animation speed multiplier. */
   speed?: number;
 };
@@ -38,6 +44,7 @@ const T = {
   rowStagger: 0.34,
   /** How long after a row lands its check strokes in. */
   checkAfter: 0.22,
+  exitFor: 0.4,
 } as const;
 
 const clamp = {
@@ -75,6 +82,7 @@ export const FeatureList: React.FC<FeatureListProps> = ({
   accentColor = "#E8B86D",
   backgroundColor,
   theme = "dark",
+  holdSeconds,
   speed = 1,
 }) => {
   const frame = useCurrentFrame();
@@ -85,6 +93,16 @@ export const FeatureList: React.FC<FeatureListProps> = ({
   const at = (seconds: number) => (seconds * fps) / speed;
   const ease = (from: number, to: number, easing = EASING.enter) =>
     interpolate(frame, [at(from), at(to)], [0, 1], { easing, ...clamp });
+  // Exits accelerate away; entrances decelerate in. Never ease-out an exit.
+  const exit =
+    holdSeconds === undefined
+      ? 0
+      : interpolate(
+          frame,
+          [at(holdSeconds), at(holdSeconds + T.exitFor)],
+          [0, 1],
+          { easing: EASING.exit, ...clamp },
+        );
 
   const stage = {
     w: width - safe.paddingLeft - safe.paddingRight,
@@ -131,6 +149,8 @@ export const FeatureList: React.FC<FeatureListProps> = ({
           flexDirection: "column",
           justifyContent: "center",
           gap: 30 * u,
+          opacity: 1 - exit,
+          transform: `translateY(${exit * -26 * u}px)`,
         }}
       >
         {eyebrow || title ? (

@@ -27,6 +27,12 @@ export type QuoteCardProps = {
   backgroundColor?: string;
   accentColor?: string;
   theme?: "dark" | "light";
+  /**
+   * Seconds after which the card leaves. Omit to hold — correct inside a
+   * `TransitionSeries`, where the transition covers the tail, and wrong on its
+   * own, where the scene stands still for the rest of the clip.
+   */
+  holdSeconds?: number;
   /** Animation speed multiplier. */
   speed?: number;
 };
@@ -40,6 +46,7 @@ const T = {
   sweep: 0.34,
   sweepStagger: 0.11,
   attribution: 0.5,
+  exitFor: 0.4,
 } as const;
 
 const clamp = {
@@ -85,6 +92,7 @@ export const QuoteCard: React.FC<QuoteCardProps> = ({
   backgroundColor,
   accentColor = "#F472B6",
   theme = "dark",
+  holdSeconds,
   speed = 1,
 }) => {
   const frame = useCurrentFrame();
@@ -119,6 +127,16 @@ export const QuoteCard: React.FC<QuoteCardProps> = ({
 
   const markDraw = ease(T.mark, T.mark + 0.6, EASING.editorial);
   const attributionIn = ease(T.attribution, T.attribution + 0.5);
+  // Exits accelerate away; entrances decelerate in. Never ease-out an exit.
+  const exit =
+    holdSeconds === undefined
+      ? 0
+      : interpolate(
+          frame,
+          [at(holdSeconds), at(holdSeconds + T.exitFor)],
+          [0, 1],
+          { easing: EASING.exit, ...clamp },
+        );
   const quoteSize = 52 * u;
   const badge =
     initials ??
@@ -159,6 +177,8 @@ export const QuoteCard: React.FC<QuoteCardProps> = ({
           display: "flex",
           flexDirection: "column",
           gap: 22 * u,
+          opacity: 1 - exit,
+          transform: `translateY(${exit * -26 * u}px)`,
         }}
       >
         {/* Quote mark, drawn rather than typed */}

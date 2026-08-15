@@ -74,7 +74,115 @@ in the Next.js docs page.
 - **P2** — fails D2/D6: technically correct but weak as a preview.
 - **P3** — fails D5 only, or cosmetic polish.
 
-## Audit results — 2026-08-15
+## Audit results — 2026-08-15 (second pass, full visual walk)
+
+All 16 sheets reviewed. **109/109 render, 0 errors, 0 dead.** Frozen tails are down
+from 20 (12 pixel-identical plus 8 near-frozen) to 12, and every one of the 12 is a
+deliberate hold — see the judgment below. Nothing on the open list is a defect the
+metric can find; what remains is framing, which it cannot.
+
+### What the sheets could not judge
+
+**D3 is not measurable from a review sheet.** The five 9:16 previews look
+letterboxed on every sheet because `audit:montage` pads each cell to one 16:9 box
+— `xstack` refuses ragged inputs. The product surfaces both derive the tile's
+aspect from the composition: `atlas-mini-preview.tsx` falls back to
+`height > width ? "9 / 16" : "16 / 9"`, and `component-contact-sheet.tsx` reads
+the same from `previewMeta()`. `social-clip`, `creator-reel`, `podcast-clip`,
+`tutorial-clip` and `talking-head-layout` are **not** letterboxed in the app. The
+Aug 5 D3 item is closed; judge it in the browser, never on a sheet.
+
+### Closed this pass
+
+- **Dead previews (5 → 0).** Four were preview timing — the motion finished
+  before the 15% sample or fell between samples. Two were component bugs found
+  underneath: `map-canvas` had `zoom` in the deps of its map-*creation* effect,
+  so any frame-driven camera rebuilt the MapLibre instance every frame and never
+  removed the old one; `map-markers` held no `delayRender` around its paint, so
+  the markers dropped out of whichever frame the browser captured first (visible
+  as a bare basemap at `map-markers@0.15` in every run before the fix).
+- **Frozen tails (20 → 12, all deliberate).** See the judgment below.
+- **`progress-bar`** filled in 54 frames of a 110-frame window and then sat at 82%
+  for the back half. A progress bar that has stopped is not a progress bar.
+- **`map-flight`.** The mid-Atlantic leg cruised at 2,200,000 m, which framed
+  open water — a flat blue plate with a line across it. Now 4,600,000 m, which
+  keeps Newfoundland and Ireland in frame.
+- **`perspective-marquee`.** The floor plane hangs below the frame, so tracks
+  placed low on it landed under the bottom edge; the near row was cut through
+  its baseline. Both tracks moved up the plane.
+- **`image-expand`.** A composition named for an image that never showed one —
+  a flat gradient at the hold and near-black at the exit. It now takes `src`,
+  and its exit is centred on the last tenth of the window instead of finishing
+  at frame 115 of 120.
+- **The three "text collisions" were one asset.** `DEMO_MEDIA_SRC` bakes a
+  headline into its lower-left band, exactly where a scene puts its label chip,
+  its callout card and its lower third. `split-screen`, `zoom-pan-frame` and
+  `callout-spotlight` all covered it and read as clipping bugs. Added
+  `DEMO_MEDIA_PLAIN_SRC` / `DEMO_MEDIA_ALT_PLAIN_SRC` for scenes that supply
+  their own copy; the titled stills stay where the still *is* the subject.
+  `split-screen` also moved its panel chips off the bottom edge for the same
+  reason — that placement fights any footage carrying a lower third.
+- **Aug 5 P1s.** `data-story`, `showcase` and `stagger-children` verified fixed
+  on the sheets alongside `hero-loop` and `karaoke-captions`.
+- **Duration drift.** `metric-ticker` and `caption-scene` had MDX overrides
+  (100 and 120) that disagreed with `preview-config` (120 and 150) — the docs
+  page played a different length than the audit rendered. Every scene MDX page
+  now omits `durationInFrames`, so `lib/preview-config.ts` is the single source.
+
+### The frozen-tail judgment
+
+Split by kind, as the rubric implies:
+
+- **Enter-only primitives hold, and that is correct.** `marker-highlight`,
+  `matrix-decode`, `slot-roll`, `staggered-fade-up`, `strikethrough-replace`,
+  `tracking-in`, `blur-focus-in`. No change.
+- **Two "primitives" were not enter-only.** `masked-slide-reveal` finished all
+  three lines by frame 28, so every sample caught settled type; `light-sweep-text`
+  is a *travelling* highlight, and a 48-frame sweep left five sixths of the loop
+  showing dead grey. Both retimed to span the window.
+- **Scenes holding is a defect, and trimming the window does not fix it.**
+  `quote-card` and `stat-card` have beats of roughly a second; no window short
+  enough to hide the hold is long enough to watch. They needed an exit, not a
+  shorter loop. `holdSeconds` — the idiom `caption-bumper` and `lower-third`
+  already had — is now on `quote-card`, `stat-card`, `feature-list`,
+  `callout-spotlight` and `metric-ticker`. It defaults to `undefined`, so a scene
+  inside a `TransitionSeries` still holds and lets the transition cover the tail.
+- **`end-card`, `caption-scene` and `hook-card` still hold, deliberately.** An
+  end card's job is to be the last thing on screen; `hook-card` carries a slow
+  six-second push that keeps it alive.
+
+The 12 that still measure frozen at the tail, and why each is correct:
+`blur-focus-in`, `marker-highlight`, `matrix-decode`, `slot-roll`,
+`staggered-fade-up`, `strikethrough-replace`, `tracking-in`, `fade-in`,
+`line-chart-draw` — enter-only primitives that settle and stay settled.
+`caption-scene`, `end-card`, `hook-card` — scenes whose job is to hold.
+Four measure frozen at the *head*: `fade-out` and `transition-light-leak` hold
+before they leave, which is what they are for; `lower-third` settles fast and now
+leaves across the 90% sample; `dynamic-grid` is a background primitive whose grid
+barely reads at tile size, which is the framing item below, not a timing one.
+
+**Time an exit to straddle the 90% sample**, not to finish before it:
+`holdSeconds ≈ 0.9 × window / fps − exitFor / 2`. `lower-third` was the
+counter-example — it already had `holdSeconds={3.2}`, which completed the exit at
+frame 109 of 150 and left the tile holding an *empty* plate for the last quarter
+of every loop. An early exit trades a frozen tail for an empty one, which is worse.
+
+### Still open — P2, framing
+
+Not defects in behaviour; the subject is small or the frame is thin at 308 px.
+`chat-gpt` and `claude-chat` (a thin input bar on a large light field — also the
+last two light stages), `v0`, `opencode`, `infinite-marquee`, `tool-menu-slide`,
+`code-diff-wipe`, `code-reveal`, `code-accordion`, `data-flow-pipes`,
+`audio-pulse`, `progress-bar`, `timeline-steps`, `dynamic-grid` (the grid barely
+reads; the card in that tile is preview chrome). `perspective-marquee` still
+carries its marquee in the lower third — that is what a floor marquee is, and
+changing `floorTilt` did not meaningfully help.
+
+The five transition previews open on a light "Scene one" by design, to make the
+wipe legible. That is a deliberate D5 exception, not the mixed behaviour the
+criterion is about.
+
+## Audit results — 2026-08-15 (first pass)
 
 Full re-run after the transitions, atoms, maps, creator and composition rebuilds.
 **109 of 109 renderable slugs rendered, zero render errors, zero resolve failures.**
