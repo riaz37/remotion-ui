@@ -159,6 +159,11 @@ import { WaterfallChartPreview } from "./previews/waterfall-chart";
 import { StackedAreaChartPreview } from "./previews/stacked-area-chart";
 import { CandlestickChartPreview } from "./previews/candlestick-chart";
 import { GanttTimelinePreview } from "./previews/gantt-timeline";
+import { WordPopCaptionsPreview } from "./previews/word-pop-captions";
+import { CaptionEmojiBeatPreview } from "./previews/caption-emoji-beat";
+import { SpeakerLabelCaptionsPreview } from "./previews/speaker-label-captions";
+import { TranscriptScrollPreview } from "./previews/transcript-scroll";
+import { SubtitleTranslatePreview } from "./previews/subtitle-translate";
 
 type AtlasMiniPreviewProps = {
   slug: string;
@@ -321,6 +326,11 @@ const PREVIEWS: Record<string, React.ComponentType> = {
   "stacked-area-chart": StackedAreaChartPreview,
   "candlestick-chart": CandlestickChartPreview,
   "gantt-timeline": GanttTimelinePreview,
+  "word-pop-captions": WordPopCaptionsPreview,
+  "caption-emoji-beat": CaptionEmojiBeatPreview,
+  "speaker-label-captions": SpeakerLabelCaptionsPreview,
+  "transcript-scroll": TranscriptScrollPreview,
+  "subtitle-translate": SubtitleTranslatePreview,
 };
 
 

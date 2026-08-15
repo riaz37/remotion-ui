@@ -155,3 +155,8 @@ export { WaterfallChart } from "../registry/bases/default/primitives/waterfall-c
 export { StackedAreaChart } from "../registry/bases/default/primitives/stacked-area-chart";
 export { CandlestickChart } from "../registry/bases/default/primitives/candlestick-chart";
 export { GanttTimeline } from "../registry/bases/default/primitives/gantt-timeline";
+export { WordPopCaptions } from "../registry/bases/default/primitives/word-pop-captions";
+export { CaptionEmojiBeat } from "../registry/bases/default/primitives/caption-emoji-beat";
+export { SpeakerLabelCaptions } from "../registry/bases/default/primitives/speaker-label-captions";
+export { TranscriptScroll } from "../registry/bases/default/primitives/transcript-scroll";
+export { SubtitleTranslate } from "../registry/bases/default/primitives/subtitle-translate";

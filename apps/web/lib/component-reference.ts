@@ -3722,6 +3722,71 @@ import { TextMaskVideo } from "@/remotion/primitives/text-mask-video";
     note: "Positions are column units rather than pixels, so a task moves by editing one number and everything stays in register. Bars wipe out from their own start edge — never from the left margin — so the animation says when a task begins as well as how long it runs. The marker label sits on a filled chip because the rule can land through a column heading.",
     related: ["roadmap-lanes", "kanban-move", "changelog-entry"],
   },
+  "word-pop-captions": {
+    category: "primitive",
+    usage: `import { WordPopCaptions } from "@/remotion/primitives/word-pop-captions";
+
+<WordPopCaptions />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "caption-emoji-beat": {
+    category: "primitive",
+    usage: `import { CaptionEmojiBeat } from "@/remotion/primitives/caption-emoji-beat";
+
+<CaptionEmojiBeat />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "speaker-label-captions": {
+    category: "primitive",
+    usage: `import { SpeakerLabelCaptions } from "@/remotion/primitives/speaker-label-captions";
+
+<SpeakerLabelCaptions />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "transcript-scroll": {
+    category: "primitive",
+    usage: `import { TranscriptScroll } from "@/remotion/primitives/transcript-scroll";
+
+<TranscriptScroll />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "subtitle-translate": {
+    category: "primitive",
+    usage: `import { SubtitleTranslate } from "@/remotion/primitives/subtitle-translate";
+
+<SubtitleTranslate />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
 };
 
 export function getComponentReference(name: string): ComponentReference | undefined {

@@ -3504,6 +3504,91 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "word-pop-captions",
+      "type": "registry:ui",
+      "description": "Narrowed: one word at a time, alone on frame",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/word-pop-captions.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "caption-emoji-beat",
+      "type": "registry:ui",
+      "description": "Emoji punctuation landing on beats",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/caption-emoji-beat.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "speaker-label-captions",
+      "type": "registry:ui",
+      "description": "Narrowed: multi-speaker caption track with name tags and color coding",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/speaker-label-captions.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "transcript-scroll",
+      "type": "registry:ui",
+      "description": "Full readable transcript scrolling with the active line marked",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/transcript-scroll.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "subtitle-translate",
+      "type": "registry:ui",
+      "description": "Dual-language stacked subtitles",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/subtitle-translate.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

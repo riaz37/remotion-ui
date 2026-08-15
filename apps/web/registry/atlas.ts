@@ -330,6 +330,11 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   "stacked-area-chart": { lane: "signals", drive: "data", tier: "advanced", tags: ["charts"] },
   "candlestick-chart": { lane: "signals", drive: "data", tier: "advanced", tags: ["charts"] },
   "gantt-timeline": { lane: "signals", drive: "data", tier: "advanced", tags: ["charts"] },
+  "word-pop-captions": { lane: "signals", drive: "data", tier: "core", tags: ["captions"] },
+  "caption-emoji-beat": { lane: "signals", drive: "data", tier: "advanced", tags: ["captions", "social"] },
+  "speaker-label-captions": { lane: "signals", drive: "data", tier: "advanced", tags: ["captions"] },
+  "transcript-scroll": { lane: "signals", drive: "data", tier: "core", tags: ["captions"] },
+  "subtitle-translate": { lane: "signals", drive: "data", tier: "advanced", tags: ["captions"] },
 };
 
 export function getAtlasMeta(name: string): AtlasMeta | undefined {

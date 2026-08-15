@@ -167,6 +167,11 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "stacked-area-chart": { durationInFrames: 120 },
   "candlestick-chart": { durationInFrames: 120 },
   "gantt-timeline": { durationInFrames: 120 },
+  "word-pop-captions": { durationInFrames: 120 },
+  "caption-emoji-beat": { durationInFrames: 120 },
+  "speaker-label-captions": { durationInFrames: 120 },
+  "transcript-scroll": { durationInFrames: 120 },
+  "subtitle-translate": { durationInFrames: 120 },
 };
 
 export function previewMeta(slug: string): Required<PreviewMeta> {
