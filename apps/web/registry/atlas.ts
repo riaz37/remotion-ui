@@ -345,6 +345,11 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   "countdown-timer": { lane: "blocks", drive: "time", tier: "core", tags: ["creator"] },
   "sports-scorebug": { lane: "blocks", drive: "time", tier: "core" },
   "news-ticker-bar": { lane: "blocks", drive: "time", tier: "core" },
+  "form-fill-sequence": { lane: "blocks", drive: "time", tier: "core", tags: ["ui"] },
+  "notification-stack": { lane: "blocks", drive: "time", tier: "core", tags: ["ui"] },
+  "tab-switch-panel": { lane: "blocks", drive: "time", tier: "core", tags: ["ui"] },
+  "search-results-populate": { lane: "blocks", drive: "time", tier: "core", tags: ["ui"] },
+  "file-tree-reveal": { lane: "blocks", drive: "time", tier: "core", tags: ["code"] },
 };
 
 export function getAtlasMeta(name: string): AtlasMeta | undefined {

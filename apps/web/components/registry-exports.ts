@@ -170,3 +170,8 @@ export { ReactionBurst } from "../registry/bases/default/scenes/reaction-burst";
 export { CountdownTimer } from "../registry/bases/default/scenes/countdown-timer";
 export { SportsScorebug } from "../registry/bases/default/scenes/sports-scorebug";
 export { NewsTickerBar } from "../registry/bases/default/scenes/news-ticker-bar";
+export { FormFillSequence } from "../registry/bases/default/scenes/form-fill-sequence";
+export { NotificationStack } from "../registry/bases/default/scenes/notification-stack";
+export { TabSwitchPanel } from "../registry/bases/default/scenes/tab-switch-panel";
+export { SearchResultsPopulate } from "../registry/bases/default/scenes/search-results-populate";
+export { FileTreeReveal } from "../registry/bases/default/scenes/file-tree-reveal";

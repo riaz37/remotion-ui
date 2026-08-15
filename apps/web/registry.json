@@ -3771,6 +3771,91 @@
           "type": "registry:block"
         }
       ]
+    },
+    {
+      "name": "form-fill-sequence",
+      "type": "registry:block",
+      "description": "Fields typing and validating in order",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/form-fill-sequence/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "notification-stack",
+      "type": "registry:block",
+      "description": "Toasts stacking and dismissing",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/notification-stack/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "tab-switch-panel",
+      "type": "registry:block",
+      "description": "Tab bar with cross-fading panels",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/tab-switch-panel/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "search-results-populate",
+      "type": "registry:block",
+      "description": "Query typed, results streaming in and ranking",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/search-results-populate/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "file-tree-reveal",
+      "type": "registry:block",
+      "description": "Directory tree expanding node by node",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/file-tree-reveal/index.tsx",
+          "type": "registry:block"
+        }
+      ]
     }
   ]
 }

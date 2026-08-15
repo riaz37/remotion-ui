@@ -182,6 +182,11 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "countdown-timer": { durationInFrames: 120 },
   "sports-scorebug": { durationInFrames: 120 },
   "news-ticker-bar": { durationInFrames: 120 },
+  "form-fill-sequence": { durationInFrames: 120 },
+  "notification-stack": { durationInFrames: 120 },
+  "tab-switch-panel": { durationInFrames: 120 },
+  "search-results-populate": { durationInFrames: 120 },
+  "file-tree-reveal": { durationInFrames: 120 },
 };
 
 export function previewMeta(slug: string): Required<PreviewMeta> {

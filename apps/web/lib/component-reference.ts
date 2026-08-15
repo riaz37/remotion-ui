@@ -4084,6 +4084,71 @@ import { parseSubtitles } from "@/remotion/lib/caption-utils";
     note: "Transparent overlay scene designed to sit over footage. infinite-marquee is the generic looping-text primitive — this is the dressed news bar with the chrome a broadcast frame needs.",
     related: ["infinite-marquee", "lower-third", "sports-scorebug"],
   },
+  "form-fill-sequence": {
+    category: "scene",
+    usage: `import { FormFillSequence } from "@/remotion/scenes/form-fill-sequence";
+
+<FormFillSequence />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "notification-stack": {
+    category: "scene",
+    usage: `import { NotificationStack } from "@/remotion/scenes/notification-stack";
+
+<NotificationStack />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "tab-switch-panel": {
+    category: "scene",
+    usage: `import { TabSwitchPanel } from "@/remotion/scenes/tab-switch-panel";
+
+<TabSwitchPanel />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "search-results-populate": {
+    category: "scene",
+    usage: `import { SearchResultsPopulate } from "@/remotion/scenes/search-results-populate";
+
+<SearchResultsPopulate />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "file-tree-reveal": {
+    category: "scene",
+    usage: `import { FileTreeReveal } from "@/remotion/scenes/file-tree-reveal";
+
+<FileTreeReveal />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
 };
 
 export function getComponentReference(name: string): ComponentReference | undefined {

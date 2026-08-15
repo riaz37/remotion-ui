@@ -174,6 +174,11 @@ import { ReactionBurstPreview } from "./previews/reaction-burst";
 import { CountdownTimerPreview } from "./previews/countdown-timer";
 import { SportsScorebugPreview } from "./previews/sports-scorebug";
 import { NewsTickerBarPreview } from "./previews/news-ticker-bar";
+import { FormFillSequencePreview } from "./previews/form-fill-sequence";
+import { NotificationStackPreview } from "./previews/notification-stack";
+import { TabSwitchPanelPreview } from "./previews/tab-switch-panel";
+import { SearchResultsPopulatePreview } from "./previews/search-results-populate";
+import { FileTreeRevealPreview } from "./previews/file-tree-reveal";
 
 type AtlasMiniPreviewProps = {
   slug: string;
@@ -351,6 +356,11 @@ const PREVIEWS: Record<string, React.ComponentType> = {
   "countdown-timer": CountdownTimerPreview,
   "sports-scorebug": SportsScorebugPreview,
   "news-ticker-bar": NewsTickerBarPreview,
+  "form-fill-sequence": FormFillSequencePreview,
+  "notification-stack": NotificationStackPreview,
+  "tab-switch-panel": TabSwitchPanelPreview,
+  "search-results-populate": SearchResultsPopulatePreview,
+  "file-tree-reveal": FileTreeRevealPreview,
 };
 
 
