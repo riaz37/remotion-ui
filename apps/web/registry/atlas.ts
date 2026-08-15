@@ -314,6 +314,14 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   "orbit-motion": { lane: "atoms", drive: "time", tier: "core" },
   "depth-of-field-blur": { lane: "atoms", drive: "time", tier: "advanced" },
   "scanline-crt": { lane: "atoms", drive: "time", tier: "core" },
+  "bar-chart-race": { lane: "signals", drive: "data", tier: "advanced", tags: ["charts"] },
+  "donut-chart": { lane: "signals", drive: "data", tier: "core", tags: ["charts"] },
+  "pie-slice-reveal": { lane: "signals", drive: "data", tier: "core", tags: ["charts"] },
+  "scatter-plot-pop": { lane: "signals", drive: "data", tier: "advanced", tags: ["charts"] },
+  "bubble-chart-pack": { lane: "signals", drive: "data", tier: "advanced", tags: ["charts"] },
+  "gauge-dial": { lane: "signals", drive: "data", tier: "core", tags: ["charts", "metrics"] },
+  "sparkline-row": { lane: "signals", drive: "data", tier: "core", tags: ["charts", "metrics"] },
+  "heatmap-grid": { lane: "signals", drive: "data", tier: "advanced", tags: ["charts"] },
 };
 
 export function getAtlasMeta(name: string): AtlasMeta | undefined {

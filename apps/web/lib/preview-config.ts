@@ -151,6 +151,14 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "orbit-motion": { durationInFrames: 120 },
   "depth-of-field-blur": { durationInFrames: 120 },
   "scanline-crt": { durationInFrames: 120 },
+  "bar-chart-race": { durationInFrames: 120 },
+  "donut-chart": { durationInFrames: 120 },
+  "pie-slice-reveal": { durationInFrames: 120 },
+  "scatter-plot-pop": { durationInFrames: 120 },
+  "bubble-chart-pack": { durationInFrames: 120 },
+  "gauge-dial": { durationInFrames: 120 },
+  "sparkline-row": { durationInFrames: 120 },
+  "heatmap-grid": { durationInFrames: 120 },
 };
 
 export function previewMeta(slug: string): Required<PreviewMeta> {

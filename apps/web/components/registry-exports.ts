@@ -139,3 +139,11 @@ export { SquashStretch } from "../registry/bases/default/primitives/squash-stret
 export { OrbitMotion } from "../registry/bases/default/primitives/orbit-motion";
 export { DepthOfFieldBlur } from "../registry/bases/default/primitives/depth-of-field-blur";
 export { ScanlineCrt } from "../registry/bases/default/primitives/scanline-crt";
+export { BarChartRace } from "../registry/bases/default/primitives/bar-chart-race";
+export { DonutChart } from "../registry/bases/default/primitives/donut-chart";
+export { PieSliceReveal } from "../registry/bases/default/primitives/pie-slice-reveal";
+export { ScatterPlotPop } from "../registry/bases/default/primitives/scatter-plot-pop";
+export { BubbleChartPack } from "../registry/bases/default/primitives/bubble-chart-pack";
+export { GaugeDial } from "../registry/bases/default/primitives/gauge-dial";
+export { SparklineRow } from "../registry/bases/default/primitives/sparkline-row";
+export { HeatmapGrid } from "../registry/bases/default/primitives/heatmap-grid";

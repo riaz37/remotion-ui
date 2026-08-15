@@ -3237,6 +3237,142 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "bar-chart-race",
+      "type": "registry:ui",
+      "description": "Ranked bars reorder over time",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/bar-chart-race.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "donut-chart",
+      "type": "registry:ui",
+      "description": "Multi-segment donut with labels",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/donut-chart.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "pie-slice-reveal",
+      "type": "registry:ui",
+      "description": "Slices sweep in sequentially",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/pie-slice-reveal.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "scatter-plot-pop",
+      "type": "registry:ui",
+      "description": "Points pop in on stagger, optional trend line",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/scatter-plot-pop.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "bubble-chart-pack",
+      "type": "registry:ui",
+      "description": "Circle-packed values settling into place",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/bubble-chart-pack.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "gauge-dial",
+      "type": "registry:ui",
+      "description": "Needle sweeps to target",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/gauge-dial.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "sparkline-row",
+      "type": "registry:ui",
+      "description": "Compact trend lines that read at small sizes",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/sparkline-row.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "heatmap-grid",
+      "type": "registry:ui",
+      "description": "Cell grid filling by intensity, contribution-graph style",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/heatmap-grid.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

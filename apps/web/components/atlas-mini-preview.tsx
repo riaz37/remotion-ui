@@ -143,6 +143,14 @@ import { SquashStretchPreview } from "./previews/squash-stretch";
 import { OrbitMotionPreview } from "./previews/orbit-motion";
 import { DepthOfFieldBlurPreview } from "./previews/depth-of-field-blur";
 import { ScanlineCrtPreview } from "./previews/scanline-crt";
+import { BarChartRacePreview } from "./previews/bar-chart-race";
+import { DonutChartPreview } from "./previews/donut-chart";
+import { PieSliceRevealPreview } from "./previews/pie-slice-reveal";
+import { ScatterPlotPopPreview } from "./previews/scatter-plot-pop";
+import { BubbleChartPackPreview } from "./previews/bubble-chart-pack";
+import { GaugeDialPreview } from "./previews/gauge-dial";
+import { SparklineRowPreview } from "./previews/sparkline-row";
+import { HeatmapGridPreview } from "./previews/heatmap-grid";
 
 type AtlasMiniPreviewProps = {
   slug: string;
@@ -289,6 +297,14 @@ const PREVIEWS: Record<string, React.ComponentType> = {
   "orbit-motion": OrbitMotionPreview,
   "depth-of-field-blur": DepthOfFieldBlurPreview,
   "scanline-crt": ScanlineCrtPreview,
+  "bar-chart-race": BarChartRacePreview,
+  "donut-chart": DonutChartPreview,
+  "pie-slice-reveal": PieSliceRevealPreview,
+  "scatter-plot-pop": ScatterPlotPopPreview,
+  "bubble-chart-pack": BubbleChartPackPreview,
+  "gauge-dial": GaugeDialPreview,
+  "sparkline-row": SparklineRowPreview,
+  "heatmap-grid": HeatmapGridPreview,
 };
 
 
