@@ -1,20 +1,22 @@
 ---
 title: Poll Overlay
-description: Question with bars filling to results. Install with npx remotion-ui@latest add poll-overlay.
+description: An audience poll whose bars travel out to their real shares.
 ---
 
 import { PollOverlayPreview } from '@/components/previews/poll-overlay';
 
-<ComponentPage name="poll-overlay" preview={PollOverlayPreview} durationInFrames={120}>
+<ComponentPage name="poll-overlay" preview={PollOverlayPreview}>
 
-Question with bars filling to results.
+The card opens, the options arrive one after another, the bars travel out to
+their shares while the percentages count up under them, and the leading answer
+takes the accent once everything has settled.
 
-## Usage
+Pass raw `votes` rather than percentages — shares are computed against the other
+options, so the numbers on screen always agree with the tallies you gave it. A
+poll with no votes in yet falls back to even shares instead of dividing by zero.
 
-```tsx
-import { PollOverlay } from "@/remotion/scenes/poll-overlay";
-
-<PollOverlay />
-```
+There is no correct answer here; the winner is whichever option the votes gave
+it. For a right-and-wrong reveal use `quiz-question`. Set `holdSeconds` to have
+the card retreat, or leave it off to hold the result for the rest of the cut.
 
 </ComponentPage>

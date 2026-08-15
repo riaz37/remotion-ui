@@ -1,20 +1,22 @@
 ---
 title: Countdown Timer
-description: Numeric or ring countdown to zero. Install with npx remotion-ui@latest add countdown-timer.
+description: A clock that runs down rather than a number that changes.
 ---
 
 import { CountdownTimerPreview } from '@/components/previews/countdown-timer';
 
-<ComponentPage name="countdown-timer" preview={CountdownTimerPreview} durationInFrames={120}>
+<ComponentPage name="countdown-timer" preview={CountdownTimerPreview}>
 
-Numeric or ring countdown to zero.
+The ring drains continuously while the digit swaps on each whole second, so the
+clock reads as running between ticks instead of sitting still. The last few
+seconds take `urgentColor`, and zero lands with a single pop rather than ticking
+on into negative time.
 
-## Usage
+The digit is what a viewer would read off a wall clock: with 4.2 seconds left it
+shows `5`. Set `zeroLabel` to swap in a word at the end — LIVE, GO, ON AIR —
+otherwise it rests on `0`.
 
-```tsx
-import { CountdownTimer } from "@/remotion/scenes/countdown-timer";
-
-<CountdownTimer />
-```
+`variant="numeric"` drops the ring and keeps the number, for corners of the frame
+where a 300-unit circle will not fit.
 
 </ComponentPage>

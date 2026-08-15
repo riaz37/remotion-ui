@@ -1,20 +1,22 @@
 ---
 title: News Ticker Bar
-description: Broadcast lower ticker with headlines. Install with npx remotion-ui@latest add news-ticker-bar.
+description: A broadcast lower bar with a standing flag and a headline crawl.
 ---
 
 import { NewsTickerBarPreview } from '@/components/previews/news-ticker-bar';
 
-<ComponentPage name="news-ticker-bar" preview={NewsTickerBarPreview} durationInFrames={120}>
+<ComponentPage name="news-ticker-bar" preview={NewsTickerBarPreview}>
 
-Broadcast lower ticker with headlines. infinite-marquee is a generic text loop primitive.
+The bar rises from the frame edge, the flag wipes out ahead of the crawl, and the
+headlines run continuously — two copies of the run chase each other so the loop
+never shows a seam. Headlines dissolve into the right edge instead of being
+sliced off against the dateline.
 
-## Usage
+`infinite-marquee` is the generic looping-text primitive. This is the dressed
+news bar built on the same idea, with the flag, strapline and timestamp furniture
+a broadcast frame needs. Drop `strapline` for a single-line bar.
 
-```tsx
-import { NewsTickerBar } from "@/remotion/scenes/news-ticker-bar";
-
-<NewsTickerBar />
-```
+Crawl speed is `pixelsPerSecond` in layout units, so it stays consistent across
+frame sizes.
 
 </ComponentPage>

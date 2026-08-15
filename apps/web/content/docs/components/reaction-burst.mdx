@@ -1,20 +1,22 @@
 ---
 title: Reaction Burst
-description: Narrowed: hearts/likes rising continuously. Install with npx remotion-ui@latest add reaction-burst.
+description: A continuous side-channel of hearts and likes climbing the frame.
 ---
 
 import { ReactionBurstPreview } from '@/components/previews/reaction-burst';
 
-<ComponentPage name="reaction-burst" preview={ReactionBurstPreview} durationInFrames={120}>
+<ComponentPage name="reaction-burst" preview={ReactionBurstPreview}>
 
-Narrowed: hearts/likes rising continuously. confetti-burst is a single impulse.
+Reactions spawn on a steady cadence, climb, sway, and thin out near the top of
+their arc — the live-stream side channel rather than a celebration.
 
-## Usage
+This is the narrow one. `confetti-burst` is a single impulse fired on one beat;
+here the stream keeps running for as long as the scene does. `stopAfterSeconds`
+closes the tap while letting everything already in flight finish its arc.
 
-```tsx
-import { ReactionBurst } from "@/remotion/scenes/reaction-burst";
-
-<ReactionBurst />
-```
+Every reaction's jitter — sway phase, lane offset, scale, tilt — is a pure
+function of its spawn index. Remotion renders frames out of order and in
+parallel, so `Math.random()` would give the same glyph a different arc on every
+frame.
 
 </ComponentPage>

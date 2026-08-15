@@ -1,20 +1,23 @@
 ---
 title: Sports Scorebug
-description: Broadcast score furniture with clock. Install with npx remotion-ui@latest add sports-scorebug.
+description: Broadcast score furniture with a live clock and scores that land.
 ---
 
 import { SportsScorebugPreview } from '@/components/previews/sports-scorebug';
 
-<ComponentPage name="sports-scorebug" preview={SportsScorebugPreview} durationInFrames={120}>
+<ComponentPage name="sports-scorebug" preview={SportsScorebugPreview}>
 
-Broadcast score furniture with clock.
+The bug wipes in from its own edge, the game clock counts down live off
+`clockSeconds`, and points listed in `changes` land mid-scene — bumping the
+total and flashing that side rather than silently swapping the number.
 
-## Usage
+Each entry in `changes` is a side, a time in seconds, and the points to add, so
+the scores you pass in `home` and `away` are the values at the top of the scene,
+not the final ones. Anything not yet reached simply has not happened at that
+frame.
 
-```tsx
-import { SportsScorebug } from "@/remotion/scenes/sports-scorebug";
-
-<SportsScorebug />
-```
+It renders nothing but the bug, so overlay it straight onto footage. `align`
+moves it to whichever corner the frame leaves free, and `holdSeconds` retreats it
+the way it came.
 
 </ComponentPage>

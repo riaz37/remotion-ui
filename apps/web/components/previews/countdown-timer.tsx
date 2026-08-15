@@ -4,13 +4,13 @@ import { CountdownTimer } from "../registry-exports";
 import { PreviewFrame } from "./preview-frame";
 
 /**
- * The audit samples at 15% / 50% / 90% of the window — frames 18, 60 and 108 on
- * the 120-frame default. Motion must still be running at frame 18 and not yet
- * settled at 60, or all three samples land on a still image and the preview is
- * reported dead. See docs-internal/preview-audit-rubric.md.
+ * The ring drains continuously and the digit ticks on every whole second, so
+ * all three audit samples (frames 18 / 60 / 108) catch a different sweep and a
+ * different number. `from={5}` keeps the clock running past the 90% sample
+ * rather than resting on zero.
  */
 export const CountdownTimerPreview: React.FC = () => (
-  <PreviewFrame lane="blocks">
-    <CountdownTimer />
+  <PreviewFrame lane="blocks" padding={0}>
+    <CountdownTimer from={5} label="Starting in" zeroLabel="Live" />
   </PreviewFrame>
 );

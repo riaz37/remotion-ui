@@ -3970,66 +3970,119 @@ import { parseSubtitles } from "@/remotion/lib/caption-utils";
     category: "scene",
     usage: `import { PollOverlay } from "@/remotion/scenes/poll-overlay";
 
-<PollOverlay />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<PollOverlay
+  badge="Poll"
+  question="Which should we build next?"
+  options={[
+    { label: "Timeline editor", votes: 412 },
+    { label: "Batch renders", votes: 268 },
+    { label: "Team presets", votes: 143 },
+  ]}
+  totalLabel="823 votes · closes in 2m"
+  holdSeconds={4}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "question", type: "string", required: true, description: "The question the card asks." },
+      { name: "options", type: "PollOption[]", required: true, description: "Each option's label and raw vote tally. Shares are computed from the tallies." },
+      { name: "badge", type: "string", description: "Small tag above the question — POLL, AUDIENCE, EP 12." },
+      { name: "align", type: '"left" | "right" | "center"', default: '"left"', description: "Edge the card sits against." },
+      { name: "holdSeconds", type: "number", description: "Seconds the result holds before the card retreats. Omit to leave it up." },
+      { name: "totalLabel", type: "string", description: "Total-vote line under the options. Omit to hide it." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Colour the leading option takes." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
+    note: "Transparent overlay scene designed to sit over footage. Unlike quiz-question there is no correct answer — the winner is whichever option the votes gave it.",
+    related: ["quiz-question", "reaction-burst", "comparison-bars"],
   },
   "reaction-burst": {
     category: "scene",
     usage: `import { ReactionBurst } from "@/remotion/scenes/reaction-burst";
 
-<ReactionBurst />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<ReactionBurst align="right" ratePerSecond={7} />`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "reactions", type: "string[]", default: '["❤️", "👍", "🔥", "😂", "✨"]', description: "Glyphs cycled through as reactions spawn." },
+      { name: "ratePerSecond", type: "number", default: "6", description: "Reactions spawned per second." },
+      { name: "align", type: '"left" | "right"', default: '"right"', description: "Edge the stream rises along." },
+      { name: "lifeSeconds", type: "number", default: "2.6", description: "Seconds a single reaction takes to travel its arc." },
+      { name: "drift", type: "number", default: "46", description: "Horizontal sway in units, peak to peak." },
+      { name: "size", type: "number", default: "44", description: "Glyph size in units at full scale." },
+      { name: "rise", type: "number", default: "0.72", description: "Fraction of the frame height a reaction climbs." },
+      { name: "stopAfterSeconds", type: "number", description: "Seconds after which no new reactions spawn. Ones in flight finish their arc." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
+    note: "Deliberately narrower than confetti-burst, which is a single impulse fired on one beat — here the reactions keep coming for as long as the scene runs. Jitter is a pure function of the spawn index, so frames render identically in any order.",
+    related: ["confetti-burst", "poll-overlay", "chat-bubble"],
   },
   "countdown-timer": {
     category: "scene",
     usage: `import { CountdownTimer } from "@/remotion/scenes/countdown-timer";
 
-<CountdownTimer />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<CountdownTimer from={5} label="Starting in" zeroLabel="Live" />`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "from", type: "number", default: "5", description: "Seconds on the clock when the scene opens." },
+      { name: "variant", type: '"ring" | "numeric"', default: '"ring"', description: "Ring sweep with the number inside, or the number alone." },
+      { name: "label", type: "string", description: "Caption above the clock — STARTING IN, DOORS OPEN." },
+      { name: "zeroLabel", type: "string", description: "Shown once the clock reaches zero. Omit to hold on 0." },
+      { name: "startDelaySeconds", type: "number", default: "0.35", description: "Seconds before the clock starts running." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Ring colour above the urgent threshold." },
+      { name: "urgentColor", type: "string", default: '"#F97362"', description: "Accent applied over the last urgentUnder seconds." },
+      { name: "urgentUnder", type: "number", default: "3", description: "Seconds remaining at which the urgent accent takes over." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
+    note: "The ring drains continuously while the digit swaps on each whole second, so the clock reads as running rather than as a number that happens to change. It stops at zero instead of ticking into negative time.",
+    related: ["metric-ticker", "sports-scorebug", "end-card"],
   },
   "sports-scorebug": {
     category: "scene",
     usage: `import { SportsScorebug } from "@/remotion/scenes/sports-scorebug";
 
-<SportsScorebug />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<SportsScorebug
+  away={{ abbr: "NOR", score: 66, color: "#7DD3E8" }}
+  home={{ abbr: "VAL", score: 71, color: "#E8B86D", possession: true }}
+  period="Q4"
+  clockSeconds={154}
+  changes={[{ side: "away", atSeconds: 1.1, points: 3 }]}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "home", type: "ScorebugTeam", required: true, description: "Home side — abbreviation, score, colour, possession." },
+      { name: "away", type: "ScorebugTeam", required: true, description: "Away side — abbreviation, score, colour, possession." },
+      { name: "period", type: "string", default: '"Q3"', description: "Period furniture — Q3, 2ND HALF, SET 2." },
+      { name: "clockSeconds", type: "number", default: "154", description: "Game clock at the top of the scene, in seconds. Counts down." },
+      { name: "changes", type: "ScoreChange[]", default: "[]", description: "Scores landing mid-scene. Each flashes its side and bumps the total." },
+      { name: "align", type: '"left" | "center" | "right"', default: '"center"', description: "Edge the bug sits against." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Period label and possession dot colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "holdSeconds", type: "number", description: "Seconds the bug holds before it retreats. Omit to leave it up." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
+    note: "Transparent overlay scene designed to sit over footage. Points landing mid-scene bump the total and flash that side rather than silently swapping the number.",
+    related: ["countdown-timer", "lower-third", "news-ticker-bar"],
   },
   "news-ticker-bar": {
     category: "scene",
     usage: `import { NewsTickerBar } from "@/remotion/scenes/news-ticker-bar";
 
-<NewsTickerBar />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<NewsTickerBar
+  flag="Breaking"
+  headlines={["Registry crosses 165 components", "CLI adds batch install"]}
+  strapline="Live from the newsroom"
+  timestamp="21:04"
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "headlines", type: "string[]", required: true, description: "Headlines cycled through the crawl, separated by a bullet." },
+      { name: "flag", type: "string", default: '"Breaking"', description: "Standing flag on the left — BREAKING, MARKETS, LIVE." },
+      { name: "strapline", type: "string", description: "Second line under the crawl. Omit for a single-line bar." },
+      { name: "timestamp", type: "string", description: "Clock or dateline pinned to the right edge. Omit to hide it." },
+      { name: "pixelsPerSecond", type: "number", default: "118", description: "Crawl speed in units per second." },
+      { name: "accentColor", type: "string", default: '"#F97362"', description: "Flag fill and top rule colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "holdSeconds", type: "number", description: "Seconds the bar holds before it retreats. Omit to leave it up." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
+    note: "Transparent overlay scene designed to sit over footage. infinite-marquee is the generic looping-text primitive — this is the dressed news bar with the chrome a broadcast frame needs.",
+    related: ["infinite-marquee", "lower-third", "sports-scorebug"],
   },
 };
 
