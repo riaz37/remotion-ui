@@ -1,16 +1,16 @@
 "use client";
 
 import { FormFillSequence } from "../registry-exports";
-import { PreviewFrame } from "./preview-frame";
+import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**
  * The audit samples at 15% / 50% / 90% of the window — frames 18, 60 and 108 on
- * the 120-frame default. Motion must still be running at frame 18 and not yet
- * settled at 60, or all three samples land on a still image and the preview is
- * reported dead. See docs-internal/preview-audit-rubric.md.
+ * the 120-frame default. Frame 18 catches the first field typing, frame 60 the
+ * third, and `holdSeconds={3.4}` puts frame 108 mid-exit rather than on a
+ * settled card. See docs-internal/preview-audit-rubric.md.
  */
 export const FormFillSequencePreview: React.FC = () => (
-  <PreviewFrame lane="blocks">
-    <FormFillSequence />
-  </PreviewFrame>
+  <ScenePreviewPlate direct>
+    <FormFillSequence holdSeconds={3.4} />
+  </ScenePreviewPlate>
 );

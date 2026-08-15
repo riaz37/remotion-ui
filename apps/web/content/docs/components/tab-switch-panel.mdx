@@ -1,20 +1,29 @@
 ---
 title: Tab Switch Panel
-description: Tab bar with cross-fading panels. Install with npx remotion-ui@latest add tab-switch-panel.
+description: An app window whose tabs switch on their own, the pill gliding while panels slide through.
 ---
 
 import { TabSwitchPanelPreview } from '@/components/previews/tab-switch-panel';
 
-<ComponentPage name="tab-switch-panel" preview={TabSwitchPanelPreview} durationInFrames={120}>
+<ComponentPage name="tab-switch-panel" preview={TabSwitchPanelPreview}>
 
-Tab bar with cross-fading panels.
+The pill travels along the tab bar while the outgoing panel slides off and the
+incoming one arrives behind it. Rows trail the headline by a little more each
+step down, so a panel reads as one object with depth rather than as a stack of
+independent fades.
 
-## Usage
+Tabs share the bar width evenly. That is what lets the pill's travel be pure
+arithmetic — no text measurement, so the indicator can never drift out of
+register with the label beneath it. The trade is that one long label squeezes
+every other tab, so keep labels to a word or two.
 
-```tsx
-import { TabSwitchPanel } from "@/remotion/scenes/tab-switch-panel";
+The scene walks forward from `startIndex` to the last tab and stops; it does not
+wrap. Total run time is `firstSwitchAtSeconds + switchEverySeconds × (tabs.length - 1 - startIndex) + transitionSeconds`,
+which is the number to check before setting `holdSeconds` — a hold shorter than
+that cuts the window away mid-switch.
 
-<TabSwitchPanel />
-```
+Panels cross-fade faster than they travel, on purpose: the outgoing panel is
+gone before the incoming one is half way, so the two never sit on top of each
+other as unreadable double text.
 
 </ComponentPage>

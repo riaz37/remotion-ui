@@ -1,20 +1,29 @@
 ---
 title: File Tree Reveal
-description: Directory tree expanding node by node. Install with npx remotion-ui@latest add file-tree-reveal.
+description: A project tree opening itself node by node, folders turning as their contents arrive.
 ---
 
 import { FileTreeRevealPreview } from '@/components/previews/file-tree-reveal';
 
-<ComponentPage name="file-tree-reveal" preview={FileTreeRevealPreview} durationInFrames={120}>
+<ComponentPage name="file-tree-reveal" preview={FileTreeRevealPreview}>
 
-Directory tree expanding node by node.
+Rows arrive in depth-first display order, so a folder is always on screen before
+anything inside it — the tree expands rather than assembling out of order. Each
+row takes up its own height as it appears, which pushes the rows beneath it down
+instead of fading them onto a fixed grid, and each folder's chevron turns on the
+same frames its first child arrives.
 
-## Usage
+Nodes are folders when they have a `children` array, files when they do not. An
+empty array is a folder with nothing in it, which is why there is no `kind`
+field to keep in sync.
 
-```tsx
-import { FileTreeReveal } from "@/remotion/scenes/file-tree-reveal";
+`selectedPath` is the slash-joined path from the root — `src/scenes/lower-third.tsx`,
+not just the file name — so a tree with the same name under two folders selects
+the one you meant. Omit it to leave nothing selected.
 
-<FileTreeReveal />
-```
+File names take their colour from the extension, using the same token palette
+the code components use, so a tree standing next to `code-reveal` or
+`code-diff-wipe` agrees with it. This component shows structure; those two show
+the contents of a file.
 
 </ComponentPage>

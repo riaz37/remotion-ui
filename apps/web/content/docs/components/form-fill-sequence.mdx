@@ -1,20 +1,29 @@
 ---
 title: Form Fill Sequence
-description: Fields typing and validating in order. Install with npx remotion-ui@latest add form-fill-sequence.
+description: A sign-up form filling itself out field by field, each one validating before the next takes focus.
 ---
 
 import { FormFillSequencePreview } from '@/components/previews/form-fill-sequence';
 
-<ComponentPage name="form-fill-sequence" preview={FormFillSequencePreview} durationInFrames={120}>
+<ComponentPage name="form-fill-sequence" preview={FormFillSequencePreview}>
 
-Fields typing and validating in order.
+The caret drops into the first field, types its value, and the field ticks green
+before focus moves on. The submit button stays disabled until the last field has
+validated, so the ending reads as a consequence of the form rather than a
+separate flourish.
 
-## Usage
+Field timings are not fixed constants — each one is derived from its own value
+length and `charsPerSecond`, so a long email visibly takes longer to enter than
+a short name and the whole sequence lengthens when you pass more fields. Budget
+roughly `value.length / charsPerSecond + 0.26s` per field when you are fitting
+this into a cut.
 
-```tsx
-import { FormFillSequence } from "@/remotion/scenes/form-fill-sequence";
+`accentColor` is the focus ring and the armed button; `validColor` is the tick
+and the settled border. They are separate props on purpose — collapsing them
+into one colour makes "this field has focus" and "this field passed"
+indistinguishable at a glance.
 
-<FormFillSequence />
-```
+Typing here is the subject. When the typing is only setup for a result list,
+reach for `search-results-populate` instead.
 
 </ComponentPage>

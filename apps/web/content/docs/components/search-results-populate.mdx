@@ -1,20 +1,27 @@
 ---
 title: Search Results Populate
-description: Query typed, results streaming in and ranking. Install with npx remotion-ui@latest add search-results-populate.
+description: A query typing itself, results streaming back, and the list re-ranking to put the best match on top.
 ---
 
 import { SearchResultsPopulatePreview } from '@/components/previews/search-results-populate';
 
-<ComponentPage name="search-results-populate" preview={SearchResultsPopulatePreview} durationInFrames={120}>
+<ComponentPage name="search-results-populate" preview={SearchResultsPopulatePreview}>
 
-Query typed, results streaming in and ranking.
+The query types itself, an indeterminate bar runs while the index works, results
+stream in one by one, and then the list re-ranks so the best match rises to the
+top.
 
-## Usage
+The order of `results` is arrival order — the order the index handed them back —
+and `score` decides where each one ends up. Give the highest score to something
+other than the first entry and you get the beat this component exists for: a
+fourth arrival climbing past three rows to first place. Pass them already sorted
+and the re-rank is a no-op.
 
-```tsx
-import { SearchResultsPopulate } from "@/remotion/scenes/search-results-populate";
+Rows are never re-sorted in the DOM. Each one interpolates from its arrival slot
+to its ranked slot, so React does not remount a row mid-flight and the travel
+stays continuous even when two rows swap.
 
-<SearchResultsPopulate />
-```
+Typing is setup here, not the subject. When the fields themselves are the story
+— focus, validation, a submit button arming — use `form-fill-sequence`.
 
 </ComponentPage>

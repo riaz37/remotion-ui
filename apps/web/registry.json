@@ -3780,7 +3780,9 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "code-syntax",
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -3797,7 +3799,9 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "code-syntax",
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -3814,7 +3818,9 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "code-syntax",
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -3831,7 +3837,9 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "code-syntax",
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -3848,7 +3856,9 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "code-syntax",
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {

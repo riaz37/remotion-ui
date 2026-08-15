@@ -4088,66 +4088,143 @@ import { parseSubtitles } from "@/remotion/lib/caption-utils";
     category: "scene",
     usage: `import { FormFillSequence } from "@/remotion/scenes/form-fill-sequence";
 
-<FormFillSequence />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<FormFillSequence
+  title="Create your workspace"
+  fields={[
+    { label: "Full name", value: "Ada Lovelace", placeholder: "Your name" },
+    { label: "Work email", value: "ada@northstar.dev" },
+  ]}
+  submitLabel="Create workspace"
+  successLabel="Workspace created"
+  holdSeconds={4}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "fields", type: "FormField[]", default: "3 sample fields", description: "Label, typed value and placeholder for each field, filled in order." },
+      { name: "title", type: "string", default: '"Create your workspace"', description: "Heading on the card. Omit to show the fields alone." },
+      { name: "subtitle", type: "string", default: '"Takes about a minute."', description: "Supporting line under the heading." },
+      { name: "submitLabel", type: "string", default: '"Create workspace"', description: "Button text while the form is still filling." },
+      { name: "successLabel", type: "string", default: '"Workspace created"', description: "Button text once every field has validated." },
+      { name: "charsPerSecond", type: "number", default: "34", description: "Typing rate. Each field's duration is its value length divided by this." },
+      { name: "holdSeconds", type: "number", description: "Seconds the filled form holds before the card retreats. Omit to leave it up." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Focus ring and armed submit button." },
+      { name: "validColor", type: "string", default: '"#7FD1A0"', description: "Tick and settled border. Kept off accentColor so focus and validation stay two states." },
+      { name: "backgroundColor", type: "string", description: "Page behind the card. Defaults to the theme page colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
+    note: "Field beats are derived from each value's length, so the sequence lengthens with the content rather than running on fixed constants. The submit button stays disabled until the last field ticks. Typing is the subject here; when it is only setup for a result list, use search-results-populate.",
+    related: ["search-results-populate", "drag-drop-flow", "tab-switch-panel"],
   },
   "notification-stack": {
     category: "scene",
     usage: `import { NotificationStack } from "@/remotion/scenes/notification-stack";
 
-<NotificationStack />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<NotificationStack
+  align="top-right"
+  toasts={[
+    { title: "Render finished", body: "launch-teaser.mp4", tone: "success", meta: "now" },
+    { title: "Storage at 86%", tone: "warn", meta: "2m" },
+  ]}
+  lifeSeconds={2.3}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "toasts", type: "Toast[]", default: "4 sample toasts", description: "Title, optional body and meta, tone, and optional per-toast arrival and dwell." },
+      { name: "align", type: '"top-right" | "top-left" | "bottom-right" | "bottom-left"', default: '"top-right"', description: "Corner the stack anchors to. Bottom anchors grow upward." },
+      { name: "startAtSeconds", type: "number", default: "0.3", description: "Second the first toast arrives." },
+      { name: "staggerSeconds", type: "number", default: "0.62", description: "Seconds between arrivals, for toasts without their own atSeconds." },
+      { name: "lifeSeconds", type: "number", default: "2.3", description: "Default seconds a toast stays up before dismissing itself." },
+      { name: "showProgress", type: "boolean", default: "true", description: "Draining line along each toast's bottom edge." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Colour used by the warn tone." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
+    note: "Transparent overlay scene designed to sit over an app or capture. Each toast carries its own life, so there is no holdSeconds — the stack fills and drains on its own. Slot offsets are the sum of the live heights above, which is what makes the rows below travel up into a dismissal instead of jumping.",
+    related: ["comment-callout", "callout-spotlight", "chat-bubble"],
   },
   "tab-switch-panel": {
     category: "scene",
     usage: `import { TabSwitchPanel } from "@/remotion/scenes/tab-switch-panel";
 
-<TabSwitchPanel />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<TabSwitchPanel
+  windowTitle="Northstar Studio"
+  tabs={[
+    { label: "Overview", title: "1,284 renders", rows: [{ label: "Queued", value: "12" }] },
+    { label: "Billing", title: "Studio plan", rows: [{ label: "Seats", value: "9 of 12" }] },
+  ]}
+  switchEverySeconds={0.9}
+  holdSeconds={4}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "tabs", type: "PanelTab[]", default: "4 sample tabs", description: "Tab label plus the panel's title, summary and label/value rows." },
+      { name: "windowTitle", type: "string", default: '"Northstar Studio"', description: "Title bar text. Omit to drop the chrome header." },
+      { name: "startIndex", type: "number", default: "0", description: "Tab shown when the scene opens." },
+      { name: "firstSwitchAtSeconds", type: "number", default: "0.95", description: "Second the first switch fires." },
+      { name: "switchEverySeconds", type: "number", default: "0.9", description: "Seconds between switches after the first." },
+      { name: "transitionSeconds", type: "number", default: "0.5", description: "How long one tab-to-tab move takes." },
+      { name: "holdSeconds", type: "number", description: "Seconds the last panel holds before the window retreats. Omit to leave it up." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Indicator pill and active label." },
+      { name: "backgroundColor", type: "string", description: "Page behind the window. Defaults to the theme page colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
+    note: "Tabs share the bar width evenly so the pill's travel is arithmetic rather than measured text — it can never drift out of register with its label. The scene walks forward to the last tab and stops; it does not wrap, so holdSeconds must clear firstSwitchAtSeconds + switchEverySeconds × (tabs.length - 1) + transitionSeconds.",
+    related: ["device-mockup-zoom", "chat-to-preview", "faq-accordion"],
   },
   "search-results-populate": {
     category: "scene",
     usage: `import { SearchResultsPopulate } from "@/remotion/scenes/search-results-populate";
 
-<SearchResultsPopulate />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<SearchResultsPopulate
+  query="transition between scenes"
+  results={[
+    { title: "Slide transition", detail: "docs/transitions/slide", score: 0.64 },
+    { title: "Cross-fade two compositions", detail: "docs/transitions/fade", score: 0.98 },
+  ]}
+  holdSeconds={4}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "query", type: "string", default: '"transition between scenes"', description: "Text typed into the field." },
+      { name: "results", type: "SearchResult[]", default: "5 sample results", description: "Title, detail line and 0–1 score. Array order is arrival order; score decides the final rank." },
+      { name: "placeholder", type: "string", default: '"Search the docs"', description: "Greyed prompt shown before the first character lands." },
+      { name: "countLabel", type: "string", default: '"{n} results"', description: "Line above the list. {n} is replaced with the result count." },
+      { name: "topLabel", type: "string", default: '"Best match"', description: "Tag pinned to the top-ranked result once the list settles." },
+      { name: "charsPerSecond", type: "number", default: "30", description: "Typing rate for the query." },
+      { name: "searchSeconds", type: "number", default: "0.34", description: "Seconds the indeterminate bar runs between the query and the first row." },
+      { name: "holdSeconds", type: "number", description: "Seconds the ranked list holds before the card retreats. Omit to leave it up." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Active field border, top-result tag and score." },
+      { name: "backgroundColor", type: "string", description: "Page behind the card. Defaults to the theme page colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
+    note: "The re-rank is the payoff: give the highest score to something other than the first entry and a late arrival climbs past the rows above it. Rows interpolate from arrival slot to ranked slot rather than being re-sorted, so React never remounts one mid-flight.",
+    related: ["form-fill-sequence", "comparison-table", "file-tree-reveal"],
   },
   "file-tree-reveal": {
     category: "scene",
     usage: `import { FileTreeReveal } from "@/remotion/scenes/file-tree-reveal";
 
-<FileTreeReveal />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<FileTreeReveal
+  title="northstar-studio"
+  nodes={[
+    { name: "src", children: [{ name: "index.ts" }] },
+    { name: "package.json" },
+  ]}
+  selectedPath="src/index.ts"
+  holdSeconds={4}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "nodes", type: "FileNode[]", default: "sample project tree", description: "Recursive tree. A node with a children array is a folder; without one it is a file." },
+      { name: "title", type: "string", default: '"northstar-studio"', description: "Title bar over the tree. Omit to drop the header." },
+      { name: "selectedPath", type: "string", default: '"src/scenes/lower-third.tsx"', description: "Slash-joined path of the file that lights up at the end. Omit to select nothing." },
+      { name: "rowStagger", type: "number", default: "0.18", description: "Seconds between one row appearing and the next." },
+      { name: "holdSeconds", type: "number", description: "Seconds the finished tree holds before the panel retreats. Omit to leave it up." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Selected row's bar, tint and label." },
+      { name: "backgroundColor", type: "string", description: "Page behind the panel. Defaults to the theme page colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
+    note: "Rows reveal in depth-first display order, so a folder is always on screen before its contents, and each row takes its own height as it arrives — the rows beneath are pushed down rather than cross-faded onto a fixed grid. File names take their colour from the extension using the code token palette. Shows structure; code-reveal and code-diff-wipe show the contents of a file.",
+    related: ["code-reveal", "code-diff-wipe", "terminal-simulator"],
   },
 };
 

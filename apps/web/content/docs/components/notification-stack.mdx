@@ -1,20 +1,31 @@
 ---
 title: Notification Stack
-description: Toasts stacking and dismissing. Install with npx remotion-ui@latest add notification-stack.
+description: Toasts arriving, stacking, and clearing themselves in a screen corner.
 ---
 
 import { NotificationStackPreview } from '@/components/previews/notification-stack';
 
-<ComponentPage name="notification-stack" preview={NotificationStackPreview} durationInFrames={120}>
+<ComponentPage name="notification-stack" preview={NotificationStackPreview}>
 
-Toasts stacking and dismissing.
+Each toast carries its own life. Arrivals and dismissals overlap, so the stack
+fills while notifications outpace their own timers and drains again once they
+stop — it is never a fixed list that fades in together.
 
-## Usage
+The collapse is what sells it: when a toast leaves, the ones below travel up
+into the gap instead of jumping. Every slot offset is the sum of the live
+heights above it, and a dismissing toast's contribution falls smoothly to zero
+rather than switching off.
 
-```tsx
-import { NotificationStack } from "@/remotion/scenes/notification-stack";
+There is no `holdSeconds` here, because there is nothing to hold — set
+`lifeSeconds` for the default dwell and override a single toast with `holdFor`.
+Bottom-anchored stacks grow upward, so the newest toast is always the one
+nearest the corner regardless of `align`.
 
-<NotificationStack />
-```
+`showProgress` draws the draining line along each toast's bottom edge. Leave it
+on for scenes where the stack sits still for a while: it is the only thing
+moving between one arrival and the next.
+
+For a single pointed annotation rather than system chatter, use
+`comment-callout` or `callout-spotlight`.
 
 </ComponentPage>
