@@ -1,20 +1,49 @@
 ---
 title: Waterfall Chart
-description: Cumulative bridge with positive/negative steps. Install with npx remotion-ui@latest add waterfall-chart.
+description: Bridge chart carrying a running total through signed steps. Install with npx remotion-ui@latest add waterfall-chart.
 ---
 
 import { WaterfallChartPreview } from '@/components/previews/waterfall-chart';
 
-<ComponentPage name="waterfall-chart" preview={WaterfallChartPreview} durationInFrames={120}>
+<ComponentPage name="waterfall-chart" preview={WaterfallChartPreview}>
 
-Cumulative bridge with positive/negative steps.
-
-## Usage
+Floating bars that carry a running total from one figure to another.
 
 ```tsx
 import { WaterfallChart } from "@/remotion/primitives/waterfall-chart";
 
-<WaterfallChart />
+<WaterfallChart
+  steps={[
+    { label: "Q1 open", value: 320, isTotal: true },
+    { label: "New", value: 180 },
+    { label: "Churn", value: -74 },
+    { label: "Q2 close", value: 484, isTotal: true },
+  ]}
+  staggerInFrames={15}
+/>
 ```
+
+## Bars grow from the running total
+
+Each bar starts at the level the previous step left behind and grows by its own
+change. That is what separates a waterfall from a bar chart: position carries as
+much information as length, and growing every bar from the axis would throw the
+position away.
+
+## Subtotals
+
+A step marked `isTotal` is drawn from the axis and resets the running total to
+its own value — that is how an opening or closing column stays honest instead of
+being a bar that happens to reach the same height.
+
+Signs come from the values themselves: a rise takes `upColor`, a fall
+`downColor`, a total `totalColor`, and the printed change keeps its sign.
+
+## Connectors
+
+Dashed connectors leave the level a step lands on and wait for that bar to stop
+moving, so they never point at a level still in flight. They are skipped in
+front of a subtotal, which starts from the axis rather than from the step
+before it.
 
 </ComponentPage>

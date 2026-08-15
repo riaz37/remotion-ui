@@ -3610,53 +3610,117 @@ import { TextMaskVideo } from "@/remotion/primitives/text-mask-video";
     category: "primitive",
     usage: `import { WaterfallChart } from "@/remotion/primitives/waterfall-chart";
 
-<WaterfallChart />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<WaterfallChart
+  steps={[
+    { label: "Q1 open", value: 320, isTotal: true },
+    { label: "New", value: 180 },
+    { label: "Churn", value: -74 },
+    { label: "Q2 close", value: 484, isTotal: true },
+  ]}
+  staggerInFrames={15}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "steps", type: "WaterfallStep[]", default: "required", description: "`{ label, value, isTotal?, color? }`. `value` is a signed change unless `isTotal`." },
+      { name: "width", type: "number", default: "860", description: "Drawing width. Type scales off it." },
+      { name: "height", type: "number", default: "440", description: "Drawing height." },
+      { name: "upColor", type: "string", default: '"#2dd4bf"', description: "Bars that add to the running total." },
+      { name: "downColor", type: "string", default: '"#f472b6"', description: "Bars that subtract." },
+      { name: "totalColor", type: "string", default: '"#e8b86d"', description: "Subtotal columns drawn from the axis." },
+      { name: "showConnectors", type: "boolean", default: "true", description: "Dashed rules from one bar's landing level to the next bar's base." },
+      { name: "showValues", type: "boolean", default: "true", description: "Signed change printed above or below each bar." },
+      { name: "showAxis", type: "boolean", default: "true", description: "Gridlines and value labels down the left gutter." },
+      { name: "durationInFrames", type: "number", default: "20", description: "Length of one bar's growth." },
+      { name: "staggerInFrames", type: "number", default: "10", description: "Frames between one step and the next." },
+      { name: "exitAtInFrames", type: "number", default: "undefined", description: "Frame the bridge starts clearing on, left to right." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "Bars grow from the running total they start at, not from the axis: in a waterfall the position carries as much as the length. `isTotal` draws from the axis and resets the running total, which is how an opening or closing column stays honest. Connectors wait for their bar to stop before extending.",
+    related: ["animated-bar-chart", "comparison-bars", "funnel-chart"],
   },
   "stacked-area-chart": {
     category: "primitive",
     usage: `import { StackedAreaChart } from "@/remotion/primitives/stacked-area-chart";
 
-<StackedAreaChart />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<StackedAreaChart
+  series={[
+    { label: "Reels", values: [140, 210, 300, 430, 520] },
+    { label: "Ads", values: [90, 130, 210, 300, 340] },
+  ]}
+  labels={["Jan", "Mar", "May", "Jul", "Aug"]}
+  durationInFrames={62}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "series", type: "StackedSeries[]", default: "required", description: "`{ label, values, color? }`, first entry is the baseline band." },
+      { name: "labels", type: "string[]", default: "undefined", description: "Category labels along the x axis, one per value." },
+      { name: "width", type: "number", default: "880", description: "Drawing width. Type scales off it." },
+      { name: "height", type: "number", default: "460", description: "Drawing height." },
+      { name: "showAxis", type: "boolean", default: "true", description: "Gridlines and value labels down the left gutter." },
+      { name: "showLegend", type: "boolean", default: "true", description: "Series names above the plot, arriving with their band." },
+      { name: "showBoundaries", type: "boolean", default: "true", description: "Hairline along the top of each band." },
+      { name: "fillOpacity", type: "number", default: "0.85", description: "Band fill opacity." },
+      { name: "durationInFrames", type: "number", default: "60", description: "Length of the wipe across the whole plot." },
+      { name: "bandOffsetInFrames", type: "number", default: "8", description: "Frames one band trails the band below it by." },
+      { name: "exitAtInFrames", type: "number", default: "undefined", description: "Frame the stack retreats on, top band first." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "The reveal is a clip travelling across the plot, not a fade or a vertical grow: a stacked area is read as a history, so uncovering it in time order is the only reveal that agrees with the axis. Band edges share one spline and the lower edge is walked backwards to close the shape, so no sliver appears at the seam.",
+    related: ["line-chart-draw", "sparkline-row", "animated-bar-chart"],
   },
   "candlestick-chart": {
     category: "primitive",
     usage: `import { CandlestickChart } from "@/remotion/primitives/candlestick-chart";
 
-<CandlestickChart />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<CandlestickChart
+  candles={[{ open: 101, high: 106, low: 99, close: 104, label: "W1" }]}
+  movingAverage={6}
+  staggerInFrames={3.4}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "candles", type: "Candle[]", default: "required", description: "`{ open, high, low, close, label? }`, oldest first." },
+      { name: "width", type: "number", default: "900", description: "Drawing width. Type scales off it." },
+      { name: "height", type: "number", default: "460", description: "Drawing height." },
+      { name: "upColor", type: "string", default: '"#2dd4bf"', description: "Candles that closed at or above their open." },
+      { name: "downColor", type: "string", default: '"#f472b6"', description: "Candles that closed below their open." },
+      { name: "movingAverage", type: "number", default: "7", description: "Window for the simple moving average. 0 hides the line." },
+      { name: "showLastPrice", type: "boolean", default: "true", description: "Final close pinned against the right edge." },
+      { name: "showAxis", type: "boolean", default: "true", description: "Gridlines and price labels down the left gutter." },
+      { name: "durationInFrames", type: "number", default: "12", description: "Length of one candle's growth." },
+      { name: "staggerInFrames", type: "number", default: "3", description: "Frames between one candle and the next." },
+      { name: "exitAtInFrames", type: "number", default: "undefined", description: "Frame the tape clears on, oldest first." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "Candles grow out of their own open in both directions, so a half-drawn candle still tells the truth; the wick runs a little ahead of the body, as a real tape prints. The average is plotted only where a full window exists. The axis is not anchored at zero — price is read for range, and a zero baseline flattens the movement.",
+    related: ["line-chart-draw", "sparkline-row", "stacked-area-chart"],
   },
   "gantt-timeline": {
     category: "primitive",
     usage: `import { GanttTimeline } from "@/remotion/primitives/gantt-timeline";
 
-<GanttTimeline />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<GanttTimeline
+  tasks={[
+    { label: "Registry build", start: 1, end: 4, progress: 0.8 },
+    { label: "Launch", start: 7.6, end: 7.6, milestone: true },
+  ]}
+  columns={["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"]}
+  markerAt={5.5}
+  markerLabel="Today"
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "tasks", type: "GanttTask[]", default: "required", description: "`{ label, start, end, progress?, color?, milestone? }` in column units." },
+      { name: "columns", type: "string[]", default: "required", description: "Column headings. Their count sets the span of the timeline." },
+      { name: "width", type: "number", default: "900", description: "Overall width, label column included." },
+      { name: "rowHeight", type: "number", default: "48", description: "Height of one task row. Type scales off it." },
+      { name: "gap", type: "number", default: "12", description: "Space between rows." },
+      { name: "labelWidth", type: "number", default: "240", description: "Width reserved for the task names." },
+      { name: "markerAt", type: "number", default: "undefined", description: "Column position for a dashed vertical rule, e.g. today." },
+      { name: "markerLabel", type: "string", default: "undefined", description: "Chip label on that rule." },
+      { name: "durationInFrames", type: "number", default: "24", description: "Length of one bar's wipe." },
+      { name: "staggerInFrames", type: "number", default: "8", description: "Frames between one row and the next." },
+      { name: "exitAtInFrames", type: "number", default: "undefined", description: "Frame the rows start leaving on, top-down." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "Positions are column units rather than pixels, so a task moves by editing one number and everything stays in register. Bars wipe out from their own start edge — never from the left margin — so the animation says when a task begins as well as how long it runs. The marker label sits on a filled chip because the rule can land through a column heading.",
+    related: ["roadmap-lanes", "kanban-move", "changelog-entry"],
   },
 };
 

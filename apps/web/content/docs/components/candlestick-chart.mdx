@@ -1,20 +1,49 @@
 ---
 title: Candlestick Chart
-description: OHLC financial series. Install with npx remotion-ui@latest add candlestick-chart.
+description: OHLC candles printing left to right with a moving average. Install with npx remotion-ui@latest add candlestick-chart.
 ---
 
 import { CandlestickChartPreview } from '@/components/previews/candlestick-chart';
 
-<ComponentPage name="candlestick-chart" preview={CandlestickChartPreview} durationInFrames={120}>
+<ComponentPage name="candlestick-chart" preview={CandlestickChartPreview}>
 
-OHLC financial series.
-
-## Usage
+A price tape: open-high-low-close candles printing in order, with an optional
+moving average running behind them.
 
 ```tsx
 import { CandlestickChart } from "@/remotion/primitives/candlestick-chart";
 
-<CandlestickChart />
+<CandlestickChart
+  candles={[{ open: 101, high: 106, low: 99, close: 104, label: "W1" }]}
+  movingAverage={6}
+  staggerInFrames={3.4}
+/>
 ```
+
+## Candles grow from their open
+
+Each candle grows out of its own open price in both directions, not up from the
+axis. The open is where the period started, so it is the only anchor that leaves
+a half-drawn candle telling the truth. The wick runs slightly ahead of the body,
+which is how a real tape prints — the extremes are known before the period
+closes.
+
+A doji, where open equals close, still gets a minimum body height rather than
+disappearing.
+
+## The average
+
+`movingAverage` is a simple mean over that many closes, plotted only where a
+full window exists — a partial window would draw an average of fewer candles
+than the legend claims. The line trails the candles by a few frames instead of
+drawing after all of them, so it reads as a running calculation over what is
+already on screen.
+
+## Scale
+
+The value axis is taken from the highs and lows and is *not* anchored at zero:
+price charts are read for range, and a zero baseline would flatten a day's
+movement into a hairline. `showLastPrice` pins the final close against the right
+edge in the colour of its own candle.
 
 </ComponentPage>

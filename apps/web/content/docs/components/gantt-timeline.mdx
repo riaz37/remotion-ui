@@ -1,20 +1,48 @@
 ---
 title: Gantt Timeline
-description: Date-scaled schedule bars. Install with npx remotion-ui@latest add gantt-timeline.
+description: Task bars laid across a shared column grid. Install with npx remotion-ui@latest add gantt-timeline.
 ---
 
 import { GanttTimelinePreview } from '@/components/previews/gantt-timeline';
 
-<ComponentPage name="gantt-timeline" preview={GanttTimelinePreview} durationInFrames={120}>
+<ComponentPage name="gantt-timeline" preview={GanttTimelinePreview}>
 
-Date-scaled schedule bars. Distinct from timeline-steps, which walks a process without a time axis.
-
-## Usage
+A schedule: task bars wiping out across a shared column grid.
 
 ```tsx
 import { GanttTimeline } from "@/remotion/primitives/gantt-timeline";
 
-<GanttTimeline />
+<GanttTimeline
+  tasks={[
+    { label: "Registry build", start: 1, end: 4, progress: 0.8 },
+    { label: "Launch", start: 7.6, end: 7.6, milestone: true },
+  ]}
+  columns={["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"]}
+  markerAt={5.5}
+  markerLabel="Today"
+/>
 ```
+
+## Column units, not pixels
+
+`start` and `end` are positions on the column grid, so a task moves by editing
+one number and every rule, bar and marker stays in register. Fractional values
+are fine — `7.6` lands six tenths into the eighth column.
+
+## Bars wipe from their own start
+
+Never from the left margin. The animation then says *when* a task begins as well
+as how long it runs. Rows stagger downward, which is the order a schedule is
+read.
+
+`progress` draws a solid fill inside a dimmed bar, and it fills only after the
+bar has finished wiping so the two readings never compete. `milestone` ignores
+`end` and drops a diamond at `start`.
+
+## The marker
+
+`markerAt` draws a dashed rule at any column position. Its label sits on a
+filled chip, because the rule can land anywhere — including straight through a
+column heading.
 
 </ComponentPage>

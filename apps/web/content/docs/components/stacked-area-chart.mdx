@@ -1,20 +1,51 @@
 ---
 title: Stacked Area Chart
-description: Multiple series stacking as they draw on. Install with npx remotion-ui@latest add stacked-area-chart.
+description: Bands stacked on a shared baseline, wiping in from the left. Install with npx remotion-ui@latest add stacked-area-chart.
 ---
 
 import { StackedAreaChartPreview } from '@/components/previews/stacked-area-chart';
 
-<ComponentPage name="stacked-area-chart" preview={StackedAreaChartPreview} durationInFrames={120}>
+<ComponentPage name="stacked-area-chart" preview={StackedAreaChartPreview}>
 
-Multiple series stacking as they draw on.
-
-## Usage
+Composition over time: bands stacked on one baseline, uncovered left to right.
 
 ```tsx
 import { StackedAreaChart } from "@/remotion/primitives/stacked-area-chart";
 
-<StackedAreaChart />
+<StackedAreaChart
+  series={[
+    { label: "Reels", values: [140, 210, 300, 430, 520] },
+    { label: "Ads", values: [90, 130, 210, 300, 340] },
+  ]}
+  labels={["Jan", "Mar", "May", "Jul", "Aug"]}
+  durationInFrames={62}
+/>
 ```
+
+## The reveal is a wipe, not a fade
+
+A clip travels across the plot. A stacked area is read as a history, so
+uncovering it in time order is the only reveal that agrees with the axis
+underneath it — an opacity fade or a vertical grow says the values changed,
+which they did not.
+
+Bands are drawn bottom-up, each trailing the one below by
+`bandOffsetInFrames`, so the stack assembles in reading order rather than as one
+moving wall.
+
+## Stacking
+
+Each band's upper edge is the sum of every series at or below it, and that same
+edge is the next band's floor. Pass series in the order you want them stacked;
+the first is the baseline band.
+
+Both edges of a band are smoothed with the same spline and the lower one is
+walked backwards to close the shape, so the two curves meet exactly instead of
+leaving a sliver at the seam.
+
+## Axis
+
+The value axis is snapped to round numbers off the *total* stack, not off any
+one series, so the top of the chart is the top of the sum.
 
 </ComponentPage>
