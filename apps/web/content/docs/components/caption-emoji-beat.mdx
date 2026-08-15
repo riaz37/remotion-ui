@@ -5,16 +5,43 @@ description: Emoji punctuation landing on beats. Install with npx remotion-ui@la
 
 import { CaptionEmojiBeatPreview } from '@/components/previews/caption-emoji-beat';
 
-<ComponentPage name="caption-emoji-beat" preview={CaptionEmojiBeatPreview} durationInFrames={120}>
+<ComponentPage name="caption-emoji-beat" preview={CaptionEmojiBeatPreview}>
 
-Emoji punctuation landing on beats.
-
-## Usage
+Emoji stamps landing on the beat, over an optional caption line.
 
 ```tsx
 import { CaptionEmojiBeat } from "@/remotion/primitives/caption-emoji-beat";
 
-<CaptionEmojiBeat />
+<CaptionEmojiBeat
+  text="Punctuate the beat, not the sentence"
+  beats={[
+    { emoji: "🔥", atInFrames: 10, x: 22, y: 26, rotate: -8 },
+    { emoji: "🚀", atInFrames: 80, x: 50, y: 16, scale: 96 },
+  ]}
+/>
 ```
+
+## Beats are scheduled, not detected
+
+Each stamp lands on a frame you give it rather than on an audio envelope read at
+render time. The beats of a track are known when the edit is cut, and a
+detector — even a good one — drifts against the music it is supposed to be
+hitting. If you have beat times in seconds, multiply by `fps` and pass frames.
+
+## The wobble decays
+
+A stamp arrives with overshoot, swings once, then releases. The swing is keyed
+to its own landing rather than to the clock, so every emoji wobbles by the same
+amount whenever it arrives, and it decays to nothing — a held frame is still,
+and only arrivals move.
+
+`holdInFrames` is how long a stamp stays at full size before the release, which
+is shorter than the landing and accelerates away.
+
+## Placement
+
+`x` and `y` are percentages of the frame, so a layout survives a change of
+resolution. Keep stamps clear of the caption line's own box; the text is
+centred and wraps inside 12% side margins.
 
 </ComponentPage>

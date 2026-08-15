@@ -5,16 +5,48 @@ description: Dual-language stacked subtitles. Install with npx remotion-ui@lates
 
 import { SubtitleTranslatePreview } from '@/components/previews/subtitle-translate';
 
-<ComponentPage name="subtitle-translate" preview={SubtitleTranslatePreview} durationInFrames={120}>
+<ComponentPage name="subtitle-translate" preview={SubtitleTranslatePreview}>
 
-Dual-language stacked subtitles.
-
-## Usage
+Two languages stacked in one subtitle block.
 
 ```tsx
 import { SubtitleTranslate } from "@/remotion/primitives/subtitle-translate";
 
-<SubtitleTranslate />
+<SubtitleTranslate
+  cues={[
+    {
+      text: "The transcript is the edit.",
+      translation: "La transcripción es el montaje.",
+      startMs: 0,
+      endMs: 1450,
+    },
+  ]}
+  languageLabels={["EN", "ES"]}
+/>
 ```
+
+## The lines are not equals
+
+The primary carries full weight and ink; the secondary is smaller and dimmer.
+Style them the same and the block reads as one four-line caption — the viewer
+has to work out which half is theirs before they can read either.
+
+`primary` swaps which language leads without touching the data, so the same cue
+list serves both cuts of a video.
+
+## Timing
+
+The secondary trails the primary by `secondaryOffsetInFrames`. Both landing on
+the same frame doubles the amount of new text at once; a few frames give the eye
+an order to take them in.
+
+Nothing renders between cues. Unlike a single-line speaker track, this block is
+tall enough that holding it through a pause covers the shot.
+
+## Language tags
+
+`languageLabels` puts a fixed-width tag beside each line, so both lines start on
+the same left edge even though their type sizes differ. Omit it when the
+languages are obvious from their scripts.
 
 </ComponentPage>

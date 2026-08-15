@@ -1,20 +1,44 @@
 ---
 title: Transcript Scroll
-description: Full readable transcript scrolling with the active line marked. Install with npx remotion-ui@latest add transcript-scroll.
+description: Full transcript scrolling with the active line marked. Install with npx remotion-ui@latest add transcript-scroll.
 ---
 
 import { TranscriptScrollPreview } from '@/components/previews/transcript-scroll';
 
-<ComponentPage name="transcript-scroll" preview={TranscriptScrollPreview} durationInFrames={120}>
+<ComponentPage name="transcript-scroll" preview={TranscriptScrollPreview}>
 
-Full readable transcript scrolling with the active line marked. A document, not a caption overlay.
-
-## Usage
+A readable transcript that scrolls, with the line being spoken marked.
 
 ```tsx
 import { TranscriptScroll } from "@/remotion/primitives/transcript-scroll";
+import { parseSubtitles } from "@/remotion/lib/caption-utils";
 
-<TranscriptScroll />
+<TranscriptScroll cues={parseSubtitles(vttSource)} width={740} height={400} />
 ```
+
+## A document, not an overlay
+
+The lines before and after stay on screen, which is the point: the viewer sees
+where a quote sits in the conversation. When only the current line should exist,
+use `srt-caption-track` or `karaoke-captions` instead.
+
+## The page glides
+
+Scroll position interpolates between the outgoing and incoming line's offsets
+over `settleInFrames`, rather than snapping to whichever line is active. Driving
+it off the index alone makes the page jump a full line height every time the
+transcript advances.
+
+Offsets are measured per line rather than assumed from a fixed pitch — a speaker
+tag adds height, and a fixed pitch drifts out of register down a long
+transcript. Wrapping is estimated from the character count at the component's
+own measure; the estimate rounds up, because an extra line of spacing is
+harmless where an overlap is not.
+
+## Reading order
+
+`activeColor`, `readColor` and `idleColor` separate what is being said from what
+has been said and what is coming. `fadeEdges` masks the top and bottom so lines
+enter and leave the block instead of being cut off by it.
 
 </ComponentPage>

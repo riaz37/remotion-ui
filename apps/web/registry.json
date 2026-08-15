@@ -3510,10 +3510,13 @@
       "type": "registry:ui",
       "description": "Narrowed: one word at a time, alone on frame",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/captions"
       ],
       "registryDependencies": [
-        "layout"
+        "caption-utils",
+        "layout",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -3530,7 +3533,7 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "motion-tokens"
       ],
       "files": [
         {
@@ -3547,7 +3550,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "caption-utils",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -3564,7 +3568,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "caption-utils",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -3581,7 +3586,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "caption-utils",
+        "motion-tokens"
       ],
       "files": [
         {

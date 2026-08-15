@@ -3725,67 +3725,130 @@ import { TextMaskVideo } from "@/remotion/primitives/text-mask-video";
   "word-pop-captions": {
     category: "primitive",
     usage: `import { WordPopCaptions } from "@/remotion/primitives/word-pop-captions";
+import { groupCaptionsIntoPages } from "@/remotion/lib/caption-utils";
 
-<WordPopCaptions />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+const [page] = groupCaptionsIntoPages(captions, 4000);
+
+<WordPopCaptions page={page} strokeWidth={4} />`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "page", type: "TikTokPage", default: "required", description: "Token page from `groupCaptionsIntoPages`. One token is shown at a time." },
+      { name: "color", type: "string", default: '"#fafafa"', description: "Word ink." },
+      { name: "accentColor", type: "string", default: '"#e8b86d"', description: "Ink for every nth word." },
+      { name: "accentEvery", type: "number", default: "3", description: "Accent cadence. 0 keeps one colour throughout." },
+      { name: "fontSize", type: "number", default: "scaled 120", description: "Defaults to a width-scaled 120px." },
+      { name: "uppercase", type: "boolean", default: "true", description: "Uppercase the word — the default look for this style." },
+      { name: "popScale", type: "number", default: "1.16", description: "Peak scale on arrival before it settles to 1." },
+      { name: "tiltInDegrees", type: "number", default: "2.5", description: "Arrival tilt. Alternates direction word to word." },
+      { name: "popInFrames", type: "number", default: "6", description: "Frames the pop takes to settle." },
+      { name: "strokeWidth", type: "number", default: "0", description: "Chunky outline behind the word, as used on social captions." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "No line context at all, which is what separates it from `caption-highlight` and `karaoke-captions`. Between tokens it renders nothing rather than holding the last word — a word left standing through a pause attributes the silence to whoever spoke it. The tilt alternates because one direction at speed reads as a stutter.",
+    related: ["karaoke-captions", "caption-highlight", "srt-caption-track"],
   },
   "caption-emoji-beat": {
     category: "primitive",
     usage: `import { CaptionEmojiBeat } from "@/remotion/primitives/caption-emoji-beat";
 
-<CaptionEmojiBeat />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<CaptionEmojiBeat
+  text="Punctuate the beat, not the sentence"
+  beats={[
+    { emoji: "🔥", atInFrames: 10, x: 22, y: 26, rotate: -8 },
+    { emoji: "🚀", atInFrames: 80, x: 50, y: 16, scale: 96 },
+  ]}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "beats", type: "EmojiBeat[]", default: "required", description: "`{ emoji, atInFrames, x, y, scale?, rotate? }`. x/y are percentages of the frame." },
+      { name: "text", type: "string", default: "undefined", description: "Caption line the emoji punctuate. Omit for emoji alone." },
+      { name: "size", type: "number", default: "84", description: "Base emoji size in px, overridable per beat." },
+      { name: "landInFrames", type: "number", default: "7", description: "Frames an emoji takes to land." },
+      { name: "holdInFrames", type: "number", default: "26", description: "Frames it holds at full size before releasing." },
+      { name: "overshoot", type: "number", default: "1.35", description: "Scale overshoot on the way in. 1 lands flat." },
+      { name: "wobbleInDegrees", type: "number", default: "9", description: "Swing after landing. Decays to nothing." },
+      { name: "textAtInFrames", type: "number", default: "0", description: "Frame the caption line arrives on." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "Beats are scheduled on frames rather than detected from audio: the beats are known when the edit is cut, and a render-time detector drifts against the music it is meant to hit. The wobble is keyed to each stamp's own landing, so it decays to nothing and a held frame is still.",
+    related: ["confetti-burst", "karaoke-captions", "beat-pulse-grid"],
   },
   "speaker-label-captions": {
     category: "primitive",
     usage: `import { SpeakerLabelCaptions } from "@/remotion/primitives/speaker-label-captions";
+import { parseSubtitles } from "@/remotion/lib/caption-utils";
 
-<SpeakerLabelCaptions />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<SpeakerLabelCaptions
+  cues={parseSubtitles(vttSource)}
+  speakers={[
+    { name: "Nadia", color: "#e8b86d", align: "left" },
+    { name: "Sam", color: "#2dd4bf", align: "right" },
+  ]}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "cues", type: "SubtitleCue[]", default: "required", description: "`{ text, startMs, endMs, speaker? }` — the shape `parseSubtitles` returns." },
+      { name: "speakers", type: "SpeakerStyle[]", default: "[]", description: "`{ name, color?, align? }` per voice. Undeclared voices are assigned." },
+      { name: "defaultSpeaker", type: "string", default: '"Speaker"', description: "Name for cues that carry none." },
+      { name: "fontSize", type: "number", default: "42", description: "Caption size. Tag and padding scale off it." },
+      { name: "cardColor", type: "string", default: "rgba(12,12,18,0.82)", description: "Plate behind a line." },
+      { name: "maxWidth", type: "number", default: "0.7", description: "Card width as a share of the frame." },
+      { name: "showPrevious", type: "boolean", default: "true", description: "Keep the previous speaker's card on screen, dimmed." },
+      { name: "enterInFrames", type: "number", default: "10", description: "Frames a card takes to arrive." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "Speaker identity is carried by tag, colour and side at once, because each fails alone: a tag is slow to read at caption speed, colour is invisible to many viewers, and alignment cannot separate three voices. Between cues the last card holds — blinking out in every pause is worse than waiting.",
+    related: ["srt-caption-track", "transcript-scroll", "talking-head-layout"],
   },
   "transcript-scroll": {
     category: "primitive",
     usage: `import { TranscriptScroll } from "@/remotion/primitives/transcript-scroll";
+import { parseSubtitles } from "@/remotion/lib/caption-utils";
 
-<TranscriptScroll />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<TranscriptScroll cues={parseSubtitles(vttSource)} width={740} height={400} />`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "cues", type: "SubtitleCue[]", default: "required", description: "`{ text, startMs, endMs, speaker? }`, in order." },
+      { name: "width", type: "number", default: "720", description: "Block width. Wrapping is estimated at this measure." },
+      { name: "height", type: "number", default: "420", description: "Visible height of the scrolling window." },
+      { name: "fontSize", type: "number", default: "34", description: "Body size. Tags and spacing scale off it." },
+      { name: "activeColor", type: "string", default: '"#fafafa"', description: "Ink of the line being spoken." },
+      { name: "idleColor", type: "string", default: "rgba(250,250,250,0.3)", description: "Ink of lines not yet reached." },
+      { name: "readColor", type: "string", default: "idleColor", description: "Ink of lines already read, when it should differ." },
+      { name: "showSpeakers", type: "boolean", default: "true", description: "Name printed above a line when the speaker changes." },
+      { name: "showMarker", type: "boolean", default: "true", description: "Accent rule down the left edge of the active line." },
+      { name: "fadeEdges", type: "number", default: "90", description: "Mask height at the top and bottom, in px. 0 disables it." },
+      { name: "settleInFrames", type: "number", default: "16", description: "Frames the scroll takes to settle on a new line." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "A document, not an overlay: surrounding lines stay on screen so a quote keeps its place in the conversation. Scroll position interpolates between the outgoing and incoming offsets rather than snapping to the active index, and every line's height is measured because a speaker tag would otherwise drift a fixed pitch out of register.",
+    related: ["srt-caption-track", "speaker-label-captions", "karaoke-captions"],
   },
   "subtitle-translate": {
     category: "primitive",
     usage: `import { SubtitleTranslate } from "@/remotion/primitives/subtitle-translate";
 
-<SubtitleTranslate />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<SubtitleTranslate
+  cues={[
+    {
+      text: "The transcript is the edit.",
+      translation: "La transcripción es el montaje.",
+      startMs: 0,
+      endMs: 1450,
+    },
+  ]}
+  languageLabels={["EN", "ES"]}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "cues", type: "TranslatedCue[]", default: "required", description: "A `SubtitleCue` plus `translation`." },
+      { name: "primary", type: '"source" | "translation"', default: '"source"', description: "Which language leads. Swaps without touching the data." },
+      { name: "fontSize", type: "number", default: "46", description: "Size of the primary line." },
+      { name: "secondaryScale", type: "number", default: "0.72", description: "Secondary size, as a share of `fontSize`." },
+      { name: "languageLabels", type: "[string, string]", default: "undefined", description: "Fixed-width tags beside each line, e.g. `[\"EN\", \"ES\"]`." },
+      { name: "backgroundColor", type: "string", default: "rgba(10,10,14,0.72)", description: "Plate behind both lines. `transparent` drops it." },
+      { name: "maxWidth", type: "number", default: "0.78", description: "Block width as a share of the frame." },
+      { name: "enterInFrames", type: "number", default: "10", description: "Frames a cue takes to arrive." },
+      { name: "secondaryOffsetInFrames", type: "number", default: "4", description: "Frames the second line trails the first by." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "The two lines are deliberately unequal in weight and ink — styled the same, the block reads as one four-line caption and the viewer has to work out which half is theirs. The secondary trails by a few frames so the eye is given an order. Nothing renders between cues; the block is tall enough that holding it would cover the shot.",
+    related: ["srt-caption-track", "speaker-label-captions", "caption-highlight"],
   },
 };
 

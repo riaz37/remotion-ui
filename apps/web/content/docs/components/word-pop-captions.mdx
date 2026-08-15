@@ -1,20 +1,47 @@
 ---
 title: Word Pop Captions
-description: Narrowed: one word at a time, alone on frame. Install with npx remotion-ui@latest add word-pop-captions.
+description: One word at a time, alone on frame. Install with npx remotion-ui@latest add word-pop-captions.
 ---
 
 import { WordPopCaptionsPreview } from '@/components/previews/word-pop-captions';
 
-<ComponentPage name="word-pop-captions" preview={WordPopCaptionsPreview} durationInFrames={120}>
+<ComponentPage name="word-pop-captions" preview={WordPopCaptionsPreview}>
 
-Narrowed: one word at a time, alone on frame. caption-highlight and karaoke-captions both show a full line with an active word; this shows no line context at all.
-
-## Usage
+One word at a time, filling the frame.
 
 ```tsx
 import { WordPopCaptions } from "@/remotion/primitives/word-pop-captions";
+import { groupCaptionsIntoPages } from "@/remotion/lib/caption-utils";
 
-<WordPopCaptions />
+const [page] = groupCaptionsIntoPages(captions, 4000);
+
+<WordPopCaptions page={page} strokeWidth={4} />
 ```
+
+## Where it sits
+
+No line context, deliberately. `caption-highlight` and `karaoke-captions` both
+show a full line with an active word, which is right when the sentence matters.
+This is the other style: the word *is* the frame, the eye has nothing to read
+ahead to, and the cut rate carries the energy.
+
+Because only one token is on screen, nothing reflows — each word can be scaled,
+tilted and stroked without disturbing a neighbour.
+
+## Gaps stay empty
+
+Between tokens the component renders nothing rather than holding the last word.
+A word left standing through a pause attributes silence to whoever spoke it, and
+in this style there is no line for it to sit inside.
+
+## Rhythm
+
+`tiltInDegrees` alternates direction word to word; a single tilt direction at
+speed reads as one frame stuttering. `accentEvery` recolours every nth word,
+which keeps a long run from flattening out. Set it to `0` for one colour
+throughout.
+
+`popInFrames` is short by default — a word may only hold for 200ms, so the
+arrival has to be over well inside that.
 
 </ComponentPage>

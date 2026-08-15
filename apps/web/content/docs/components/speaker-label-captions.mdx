@@ -1,20 +1,49 @@
 ---
 title: Speaker Label Captions
-description: Narrowed: multi-speaker caption track with name tags and color coding. Install with npx remotion-ui@latest add speaker-label-captions.
+description: Multi-speaker caption track with name tags and colour coding. Install with npx remotion-ui@latest add speaker-label-captions.
 ---
 
 import { SpeakerLabelCaptionsPreview } from '@/components/previews/speaker-label-captions';
 
-<ComponentPage name="speaker-label-captions" preview={SpeakerLabelCaptionsPreview} durationInFrames={120}>
+<ComponentPage name="speaker-label-captions" preview={SpeakerLabelCaptionsPreview}>
 
-Narrowed: multi-speaker caption track with name tags and color coding. talking-head-layout is a framing scene, not a track.
-
-## Usage
+A caption track for more than one voice: name tag, colour, and a side of the
+frame per speaker.
 
 ```tsx
 import { SpeakerLabelCaptions } from "@/remotion/primitives/speaker-label-captions";
+import { parseSubtitles } from "@/remotion/lib/caption-utils";
 
-<SpeakerLabelCaptions />
+<SpeakerLabelCaptions
+  cues={parseSubtitles(vttSource)}
+  speakers={[
+    { name: "Nadia", color: "#e8b86d", align: "left" },
+    { name: "Sam", color: "#2dd4bf", align: "right" },
+  ]}
+/>
 ```
+
+## Identity three ways
+
+Tag, colour and alignment all carry the speaker, because each one fails
+somewhere: a tag alone is slow to read at caption speed, colour alone is
+invisible to a good share of viewers, and alignment alone cannot separate three
+voices. Undeclared speakers get a colour from the palette and alternate sides in
+the order they first appear.
+
+## Cues
+
+Timings are in milliseconds, so a track parsed from SRT or WebVTT drops straight
+in — `parseSubtitles` already fills `speaker` from a WebVTT `<v Name>` tag.
+
+Between cues the last card holds rather than clearing. A card blinking out in
+every pause is more distracting than one that waits for the next line.
+`showPrevious` keeps the line before it on screen, dimmed to about a third — it
+is context, and matching the live line's weight would defeat both.
+
+## Where it sits
+
+This is a track, not a frame: `talking-head-layout` handles the shot
+composition. They compose — put this over that.
 
 </ComponentPage>
