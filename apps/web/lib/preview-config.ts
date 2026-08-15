@@ -159,6 +159,10 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "gauge-dial": { durationInFrames: 120 },
   "sparkline-row": { durationInFrames: 120 },
   "heatmap-grid": { durationInFrames: 120 },
+  "comparison-bars": { durationInFrames: 120 },
+  "funnel-chart": { durationInFrames: 120 },
+  "radar-chart": { durationInFrames: 120 },
+  "treemap-blocks": { durationInFrames: 120 },
 };
 
 export function previewMeta(slug: string): Required<PreviewMeta> {

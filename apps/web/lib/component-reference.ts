@@ -3488,6 +3488,58 @@ import { TextMaskVideo } from "@/remotion/primitives/text-mask-video";
     note: "Staggering by column plus row makes the fill sweep as a diagonal front; a flat index stagger snakes back to the left edge on every new row and reads as a glitch. Intensity drives colour and a small scale step together — colour alone is hard to judge at cell size on a dark stage.",
     related: ["commit-graph", "beat-pulse-grid", "treemap-blocks"],
   },
+  "comparison-bars": {
+    category: "primitive",
+    usage: `import { ComparisonBars } from "@/remotion/primitives/comparison-bars";
+
+<ComparisonBars />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "funnel-chart": {
+    category: "primitive",
+    usage: `import { FunnelChart } from "@/remotion/primitives/funnel-chart";
+
+<FunnelChart />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "radar-chart": {
+    category: "primitive",
+    usage: `import { RadarChart } from "@/remotion/primitives/radar-chart";
+
+<RadarChart />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "treemap-blocks": {
+    category: "primitive",
+    usage: `import { TreemapBlocks } from "@/remotion/primitives/treemap-blocks";
+
+<TreemapBlocks />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
 };
 
 export function getComponentReference(name: string): ComponentReference | undefined {

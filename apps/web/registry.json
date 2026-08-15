@@ -3362,6 +3362,74 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "comparison-bars",
+      "type": "registry:ui",
+      "description": "Two-series before/after with delta callout",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/comparison-bars.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "funnel-chart",
+      "type": "registry:ui",
+      "description": "Stage bars narrowing with drop-off percentages",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/funnel-chart.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "radar-chart",
+      "type": "registry:ui",
+      "description": "Multi-axis spider chart drawing its polygon",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/radar-chart.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "treemap-blocks",
+      "type": "registry:ui",
+      "description": "Nested rectangles sized by value",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/treemap-blocks.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

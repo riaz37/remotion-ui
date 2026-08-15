@@ -151,6 +151,10 @@ import { BubbleChartPackPreview } from "./previews/bubble-chart-pack";
 import { GaugeDialPreview } from "./previews/gauge-dial";
 import { SparklineRowPreview } from "./previews/sparkline-row";
 import { HeatmapGridPreview } from "./previews/heatmap-grid";
+import { ComparisonBarsPreview } from "./previews/comparison-bars";
+import { FunnelChartPreview } from "./previews/funnel-chart";
+import { RadarChartPreview } from "./previews/radar-chart";
+import { TreemapBlocksPreview } from "./previews/treemap-blocks";
 
 type AtlasMiniPreviewProps = {
   slug: string;
@@ -305,6 +309,10 @@ const PREVIEWS: Record<string, React.ComponentType> = {
   "gauge-dial": GaugeDialPreview,
   "sparkline-row": SparklineRowPreview,
   "heatmap-grid": HeatmapGridPreview,
+  "comparison-bars": ComparisonBarsPreview,
+  "funnel-chart": FunnelChartPreview,
+  "radar-chart": RadarChartPreview,
+  "treemap-blocks": TreemapBlocksPreview,
 };
 
 

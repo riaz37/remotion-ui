@@ -322,6 +322,10 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   "gauge-dial": { lane: "signals", drive: "data", tier: "core", tags: ["charts", "metrics"] },
   "sparkline-row": { lane: "signals", drive: "data", tier: "core", tags: ["charts", "metrics"] },
   "heatmap-grid": { lane: "signals", drive: "data", tier: "advanced", tags: ["charts"] },
+  "comparison-bars": { lane: "signals", drive: "data", tier: "core", tags: ["charts"] },
+  "funnel-chart": { lane: "signals", drive: "data", tier: "core", tags: ["charts"] },
+  "radar-chart": { lane: "signals", drive: "data", tier: "advanced", tags: ["charts"] },
+  "treemap-blocks": { lane: "signals", drive: "data", tier: "advanced", tags: ["charts"] },
 };
 
 export function getAtlasMeta(name: string): AtlasMeta | undefined {

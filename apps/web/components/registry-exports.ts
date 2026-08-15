@@ -147,3 +147,7 @@ export { BubbleChartPack } from "../registry/bases/default/primitives/bubble-cha
 export { GaugeDial } from "../registry/bases/default/primitives/gauge-dial";
 export { SparklineRow } from "../registry/bases/default/primitives/sparkline-row";
 export { HeatmapGrid } from "../registry/bases/default/primitives/heatmap-grid";
+export { ComparisonBars } from "../registry/bases/default/primitives/comparison-bars";
+export { FunnelChart } from "../registry/bases/default/primitives/funnel-chart";
+export { RadarChart } from "../registry/bases/default/primitives/radar-chart";
+export { TreemapBlocks } from "../registry/bases/default/primitives/treemap-blocks";
