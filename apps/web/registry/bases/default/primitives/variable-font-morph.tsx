@@ -1,50 +1,98 @@
 import { useCurrentFrame } from "remotion";
+import {
+  SplitTextChars,
+  type SplitTextCharsProps,
+} from "@/remotion/primitives/split-text-chars";
+import type { SplitUnitState } from "@/remotion/lib/text-split";
 
-export type VariableFontMorphProps = {
-  /** Frames to wait before this starts. */
-  delayInFrames?: number;
-  /** Length of the entrance. */
-  durationInFrames?: number;
-  /** Frame the exit begins on. */
-  exitAtInFrames?: number;
-  /** Length of the exit. */
-  exitInFrames?: number;
+/** `[from, to]` for one registered or custom OpenType axis. */
+export type FontAxisRange = [number, number];
+
+export type VariableFontMorphProps = Omit<
+  SplitTextCharsProps,
+  "effect" | "renderUnit" | "fontWeight"
+> & {
+  /** `wght` axis. Also mirrored onto `font-weight` for non-variable faces. */
+  weight?: FontAxisRange;
+  /** `wdth` axis, in percent. Also mirrored onto `font-stretch`. */
+  width?: FontAxisRange;
+  /** `slnt` axis, in degrees. Negative leans right, per the spec. */
+  slant?: FontAxisRange;
+  /** Any further axes by four-letter tag, e.g. `{ opsz: [14, 96] }`. */
+  axes?: Record<string, FontAxisRange>;
+  /** Keep travelling between the two ends instead of landing on `to`. */
+  oscillate?: boolean;
+  /** Frames for one there-and-back when oscillating. */
+  periodInFrames?: number;
+  /** Characters offset per unit along the wave, in radians. */
+  phaseStep?: number;
 };
 
+const lerp = (range: FontAxisRange, t: number) =>
+  range[0] + (range[1] - range[0]) * t;
+
 /**
- * Animates weight/width axes of a variable font.
+ * Sweeps a variable font's axes across a line, one character at a time.
  *
- * TODO(scaffold): unimplemented. Replace the placeholder body below.
- * Lane: atoms · tags: text · tier: advanced
+ * The axis position is a single 0–1 value per unit, spent on every requested
+ * axis at once — a real variable face moves `wght` and `wdth` together, and
+ * driving them from separate clocks makes the type look broken rather than
+ * variable.
+ *
+ * **Fallback.** `font-variation-settings` does nothing on a static face, so the
+ * `wght` and `wdth` values are also written to `font-weight` and
+ * `font-stretch`. A family shipping discrete weights therefore steps between
+ * them instead of gliding, which is visibly coarser but never frozen. Pass a
+ * variable `fontFamily` to get the real thing.
  */
 export const VariableFontMorph: React.FC<VariableFontMorphProps> = ({
-  delayInFrames = 0,
-  durationInFrames = 30,
-  exitAtInFrames = 90,
-  exitInFrames = 20,
+  weight = [200, 800],
+  width,
+  slant,
+  axes,
+  oscillate = false,
+  periodInFrames = 60,
+  phaseStep = 0.55,
+  ...splitProps
 }) => {
   const frame = useCurrentFrame();
-  const clamp = (v: number) => Math.min(1, Math.max(0, v));
+  const period = Math.max(1, periodInFrames);
 
-  // The placeholder carries an exit on purpose. audit:stills samples 15/50/90%
-  // and reports a still tail as a defect; an entrance that settles and holds
-  // would make every unbuilt scaffold a false positive on the audit sheet.
-  const enter = clamp((frame - delayInFrames) / durationInFrames);
-  const exit = clamp((frame - exitAtInFrames) / exitInFrames);
-  const progress = enter * (1 - exit);
+  const renderUnit = (unit: SplitUnitState) => {
+    // One position drives every axis. `enter` ramps it in, the oscillation
+    // takes over once the unit has arrived, and the exit relaxes it back.
+    const wave = oscillate
+      ? 0.5 +
+        0.5 *
+          Math.sin((frame / period) * Math.PI * 2 - unit.index * phaseStep)
+      : 1;
+    const position =
+      Math.max(0, Math.min(1, unit.enter)) * wave * (1 - unit.exit);
 
-  return (
-    <div style={{ display: "inline-block" }}>
+    const settings: string[] = [`"wght" ${lerp(weight, position).toFixed(1)}`];
+    if (width) settings.push(`"wdth" ${lerp(width, position).toFixed(1)}`);
+    if (slant) settings.push(`"slnt" ${lerp(slant, position).toFixed(2)}`);
+    for (const [tag, range] of Object.entries(axes ?? {})) {
+      settings.push(`"${tag}" ${lerp(range, position).toFixed(2)}`);
+    }
+
+    return (
       <span
         style={{
-          fontFamily: "ui-monospace, monospace",
-          fontSize: 24,
-          color: "#f5f5f7",
-          opacity: progress,
+          display: "inline-block",
+          whiteSpace: "pre",
+          opacity: unit.opacity,
+          fontVariationSettings: settings.join(", "),
+          fontWeight: Math.round(lerp(weight, position)),
+          ...(width
+            ? { fontStretch: `${lerp(width, position).toFixed(1)}%` }
+            : null),
         }}
       >
-        TODO: variable-font-morph
+        {unit.text}
       </span>
-    </div>
-  );
+    );
+  };
+
+  return <SplitTextChars {...splitProps} effect="none" renderUnit={renderUnit} />;
 };

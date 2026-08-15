@@ -1,20 +1,49 @@
 ---
 title: Scramble Text
-description: Random-glyph scramble resolving per character. Install with npx remotion-ui@latest add scramble-text.
+description: Resolve each character out of random glyph noise, in any stagger order. Install with npx remotion-ui@latest add scramble-text.
 ---
 
 import { ScrambleTextPreview } from '@/components/previews/scramble-text';
 
 <ComponentPage name="scramble-text" preview={ScrambleTextPreview} durationInFrames={120}>
 
-Random-glyph scramble resolving per character. Distinct from matrix-decode, which is column rain.
-
-## Usage
+Every character runs its own scramble on its own clock, then locks onto its
+target glyph.
 
 ```tsx
 import { ScrambleText } from "@/remotion/primitives/scramble-text";
 
-<ScrambleText />
+<ScrambleText
+  text="Resolve out of noise"
+  order="center"
+  charset="symbols"
+  staggerInFrames={6}
+/>
 ```
+
+## Against `matrix-decode`
+
+`matrix-decode` resolves strictly left to right from one shared progress value.
+This one is built on `split-text-chars`, so the resolve follows any stagger
+order — `center`, `edges`, `random` — and a character's noise stops when *that
+character* arrives, not when the string is a given percentage decoded.
+
+## Charsets
+
+`charset` takes `symbols` (the default), `latin`, `digits`, `blocks`, or any
+string to use as the pool. `tickInFrames` is how long one noise glyph is held:
+`1` is a blur, `4` is a slot machine.
+
+## Monospace is the default on purpose
+
+A proportional face re-flows the line every time a noise glyph changes width,
+and the whole word jitters sideways. Override `fontFamily` only with a face
+whose glyphs share an advance, or accept the wobble.
+
+## Determinism
+
+Glyphs are hashed from the character index, the tick and `seed` — never
+sampled. `Math.random()` would resample on every render pass, so the same frame
+would scramble differently in the preview and in the render.
 
 </ComponentPage>

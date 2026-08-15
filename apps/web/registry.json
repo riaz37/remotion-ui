@@ -2846,7 +2846,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "motion-primitive",
+        "motion-wrapper"
       ],
       "files": [
         {
@@ -2863,7 +2864,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "split-text-chars",
+        "text-split"
       ],
       "files": [
         {
@@ -2880,7 +2882,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "layout",
+        "motion-primitive"
       ],
       "files": [
         {
@@ -2897,7 +2900,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "split-text-chars",
+        "text-split"
       ],
       "files": [
         {
@@ -2914,7 +2918,9 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "split-text-chars",
+        "text-split",
+        "timing"
       ],
       "files": [
         {
@@ -2931,7 +2937,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "split-text-chars",
+        "text-split"
       ],
       "files": [
         {
@@ -2948,6 +2955,8 @@
         "remotion"
       ],
       "registryDependencies": [
+        "split-text-chars",
+        "text-split",
         "layout"
       ],
       "files": [
@@ -2965,7 +2974,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "split-text-chars",
+        "text-split"
       ],
       "files": [
         {
@@ -2982,7 +2992,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "split-text-chars",
+        "text-split"
       ],
       "files": [
         {
@@ -3083,9 +3094,7 @@
       "dependencies": [
         "remotion"
       ],
-      "registryDependencies": [
-        "layout"
-      ],
+      "registryDependencies": [],
       "files": [
         {
           "path": "registry/bases/default/primitives/light-rays.tsx",

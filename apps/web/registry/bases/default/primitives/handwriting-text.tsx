@@ -1,50 +1,121 @@
-import { useCurrentFrame } from "remotion";
+import {
+  SplitTextChars,
+  type SplitTextCharsProps,
+} from "@/remotion/primitives/split-text-chars";
+import type { SplitUnitState } from "@/remotion/lib/text-split";
 
-export type HandwritingTextProps = {
-  /** Frames to wait before this starts. */
-  delayInFrames?: number;
-  /** Length of the entrance. */
-  durationInFrames?: number;
-  /** Frame the exit begins on. */
-  exitAtInFrames?: number;
-  /** Length of the exit. */
-  exitInFrames?: number;
+export type HandwritingTextProps = Omit<
+  SplitTextCharsProps,
+  "effect" | "renderUnit" | "order" | "mode"
+> & {
+  /** Diameter of the nib, in em. 0 hides it. */
+  penSize?: number;
+  /** Nib colour. Defaults to `color`. */
+  penColor?: string;
+  /** Softness of the ink edge, as a share of one glyph. 0 is a hard cut. */
+  inkSoftness?: number;
+  /** Per-character tilt and baseline drift, in degrees. 0 is machine-even. */
+  wobble?: number;
 };
 
+/** Deterministic ±1. A random tilt would resample on every render pass. */
+function jitter(index: number, salt: number): number {
+  const noise = Math.sin(index * 57.31 + salt * 19.77) * 43758.5453;
+  return (noise - Math.floor(noise)) * 2 - 1;
+}
+
 /**
- * Takes a string and strokes it on. path-draw takes a path; that's the line between them.
+ * Writes a string on, character by character.
  *
- * TODO(scaffold): unimplemented. Replace the placeholder body below.
- * Lane: atoms · tags: text · tier: advanced
+ * **This takes a string; `path-draw` takes a path.** That is the whole
+ * distinction. A string has no stroke order, so the ink is revealed by a
+ * left-to-right wipe per glyph with a nib riding the wet edge, rather than by
+ * stroking a real outline — for a signature or a logogram, where the stroke
+ * order is the point, give `path-draw` the actual path.
+ *
+ * `order` is not a prop: writing runs left to right, and re-ranking the stagger
+ * would produce a word that assembles out of sequence, which reads as a glitch
+ * rather than as a hand.
+ *
+ * The default family is a script stack. Pass a webfont via `fontFamily` for a
+ * result that is identical on every render machine — the generic `cursive`
+ * fallback resolves to whatever the host has.
  */
 export const HandwritingText: React.FC<HandwritingTextProps> = ({
-  delayInFrames = 0,
-  durationInFrames = 30,
-  exitAtInFrames = 90,
-  exitInFrames = 20,
+  penSize = 0.14,
+  penColor,
+  inkSoftness = 0.18,
+  wobble = 1.6,
+  color = "#f4f4f5",
+  fontFamily = '"Segoe Script", "Bradley Hand", "Snell Roundhand", cursive',
+  staggerInFrames = 3,
+  durationInFrames = 10,
+  ...splitProps
 }) => {
-  const frame = useCurrentFrame();
-  const clamp = (v: number) => Math.min(1, Math.max(0, v));
+  const nib = penColor ?? color;
+  const softness = Math.max(0, inkSoftness) * 100;
 
-  // The placeholder carries an exit on purpose. audit:stills samples 15/50/90%
-  // and reports a still tail as a defect; an entrance that settles and holds
-  // would make every unbuilt scaffold a false positive on the audit sheet.
-  const enter = clamp((frame - delayInFrames) / durationInFrames);
-  const exit = clamp((frame - exitAtInFrames) / exitInFrames);
-  const progress = enter * (1 - exit);
+  const renderUnit = (unit: SplitUnitState) => {
+    const written = Math.max(0, Math.min(1, unit.enter));
+    const stop = written * 100;
+    const ink = `linear-gradient(to right, #000 ${stop.toFixed(2)}%, rgba(0,0,0,0) ${Math.min(100, stop + softness).toFixed(2)}%)`;
+    // A hand does not sit on the baseline. The tilt is fixed per character so
+    // the word does not wriggle after it is written.
+    const tilt = jitter(unit.index, 1) * wobble;
+    const drift = jitter(unit.index, 2) * wobble * 0.012;
+    const writing = written > 0.02 && written < 0.98;
 
-  return (
-    <div style={{ display: "inline-block" }}>
+    return (
       <span
         style={{
-          fontFamily: "ui-monospace, monospace",
-          fontSize: 24,
-          color: "#f5f5f7",
-          opacity: progress,
+          position: "relative",
+          display: "inline-block",
+          whiteSpace: "pre",
+          opacity: unit.opacity,
+          rotate: `${tilt.toFixed(3)}deg`,
+          translate: `0 ${drift.toFixed(4)}em`,
         }}
       >
-        TODO: handwriting-text
+        <span
+          style={{
+            display: "inline-block",
+            maskImage: ink,
+            WebkitMaskImage: ink,
+          }}
+        >
+          {unit.text}
+        </span>
+        {penSize > 0 ? (
+          <span
+            aria-hidden
+            style={{
+              position: "absolute",
+              left: `${stop.toFixed(2)}%`,
+              bottom: "0.08em",
+              width: `${penSize}em`,
+              height: `${penSize}em`,
+              marginLeft: `${(-penSize / 2).toFixed(4)}em`,
+              borderRadius: "50%",
+              background: nib,
+              opacity: writing ? unit.opacity : 0,
+            }}
+          />
+        ) : null}
       </span>
-    </div>
+    );
+  };
+
+  return (
+    <SplitTextChars
+      {...splitProps}
+      color={color}
+      fontFamily={fontFamily}
+      mode="chars"
+      order="start"
+      staggerInFrames={staggerInFrames}
+      durationInFrames={durationInFrames}
+      effect="none"
+      renderUnit={renderUnit}
+    />
   );
 };

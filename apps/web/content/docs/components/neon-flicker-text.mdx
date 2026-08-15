@@ -1,20 +1,51 @@
 ---
 title: Neon Flicker Text
-description: Neon sign flicker and settle. Install with npx remotion-ui@latest add neon-flicker-text.
+description: Light a word tube by tube, with a mains hum that never quite settles. Install with npx remotion-ui@latest add neon-flicker-text.
 ---
 
 import { NeonFlickerTextPreview } from '@/components/previews/neon-flicker-text';
 
 <ComponentPage name="neon-flicker-text" preview={NeonFlickerTextPreview} durationInFrames={120}>
 
-Neon sign flicker and settle.
-
-## Usage
+A neon sign starting the way neon actually starts.
 
 ```tsx
 import { NeonFlickerText } from "@/remotion/primitives/neon-flicker-text";
 
-<NeonFlickerText />
+<NeonFlickerText
+  text="Open all night"
+  order="random"
+  glowColor="#f472b6"
+  staggerInFrames={5}
+/>
 ```
+
+## A gas-discharge model, not random opacity
+
+Three things separate this from `Math.random()` on `opacity`:
+
+- An unlit tube is still there as cold glass (`offColor`), not invisible.
+- The strike probability climbs across each character's own window, so the sign
+  resolves instead of sputtering forever.
+- A lit tube keeps a mains hum and an occasional stutter.
+
+That last one matters more than it sounds. A settled state with no hum is what
+makes a neon effect look like a static PNG two seconds in.
+
+## Tuning
+
+`hum` is the depth of the idle breathe and `buzz` is the chance per beat that a
+settled tube drops out. `glowSize` is the halo radius in px at full brightness;
+the glow is four stacked shadows, so it stays soft at large sizes instead of
+banding.
+
+`order="random"` is the natural fit — tubes in a real sign do not strike left to
+right — and the shuffle is seeded, so the same `seed` renders the same order
+everywhere.
+
+## Going out
+
+`exit` stutters the tubes back off rather than fading them, because an exit is
+not an entrance played backwards. Set `flickerOnExit={false}` for a clean fade.
 
 </ComponentPage>

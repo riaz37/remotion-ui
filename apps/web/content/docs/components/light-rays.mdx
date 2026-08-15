@@ -1,20 +1,53 @@
 ---
 title: Light Rays
-description: Volumetric god rays drifting across the stage. Install with npx remotion-ui@latest add light-rays.
+description: Volumetric shafts fanning out of a point and drifting. Install with npx remotion-ui@latest add light-rays.
 ---
 
 import { LightRaysPreview } from '@/components/previews/light-rays';
 
 <ComponentPage name="light-rays" preview={LightRaysPreview} durationInFrames={120}>
 
-Volumetric god rays drifting across the stage. Distinct from light-sweep-text (text-only) and mesh-gradient-bg (blobs).
-
-## Usage
+A full-frame stage layer of god rays.
 
 ```tsx
 import { LightRays } from "@/remotion/primitives/light-rays";
 
-<LightRays />
+<AbsoluteFill>
+  <LightRays originX={28} originY={-14} angle={20} spread={56} />
+  <YourScene />
+</AbsoluteFill>
 ```
+
+## Where it sits
+
+Shafts, not blobs — `mesh-gradient-bg` owns blobs. And full-frame, unlike
+`light-sweep-text`, which is a specular pass clipped to letterforms.
+
+Set `backgroundColor="transparent"` to lay it over footage instead of over its
+own plate.
+
+## Why it does not look printed
+
+Each shaft is a tapered wedge composited on `screen`, so overlapping shafts add
+the way light does instead of stacking alpha and going muddy. Width, brightness
+and sway period are all hashed per index: an evenly spaced, evenly bright fan
+reads as a printed sunburst rather than as light in air. An odd `rayCount`
+avoids a symmetric seam down the middle of the fan.
+
+## Aiming it
+
+`originX` / `originY` are percentages of the frame and are usually outside it —
+the default puts the source above the top edge. `angle` points the fan, `spread`
+is its total width in degrees, and `bloom` is the halo at the source.
+
+## Motion
+
+There is no entrance: every shaft sways on its own period and the fan drifts on
+a longer one. `speed` scales all of it, and `speed={0}` freezes the fan into a
+still image, which is occasionally what a poster frame wants.
+
+Keep `blur` moderate. A heavy blur swallows the sway — the first cut of this
+component moved one to two degrees under an 18px blur and measured as a still
+frame on the preview audit.
 
 </ComponentPage>

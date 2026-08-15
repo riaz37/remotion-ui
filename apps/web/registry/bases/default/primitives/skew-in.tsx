@@ -1,50 +1,75 @@
-import { useCurrentFrame } from "remotion";
+import { interpolate } from "remotion";
+import {
+  resolveOrigin,
+  useEnterExit,
+  type MotionPrimitiveProps,
+  type TransformOrigin,
+} from "@/remotion/lib/motion-primitive";
+import { MotionWrapper } from "@/remotion/lib/motion-wrapper";
 
-export type SkewInProps = {
-  /** Frames to wait before this starts. */
-  delayInFrames?: number;
-  /** Length of the entrance. */
-  durationInFrames?: number;
-  /** Frame the exit begins on. */
-  exitAtInFrames?: number;
-  /** Length of the exit. */
-  exitInFrames?: number;
+export type SkewDirection = "left" | "right";
+
+export type SkewInProps = MotionPrimitiveProps & {
+  /** Horizontal shear it starts at, in degrees. */
+  skew?: number;
+  /** Vertical shear it starts at. Small values only — this reads as a wobble. */
+  skewY?: number;
+  /** How far it slides in, in px. Travels against the lean. */
+  travel?: number;
+  /** Which way the element leans on the way in. */
+  direction?: SkewDirection;
+  /** Point the shear pivots around. `bottom left` is the editorial default. */
+  origin?: TransformOrigin;
 };
 
 /**
- * Skew + translate, editorial feel.
+ * Leans in and straightens up.
  *
- * TODO(scaffold): unimplemented. Replace the placeholder body below.
- * Lane: atoms · tags: enter · tier: core
+ * The shear and the slide are deliberately opposed: the element leans *into*
+ * the direction it is travelling from, so the type appears to be dragged
+ * upright by its own momentum rather than sliding in pre-formed. That is the
+ * difference between this and `slide-left` with a transform on top.
+ *
+ * The pivot sits on the baseline corner by default (`bottom left`), because a
+ * shear around the centre lifts the baseline of a headline and the line below
+ * it visibly jumps.
  */
 export const SkewIn: React.FC<SkewInProps> = ({
-  delayInFrames = 0,
-  durationInFrames = 30,
-  exitAtInFrames = 90,
-  exitInFrames = 20,
+  children,
+  skew = 14,
+  skewY = 0,
+  travel = 56,
+  direction = "left",
+  origin = "bottom left",
+  block,
+  style,
+  className,
+  ...motionProps
 }) => {
-  const frame = useCurrentFrame();
-  const clamp = (v: number) => Math.min(1, Math.max(0, v));
+  const { displace, opacity, sign } = useEnterExit(motionProps);
 
-  // The placeholder carries an exit on purpose. audit:stills samples 15/50/90%
-  // and reports a still tail as a defect; an entrance that settles and holds
-  // would make every unbuilt scaffold a false positive on the audit sheet.
-  const enter = clamp((frame - delayInFrames) / durationInFrames);
-  const exit = clamp((frame - exitAtInFrames) / exitInFrames);
-  const progress = enter * (1 - exit);
+  // `sign` is -1 only when the caller asked the exit to carry on through, so a
+  // continuing exit keeps leaning the same way instead of snapping back.
+  const lean = direction === "left" ? 1 : -1;
+  const away = displace * sign * lean;
+
+  const skewX = interpolate(away, [0, 1], [0, skew]);
+  const shearY = interpolate(away, [0, 1], [0, skewY]);
+  const offset = interpolate(away, [0, 1], [0, -travel]);
 
   return (
-    <div style={{ display: "inline-block" }}>
-      <span
-        style={{
-          fontFamily: "ui-monospace, monospace",
-          fontSize: 24,
-          color: "#f5f5f7",
-          opacity: progress,
-        }}
-      >
-        TODO: skew-in
-      </span>
-    </div>
+    <MotionWrapper
+      block={block}
+      className={className}
+      style={{
+        ...style,
+        opacity,
+        transform: `translateX(${offset.toFixed(3)}px) skew(${skewX.toFixed(3)}deg, ${shearY.toFixed(3)}deg)`,
+        transformOrigin: resolveOrigin(origin),
+        willChange: "transform, opacity",
+      }}
+    >
+      {children}
+    </MotionWrapper>
   );
 };

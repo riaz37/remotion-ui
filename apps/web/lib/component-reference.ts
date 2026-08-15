@@ -2721,115 +2721,213 @@ const { lines } = useSplitText({ text, mode: "words" });`,
     category: "primitive",
     usage: `import { SkewIn } from "@/remotion/primitives/skew-in";
 
-<SkewIn />`,
+<SkewIn skew={16} travel={72} durationInFrames={40}>
+  <h1>Leans in, straightens up</h1>
+</SkewIn>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "children", type: "ReactNode", description: "What leans in." },
+      { name: "skew", type: "number", default: "14", description: "Horizontal shear it starts at, in degrees." },
+      { name: "skewY", type: "number", default: "0", description: "Vertical shear it starts at. Small values only." },
+      { name: "travel", type: "number", default: "56", description: "How far it slides in, in px. Travels against the lean." },
+      { name: "direction", type: '"left" | "right"', default: '"left"', description: "Which way the element leans on the way in." },
+      { name: "origin", type: "TransformOrigin", default: '"bottom left"', description: "Pivot. A centre pivot lifts the baseline and the line below jumps." },
       { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before it starts." },
+      { name: "spring", type: "MotionSpring", description: "Drive the entrance with a spring instead of the ease-out curve." },
+      { name: "exit", type: "boolean", default: "false", description: "Land out at the end of the surrounding Sequence." },
+      { name: "exitAtInFrames", type: "number", description: "Frame the exit starts on. Overrides the automatic timing." },
+      { name: "exitInFrames", type: "number", description: "Length of the exit. Defaults to 70% of the entrance." },
+      { name: "exitDirection", type: '"reverse" | "continue"', default: '"reverse"', description: "Straighten back, or carry the lean on through." },
+      { name: "block", type: "boolean", default: "false", description: "Fill the parent's width instead of shrink-wrapping." },
     ],
+    note: "The shear opposes the travel on purpose — the element looks dragged upright by its own momentum.",
+    related: ["slide-left", "rotate-in", "spring-in"],
   },
   "scramble-text": {
     category: "primitive",
     usage: `import { ScrambleText } from "@/remotion/primitives/scramble-text";
 
-<ScrambleText />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<ScrambleText text="Resolve out of noise" order="center" charset="symbols" />`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "text", type: "string", description: "The string that resolves. `\\n` breaks a line." },
+      { name: "charset", type: '"latin" | "symbols" | "digits" | "blocks" | string', default: '"symbols"', description: "Glyph pool the noise is drawn from. Any string is used as-is." },
+      { name: "tickInFrames", type: "number", default: "2", description: "Frames one noise glyph is held. 1 is a blur, 4 is a slot machine." },
+      { name: "scrambleColor", type: "string", description: "Colour of the unresolved glyphs. Defaults to `color`." },
+      { name: "scrambleOpacity", type: "number", default: "0.72", description: "Opacity of the unresolved glyphs." },
+      { name: "scrambleOnExit", type: "boolean", default: "true", description: "Scramble again on the way out." },
+      { name: "order", type: '"start" | "end" | "center" | "edges" | "random"', default: '"start"', description: "Which character resolves first. Document order is never affected." },
+      { name: "staggerInFrames", type: "number", default: "2", description: "Frames between one character resolving and the next." },
+      { name: "durationInFrames", type: "number", default: "20", description: "Length of one character's resolve." },
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames before the first character starts." },
+      { name: "seed", type: "number", default: "1", description: "Seeds the glyph noise and `order=\"random\"`." },
+      { name: "exitAtInFrames", type: "number", description: "Frame the first character starts leaving on." },
+      { name: "fontFamily", type: "string", default: "ui-monospace stack", description: "Monospace by default — a proportional face re-flows on every tick." },
     ],
+    note: "Per-character clocks, so any stagger order works. `matrix-decode` resolves strictly left to right from one shared progress value.",
+    related: ["split-text-chars", "matrix-decode", "slot-roll"],
   },
   "text-mask-video": {
     category: "primitive",
-    usage: `import { TextMaskVideo } from "@/remotion/primitives/text-mask-video";
+    usage: `import { staticFile } from "remotion";
+import { TextMaskVideo } from "@/remotion/primitives/text-mask-video";
 
-<TextMaskVideo />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<TextMaskVideo
+  text={"IN\\nMOTION"}
+  src={staticFile("clips/skyline.mp4")}
+  fontSize={172}
+  fontWeight={900}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "text", type: "string", description: "The letterforms the media is seen through. `\\n` breaks a line." },
+      { name: "src", type: "string", description: "Video or image source. Wrap local files in `staticFile()`." },
+      { name: "media", type: '"video" | "image" | "gradient"', default: "video with a src, gradient without", description: "Which layer is drawn behind the letters." },
+      { name: "gradient", type: "string", description: "Any CSS background, used by `media=\"gradient\"`." },
+      { name: "mediaFilter", type: "string", description: "CSS filter on the media. Footage is usually too dark inside letterforms." },
+      { name: "reveal", type: '"left" | "right" | "up" | "down" | "none"', default: '"left"', description: "Which way the letters are uncovered." },
+      { name: "width", type: "number", description: "Clip coordinate space. Defaults to a multiple of `fontSize`." },
+      { name: "height", type: "number", description: "Clip coordinate space. Defaults from the line count." },
+      { name: "drift", type: "number", default: "26", description: "Peak sideways travel of the media, in px." },
+      { name: "zoom", type: "number", default: "0.12", description: "Extra scale the media breathes through. 0 holds it still." },
+      { name: "startFrom", type: "number", description: "Frame offset into the video." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the reveal." },
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames before the reveal starts." },
+      { name: "exitAtInFrames", type: "number", description: "Frame the reveal starts unwinding on." },
     ],
+    note: "An SVG clipPath on a real element, not `background-clip: text` — that only takes a paint, so it can never carry a video.",
+    related: ["light-sweep-text", "svg-mask-reveal", "stroke-to-fill-text"],
   },
   "handwriting-text": {
     category: "primitive",
     usage: `import { HandwritingText } from "@/remotion/primitives/handwriting-text";
 
-<HandwritingText />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<HandwritingText text="Signed by hand" staggerInFrames={9} penColor="#e8b86d" />`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "text", type: "string", description: "The line that gets written." },
+      { name: "penSize", type: "number", default: "0.14", description: "Diameter of the nib, in em. 0 hides it." },
+      { name: "penColor", type: "string", description: "Nib colour. Defaults to `color`." },
+      { name: "inkSoftness", type: "number", default: "0.18", description: "Softness of the ink edge, as a share of one glyph." },
+      { name: "wobble", type: "number", default: "1.6", description: "Per-character tilt and baseline drift, in degrees. Fixed, not animated." },
+      { name: "staggerInFrames", type: "number", default: "3", description: "Frames between one character and the next. This is the writing speed." },
+      { name: "durationInFrames", type: "number", default: "10", description: "Frames one character takes to be drawn." },
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames before the first stroke." },
+      { name: "exitAtInFrames", type: "number", description: "Frame the ink starts fading on." },
+      { name: "fontFamily", type: "string", default: "script stack", description: "Ends in generic `cursive`; pass a webfont for identical renders everywhere." },
     ],
+    note: "Takes a string, so there is no stroke order — the ink is wiped on per glyph. `path-draw` takes a path and strokes it properly. `order` and `mode` are deliberately not props.",
+    related: ["path-draw", "split-text-chars", "marker-highlight"],
   },
   "stroke-to-fill-text": {
     category: "primitive",
     usage: `import { StrokeToFillText } from "@/remotion/primitives/stroke-to-fill-text";
 
-<StrokeToFillText />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<StrokeToFillText
+  text="Ship faster with source"
+  strokeColor="#e8b86d"
+  staggerInFrames={5}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "text", type: "string", description: "The line that outlines and then fills." },
+      { name: "strokeWidth", type: "number", default: "2", description: "Outline weight in px, before it thins into the fill." },
+      { name: "strokeColor", type: "string", description: "Outline colour. Defaults to `color`." },
+      { name: "fillColor", type: "string", description: "Colour the letter fills with. Defaults to `color`." },
+      { name: "direction", type: '"up" | "down" | "left" | "right"', default: '"up"', description: "Which way the fill floods the letter." },
+      { name: "edgeSoftness", type: "number", default: "0.12", description: "Softness of the fill edge, as a share of the glyph. 0 is a hard line." },
+      { name: "strokeRetain", type: "number", default: "0.35", description: "Share of the outline weight left once the letter is full." },
+      { name: "outlineInFrames", type: "number", default: "16", description: "Frames the outline takes to draw. It arrives as a whole word, unstaggered." },
+      { name: "staggerInFrames", type: "number", default: "2", description: "Frames between one letter flooding and the next." },
+      { name: "durationInFrames", type: "number", default: "20", description: "Length of one letter's flood." },
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames before the outline starts." },
+      { name: "order", type: '"start" | "end" | "center" | "edges" | "random"', default: '"start"', description: "Which letter floods first." },
+      { name: "exitAtInFrames", type: "number", description: "Frame the fill starts draining on." },
     ],
+    note: "The outline is unstaggered and the fill is staggered. Running both on one clock leaves the un-flooded half of the line absent, which reads as truncated type.",
+    related: ["split-text-chars", "text-mask-video", "path-draw"],
   },
   "variable-font-morph": {
     category: "primitive",
     usage: `import { VariableFontMorph } from "@/remotion/primitives/variable-font-morph";
 
-<VariableFontMorph />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<VariableFontMorph text="Weight in motion" weight={[200, 900]} oscillate />`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "text", type: "string", description: "The line whose axes are swept." },
+      { name: "weight", type: "[number, number]", default: "[200, 800]", description: "`wght` axis. Also mirrored onto `font-weight`." },
+      { name: "width", type: "[number, number]", description: "`wdth` axis in percent. Also mirrored onto `font-stretch`." },
+      { name: "slant", type: "[number, number]", description: "`slnt` axis in degrees. Negative leans right, per the spec." },
+      { name: "axes", type: "Record<string, [number, number]>", description: "Any further axes by four-letter tag, e.g. `{ opsz: [14, 96] }`." },
+      { name: "oscillate", type: "boolean", default: "false", description: "Keep travelling between the two ends instead of landing on `to`." },
+      { name: "periodInFrames", type: "number", default: "60", description: "Frames for one there-and-back when oscillating." },
+      { name: "phaseStep", type: "number", default: "0.55", description: "Radians of offset per character along the wave." },
+      { name: "staggerInFrames", type: "number", default: "2", description: "Frames between one character starting and the next." },
+      { name: "durationInFrames", type: "number", default: "20", description: "Length of one character's ramp." },
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames before the first character starts." },
+      { name: "fontFamily", type: "string", description: "Pass a variable face here — the fallback only steps between static weights." },
     ],
+    note: "One 0–1 position drives every axis at once. On a static face the values fall back to `font-weight`/`font-stretch`, which steps rather than glides.",
+    related: ["split-text-chars", "wave-text", "tracking-in"],
   },
   "liquid-text-morph": {
     category: "primitive",
     usage: `import { LiquidTextMorph } from "@/remotion/primitives/liquid-text-morph";
 
-<LiquidTextMorph />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<LiquidTextMorph words={["Melt", "Merge", "Reform"]} morphInFrames={22} />`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "words", type: "string[]", description: "Two or more words. The last melts back into the first when looping." },
+      { name: "holdInFrames", type: "number", default: "12", description: "Frames a word is held before it starts melting." },
+      { name: "morphInFrames", type: "number", default: "22", description: "Frames one word takes to become the next." },
+      { name: "loop", type: "boolean", default: "true", description: "Keep cycling. When false the last word is held forever." },
+      { name: "gooStrength", type: "number", default: "0.045", description: "Blur feeding the threshold, in em. This is what makes letters merge." },
+      { name: "gooContrast", type: "number", default: "18", description: "Alpha contrast on the blurred layer. Lower is softer and wetter." },
+      { name: "staggerInFrames", type: "number", default: "2", description: "Frames between neighbouring letters melting. Clamped to fit the morph." },
+      { name: "fontSize", type: "number", description: "Defaults to a scaled 96px at the composition width." },
+      { name: "color", type: "string", default: '"#f4f4f5"', description: "Ink colour." },
+      { name: "fontWeight", type: "number | string", default: "700", description: "Heavier weights fuse more readily under the threshold." },
     ],
+    note: "A gooey threshold filter, not path interpolation — two arbitrary letters do not have matching node counts. Use `shape-morph` for paths you control.",
+    related: ["shape-morph", "split-text-chars", "blob-morph"],
   },
   "wave-text": {
     category: "primitive",
     usage: `import { WaveText } from "@/remotion/primitives/wave-text";
 
-<WaveText />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<WaveText text="Ride the sine" amplitude={0.2} wavelength={5} />`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "text", type: "string", description: "The line the wave runs along." },
+      { name: "amplitude", type: "number", default: "0.16", description: "Peak displacement, in em of the font size." },
+      { name: "wavelength", type: "number", default: "6", description: "Characters per full wave. Higher spreads the crest wider." },
+      { name: "periodInFrames", type: "number", default: "48", description: "Frames for one full cycle." },
+      { name: "direction", type: '"forward" | "backward"', default: '"forward"', description: "Travel direction along the line." },
+      { name: "scale", type: "number", default: "0.06", description: "Extra scale on the crest, so it reads as depth rather than jitter." },
+      { name: "shade", type: "number", default: "0.25", description: "How far the trough fades. 0 keeps every character at full opacity." },
+      { name: "staggerInFrames", type: "number", default: "2", description: "Frames between one character arriving and the next." },
+      { name: "durationInFrames", type: "number", default: "20", description: "Length of one character's entrance." },
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames before the first character arrives." },
+      { name: "exitAtInFrames", type: "number", description: "Frame the line starts leaving on. The wave lowers with it." },
     ],
+    note: "Ambient: the wave is a function of the frame and never settles. Phase follows document order, not the stagger rank.",
+    related: ["split-text-chars", "infinite-marquee", "variable-font-morph"],
   },
   "neon-flicker-text": {
     category: "primitive",
     usage: `import { NeonFlickerText } from "@/remotion/primitives/neon-flicker-text";
 
-<NeonFlickerText />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<NeonFlickerText text="Open all night" order="random" glowColor="#f472b6" />`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "text", type: "string", description: "The sign." },
+      { name: "glowColor", type: "string", default: '"#f472b6"', description: "Colour of the halo around the tube." },
+      { name: "glowSize", type: "number", default: "26", description: "Halo radius in px at full brightness. Four stacked shadows, so it stays soft." },
+      { name: "offColor", type: "string", default: "faint pink", description: "The tube with no gas lit — cold glass, not invisible." },
+      { name: "offLevel", type: "number", default: "0.14", description: "Brightness of an unlit tube, 0–1." },
+      { name: "hum", type: "number", default: "0.12", description: "Depth of the mains hum once the sign has settled." },
+      { name: "buzz", type: "number", default: "0.06", description: "Chance per beat that a settled tube stutters. 0 disables it." },
+      { name: "flickerOnExit", type: "boolean", default: "true", description: "Stutter back off instead of fading cleanly." },
+      { name: "order", type: '"start" | "end" | "center" | "edges" | "random"', default: '"start"', description: "Which tube strikes first. `random` is the natural fit." },
+      { name: "staggerInFrames", type: "number", default: "2", description: "Frames between one tube striking and the next." },
+      { name: "durationInFrames", type: "number", default: "20", description: "Length of one tube's ignition. Longer sputters more." },
+      { name: "seed", type: "number", default: "1", description: "Seeds the flicker and `order=\"random\"`." },
+      { name: "exitAtInFrames", type: "number", description: "Frame the sign starts cutting out on." },
     ],
+    note: "A gas-discharge model: unlit tubes are still cold glass, strike probability climbs so the sign resolves, and a lit tube keeps a hum. A settled state with no hum looks like a PNG.",
+    related: ["split-text-chars", "glow-pulse", "rgb-glitch-text"],
   },
   "aurora-bg": {
     category: "primitive",
@@ -2900,14 +2998,25 @@ const { lines } = useSplitText({ text, mode: "words" });`,
     category: "primitive",
     usage: `import { LightRays } from "@/remotion/primitives/light-rays";
 
-<LightRays />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<AbsoluteFill>
+  <LightRays originX={28} originY={-14} angle={20} spread={56} />
+  <YourScene />
+</AbsoluteFill>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "backgroundColor", type: "string", default: '"#080810"', description: "Plate behind the rays. `transparent` layers them over footage." },
+      { name: "color", type: "string", default: '"#e8b86d"', description: "Colour of the shafts." },
+      { name: "rayCount", type: "number", default: "11", description: "How many shafts. Odd counts avoid a symmetric seam down the middle." },
+      { name: "spread", type: "number", default: "52", description: "Total fan angle, in degrees." },
+      { name: "angle", type: "number", default: "22", description: "Direction the fan points. 0 points straight down." },
+      { name: "originX", type: "number", default: "26", description: "Source position in percent of the frame. Usually outside it." },
+      { name: "originY", type: "number", default: "-12", description: "Source position in percent of the frame." },
+      { name: "intensity", type: "number", default: "1", description: "Overall brightness." },
+      { name: "speed", type: "number", default: "1", description: "Sway speed. 0 freezes the fan into a poster frame." },
+      { name: "blur", type: "number", default: "13", description: "Softness of a shaft's edge, in px. A heavy blur swallows the sway." },
+      { name: "bloom", type: "number", default: "42", description: "Bloom radius at the source, in percent. 0 removes it." },
     ],
+    note: "Tapered wedges on `screen`, with width, brightness and sway period hashed per index — an even fan reads as a printed sunburst. Background layer, so it has no entrance.",
+    related: ["mesh-gradient-bg", "light-sweep-text", "aurora-bg"],
   },
   "parallax-layers": {
     category: "primitive",

@@ -1,20 +1,49 @@
 ---
 title: Stroke To Fill Text
-description: Outline text filling solid. Install with npx remotion-ui@latest add stroke-to-fill-text.
+description: Draw type as an outline, then flood each letter solid. Install with npx remotion-ui@latest add stroke-to-fill-text.
 ---
 
 import { StrokeToFillTextPreview } from '@/components/previews/stroke-to-fill-text';
 
 <ComponentPage name="stroke-to-fill-text" preview={StrokeToFillTextPreview} durationInFrames={120}>
 
-Outline text filling solid.
-
-## Usage
+Outline first, then a flood that travels through the line.
 
 ```tsx
 import { StrokeToFillText } from "@/remotion/primitives/stroke-to-fill-text";
 
-<StrokeToFillText />
+<StrokeToFillText
+  text="Ship faster with source"
+  strokeColor="#e8b86d"
+  fillColor="#f4f4f5"
+  staggerInFrames={5}
+  direction="up"
+/>
 ```
+
+## The outline is not staggered; the fill is
+
+They ran on one clock in the first cut, and a slow stagger then left the
+un-flooded half of the line completely absent — the word looked truncated
+rather than outlined. The whole outline now draws once across
+`outlineInFrames`, and the stagger is spent entirely on the flood, which is the
+part the eye is meant to follow.
+
+## Two layers of the same span
+
+The outline and the fill are the same `<span>` of real text stacked on itself,
+so they are guaranteed to be the same glyph at the same metrics. Tracing a fill
+with a second element positioned by hand drifts by a fraction of a pixel and the
+outline starts reading as a drop shadow.
+
+The flood is a gradient mask rather than a `background-clip` trick, because a
+mask can move — and the moving edge is the effect. `direction` takes `up`,
+`down`, `left` or `right`; `edgeSoftness` is how wet that edge is.
+
+## Weights
+
+`strokeWidth` is the outline in px and `strokeRetain` is the share of it left
+once the letter is full — keeping a little makes the fill read as ink inside a
+drawn letter instead of as a swap between two typefaces.
 
 </ComponentPage>

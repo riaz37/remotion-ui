@@ -1,20 +1,49 @@
 ---
 title: Liquid Text Morph
-description: Letterforms morphing between two words. Install with npx remotion-ui@latest add liquid-text-morph.
+description: Melt one word into the next through a gooey threshold filter. Install with npx remotion-ui@latest add liquid-text-morph.
 ---
 
 import { LiquidTextMorphPreview } from '@/components/previews/liquid-text-morph';
 
 <ComponentPage name="liquid-text-morph" preview={LiquidTextMorphPreview} durationInFrames={120}>
 
-Letterforms morphing between two words.
-
-## Usage
+Cycles a list of words, melting each one into the next.
 
 ```tsx
 import { LiquidTextMorph } from "@/remotion/primitives/liquid-text-morph";
 
-<LiquidTextMorph />
+<LiquidTextMorph
+  words={["Melt", "Merge", "Reform"]}
+  holdInFrames={12}
+  morphInFrames={22}
+/>
 ```
+
+## Goo, not path interpolation
+
+Both words are drawn at once inside an SVG blur-plus-alpha-threshold, so
+letterforms that come near each other fuse into one blob and split apart again.
+Real glyph outline interpolation needs matched node counts between two arbitrary
+letters — `A` and `s` do not have them — and produces tearing where this
+produces surface tension. Use `shape-morph` when the two shapes are paths you
+control.
+
+`gooStrength` is the blur in em and `gooContrast` is the alpha threshold on top
+of it. Raising the blur past about `0.1` fuses the whole line into one mass.
+
+## The overlap is a third of the morph, not all of it
+
+The outgoing word plays its own entrance backwards on a clock that runs 1.5×
+fast, and the incoming word does not start until the melt is 30% through.
+Running both across the whole morph leaves two complete words stacked at the
+midpoint and the threshold turns them into an unreadable puddle.
+
+## Timing
+
+One cycle is `holdInFrames + morphInFrames`. `loop` is on by default and the
+last word morphs back into the first; turn it off and the final word is held.
+Both words run through `split-text-chars` with a frame override, so the stagger
+semantics are the same as everywhere else — it is fitted to the longest word so
+a wide stagger cannot leave the last letter half-formed when the hold begins.
 
 </ComponentPage>

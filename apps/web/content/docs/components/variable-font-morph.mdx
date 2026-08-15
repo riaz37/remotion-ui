@@ -1,20 +1,51 @@
 ---
 title: Variable Font Morph
-description: Animates weight/width axes of a variable font. Install with npx remotion-ui@latest add variable-font-morph.
+description: Sweep a variable font's weight and width axes across a line, one character at a time. Install with npx remotion-ui@latest add variable-font-morph.
 ---
 
 import { VariableFontMorphPreview } from '@/components/previews/variable-font-morph';
 
 <ComponentPage name="variable-font-morph" preview={VariableFontMorphPreview} durationInFrames={120}>
 
-Animates weight/width axes of a variable font.
-
-## Usage
+A weight wave travelling through a headline.
 
 ```tsx
 import { VariableFontMorph } from "@/remotion/primitives/variable-font-morph";
 
-<VariableFontMorph />
+<VariableFontMorph
+  text="Weight in motion"
+  weight={[200, 900]}
+  width={[85, 115]}
+  oscillate
+  periodInFrames={46}
+/>
 ```
+
+## One position, every axis
+
+The axis position is a single 0–1 value per character, spent on every requested
+axis at once. A real variable face moves `wght` and `wdth` together; driving
+them from separate clocks makes the type look broken rather than variable.
+
+`weight`, `width` and `slant` are the registered axes. Anything else goes
+through `axes` by four-letter tag:
+
+```tsx
+<VariableFontMorph text="Optical" axes={{ opsz: [14, 96] }} />
+```
+
+## Oscillate, or arrive
+
+By default the axes ramp from `from` to `to` with the entrance and stay there.
+`oscillate` keeps them travelling between the two ends forever, offset per
+character by `phaseStep` so the wave moves along the line.
+
+## The static-font fallback
+
+`font-variation-settings` does nothing on a face without those axes, so the
+`wght` and `wdth` values are also written to `font-weight` and `font-stretch`.
+A family shipping discrete weights therefore steps between them instead of
+gliding — visibly coarser, but never frozen. Pass a variable `fontFamily` to
+get the real thing.
 
 </ComponentPage>

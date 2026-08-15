@@ -1,20 +1,45 @@
 ---
 title: Wave Text
-description: Per-character sine displacement. Install with npx remotion-ui@latest add wave-text.
+description: Run a sine along a line of type, one character at a time. Install with npx remotion-ui@latest add wave-text.
 ---
 
 import { WaveTextPreview } from '@/components/previews/wave-text';
 
 <ComponentPage name="wave-text" preview={WaveTextPreview} durationInFrames={120}>
 
-Per-character sine displacement.
-
-## Usage
+An ambient loop, not an entrance.
 
 ```tsx
 import { WaveText } from "@/remotion/primitives/wave-text";
 
-<WaveText />
+<WaveText
+  text="Ride the sine"
+  amplitude={0.2}
+  wavelength={5}
+  periodInFrames={44}
+/>
 ```
+
+## It never settles
+
+The wave is a function of the frame, so there is no end state to reach. The
+entrance is still there underneath — `split-text-chars` owns it, and every
+`delayInFrames` / `staggerInFrames` / `exit` prop works as usual — and the
+amplitude is scaled by each character's own arrival progress, so a character
+does not start bobbing before it has landed and the line lowers as one on the
+way out.
+
+## Phase follows document order
+
+Phase is keyed off the character's index in the string, not off its stagger
+rank. A wave that travels in the stagger order of `order="random"` is not a
+wave.
+
+## Shape
+
+`amplitude` is the peak lift in em, `wavelength` is how many characters one full
+wave spans, and `periodInFrames` is how long a cycle takes. `scale` and `shade`
+add depth by growing and brightening the crest — set both to `0` for a flat
+displacement.
 
 </ComponentPage>

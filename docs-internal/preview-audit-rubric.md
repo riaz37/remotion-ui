@@ -333,3 +333,29 @@ All four components in the lane were rebuilt from scratch rather than patched.
 bounding box, and a straight horizontal or vertical path has a zero-area box — the
 stroke disappears entirely. `path-draw` pins its glow filter with
 `filterUnits="userSpaceOnUse"` over the viewBox.
+
+## Two failure modes PSNR cannot see
+
+Both were found by looking at rendered stills after the numbers came back
+clean, during the atoms batch (2026-08-15). Neither is detectable from the
+three-point PSNR pairs alone.
+
+### An exit that empties the 90% frame
+
+Opacity is gone by roughly 70% of an exit window, so an exit beginning at
+frame 88 leaves frame 108 — the 90% sample — completely blank. PSNR *passes*,
+because a blank frame differs from a full one as much as any motion does.
+
+Keep the exit late enough that the last sample still has something in it. On
+the 120-frame default, start exits at 96, not 88.
+
+### An oscillation aliased against the sample gaps
+
+The samples sit at frames 18, 60 and 108, so the gaps are **42 and 48 frames**.
+A periodic preview whose period divides near either gap puts two of the three
+stills on the same phase of the cycle: numerically healthy, visually a still
+image. A 44-frame sine and a 46-frame axis morph both did this.
+
+Check an oscillating preview's period against 42 and 48, not against the
+120-frame window. Periods near 32–34 land the three samples on distinct
+phases.

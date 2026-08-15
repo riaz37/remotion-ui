@@ -1,20 +1,54 @@
 ---
 title: Text Mask Video
-description: Video or gradient showing through letterforms. Install with npx remotion-ui@latest add text-mask-video.
+description: Play video, a still, or a gradient inside letterforms, with a wipe reveal. Install with npx remotion-ui@latest add text-mask-video.
 ---
 
 import { TextMaskVideoPreview } from '@/components/previews/text-mask-video';
 
 <ComponentPage name="text-mask-video" preview={TextMaskVideoPreview} durationInFrames={120}>
 
-Video or gradient showing through letterforms.
-
-## Usage
+Media seen through a word.
 
 ```tsx
+import { staticFile } from "remotion";
 import { TextMaskVideo } from "@/remotion/primitives/text-mask-video";
 
-<TextMaskVideo />
+<TextMaskVideo
+  text={"IN\nMOTION"}
+  src={staticFile("clips/skyline.mp4")}
+  fontSize={172}
+  fontWeight={900}
+  reveal="left"
+/>
 ```
+
+## Why a clip path, not `background-clip`
+
+`background-clip: text` only takes a paint, so it can carry a gradient and it
+can carry an image, but it can never carry a video. Clipping a real element with
+an SVG `clipPath` of `<text>` means one code path covers all three: the media
+underneath is a normal `<OffthreadVideo>` that seeks and trims like any other.
+
+Set `media` explicitly to force a mode. It defaults to `video` when `src` is
+set and `gradient` when it is not.
+
+## The reveal is a second clip
+
+One element gets one `clip-path`, so the wipe lives on a child of the
+letter-clipped layer. `reveal` takes `left`, `right`, `up`, `down` or `none`,
+runs on the entrance and unwinds on the exit.
+
+## Sizing
+
+`width` and `height` are the clip's coordinate space and the type is positioned
+inside it arithmetically. Nothing is measured: a measured layout renders one
+thing on frame 0 of a headless render and another on frame 1. Both default to
+multiples of `fontSize`; set them when the copy is long.
+
+## Footage almost always needs lifting
+
+A clip that reads fine full-frame is usually too dark once it is only visible
+inside letterforms. `mediaFilter` takes any CSS filter — `brightness(2.2)
+saturate(1.5)` is a reasonable starting point for night footage.
 
 </ComponentPage>

@@ -1,20 +1,49 @@
 ---
 title: Handwriting Text
-description: Takes a string and strokes it on. Install with npx remotion-ui@latest add handwriting-text.
+description: Write a string on, character by character, with a nib riding the wet edge. Install with npx remotion-ui@latest add handwriting-text.
 ---
 
 import { HandwritingTextPreview } from '@/components/previews/handwriting-text';
 
 <ComponentPage name="handwriting-text" preview={HandwritingTextPreview} durationInFrames={120}>
 
-Takes a string and strokes it on. path-draw takes a path; that's the line between them.
-
-## Usage
+Reveals a line as if it were being written.
 
 ```tsx
 import { HandwritingText } from "@/remotion/primitives/handwriting-text";
 
-<HandwritingText />
+<HandwritingText
+  text="Signed by hand"
+  staggerInFrames={9}
+  penColor="#e8b86d"
+/>
 ```
+
+## This takes a string; `path-draw` takes a path
+
+That is the whole distinction, and it decides which one you want. A string has
+no stroke order — nothing in a font records that `S` starts at the top right —
+so the ink here is revealed by a left-to-right wipe per glyph with a nib riding
+the wet edge. For a signature or a logogram, where the stroke order *is* the
+effect, give `path-draw` the actual path.
+
+## `order` is not a prop
+
+Writing runs left to right. Re-ranking the stagger would produce a word that
+assembles out of sequence, which reads as a glitch rather than as a hand.
+
+## The hand
+
+`wobble` tilts each character and drifts it off the baseline by a hashed amount.
+It is fixed per character, not animated, so the word does not wriggle once it is
+written. Set it to `0` for machine-even type.
+
+`penSize` is in em; `0` hides the nib.
+
+## Fonts
+
+The default family is a script stack ending in the generic `cursive`, which
+resolves to whatever the render machine happens to have. Pass a webfont through
+`fontFamily` for a result that is identical everywhere.
 
 </ComponentPage>

@@ -1,20 +1,42 @@
 ---
 title: Skew In
-description: Skew + translate, editorial feel. Install with npx remotion-ui@latest add skew-in.
+description: Lean in and straighten up — an editorial entrance built from shear plus travel. Install with npx remotion-ui@latest add skew-in.
 ---
 
 import { SkewInPreview } from '@/components/previews/skew-in';
 
 <ComponentPage name="skew-in" preview={SkewInPreview} durationInFrames={120}>
 
-Skew + translate, editorial feel.
+Leans in and straightens up. A shear and a slide, opposed on purpose.
 
-## Usage
+## Why the shear opposes the travel
+
+The element leans *into* the direction it is travelling from, so it looks
+dragged upright by its own momentum rather than sliding in pre-formed. That
+opposition is the whole component — `slide-left` with a `skew()` in `style`
+leans the other way and reads as a wobble.
 
 ```tsx
 import { SkewIn } from "@/remotion/primitives/skew-in";
 
-<SkewIn />
+<SkewIn skew={16} travel={72} durationInFrames={40}>
+  <h1>Leans in, straightens up</h1>
+</SkewIn>
 ```
+
+## Pivot
+
+`origin` defaults to `bottom left`. A shear pivoted at the centre lifts the
+baseline of a headline, and the line below it visibly jumps as the shear
+resolves — put the pivot on the baseline corner and only the top of the element
+moves.
+
+## Exits
+
+Like every wrapper primitive here, it takes `exit`, `exitAtInFrames`,
+`exitInFrames` and `exitDirection` from the shared enter/exit contract. Inside a
+`<Sequence durationInFrames={n}>`, `exit` alone lands the element out at the end
+of its slot. `exitDirection="continue"` carries the lean on through instead of
+straightening back.
 
 </ComponentPage>
