@@ -91,6 +91,8 @@ STUDIO-DESIGN.md
 
 # Local marketing/launch assets
 launch-screenshots/
+scripts/render-social-assets.mjs
+docs-internal/expansion-handoff.html
 
 # Misc
 *.tgz
