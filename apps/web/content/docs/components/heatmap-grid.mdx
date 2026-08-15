@@ -5,16 +5,41 @@ description: Cell grid filling by intensity, contribution-graph style. Install w
 
 import { HeatmapGridPreview } from '@/components/previews/heatmap-grid';
 
-<ComponentPage name="heatmap-grid" preview={HeatmapGridPreview} durationInFrames={120}>
+<ComponentPage name="heatmap-grid" preview={HeatmapGridPreview}>
 
-Cell grid filling by intensity, contribution-graph style.
-
-## Usage
+A contribution graph that fills in on a diagonal wave.
 
 ```tsx
 import { HeatmapGrid } from "@/remotion/primitives/heatmap-grid";
 
-<HeatmapGrid />
+<HeatmapGrid
+  cells={weeks}
+  rowLabels={["Mon", "", "Wed", "", "Fri", "", "Sun"]}
+  columnStaggerInFrames={3.4}
+  rowStaggerInFrames={1.6}
+/>
 ```
+
+`cells` is row-major. Ragged rows are padded with empty cells, so a partial
+final week needs no placeholder values.
+
+## The wave
+
+Cells are staggered by `column × columnStaggerInFrames + row ×
+rowStaggerInFrames`. Keep the row stagger smaller than the column stagger and
+the fill sweeps as a diagonal front. Staggering by flat index instead makes the
+fill snake back to the left edge on every new row, which reads as a glitch.
+
+The exit drains along the same diagonal.
+
+## Reading intensity
+
+Intensity drives colour *and* a small scale step. Colour alone is hard to judge
+at cell size on a dark stage; the size difference is what lets a busy column
+register in peripheral vision. Empty cells stay at `emptyColor` and never scale
+up, so a quiet week stays quiet.
+
+`maxValue` pins the top of the ramp. Leave it unset and the busiest cell present
+defines it — set it explicitly when several grids need to be compared.
 
 </ComponentPage>

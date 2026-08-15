@@ -3,16 +3,30 @@
 import { BubbleChartPack } from "../registry-exports";
 import { PreviewFrame } from "./preview-frame";
 
+const BUBBLES = [
+  { label: "Atoms", value: 42 },
+  { label: "Blocks", value: 31 },
+  { label: "Signals", value: 26 },
+  { label: "Cuts", value: 18 },
+  { label: "Reels", value: 12 },
+];
+
 /**
- * The audit samples at 15% / 50% / 90% of the window — frames 18, 60 and 108 on
- * the 120-frame default. Motion must still be running at frame 18 and not yet
- * settled at 60, or all three samples land on a still image and the preview is
- * reported dead. See docs-internal/preview-audit-rubric.md.
+ * Samples land at frames 18, 60 and 108. Seven bubbles on a 12-frame stagger
+ * settle from frame 6 to 100, so the cluster is two bubbles in at the first
+ * sample and five at the second, with the contraction at 96 running under the
+ * third.
  */
 export const BubbleChartPackPreview: React.FC = () => (
   <PreviewFrame lane="signals" padding={72}>
-    <div style={{ display: "grid", placeItems: "center", width: "100%" }}>
-      <BubbleChartPack delayInFrames={2} durationInFrames={40} />
-    </div>
+    <BubbleChartPack
+      bubbles={BUBBLES}
+      width={780}
+      height={380}
+      delayInFrames={6}
+      durationInFrames={26}
+      staggerInFrames={12}
+      exitAtInFrames={96}
+    />
   </PreviewFrame>
 );

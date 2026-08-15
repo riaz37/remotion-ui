@@ -5,16 +5,42 @@ description: Slices sweep in sequentially. Install with npx remotion-ui@latest a
 
 import { PieSliceRevealPreview } from '@/components/previews/pie-slice-reveal';
 
-<ComponentPage name="pie-slice-reveal" preview={PieSliceRevealPreview} durationInFrames={120}>
+<ComponentPage name="pie-slice-reveal" preview={PieSliceRevealPreview}>
 
-Slices sweep in sequentially.
-
-## Usage
+A filled pie whose wedges open clockwise from twelve o'clock, one at a time.
 
 ```tsx
 import { PieSliceReveal } from "@/remotion/primitives/pie-slice-reveal";
 
-<PieSliceReveal />
+<PieSliceReveal
+  slices={[
+    { label: "Pro", value: 44 },
+    { label: "Team", value: 26 },
+    { label: "Free", value: 18 },
+  ]}
+  staggerInFrames={18}
+/>
 ```
+
+## Where it sits
+
+Solid wedges, so the whole is the point. When the comparison matters more than
+the total, `donut-chart` frees the centre for a headline number.
+
+## Slice separation
+
+`gapInDegrees` is taken off the end of each wedge rather than drawn as a stroke
+between them. A stroked divider sits on top of whichever slice was painted last
+and nicks the outer edge of the circle.
+
+`explode` pushes every wedge out along its own bisector. Because the bisector is
+still moving while a slice opens, the wedge slides outward as it sweeps. The pie
+is drawn slightly smaller than its box to leave room for that offset.
+
+## Labels
+
+Percentages appear at 70% of a slice's sweep, so a label never sits on a wedge
+too narrow to hold it. `labelColor` defaults to near-black — the slice colours
+are light enough that dark type is the readable choice on all of them.
 
 </ComponentPage>

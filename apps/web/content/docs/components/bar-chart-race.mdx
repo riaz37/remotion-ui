@@ -5,16 +5,48 @@ description: Ranked bars reorder over time. Install with npx remotion-ui@latest 
 
 import { BarChartRacePreview } from '@/components/previews/bar-chart-race';
 
-<ComponentPage name="bar-chart-race" preview={BarChartRacePreview} durationInFrames={120}>
+<ComponentPage name="bar-chart-race" preview={BarChartRacePreview}>
 
-Ranked bars reorder over time. Distinct from animated-bar-chart, which is a static ranking with a value axis.
-
-## Usage
+Ranked bars that overtake each other as the clock runs.
 
 ```tsx
 import { BarChartRace } from "@/remotion/primitives/bar-chart-race";
 
-<BarChartRace />
+<BarChartRace
+  series={[
+    { label: "Studio", values: [42, 58, 66, 72, 78, 84] },
+    { label: "Motion", values: [18, 34, 57, 76, 92, 108] },
+  ]}
+  steps={["Q1", "Q2", "Q3", "Q4", "Q5", "Q6"]}
+  framesPerStep={18}
+/>
 ```
+
+## Data shape
+
+Raw time series, one value per keyframe, interpolated at render — not
+pre-computed rankings. `framesPerStep` sets how long the clock takes to travel
+between two keyframes, so the whole race runs for `framesPerStep × (steps − 1)`.
+`steps` supplies the running caption.
+
+Every series should carry the same number of values. A short one holds its last
+value rather than dropping off the board.
+
+## Why the overtakes look right
+
+Rank is fractional, not an integer sort position: each series measures how far
+above it every other series sits, softened by a sigmoid. An integer rank makes
+bars teleport a full row the instant two values cross, which is exactly the
+moment the format exists to show. The softening width scales with the leader's
+value, so a crossover reads the same whether the chart counts in tens or in
+millions.
+
+## Where it sits
+
+`animated-bar-chart` is the static counterpart — one fixed ranking revealed with
+a value axis. Use that when the order never changes.
+
+`visibleRows` bounds the board; series ranked below it fade out instead of
+clipping, so dropping off reads as losing rather than as a render bug.
 
 </ComponentPage>

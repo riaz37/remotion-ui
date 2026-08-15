@@ -5,16 +5,43 @@ description: Multi-segment donut with labels. Install with npx remotion-ui@lates
 
 import { DonutChartPreview } from '@/components/previews/donut-chart';
 
-<ComponentPage name="donut-chart" preview={DonutChartPreview} durationInFrames={120}>
+<ComponentPage name="donut-chart" preview={DonutChartPreview}>
 
-Multi-segment donut with labels. Narrowed from "progress ring" — stat-card already owns the single-value ring.
-
-## Usage
+A composition breakdown whose slices sweep on one after another.
 
 ```tsx
 import { DonutChart } from "@/remotion/primitives/donut-chart";
 
-<DonutChart />
+<DonutChart
+  segments={[
+    { label: "Direct", value: 4820 },
+    { label: "Search", value: 3140 },
+    { label: "Social", value: 1960 },
+  ]}
+  totalLabel="Sessions"
+  staggerInFrames={16}
+/>
 ```
+
+## Where it sits
+
+`stat-card` already owns the single-value ring, so this one is strictly
+multi-segment. For a filled circle rather than a ring, use `pie-slice-reveal`.
+
+## The centre number
+
+`showTotal` counts the segments that have actually landed, not the grand total
+scaled by progress. The ring and the number therefore agree on every frame — a
+total that races ahead of the arcs is the usual tell of a chart animated in two
+unrelated places.
+
+## Timing
+
+Each segment sweeps over `durationInFrames` and starts `staggerInFrames` after
+the one before, so the total run is `stagger × (segments − 1) + duration`. The
+legend rows fade in with their own slice.
+
+Pass `exitAtInFrames` to dismiss the chart: it fades and scales down rather than
+unwinding the sweep, since a ring that retracts reads as data being withdrawn.
 
 </ComponentPage>

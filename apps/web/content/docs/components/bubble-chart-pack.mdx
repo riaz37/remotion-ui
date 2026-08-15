@@ -5,16 +5,47 @@ description: Circle-packed values settling into place. Install with npx remotion
 
 import { BubbleChartPackPreview } from '@/components/previews/bubble-chart-pack';
 
-<ComponentPage name="bubble-chart-pack" preview={BubbleChartPackPreview} durationInFrames={120}>
+<ComponentPage name="bubble-chart-pack" preview={BubbleChartPackPreview}>
 
-Circle-packed values settling into place.
-
-## Usage
+Value bubbles packing themselves into a cluster, largest first.
 
 ```tsx
 import { BubbleChartPack } from "@/remotion/primitives/bubble-chart-pack";
 
-<BubbleChartPack />
+<BubbleChartPack
+  bubbles={[
+    { label: "Atoms", value: 42 },
+    { label: "Blocks", value: 31 },
+    { label: "Signals", value: 26 },
+  ]}
+  staggerInFrames={12}
+/>
 ```
+
+## Area, not radius
+
+Radius scales with the square root of the value, so the area — which is what the
+eye actually compares — stays proportional to the number. Scaling radius
+directly makes a bubble worth twice another look four times as big.
+
+## The pack is deterministic
+
+Circles are placed largest first, each walking out along a spiral from the
+origin until it clears everything already placed. It is not the densest possible
+pack, but the same data always produces the same arrangement — a layout that
+reshuffled between renders would make the chart untrustworthy, and density is
+worth less than that.
+
+The cluster is laid out in its own units and scaled once to fit `width` ×
+`height`, so the same data fills the frame at any size.
+
+## Motion
+
+Bubbles travel outward from the centre as they grow, so the cluster expands
+rather than assembling out of unrelated dots. With `exitAtInFrames` the smallest
+leave first and the cluster contracts back onto its heaviest value.
+
+Labels and values are hidden on bubbles too small to hold them, so a long tail
+of minor values stays clean.
 
 </ComponentPage>

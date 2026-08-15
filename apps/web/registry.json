@@ -3009,9 +3009,7 @@
       "dependencies": [
         "remotion"
       ],
-      "registryDependencies": [
-        "layout"
-      ],
+      "registryDependencies": [],
       "files": [
         {
           "path": "registry/bases/default/primitives/aurora-bg.tsx",
@@ -3026,9 +3024,7 @@
       "dependencies": [
         "remotion"
       ],
-      "registryDependencies": [
-        "layout"
-      ],
+      "registryDependencies": [],
       "files": [
         {
           "path": "registry/bases/default/primitives/particle-field.tsx",
@@ -3043,9 +3039,7 @@
       "dependencies": [
         "remotion"
       ],
-      "registryDependencies": [
-        "layout"
-      ],
+      "registryDependencies": [],
       "files": [
         {
           "path": "registry/bases/default/primitives/topographic-lines-bg.tsx",
@@ -3060,9 +3054,7 @@
       "dependencies": [
         "remotion"
       ],
-      "registryDependencies": [
-        "layout"
-      ],
+      "registryDependencies": [],
       "files": [
         {
           "path": "registry/bases/default/primitives/caustics-bg.tsx",
@@ -3077,9 +3069,7 @@
       "dependencies": [
         "remotion"
       ],
-      "registryDependencies": [
-        "layout"
-      ],
+      "registryDependencies": [],
       "files": [
         {
           "path": "registry/bases/default/primitives/animated-noise-grain.tsx",
@@ -3110,7 +3100,7 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "motion-tokens"
       ],
       "files": [
         {
@@ -3127,7 +3117,7 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "motion-wrapper"
       ],
       "files": [
         {
@@ -3143,9 +3133,7 @@
       "dependencies": [
         "remotion"
       ],
-      "registryDependencies": [
-        "layout"
-      ],
+      "registryDependencies": [],
       "files": [
         {
           "path": "registry/bases/default/primitives/glow-pulse.tsx",
@@ -3160,9 +3148,7 @@
       "dependencies": [
         "remotion"
       ],
-      "registryDependencies": [
-        "layout"
-      ],
+      "registryDependencies": [],
       "files": [
         {
           "path": "registry/bases/default/primitives/motion-trail.tsx",
@@ -3178,7 +3164,7 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "motion-wrapper"
       ],
       "files": [
         {
@@ -3194,9 +3180,7 @@
       "dependencies": [
         "remotion"
       ],
-      "registryDependencies": [
-        "layout"
-      ],
+      "registryDependencies": [],
       "files": [
         {
           "path": "registry/bases/default/primitives/orbit-motion.tsx",
@@ -3212,7 +3196,7 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "motion-tokens"
       ],
       "files": [
         {
@@ -3228,9 +3212,7 @@
       "dependencies": [
         "remotion"
       ],
-      "registryDependencies": [
-        "layout"
-      ],
+      "registryDependencies": [],
       "files": [
         {
           "path": "registry/bases/default/primitives/scanline-crt.tsx",
@@ -3246,7 +3228,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "chart-utils",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -3263,7 +3246,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "chart-utils",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -3280,7 +3264,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "chart-utils",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -3297,7 +3282,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "chart-utils",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -3314,7 +3300,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "chart-utils",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -3331,7 +3318,7 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "motion-tokens"
       ],
       "files": [
         {
@@ -3348,7 +3335,9 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "chart-utils",
+        "motion-tokens",
+        "path-utils"
       ],
       "files": [
         {
@@ -3365,7 +3354,7 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "motion-tokens"
       ],
       "files": [
         {

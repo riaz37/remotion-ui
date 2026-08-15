@@ -5,16 +5,37 @@ description: Needle sweeps to target. Install with npx remotion-ui@latest add ga
 
 import { GaugeDialPreview } from '@/components/previews/gauge-dial';
 
-<ComponentPage name="gauge-dial" preview={GaugeDialPreview} durationInFrames={120}>
+<ComponentPage name="gauge-dial" preview={GaugeDialPreview}>
 
-Needle sweeps to target.
-
-## Usage
+An instrument dial: arc fill, tick marks, and a needle that sweeps to its
+target.
 
 ```tsx
 import { GaugeDial } from "@/remotion/primitives/gauge-dial";
 
-<GaugeDial />
+<GaugeDial value={78} label="Render budget" unit="%" durationInFrames={70} />
 ```
+
+## Two curves on purpose
+
+The needle rides the overshoot curve and the arc does not. A needle that swings
+past and settles back is what a real instrument does; a coloured arc that
+retreats reads as the value itself changing its mind. The readout counts from
+the arc's progress, so the number never disagrees with the fill.
+
+## Shape
+
+`sweepInDegrees` is the total travel, centred on twelve o'clock — 250° is the
+default car-dashboard look, 180° gives a half-moon meter. `thickness` covers
+both the track and the fill; ticks are inset from it so the needle can cross
+them without colliding.
+
+Ticks the needle has passed sit brighter than the ones ahead, which keeps the
+reading legible where the needle covers the arc.
+
+## Exit
+
+`exitAtInFrames` unwinds the dial back to rest as it fades — an instrument
+powering down rather than a panel dissolving in place.
 
 </ComponentPage>

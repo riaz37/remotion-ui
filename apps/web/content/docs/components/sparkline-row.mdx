@@ -5,16 +5,43 @@ description: Compact trend lines that read at small sizes. Install with npx remo
 
 import { SparklineRowPreview } from '@/components/previews/sparkline-row';
 
-<ComponentPage name="sparkline-row" preview={SparklineRowPreview} durationInFrames={120}>
+<ComponentPage name="sparkline-row" preview={SparklineRowPreview}>
 
-Compact trend lines that read at small sizes.
-
-## Usage
+A metrics stack: label, a small trend line that draws itself on, the current
+figure, and a signed delta.
 
 ```tsx
 import { SparklineRow } from "@/remotion/primitives/sparkline-row";
 
-<SparklineRow />
+<SparklineRow
+  rows={[
+    { label: "Renders / day", values: [180, 240, 210, 320, 480, 610], delta: "+24%" },
+    { label: "Median render", values: [92, 84, 86, 74, 66, 61], delta: "-18%" },
+  ]}
+  staggerInFrames={20}
+/>
 ```
+
+## Every row scales to itself
+
+A sparkline is read for shape, not level. Rows are normalised individually, so a
+metric that moves between 4 and 6 keeps its shape next to one in the thousands —
+a shared axis would flatten it into a straight line.
+
+## Layout
+
+Only the spark is SVG. Label, value and delta are CSS, so the row can carry
+tabular figures and a coloured delta without fighting SVG text metrics. `width`
+divides between the label (flexible), `sparkWidth` (fixed) and the value column.
+
+`delta` colours itself from its sign: `+` reads as up, `-` or `−` as down,
+anything else stays neutral. The delta waits for the line to finish drawing —
+it is the conclusion of the row, not its opening.
+
+## Timing
+
+Rows draw in order, `staggerInFrames` apart, and leave in the same order when
+`exitAtInFrames` is set, so the stack empties top-down instead of blinking out
+as one block.
 
 </ComponentPage>

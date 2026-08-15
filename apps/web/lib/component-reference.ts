@@ -3271,105 +3271,222 @@ import { TextMaskVideo } from "@/remotion/primitives/text-mask-video";
     category: "primitive",
     usage: `import { BarChartRace } from "@/remotion/primitives/bar-chart-race";
 
-<BarChartRace />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<BarChartRace
+  series={[
+    { label: "Studio", values: [42, 58, 66, 72, 78, 84] },
+    { label: "Motion", values: [18, 34, 57, 76, 92, 108] },
+  ]}
+  steps={["Q1", "Q2", "Q3", "Q4", "Q5", "Q6"]}
+  framesPerStep={18}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "series", type: "RaceSeries[]", default: "required", description: "One entry per contender: `{ label, values, color? }`, one value per keyframe." },
+      { name: "steps", type: "string[]", default: "undefined", description: "Keyframe captions, e.g. years. Shown as the running clock." },
+      { name: "framesPerStep", type: "number", default: "26", description: "Frames spent travelling between two keyframes." },
+      { name: "visibleRows", type: "number", default: "6", description: "How many rows stay on the board. Below that, series fade out." },
+      { name: "width", type: "number", default: "900", description: "Overall width, label column included." },
+      { name: "rowHeight", type: "number", default: "66", description: "Bar height. Type scales off it." },
+      { name: "gap", type: "number", default: "14", description: "Space between rows." },
+      { name: "labelWidth", type: "number", default: "200", description: "Width reserved for the row labels." },
+      { name: "showStepLabel", type: "boolean", default: "true", description: "Large step caption in the bottom-right corner." },
+      { name: "valueFormatter", type: "(value: number) => string", default: "compact", description: "Formats the figure inside each bar." },
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before the clock starts." },
+      { name: "exitAtInFrames", type: "number", default: "undefined", description: "Frame the bars collapse on. Omit to hold the final standings." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "Rank is fractional, not an integer sort position: each series measures how far above it the others sit, softened by a sigmoid. Integer ranks make bars teleport a full row the instant two values cross — the exact moment the format exists to show. Takes raw time series and interpolates them, not pre-computed rankings.",
+    related: ["animated-bar-chart", "leaderboard-rows", "counter"],
   },
   "donut-chart": {
     category: "primitive",
     usage: `import { DonutChart } from "@/remotion/primitives/donut-chart";
 
-<DonutChart />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<DonutChart
+  segments={[
+    { label: "Direct", value: 4820 },
+    { label: "Search", value: 3140 },
+    { label: "Social", value: 1960 },
+  ]}
+  totalLabel="Sessions"
+  staggerInFrames={16}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "segments", type: "ChartDatum[]", default: "required", description: "`{ label, value, color? }`, drawn clockwise in the order given." },
+      { name: "size", type: "number", default: "360", description: "Outer diameter in px. All type scales off it." },
+      { name: "thickness", type: "number", default: "46", description: "Ring thickness. Below a tenth of `size` it reads as a hairline." },
+      { name: "colors", type: "string[]", default: "gold / teal / pink / indigo", description: "Fallback colours, cycled for segments with no `color`." },
+      { name: "showLegend", type: "boolean", default: "true", description: "Legend rows beside the ring, arriving with their own slice." },
+      { name: "showTotal", type: "boolean", default: "true", description: "Running total in the hole." },
+      { name: "totalLabel", type: "string", default: '"Total"', description: "Caption under the total." },
+      { name: "valueFormatter", type: "(value: number) => string", default: "compact", description: "Formats the centre total." },
+      { name: "durationInFrames", type: "number", default: "26", description: "Length of one segment's sweep." },
+      { name: "staggerInFrames", type: "number", default: "9", description: "Frames between one segment and the next." },
+      { name: "exitAtInFrames", type: "number", default: "undefined", description: "Frame the chart is dismissed on." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "The centre total counts the segments that have actually landed, so ring and number agree on every frame. Each segment is a dashed circle rotated to its own start angle, which keeps every arc on one radius. `stat-card` owns the single-value ring; this one is strictly multi-segment.",
+    related: ["pie-slice-reveal", "stat-card", "progress-bar"],
   },
   "pie-slice-reveal": {
     category: "primitive",
     usage: `import { PieSliceReveal } from "@/remotion/primitives/pie-slice-reveal";
 
-<PieSliceReveal />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<PieSliceReveal
+  slices={[
+    { label: "Pro", value: 44 },
+    { label: "Team", value: 26 },
+    { label: "Free", value: 18 },
+  ]}
+  staggerInFrames={18}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "slices", type: "ChartDatum[]", default: "required", description: "`{ label, value, color? }`, swept clockwise from twelve o'clock." },
+      { name: "size", type: "number", default: "380", description: "Diameter in px, offset for the explode included." },
+      { name: "colors", type: "string[]", default: "gold / teal / pink / indigo / amber", description: "Fallback colours, cycled." },
+      { name: "showLabels", type: "boolean", default: "true", description: "Percentages inside each slice, from 70% of its sweep." },
+      { name: "explode", type: "number", default: "0.04", description: "How far each slice sits off centre, as a share of the radius." },
+      { name: "gapInDegrees", type: "number", default: "1.4", description: "Angular gap, taken off the end of each wedge." },
+      { name: "durationInFrames", type: "number", default: "24", description: "Length of one slice's sweep." },
+      { name: "staggerInFrames", type: "number", default: "14", description: "Frames between one slice and the next." },
+      { name: "exitAtInFrames", type: "number", default: "undefined", description: "Frame the slices fan out on." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "The gap is cut out of the wedge rather than stroked between wedges: a stroked divider sits on top of whichever slice was painted last and nicks the outer edge of the circle. Solid wedges, so the whole is the point — use `donut-chart` when the centre should carry a number.",
+    related: ["donut-chart", "stat-card", "comparison-bars"],
   },
   "scatter-plot-pop": {
     category: "primitive",
     usage: `import { ScatterPlotPop } from "@/remotion/primitives/scatter-plot-pop";
 
-<ScatterPlotPop />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<ScatterPlotPop
+  points={[{ x: 4, y: 24, weight: 0.8 }, { x: 11, y: 39 }]}
+  xLabel="Scenes per project"
+  staggerInFrames={3}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "points", type: "ScatterPoint[]", default: "required", description: "`{ x, y, weight?, color? }` in data units." },
+      { name: "width", type: "number", default: "860", description: "Drawing width. Type scales off it." },
+      { name: "height", type: "number", default: "480", description: "Drawing height." },
+      { name: "minRadius", type: "number", default: "7", description: "Dot radius at weight 0." },
+      { name: "maxRadius", type: "number", default: "20", description: "Dot radius at the heaviest weight present." },
+      { name: "showTrend", type: "boolean", default: "true", description: "Least-squares trend line, drawn after the last dot lands." },
+      { name: "showAxis", type: "boolean", default: "true", description: "Gridlines and value labels on both axes." },
+      { name: "xLabel", type: "string", default: "undefined", description: "Caption under the x axis." },
+      { name: "yLabel", type: "string", default: "undefined", description: "Rotated caption beside the y axis." },
+      { name: "durationInFrames", type: "number", default: "16", description: "Length of one dot's pop." },
+      { name: "staggerInFrames", type: "number", default: "2.5", description: "Frames between dots, in ascending x order." },
+      { name: "exitAtInFrames", type: "number", default: "undefined", description: "Frame the cloud drains on." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "The stagger follows ascending x, not array order, so the cloud fills the way the axis is read. The fit is least squares over the raw values and only then projected — fitting in screen space inverts the slope, since y grows downward there.",
+    related: ["line-chart-draw", "bubble-chart-pack", "sparkline-row"],
   },
   "bubble-chart-pack": {
     category: "primitive",
     usage: `import { BubbleChartPack } from "@/remotion/primitives/bubble-chart-pack";
 
-<BubbleChartPack />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<BubbleChartPack
+  bubbles={[
+    { label: "Atoms", value: 42 },
+    { label: "Blocks", value: 31 },
+    { label: "Signals", value: 26 },
+  ]}
+  staggerInFrames={12}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "bubbles", type: "ChartDatum[]", default: "required", description: "`{ label, value, color? }`. Area is proportional to value." },
+      { name: "width", type: "number", default: "860", description: "Box the cluster is scaled to fit." },
+      { name: "height", type: "number", default: "520", description: "Box height." },
+      { name: "colors", type: "string[]", default: "gold / teal / pink / indigo / amber", description: "Fallback colours, cycled." },
+      { name: "showLabels", type: "boolean", default: "true", description: "Labels inside bubbles large enough to hold them." },
+      { name: "showValues", type: "boolean", default: "true", description: "Value line under the label, hidden on small bubbles." },
+      { name: "padding", type: "number", default: "6", description: "Gap held between neighbours, in layout units." },
+      { name: "durationInFrames", type: "number", default: "26", description: "Length of one bubble's settle." },
+      { name: "staggerInFrames", type: "number", default: "7", description: "Frames between bubbles, largest first." },
+      { name: "exitAtInFrames", type: "number", default: "undefined", description: "Frame the cluster contracts on." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "Radius scales with the square root of the value, so area — what the eye compares — stays proportional. The pack is a deterministic spiral placement followed by a compaction pass toward the centre: the same data always produces the same arrangement, which is worth more here than density.",
+    related: ["scatter-plot-pop", "donut-chart", "treemap-blocks"],
   },
   "gauge-dial": {
     category: "primitive",
     usage: `import { GaugeDial } from "@/remotion/primitives/gauge-dial";
 
-<GaugeDial />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<GaugeDial value={78} label="Render budget" unit="%" durationInFrames={70} />`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "value", type: "number", default: "required", description: "Target the needle sweeps to." },
+      { name: "min", type: "number", default: "0", description: "Value at the start of the arc." },
+      { name: "max", type: "number", default: "100", description: "Value at the end of the arc." },
+      { name: "size", type: "number", default: "360", description: "Outer diameter in px. Type scales off it." },
+      { name: "thickness", type: "number", default: "26", description: "Track and fill thickness." },
+      { name: "sweepInDegrees", type: "number", default: "250", description: "Total travel, centred on twelve o'clock. 180 gives a half-moon meter." },
+      { name: "label", type: "string", default: "undefined", description: "Caption under the readout." },
+      { name: "unit", type: "string", default: '""', description: "Suffix on the readout, e.g. `\"%\"`." },
+      { name: "tickCount", type: "number", default: "9", description: "Tick marks around the arc. 0 hides them." },
+      { name: "valueFormatter", type: "(value: number) => string", default: "rounded", description: "Formats the readout." },
+      { name: "durationInFrames", type: "number", default: "44", description: "Length of the sweep." },
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before the sweep starts." },
+      { name: "exitAtInFrames", type: "number", default: "undefined", description: "Frame the dial unwinds on." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "The needle rides the overshoot curve and the arc does not — a needle that settles back is instrument-like, while a coloured arc that retreats reads as the value changing its mind. The readout counts from the arc's progress, so number and fill never disagree.",
+    related: ["progress-bar", "stat-card", "counter"],
   },
   "sparkline-row": {
     category: "primitive",
     usage: `import { SparklineRow } from "@/remotion/primitives/sparkline-row";
 
-<SparklineRow />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<SparklineRow
+  rows={[
+    { label: "Renders / day", values: [180, 240, 320, 480, 610], delta: "+24%" },
+    { label: "Median render", values: [92, 86, 74, 66, 61], delta: "-18%" },
+  ]}
+  staggerInFrames={20}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "rows", type: "SparklineSeries[]", default: "required", description: "`{ label, values, value?, delta?, color? }`, oldest value first." },
+      { name: "width", type: "number", default: "720", description: "Overall width of the stack." },
+      { name: "rowHeight", type: "number", default: "96", description: "Height of one row. Type scales off it." },
+      { name: "sparkWidth", type: "number", default: "260", description: "Width of the spark itself." },
+      { name: "upColor", type: "string", default: '"#2dd4bf"', description: "Colour for a `+` delta." },
+      { name: "downColor", type: "string", default: '"#f472b6"', description: "Colour for a `-` delta." },
+      { name: "showArea", type: "boolean", default: "true", description: "Gradient wash under each line." },
+      { name: "durationInFrames", type: "number", default: "34", description: "Length of one row's draw." },
+      { name: "staggerInFrames", type: "number", default: "12", description: "Frames between one row and the next." },
+      { name: "exitAtInFrames", type: "number", default: "undefined", description: "Frame the stack starts emptying on, top-down." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "Every row scales to its own domain: a sparkline is read for shape, and a shared axis would flatten a metric that moves between 4 and 6 next to one in the thousands. Only the spark is SVG — label, value and delta are CSS, so the row keeps tabular figures without fighting SVG text metrics.",
+    related: ["line-chart-draw", "stat-card", "scatter-plot-pop"],
   },
   "heatmap-grid": {
     category: "primitive",
     usage: `import { HeatmapGrid } from "@/remotion/primitives/heatmap-grid";
 
-<HeatmapGrid />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<HeatmapGrid
+  cells={weeks}
+  rowLabels={["Mon", "", "Wed", "", "Fri", "", "Sun"]}
+  columnStaggerInFrames={3.4}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "cells", type: "number[][]", default: "required", description: "Row-major intensities. Ragged rows are padded with empty cells." },
+      { name: "maxValue", type: "number", default: "busiest cell", description: "Top of the ramp. Set it explicitly to compare two grids." },
+      { name: "cellSize", type: "number", default: "34", description: "Cell edge length in px." },
+      { name: "gap", type: "number", default: "8", description: "Space between cells." },
+      { name: "color", type: "string", default: '"#e8b86d"', description: "Colour at full intensity." },
+      { name: "emptyColor", type: "string", default: "rgba(250,250,250,0.07)", description: "Colour of a zero cell." },
+      { name: "rowLabels", type: "string[]", default: "undefined", description: "Labels down the left gutter, one per row." },
+      { name: "columnLabels", type: "string[]", default: "undefined", description: "Labels along the top. Sparse arrays are fine." },
+      { name: "showLegend", type: "boolean", default: "true", description: "\"Less → more\" ramp under the grid." },
+      { name: "durationInFrames", type: "number", default: "14", description: "Length of one cell's fill." },
+      { name: "columnStaggerInFrames", type: "number", default: "3", description: "Frames added per column as the wave crosses." },
+      { name: "rowStaggerInFrames", type: "number", default: "1.5", description: "Frames added per row. Keep it below the column stagger." },
+      { name: "exitAtInFrames", type: "number", default: "undefined", description: "Frame the grid drains on, along the same diagonal." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "Staggering by column plus row makes the fill sweep as a diagonal front; a flat index stagger snakes back to the left edge on every new row and reads as a glitch. Intensity drives colour and a small scale step together — colour alone is hard to judge at cell size on a dark stage.",
+    related: ["commit-graph", "beat-pulse-grid", "treemap-blocks"],
   },
 };
 

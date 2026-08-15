@@ -5,16 +5,40 @@ description: Points pop in on stagger, optional trend line. Install with npx rem
 
 import { ScatterPlotPopPreview } from '@/components/previews/scatter-plot-pop';
 
-<ComponentPage name="scatter-plot-pop" preview={ScatterPlotPopPreview} durationInFrames={120}>
+<ComponentPage name="scatter-plot-pop" preview={ScatterPlotPopPreview}>
 
-Points pop in on stagger, optional trend line.
-
-## Usage
+A correlation cloud that fills left to right, with a least-squares trend line
+that lands after the last point.
 
 ```tsx
 import { ScatterPlotPop } from "@/remotion/primitives/scatter-plot-pop";
 
-<ScatterPlotPop />
+<ScatterPlotPop
+  points={[{ x: 4, y: 24, weight: 0.8 }, { x: 11, y: 39 }]}
+  xLabel="Scenes per project"
+  staggerInFrames={3}
+/>
 ```
+
+## Order of arrival
+
+The stagger follows ascending `x`, not array order, so the cloud fills the way
+the axis is read no matter how the data arrived. Points leave in the same order.
+
+The trend line waits for the last point. Drawn earlier it would assert a
+correlation over data the viewer has not been shown yet.
+
+## Fitting
+
+The fit is least squares over the raw values and only then projected to the
+screen. Fitting in screen space inverts the slope, since y grows downward there.
+`showTrend={false}` drops it for data with no meaningful relationship.
+
+## Weight
+
+`weight` scales a dot between `minRadius` and `maxRadius` and defaults to 1 —
+omit it on every point and the cloud is uniform. Each dot carries a soft halo at
+about twice its radius, which keeps overlapping points readable without an
+explicit stroke.
 
 </ComponentPage>

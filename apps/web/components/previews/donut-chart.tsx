@@ -3,16 +3,29 @@
 import { DonutChart } from "../registry-exports";
 import { PreviewFrame } from "./preview-frame";
 
+const SEGMENTS = [
+  { label: "Direct", value: 4820 },
+  { label: "Search", value: 3140 },
+  { label: "Social", value: 1960 },
+  { label: "Referral", value: 880 },
+];
+
 /**
- * The audit samples at 15% / 50% / 90% of the window — frames 18, 60 and 108 on
- * the 120-frame default. Motion must still be running at frame 18 and not yet
- * settled at 60, or all three samples land on a still image and the preview is
- * reported dead. See docs-internal/preview-audit-rubric.md.
+ * Samples land at frames 18, 60 and 108. The stagger spreads four sweeps from
+ * frame 6 to frame 88, so the first sample catches the opening slice mid-draw,
+ * the middle one lands between the third and fourth, and the exit at 96 keeps
+ * the tail moving.
  */
 export const DonutChartPreview: React.FC = () => (
   <PreviewFrame lane="signals" padding={72}>
-    <div style={{ display: "grid", placeItems: "center", width: "100%" }}>
-      <DonutChart delayInFrames={2} durationInFrames={40} />
-    </div>
+    <DonutChart
+      segments={SEGMENTS}
+      size={340}
+      totalLabel="Sessions"
+      delayInFrames={6}
+      durationInFrames={34}
+      staggerInFrames={16}
+      exitAtInFrames={96}
+    />
   </PreviewFrame>
 );
