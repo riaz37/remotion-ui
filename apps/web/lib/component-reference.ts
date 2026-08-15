@@ -4230,66 +4230,163 @@ import { parseSubtitles } from "@/remotion/lib/caption-utils";
     category: "scene",
     usage: `import { KanbanMove } from "@/remotion/scenes/kanban-move";
 
-<KanbanMove />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<KanbanMove
+  columns={["Backlog", "In progress", "Shipped"]}
+  cards={[
+    { title: "Caption presets", meta: "RUI-218 · Ana", column: 0 },
+    {
+      title: "Render queue retries",
+      meta: "RUI-204 · Piotr",
+      column: 0,
+      moveTo: 1,
+      moveAtSeconds: 0.95,
+    },
+    { title: "Theme tokens", meta: "RUI-177 · Kit", column: 1 },
+  ]}
+  holdSeconds={3.4}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "columns", type: "string[]", default: '["Backlog", "In progress", "Shipped"]', description: "Column headings, left to right. Cards address columns by index." },
+      { name: "cards", type: "KanbanCard[]", default: "6 sample cards", description: "Title, meta line, starting column, rail tint, and the one move the card makes." },
+      { name: "moveSeconds", type: "number", default: "0.62", description: "How long a card takes to arc from column to column." },
+      { name: "dealStaggerSeconds", type: "number", default: "0.08", description: "Seconds between each card's arrival during the opening deal." },
+      { name: "holdSeconds", type: "number", description: "Seconds the settled board holds before it retreats. Omit to leave it up." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Destination column glow, and the fallback card rail." },
+      { name: "backgroundColor", type: "string", description: "Page behind the board. Defaults to the theme page colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
+    note: "Give a card `moveTo` and `moveAtSeconds` to send it across; leave both off for cards that hold. Slots are arithmetic — a card lands at the bottom of its destination as that column stands at the moment it arrives, and the cards it left behind close the gap over exactly the frames it is travelling. For a single file dropping into one target, use drag-drop-flow.",
+    related: ["drag-drop-flow", "tab-switch-panel", "notification-stack"],
   },
   "commit-graph": {
     category: "scene",
     usage: `import { CommitGraph } from "@/remotion/scenes/commit-graph";
 
-<CommitGraph />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<CommitGraph
+  commits={[
+    { message: "Seed the registry manifest", hash: "9c41f0a" },
+    { message: "Add render queue worker", hash: "3ab77e2" },
+    { message: "Branch: retry backoff", hash: "d0e91c4", lane: 1, parent: 1 },
+    { message: "Cap retries at five", hash: "51b2fa8", lane: 1 },
+    { message: "Ship caption presets", hash: "7f30dd1", lane: 0, parent: 1 },
+    { message: "Merge retry backoff", hash: "b8c4e05", parent: 4, mergeFrom: 3, ref: "main" },
+  ]}
+  holdSeconds={3.4}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "commits", type: "GraphCommit[]", default: "6 sample commits", description: "Message, hash, lane, parent index, optional mergeFrom lane and branch ref chip." },
+      { name: "windowTitle", type: "string", default: '"git log --graph --oneline"', description: "Text in the title bar. Omit to drop the chrome header." },
+      { name: "startAtSeconds", type: "number", default: "0.34", description: "Second the first commit lands." },
+      { name: "stepSeconds", type: "number", default: "0.36", description: "Seconds between commits. Each edge draws over this same gap." },
+      { name: "holdSeconds", type: "number", description: "Seconds the finished graph holds before it retreats. Omit to leave it up." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Trunk colour, and the branch ref chip." },
+      { name: "laneColors", type: "string[]", default: "4 lane colours", description: "Colours for branch lanes 1 and up. Lane 0 always takes accentColor." },
+      { name: "backgroundColor", type: "string", description: "Page behind the window. Defaults to the theme page colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
+    note: "`parent` defaults to the previous commit, so a straight run needs nothing; point it further back to fork and set `mergeFrom` to bring the fork home. Edges use pathLength={1}, so a long merge curve and a short vertical hop draw at the same apparent speed, and a commit dot only pops once the line feeding it has arrived.",
+    related: ["code-diff-wipe", "file-tree-reveal", "terminal-simulator"],
   },
   "comparison-table": {
     category: "scene",
     usage: `import { ComparisonTable } from "@/remotion/scenes/comparison-table";
 
-<ComparisonTable />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<ComparisonTable
+  title="What you get"
+  columns={["Free", "Studio", "Scale"]}
+  rows={[
+    { label: "Render minutes", cells: ["60", "2,000", "Unlimited"] },
+    { label: "4K exports", cells: [false, true, true] },
+    { label: "Priority queue", cells: [false, false, true] },
+  ]}
+  highlightColumn={1}
+  highlightLabel="Most picked"
+  holdSeconds={3.4}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "columns", type: "string[]", default: '["Free", "Studio", "Scale"]', description: "Column headings. The feature-label column is unnamed and sits ahead of these." },
+      { name: "rows", type: "MatrixRow[]", default: "6 sample rows", description: "A label plus one cell per column: true ticks, false crosses, a string prints as-is." },
+      { name: "title", type: "string", default: '"What you get"', description: "Heading above the table. Omit to drop it." },
+      { name: "highlightColumn", type: "number", default: "1", description: "Column kept lit throughout. Pass -1 for a table with no favourite." },
+      { name: "highlightLabel", type: "string", default: '"Most picked"', description: "Chip pinned beside the title, above the highlighted column." },
+      { name: "startAtSeconds", type: "number", default: "0.5", description: "Second the first row wipes in." },
+      { name: "rowStaggerSeconds", type: "number", default: "0.26", description: "Seconds between rows. Cells inside a row trail their label by another 0.07s each." },
+      { name: "holdSeconds", type: "number", description: "Seconds the finished table holds before it retreats. Omit to leave it up." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Highlight band, its header, and the ticks inside it." },
+      { name: "backgroundColor", type: "string", description: "Page behind the card. Defaults to the theme page colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
+    note: "Ticks and crosses draw their own strokes rather than fading — a fading glyph spends most of its entrance as grey mush at matrix sizes. The highlighted column is one lit band behind the grid, so rows can never disagree about where its edges are. For a single ticked list rather than a matrix, use feature-list.",
+    related: ["feature-list", "pricing-card", "pricing-focus"],
   },
   "pricing-card": {
     category: "scene",
     usage: `import { PricingCard } from "@/remotion/scenes/pricing-card";
 
-<PricingCard />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<PricingCard
+  tier="Studio"
+  badge="Most picked"
+  price={32}
+  period="/mo"
+  note="Billed annually. Cancel whenever."
+  features={["2,000 render minutes a month", "4K exports, no watermark", "9 team seats"]}
+  ctaLabel="Start rendering"
+  holdSeconds={3.4}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "tier", type: "string", default: '"Studio"', description: "Tier name across the top of the card." },
+      { name: "price", type: "number", default: "32", description: "The number the price rolls up to." },
+      { name: "currency", type: "string", default: '"$"', description: "Symbol set ahead of the number." },
+      { name: "period", type: "string", default: '"/mo"', description: "Cadence after the price — \"/mo\", \"per seat\", anything short." },
+      { name: "badge", type: "string", default: '"Most picked"', description: "Chip beside the tier name. Omit to drop it." },
+      { name: "note", type: "string", default: '"Billed annually. Cancel whenever."', description: "Line under the price." },
+      { name: "wasPrice", type: "number", description: "Old price, struck through beside the new one. Omit when there is no before-and-after." },
+      { name: "features", type: "string[]", default: "5 sample features", description: "Ticked lines under the price, revealed in order." },
+      { name: "ctaLabel", type: "string", default: '"Start rendering"', description: "Button text. Omit to drop the button." },
+      { name: "priceAtSeconds", type: "number", default: "0.42", description: "Second the price starts rolling." },
+      { name: "rollSeconds", type: "number", default: "0.9", description: "How long the roll takes." },
+      { name: "featuresAtSeconds", type: "number", default: "1.05", description: "Second the first feature ticks in." },
+      { name: "featureStaggerSeconds", type: "number", default: "0.22", description: "Seconds between features. The CTA lands 0.16s after the last one." },
+      { name: "holdSeconds", type: "number", description: "Seconds the finished card holds before it retreats. Omit to leave it up." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Badge, ticks, card border wash and the CTA fill." },
+      { name: "backgroundColor", type: "string", description: "Page behind the card. Defaults to the theme page colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
+    note: "The price is a counted number under a blur that clears as it settles, not a spinning digit strip — a strip has to guess glyph widths, a counted number stays in register with tabular-nums at any size. The CTA is scheduled off the last feature, so adding features pushes the button later rather than colliding with it. This is one card at block grain; for a full tier comparison beat, use pricing-focus.",
+    related: ["pricing-focus", "comparison-table", "feature-list"],
   },
   "faq-accordion": {
     category: "scene",
     usage: `import { FaqAccordion } from "@/remotion/scenes/faq-accordion";
 
-<FaqAccordion />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<FaqAccordion
+  title="Questions people ask"
+  items={[
+    { question: "Do I own the components?", answer: "Yes. The CLI copies the source into your repo." },
+    { question: "Can I render on my own machine?", answer: "Renders run wherever Remotion runs." },
+  ]}
+  openOrder={[0, 1]}
+  holdSeconds={3.4}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "items", type: "FaqItem[]", default: "4 sample questions", description: "Question and answer for each row." },
+      { name: "title", type: "string", default: '"Questions people ask"', description: "Heading above the list. Omit to drop it." },
+      { name: "openOrder", type: "number[]", default: "[0, 1, 2]", description: "Row indices opened in turn; each closes the previous. Shorter than items leaves the tail closed." },
+      { name: "startAtSeconds", type: "number", default: "0.55", description: "Second the first row opens." },
+      { name: "openEverySeconds", type: "number", default: "1", description: "Seconds between one row opening and the next." },
+      { name: "transitionSeconds", type: "number", default: "0.55", description: "How long a row takes to open or close. Opens and closes overlap, so the list never jumps height." },
+      { name: "holdSeconds", type: "number", description: "Seconds the list holds before it retreats. Omit to leave it up." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Open row's chevron and its background wash." },
+      { name: "backgroundColor", type: "string", description: "Page behind the list. Defaults to the theme page colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
+    note: "Panel heights are estimated from the answer's length against the measured content width, because a headless render has no layout to interrogate mid-animation — a height read from scrollHeight collapses to zero on exactly the frames that matter. Keep answers to two or three lines; long copy inflates the estimate's rounding slack. For code panels use code-accordion, for an ordered process use timeline-steps.",
+    related: ["code-accordion", "timeline-steps", "feature-list"],
   },
 };
 

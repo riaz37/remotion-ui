@@ -1,20 +1,32 @@
 ---
-title: Faq Accordion
-description: Narrowed: Q/A text rows expanding. Install with npx remotion-ui@latest add faq-accordion.
+title: FAQ Accordion
+description: Question rows that open one at a time, each answer's panel growing as the row above it gives the height back.
 ---
 
 import { FaqAccordionPreview } from '@/components/previews/faq-accordion';
 
-<ComponentPage name="faq-accordion" preview={FaqAccordionPreview} durationInFrames={120}>
+<ComponentPage name="faq-accordion" preview={FaqAccordionPreview}>
 
-Narrowed: Q/A text rows expanding. code-accordion is code-specific, timeline-steps is process.
+Rows open in the order you give in `openOrder`, and each one closes the previous.
+The two curves overlap deliberately: the closing panel gives back its height over
+the same frames the opening one takes it, so the list keeps a steady overall
+height and nothing below it jumps. The chevron turns a full half so it ends
+pointing at the panel it just opened, and the answer copy fades in behind the
+growing edge rather than with it, which is what makes the panel read as opening
+instead of as text stretching.
 
-## Usage
+Panel heights are estimated from each answer's own length against the measured
+content width. A headless render has no settled layout to interrogate
+mid-animation — a height read from `scrollHeight` collapses to zero on exactly
+the frames that matter — so the estimate rounds up, costing a few pixels of slack
+and buying a height that is identical on every machine. Keep answers to two or
+three lines; long copy inflates that rounding.
 
-```tsx
-import { FaqAccordion } from "@/remotion/scenes/faq-accordion";
+Pass a shorter `openOrder` than `items` to leave the tail closed, which is often
+what you want: a list where every row opens spends its whole run in motion and
+never lets a viewer read one answer.
 
-<FaqAccordion />
-```
+For code panels reach for `code-accordion`, and for an ordered process rather
+than a Q&A use `timeline-steps`.
 
 </ComponentPage>

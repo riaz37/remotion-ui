@@ -1,20 +1,31 @@
 ---
 title: Commit Graph
-description: Branch/merge graph drawing itself. Install with npx remotion-ui@latest add commit-graph.
+description: A branch graph that draws itself — every edge grows from its parent, and each commit pops the moment its line arrives.
 ---
 
 import { CommitGraphPreview } from '@/components/previews/commit-graph';
 
-<ComponentPage name="commit-graph" preview={CommitGraphPreview} durationInFrames={120}>
+<ComponentPage name="commit-graph" preview={CommitGraphPreview}>
 
-Branch/merge graph drawing itself.
+Commits land one at a time in a window styled like `git log --graph`. Each
+edge grows from the commit it descends from, the dot pops as the line reaches
+it, and the message beside it fades up a beat later — so the eye follows the
+rail rather than jumping ahead to the text.
 
-## Usage
+`parent` defaults to the previous entry, which is all a straight run needs.
+Point it further back to fork a branch, put the fork's commits on `lane: 1`, and
+set `mergeFrom` on the commit that brings it home; that commit draws two edges,
+one per parent, in each parent's own lane colour.
 
-```tsx
-import { CommitGraph } from "@/remotion/scenes/commit-graph";
+Edges declare `pathLength={1}`, so the dash offset that reveals a segment is the
+same number as the commit's progress whether the segment is a one-row vertical
+hop or a long merge curve. A fork and a straight run therefore draw at the same
+apparent speed instead of the curve appearing to rush.
 
-<CommitGraph />
-```
+Fork and merge curves leave their parent vertically and arrive vertically, which
+is what makes them read as lane changes rather than diagonal shortcuts.
+
+`stepSeconds` sets the pace for both the edge and the commit that follows it,
+so a longer history is a matter of lowering it rather than restaging the beats.
 
 </ComponentPage>

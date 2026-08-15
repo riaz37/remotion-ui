@@ -1,20 +1,30 @@
 ---
 title: Comparison Table
-description: Multi-column feature matrix. Install with npx remotion-ui@latest add comparison-table.
+description: A feature matrix that fills in the way you read it — row by row, label first, each column's verdict a fraction behind the last.
 ---
 
 import { ComparisonTablePreview } from '@/components/previews/comparison-table';
 
-<ComponentPage name="comparison-table" preview={ComparisonTablePreview} durationInFrames={120}>
+<ComponentPage name="comparison-table" preview={ComparisonTablePreview}>
 
-Multi-column feature matrix. feature-list is a single ticked list.
+Rows wipe in one at a time. Inside a row the label lands first and the cells
+follow at 0.07s intervals, so the eye tracks left to right across the row
+instead of taking it as a block — the same order a viewer would read it in
+anyway.
 
-## Usage
+Cells take three forms. `true` draws a tick, `false` draws a cross, and a string
+prints as-is for the rows where the answer is a number or a word rather than a
+yes. Ticks and crosses draw their own strokes rather than fading in: at the size
+a matrix forces, a fading glyph spends most of its entrance as grey mush,
+whereas a drawing one is sharp from its first frame.
 
-```tsx
-import { ComparisonTable } from "@/remotion/scenes/comparison-table";
+`highlightColumn` lights the tier you want picked. It is one band sitting behind
+the grid, not a background on each cell, so the rows can never disagree about
+where its edges are — and `highlightLabel` pins the chip that explains it beside
+the title.
 
-<ComparisonTable />
-```
+Six rows and three columns is a comfortable ceiling at 1080p; past that, the
+row height starts fighting the type size. For a single ticked list rather than a
+matrix, use `feature-list`, and for one tier on its own use `pricing-card`.
 
 </ComponentPage>

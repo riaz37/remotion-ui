@@ -1,20 +1,30 @@
 ---
 title: Pricing Card
-description: Tier card with price roll and features. Install with npx remotion-ui@latest add pricing-card.
+description: A tier card that earns its price — the number rolls up, the features tick in beneath it, and the call to action arrives last.
 ---
 
 import { PricingCardPreview } from '@/components/previews/pricing-card';
 
-<ComponentPage name="pricing-card" preview={PricingCardPreview} durationInFrames={120}>
+<ComponentPage name="pricing-card" preview={PricingCardPreview}>
 
-Tier card with price roll and features. Block-grain; pricing-focus is a full composition.
+The price counts up under a soft blur that clears as it settles, the features
+tick in one at a time, and the button lands after the last of them — so the card
+finishes on the thing you want clicked rather than on a feature line.
 
-## Usage
+The roll is a plain interpolation on the value, not a spinning digit strip. A
+strip has to guess glyph widths to keep its columns aligned; a counted number
+stays in register with `tabular-nums` at any font size, and it reads as counting
+rather than as a slot machine. Pass `wasPrice` when there is a before-and-after
+to tell — it strikes through beside the new number once the roll is most of the
+way home.
 
-```tsx
-import { PricingCard } from "@/remotion/scenes/pricing-card";
+The call to action is scheduled off the last feature, not off a fixed second, so
+adding features pushes the button later instead of colliding with it. If you
+need the whole card inside a tighter cut, lower `featureStaggerSeconds` before
+you touch `rollSeconds` — the roll is the beat people watch.
 
-<PricingCard />
-```
+This is one card at block grain. For a full tier-comparison beat with a
+composition's pacing around it, use `pricing-focus`; for a side-by-side matrix,
+use `comparison-table`.
 
 </ComponentPage>

@@ -1,20 +1,33 @@
 ---
 title: Kanban Move
-description: Cards moving across columns. Install with npx remotion-ui@latest add kanban-move.
+description: A board where work moves — cards lift off one column, arc across the gutter, and drop into the next while the list they left closes up.
 ---
 
 import { KanbanMovePreview } from '@/components/previews/kanban-move';
 
-<ComponentPage name="kanban-move" preview={KanbanMovePreview} durationInFrames={120}>
+<ComponentPage name="kanban-move" preview={KanbanMovePreview}>
 
-Cards moving across columns. drag-drop-flow is one file into one drop zone.
+Cards deal into their columns, then the ones you have given a move lift off,
+arc across the gutter under a shadow that grows with the lift, and drop into the
+bottom of the destination list. The column being aimed at lights while a card is
+in flight and settles again once it lands, so the eye is told where the card is
+going before it gets there.
 
-## Usage
+Give a card a move with `moveTo` and `moveAtSeconds`; leave both off and it
+holds. A board where everything moves reads as noise rather than as work getting
+done — two or three moves across a scene is usually the right number.
 
-```tsx
-import { KanbanMove } from "@/remotion/scenes/kanban-move";
+Slots are arithmetic rather than layout. A moving card lands at the bottom of
+its destination *as that column stands at the moment it arrives*, and every card
+above a departure closes the gap over exactly the frames the departing card is
+travelling. Nothing here measures the DOM, so the board behaves identically in a
+headless render and in the Studio, and no card ever snaps to a new row.
 
-<KanbanMove />
-```
+Column counts follow the cards, not the clock: a card in flight is counted by
+whichever column it is closest to, so the numbers tick over at the midpoint of
+the arc.
+
+For a single file dropped into one target, `drag-drop-flow` is the smaller
+scene.
 
 </ComponentPage>
