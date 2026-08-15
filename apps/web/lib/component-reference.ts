@@ -3854,66 +3854,117 @@ import { parseSubtitles } from "@/remotion/lib/caption-utils";
     category: "primitive",
     usage: `import { WaveformBarsRadial } from "@/remotion/primitives/waveform-bars-radial";
 
-<WaveformBarsRadial />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<WaveformBarsRadial src={audioSrc} radius={112} barCount={80}>
+  <CoverArt />
+</WaveformBarsRadial>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "src", type: "string", default: "required", description: "Audio source. `.wav` only — `useWindowedAudioData` accepts nothing else." },
+      { name: "children", type: "ReactNode", default: "undefined", description: "Content in the middle of the ring: artwork, a logo, a title." },
+      { name: "radius", type: "number", default: "150", description: "Radius of the circle the bars stand on." },
+      { name: "barCount", type: "number", default: "72", description: "Bars around the ring." },
+      { name: "barWidth", type: "number", default: "5", description: "Bar thickness in px." },
+      { name: "minLength", type: "number", default: "10", description: "Bar length at silence." },
+      { name: "maxLength", type: "number", default: "90", description: "Bar length at full level." },
+      { name: "peakColor", type: "string", default: "undefined", description: "Second colour for bars above 75% level." },
+      { name: "mirror", type: "boolean", default: "true", description: "Reflect the spectrum across the vertical axis." },
+      { name: "spinPerSecond", type: "number", default: "6", description: "Degrees the ring turns per second. 0 holds it still." },
+      { name: "bidirectional", type: "boolean", default: "false", description: "Bars grow inward as well as outward." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "Mirroring is on by default because a ring running low-to-high all the way round puts every bit of energy on one side, so it wobbles rather than pulses; it also halves the bands needed. The slow spin matters: through a quiet passage a still ring is exactly what the preview audit reports as dead.",
+    related: ["audiogram-bars", "audio-pulse", "waveform-line"],
   },
   "vu-meter": {
     category: "primitive",
     usage: `import { VuMeter } from "@/remotion/primitives/vu-meter";
 
-<VuMeter />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<VuMeter src={audioSrc} orientation="vertical" labels={["L", "R"]} />`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "src", type: "string", default: "required", description: "Audio source. `.wav` only." },
+      { name: "orientation", type: '"vertical" | "horizontal"', default: '"vertical"', description: "Which way the segments stack." },
+      { name: "segments", type: "number", default: "18", description: "Segments in one channel." },
+      { name: "channels", type: "1 | 2", default: "2", description: "Second channel is weighted toward the upper spectrum." },
+      { name: "thickness", type: "number", default: "26", description: "Segment size across the short axis." },
+      { name: "length", type: "number", default: "260", description: "Meter length along its own axis." },
+      { name: "color", type: "string", default: '"#2dd4bf"', description: "Segments below the warm zone." },
+      { name: "warnColor", type: "string", default: '"#e8b86d"', description: "Segments in the top third." },
+      { name: "peakColor", type: "string", default: '"#f472b6"', description: "Segments in the top eighth." },
+      { name: "showPeakHold", type: "boolean", default: "true", description: "Peak marker that falls back slowly." },
+      { name: "peakFallPerFrame", type: "number", default: "0.018", description: "How fast the peak marker drops." },
+      { name: "labels", type: "[string, string]", default: "undefined", description: "Channel captions, e.g. `[\"L\", \"R\"]`." },
+      { name: "sensitivity", type: "number", default: "1", description: "Lifts or lowers the reading before it hits the segments." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "Level rather than spectrum — the reading that still works at 40px wide. The peak marker is reconstructed from the library's decaying peaks on every frame instead of being held in state: a render is stateless and may start on any frame, so a ref-held marker would differ between a preview scrub and a full render.",
+    related: ["audiogram-bars", "audio-pulse", "waveform-bars-radial"],
   },
   "voice-note-bubble": {
     category: "primitive",
     usage: `import { VoiceNoteBubble } from "@/remotion/primitives/voice-note-bubble";
 
-<VoiceNoteBubble />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<VoiceNoteBubble durationInFrames={120} sender="Sam" avatar="S" />`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "durationInFrames", type: "number", default: "required", description: "Length of the note. The playhead crosses the bar over exactly this." },
+      { name: "waveform", type: "number[]", default: "generated", description: "Bar heights 0–1. Omitted, a deterministic envelope is built from `seed`." },
+      { name: "barCount", type: "number", default: "42", description: "Bars drawn when the waveform is generated." },
+      { name: "seed", type: "number", default: "1", description: "Changes the generated envelope and nothing else." },
+      { name: "barHeight", type: "number", default: "44", description: "Tallest bar. Type and padding scale off it." },
+      { name: "avatar", type: "string", default: "undefined", description: "Initial or emoji in the round badge." },
+      { name: "sender", type: "string", default: "undefined", description: "Name above the waveform." },
+      { name: "showTime", type: "boolean", default: "true", description: "Elapsed / total readout under the bar." },
+      { name: "align", type: '"left" | "right"', default: '"left"', description: "Side of the frame the bubble sits on." },
+      { name: "showPlayhead", type: "boolean", default: "true", description: "Dot riding the played/unplayed boundary." },
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames before the playhead starts moving." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "The waveform is static and only the colour moves through it, as every messaging app draws it — animating bar heights would be a live spectrum, which contradicts the fact that a voice note's shape is known before playback. Position comes from frames, not analysis, so the bubble can front a note that is only described.",
+    related: ["audio-scrubber", "audiogram-bars", "chat-bubble"],
   },
   "beat-pulse-grid": {
     category: "primitive",
     usage: `import { BeatPulseGrid } from "@/remotion/primitives/beat-pulse-grid";
 
-<BeatPulseGrid />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<BeatPulseGrid src={audioSrc} columns={14} rows={7} mapping="radial" />`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "src", type: "string", default: "required", description: "Audio source. `.wav` only." },
+      { name: "columns", type: "number", default: "12", description: "Cells across." },
+      { name: "rows", type: "number", default: "6", description: "Cells down." },
+      { name: "cellSize", type: "number", default: "34", description: "Cell edge length in px." },
+      { name: "mapping", type: '"column" | "radial" | "row"', default: '"radial"', description: "How the spectrum is laid over the geometry." },
+      { name: "idleColor", type: "string", default: "rgba(250,250,250,0.07)", description: "Cell colour at rest." },
+      { name: "color", type: "string", default: '"#e8b86d"', description: "Cell colour at level." },
+      { name: "peakColor", type: "string", default: '"#f472b6"', description: "Colour of the loudest cells." },
+      { name: "pulseScale", type: "number", default: "0.28", description: "Extra scale a cell takes at full level." },
+      { name: "floor", type: "number", default: "0.06", description: "Level below which a cell stays dark. Cuts the noise floor." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "Each cell is bound to a band rather than the overall level — a grid where every cell agrees is one flashing rectangle. Cells carry their band's decaying peak under the live level, the same trick as a peak-hold meter, because a one-frame transient is invisible at 30fps.",
+    related: ["caption-emoji-beat", "audiogram-bars", "heatmap-grid"],
   },
   "audio-scrubber": {
     category: "primitive",
     usage: `import { AudioScrubber } from "@/remotion/primitives/audio-scrubber";
 
-<AudioScrubber />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<AudioScrubber
+  durationInFrames={120}
+  marks={[{ atInFrames: 66, label: "Quote" }]}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "durationInFrames", type: "number", default: "required", description: "Clip length. The playhead crosses the track over exactly this." },
+      { name: "waveform", type: "number[]", default: "generated", description: "Bar heights 0–1. Omitted, a deterministic envelope is built from `seed`." },
+      { name: "barCount", type: "number", default: "96", description: "Bars drawn when the waveform is generated." },
+      { name: "width", type: "number", default: "720", description: "Overall width, time labels included." },
+      { name: "height", type: "number", default: "96", description: "Track height. Type scales off it." },
+      { name: "playedColor", type: "string", default: '"#e8b86d"', description: "Bars already played." },
+      { name: "unplayedColor", type: "string", default: "rgba(250,250,250,0.2)", description: "Bars not yet reached." },
+      { name: "marks", type: "{ atInFrames, label? }[]", default: "undefined", description: "Chapter rules at frame positions." },
+      { name: "mirrored", type: "boolean", default: "true", description: "Centre the bars the way an editor draws them." },
+      { name: "showTime", type: "boolean", default: "true", description: "Elapsed and total readouts either side of the track." },
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames before the playhead starts moving." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "Position comes from frames rather than audio analysis, so the playhead lands on the frame the edit says it should. The waveform is static and the colour boundary moves through it — animating the heights would make it a live spectrum, which is `audiogram-bars`. Marks sit under the playhead so it is never hidden behind one.",
+    related: ["voice-note-bubble", "audiogram-bars", "waveform-line"],
   },
 };
 

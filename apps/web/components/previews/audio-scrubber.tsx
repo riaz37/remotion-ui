@@ -1,18 +1,30 @@
 "use client";
 
+import { AbsoluteFill } from "remotion";
 import { AudioScrubber } from "../registry-exports";
 import { PreviewFrame } from "./preview-frame";
 
+const MARKS = [
+  { atInFrames: 30, label: "Intro" },
+  { atInFrames: 66, label: "Quote" },
+  { atInFrames: 100, label: "Outro" },
+];
+
 /**
- * The audit samples at 15% / 50% / 90% of the window — frames 18, 60 and 108 on
- * the 120-frame default. Motion must still be running at frame 18 and not yet
- * settled at 60, or all three samples land on a still image and the preview is
- * reported dead. See docs-internal/preview-audit-rubric.md.
+ * The playhead crosses the track over the full 120-frame window, passing a
+ * different chapter mark before each audit sample, so no sample sits on a
+ * settled frame.
  */
 export const AudioScrubberPreview: React.FC = () => (
-  <PreviewFrame lane="signals" padding={72}>
-    <div style={{ display: "grid", placeItems: "center", width: "100%" }}>
-      <AudioScrubber delayInFrames={2} durationInFrames={40} />
-    </div>
+  <PreviewFrame lane="signals" padding={0}>
+    <AbsoluteFill style={{ justifyContent: "center", padding: "0 64px" }}>
+      <AudioScrubber
+        durationInFrames={120}
+        width={800}
+        height={110}
+        barCount={90}
+        marks={MARKS}
+      />
+    </AbsoluteFill>
   </PreviewFrame>
 );

@@ -3601,10 +3601,11 @@
       "type": "registry:ui",
       "description": "Circular bars around a center element",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/media-utils"
       ],
       "registryDependencies": [
-        "layout"
+        "audio-viz-utils"
       ],
       "files": [
         {
@@ -3618,10 +3619,11 @@
       "type": "registry:ui",
       "description": "Segmented level meter with peak hold",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/media-utils"
       ],
       "registryDependencies": [
-        "layout"
+        "audio-viz-utils"
       ],
       "files": [
         {
@@ -3637,9 +3639,7 @@
       "dependencies": [
         "remotion"
       ],
-      "registryDependencies": [
-        "layout"
-      ],
+      "registryDependencies": [],
       "files": [
         {
           "path": "registry/bases/default/primitives/voice-note-bubble.tsx",
@@ -3652,10 +3652,11 @@
       "type": "registry:ui",
       "description": "Grid cells pulsing on detected beats",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/media-utils"
       ],
       "registryDependencies": [
-        "layout"
+        "audio-viz-utils"
       ],
       "files": [
         {
@@ -3671,9 +3672,7 @@
       "dependencies": [
         "remotion"
       ],
-      "registryDependencies": [
-        "layout"
-      ],
+      "registryDependencies": [],
       "files": [
         {
           "path": "registry/bases/default/primitives/audio-scrubber.tsx",

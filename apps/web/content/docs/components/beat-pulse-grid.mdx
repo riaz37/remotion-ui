@@ -1,20 +1,42 @@
 ---
 title: Beat Pulse Grid
-description: Grid cells pulsing on detected beats. Install with npx remotion-ui@latest add beat-pulse-grid.
+description: Grid cells pulsing with the track. Install with npx remotion-ui@latest add beat-pulse-grid.
 ---
 
 import { BeatPulseGridPreview } from '@/components/previews/beat-pulse-grid';
 
-<ComponentPage name="beat-pulse-grid" preview={BeatPulseGridPreview} durationInFrames={120}>
+<ComponentPage name="beat-pulse-grid" preview={BeatPulseGridPreview}>
 
-Grid cells pulsing on detected beats.
-
-## Usage
+A grid of cells pulsing with the audio.
 
 ```tsx
 import { BeatPulseGrid } from "@/remotion/primitives/beat-pulse-grid";
 
-<BeatPulseGrid />
+<BeatPulseGrid src={audioSrc} columns={14} rows={7} mapping="radial" />
 ```
+
+## Every cell has its own band
+
+A grid where each cell follows the overall level is one big flashing rectangle;
+the point of a grid is that its parts can disagree. `mapping` decides how the
+spectrum is laid over the geometry — `column` runs it left to right, `row` top
+to bottom, and `radial` maps it outward from the centre, which reads as a pulse
+travelling through the grid on the kick.
+
+## The decaying trace
+
+Cells carry their band's peak, dimmed, under the live level — the same trick as
+a peak-hold meter. At 30fps a one-frame transient is invisible, and the trace is
+what makes the beat legible instead of a flicker.
+
+`floor` cuts the noise floor so quiet passages stay dark rather than shimmering,
+and the kick lifts every cell slightly, which is what makes the pattern read as
+one instrument rather than many.
+
+## Scheduled beats instead
+
+When the beats are already known from the edit, `caption-emoji-beat` takes
+explicit frames. This component is for reacting to a track you are actually
+playing.
 
 </ComponentPage>

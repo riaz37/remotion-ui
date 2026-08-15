@@ -1,18 +1,42 @@
 "use client";
 
+import { AbsoluteFill } from "remotion";
 import { VoiceNoteBubble } from "../registry-exports";
 import { PreviewFrame } from "./preview-frame";
 
 /**
- * The audit samples at 15% / 50% / 90% of the window — frames 18, 60 and 108 on
- * the 120-frame default. Motion must still be running at frame 18 and not yet
- * settled at 60, or all three samples land on a still image and the preview is
- * reported dead. See docs-internal/preview-audit-rubric.md.
+ * The playhead crosses the bar over the full 120-frame window, so the coloured
+ * boundary is in a different place at every audit sample and there is no tail
+ * to freeze.
  */
 export const VoiceNoteBubblePreview: React.FC = () => (
-  <PreviewFrame lane="signals" padding={72}>
-    <div style={{ display: "grid", placeItems: "center", width: "100%" }}>
-      <VoiceNoteBubble delayInFrames={2} durationInFrames={40} />
-    </div>
+  <PreviewFrame lane="signals" padding={0}>
+    <AbsoluteFill
+      style={{
+        justifyContent: "center",
+        padding: "0 72px",
+        gap: 28,
+      }}
+    >
+      <VoiceNoteBubble
+        durationInFrames={120}
+        sender="Sam"
+        avatar="S"
+        barCount={44}
+        width={560}
+        barHeight={48}
+      />
+      <VoiceNoteBubble
+        durationInFrames={120}
+        delayInFrames={26}
+        seed={7}
+        align="right"
+        barCount={32}
+        width={420}
+        barHeight={40}
+        playedColor="#2dd4bf"
+        showTime={false}
+      />
+    </AbsoluteFill>
   </PreviewFrame>
 );

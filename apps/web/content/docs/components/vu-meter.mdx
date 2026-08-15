@@ -1,20 +1,45 @@
 ---
-title: Vu Meter
+title: VU Meter
 description: Segmented level meter with peak hold. Install with npx remotion-ui@latest add vu-meter.
 ---
 
 import { VuMeterPreview } from '@/components/previews/vu-meter';
 
-<ComponentPage name="vu-meter" preview={VuMeterPreview} durationInFrames={120}>
+<ComponentPage name="vu-meter" preview={VuMeterPreview}>
 
-Segmented level meter with peak hold. Level, not spectrum.
-
-## Usage
+A segmented level meter with peak hold.
 
 ```tsx
 import { VuMeter } from "@/remotion/primitives/vu-meter";
 
-<VuMeter />
+<VuMeter src={audioSrc} orientation="vertical" labels={["L", "R"]} />
 ```
+
+## Level, not spectrum
+
+`audiogram-bars` and `waveform-bars-radial` show *what* the frequencies are
+doing. This shows only how loud it is — the reading an engineer actually
+watches, and the one that still works at 40px wide in the corner of a frame.
+
+## Peak hold
+
+At 30fps a transient that lights the top segment for one frame is invisible. The
+marker comes from the decaying peaks the audio library already tracks, so it is
+reconstructed from the waveform on every frame rather than held in component
+state: a render is stateless and may start on any frame, and a ref-held marker
+would differ between a preview scrub and a full render.
+
+`peakFallPerFrame` sets how fast the marker drops back.
+
+## Two channels
+
+The second channel is weighted toward the upper half of the spectrum. It is not
+a real stereo split — the analysis is mono — but it is what stops a pair from
+looking like one meter drawn twice. Pass `channels={1}` when honesty matters
+more than the look.
+
+The top eighth of the scale takes `peakColor`, the third below it `warnColor`;
+a partly lit top segment reads as a level sitting between two steps rather than
+snapping down to the lower one.
 
 </ComponentPage>

@@ -1,20 +1,45 @@
 ---
 title: Waveform Bars Radial
-description: Circular bars around a center element. Install with npx remotion-ui@latest add waveform-bars-radial.
+description: Circular bars around a centre element. Install with npx remotion-ui@latest add waveform-bars-radial.
 ---
 
 import { WaveformBarsRadialPreview } from '@/components/previews/waveform-bars-radial';
 
-<ComponentPage name="waveform-bars-radial" preview={WaveformBarsRadialPreview} durationInFrames={120}>
+<ComponentPage name="waveform-bars-radial" preview={WaveformBarsRadialPreview}>
 
-Circular bars around a center element. Distinct geometry from audiogram-bars.
-
-## Usage
+A spectrum wrapped into a circle, around whatever sits in the middle.
 
 ```tsx
 import { WaveformBarsRadial } from "@/remotion/primitives/waveform-bars-radial";
 
-<WaveformBarsRadial />
+<WaveformBarsRadial src={audioSrc} radius={112} barCount={80}>
+  <CoverArt />
+</WaveformBarsRadial>
 ```
+
+## Where it sits
+
+Different geometry from `audiogram-bars`, which is a straight row. A ring frames
+a centre element instead of underlining it and reads at any aspect ratio, which
+is why it is the shape social audio clips use.
+
+## Mirroring
+
+`mirror` reflects the spectrum across the vertical axis and is on by default. A
+ring that runs low-to-high all the way round puts every bit of energy on one
+side, so the shape wobbles rather than pulses. Mirroring also halves the number
+of distinct bands the ring needs, so the spectrum is not stretched across twice
+as many bars as it has resolution for.
+
+## Motion at rest
+
+`spinPerSecond` turns the whole ring slowly. It matters more than it looks:
+through a quiet passage the bars barely move, and a still ring is exactly what
+the preview audit reports as a dead frame. `bidirectional` grows bars inward as
+well as outward, which suits a thin centre element.
+
+The source must be a `.wav` — `useWindowedAudioData` accepts nothing else — and
+while it loads the bars run on the library's deterministic idle envelope rather
+than sitting flat.
 
 </ComponentPage>

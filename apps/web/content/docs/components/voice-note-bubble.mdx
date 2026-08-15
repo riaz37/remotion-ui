@@ -5,16 +5,38 @@ description: Chat-style audio message with waveform and playhead. Install with n
 
 import { VoiceNoteBubblePreview } from '@/components/previews/voice-note-bubble';
 
-<ComponentPage name="voice-note-bubble" preview={VoiceNoteBubblePreview} durationInFrames={120}>
+<ComponentPage name="voice-note-bubble" preview={VoiceNoteBubblePreview}>
 
-Chat-style audio message with waveform and playhead.
-
-## Usage
+A chat-style audio message: waveform, playhead and running time.
 
 ```tsx
 import { VoiceNoteBubble } from "@/remotion/primitives/voice-note-bubble";
 
-<VoiceNoteBubble />
+<VoiceNoteBubble durationInFrames={120} sender="Sam" avatar="S" />
 ```
+
+## The waveform is static
+
+Only the colour moves through it, which is how every messaging app draws this. A
+bar chart that animated its heights would be a live spectrum — a different claim
+entirely, and one that contradicts the fact that a voice note's shape is known
+before you press play.
+
+The bar being crossed blends between the two colours, so the boundary travels
+smoothly instead of stepping bar by bar.
+
+## Position comes from frames
+
+`durationInFrames` drives the playhead, not audio analysis, so the bubble can
+front a note that is described rather than played — and the playhead lands on
+the frame the edit says it should. `delayInFrames` staggers a second bubble in a
+conversation.
+
+## Waveform data
+
+Pass real per-bar levels as `waveform` when you have them. Otherwise a
+deterministic envelope is generated from `seed`: bursts of syllables inside
+phrases with short gaps, because flat noise reads as a machine and a single sine
+reads as a tone. Changing `seed` changes the shape and nothing else.
 
 </ComponentPage>

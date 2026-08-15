@@ -1,20 +1,43 @@
 ---
 title: Audio Scrubber
-description: Waveform with traveling playhead and time labels. Install with npx remotion-ui@latest add audio-scrubber.
+description: Waveform with travelling playhead and time labels. Install with npx remotion-ui@latest add audio-scrubber.
 ---
 
 import { AudioScrubberPreview } from '@/components/previews/audio-scrubber';
 
-<ComponentPage name="audio-scrubber" preview={AudioScrubberPreview} durationInFrames={120}>
+<ComponentPage name="audio-scrubber" preview={AudioScrubberPreview}>
 
-Waveform with traveling playhead and time labels.
-
-## Usage
+A waveform with a travelling playhead, chapter marks and time labels.
 
 ```tsx
 import { AudioScrubber } from "@/remotion/primitives/audio-scrubber";
 
-<AudioScrubber />
+<AudioScrubber
+  durationInFrames={120}
+  marks={[{ atInFrames: 66, label: "Quote" }]}
+/>
 ```
+
+## Position comes from frames
+
+Not from audio analysis. The playhead lands exactly on the frame the edit says
+it should, rather than wherever a detector thinks the audio is — and the
+scrubber can front a clip that is only being described.
+
+## The waveform is static
+
+The colour boundary moves through it. That is the shape of a file, known before
+playback; animating the bar heights would be a live spectrum, which is
+`audiogram-bars`.
+
+Pass measured levels as `waveform`, or let a deterministic envelope be generated
+from `seed`. `mirrored` centres the bars the way an editor draws them; turn it
+off for a baseline-anchored bar chart.
+
+## Marks
+
+`marks` places rules at frame positions with optional labels — chapter points,
+quotes, the cut you are about to make. They sit under the playhead, so the
+playhead is never hidden behind one.
 
 </ComponentPage>
