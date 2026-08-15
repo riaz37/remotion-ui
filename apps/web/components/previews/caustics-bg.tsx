@@ -1,18 +1,24 @@
 "use client";
 
 import { CausticsBg } from "../registry-exports";
-import { PreviewFrame } from "./preview-frame";
+import { DEMO_COPY } from "@/lib/demo-assets";
+import { PreviewFrame, ProductCard } from "./preview-frame";
 
 /**
- * The audit samples at 15% / 50% / 90% of the window — frames 18, 60 and 108 on
- * the 120-frame default. Motion must still be running at frame 18 and not yet
- * settled at 60, or all three samples land on a still image and the preview is
- * reported dead. See docs-internal/preview-audit-rubric.md.
+ * The three interference layers traverse a wavelength in 72, 33 and 51 frames.
+ * None of those is close to the audit's 42 and 48-frame sample gaps, and none
+ * is a multiple of another, so the summed web is a different shape at frames
+ * 18, 60 and 108 rather than the same web slid sideways.
  */
 export const CausticsBgPreview: React.FC = () => (
-  <PreviewFrame lane="atoms" padding={72}>
-    <div style={{ display: "grid", placeItems: "center", width: "100%" }}>
-      <CausticsBg delayInFrames={2} durationInFrames={40} />
-    </div>
+  <PreviewFrame lane="atoms" padding={0}>
+    <CausticsBg scale={130} contrast={3.6} blur={9} intensity={1.15} />
+    <PreviewFrame lane="blocks" backgroundColor="transparent" padding={72}>
+      <ProductCard
+        kicker="Ambient layer"
+        title="Caustics"
+        detail={DEMO_COPY.creatorHook.subtitle}
+      />
+    </PreviewFrame>
   </PreviewFrame>
 );
