@@ -96,9 +96,15 @@ importers:
         specifier: ^4.4.3
         version: 4.4.3
     devDependencies:
+      '@remotion/bundler':
+        specifier: ^4.0.505
+        version: 4.0.505(@swc/helpers@0.5.15)(lightningcss@1.32.0)(postcss@8.5.15)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@remotion/cli':
         specifier: ^4.0.505
         version: 4.0.505(@swc/helpers@0.5.15)(lightningcss@1.32.0)(postcss@8.5.15)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@5.9.3)
+      '@remotion/renderer':
+        specifier: ^4.0.505
+        version: 4.0.505(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@remotionui/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
