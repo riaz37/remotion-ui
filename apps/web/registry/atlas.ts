@@ -291,6 +291,7 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   "transition-whip-pan": { lane: "cuts", drive: "time", tier: "core" },
   "transition-morph-shape": { lane: "cuts", drive: "time", tier: "advanced" },
   "transition-liquid-warp": { lane: "cuts", drive: "time", tier: "advanced" },
+  "skew-in": { lane: "atoms", drive: "time", tier: "core", tags: ["enter"] },
 };
 
 export function getAtlasMeta(name: string): AtlasMeta | undefined {

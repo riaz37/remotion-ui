@@ -116,3 +116,4 @@ export { transitionBlinds, getTransitionBlindsDuration } from "../registry/bases
 export { transitionWhipPan, getTransitionWhipPanDuration } from "../registry/bases/default/primitives/transition-whip-pan";
 export { transitionMorphShape, getTransitionMorphShapeDuration } from "../registry/bases/default/primitives/transition-morph-shape";
 export { transitionLiquidWarp, getTransitionLiquidWarpDuration } from "../registry/bases/default/primitives/transition-liquid-warp";
+export { SkewIn } from "../registry/bases/default/primitives/skew-in";

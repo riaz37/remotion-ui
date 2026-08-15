@@ -120,6 +120,7 @@ import {
 import { WaveformLinePreview } from "./previews/waveform-line";
 import { MarkerHighlightPreview } from "./previews/marker-highlight";
 import { ZoomPanFramePreview } from "./previews/zoom-pan-frame";
+import { SkewInPreview } from "./previews/skew-in";
 
 type AtlasMiniPreviewProps = {
   slug: string;
@@ -243,6 +244,7 @@ const PREVIEWS: Record<string, React.ComponentType> = {
   "waveform-line": WaveformLinePreview,
   "marker-highlight": MarkerHighlightPreview,
   "zoom-pan-frame": ZoomPanFramePreview,
+  "skew-in": SkewInPreview,
 };
 
 

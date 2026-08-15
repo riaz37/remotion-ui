@@ -84,7 +84,7 @@ Weights shifted after dedup: spatial collapsed from +8 to +3 because `device-moc
 
 > This group lost four of five entries to dedup. `spring-in` already ships bouncy and snappy presets; `rotate-in` already hinges in depth; `slide-*` already mask-reveal. The entrance space is genuinely full.
 
-### Text (8)
+### Text (9)
 
 | Slug | Tags | Tier | Intent |
 |---|---|---|---|
@@ -98,7 +98,7 @@ Weights shifted after dedup: spatial collapsed from +8 to +3 because `device-moc
 | `wave-text` | text | core | Per-character sine displacement. |
 | `neon-flicker-text` | text | core | Neon sign flicker and settle. |
 
-### Backgrounds (4)
+### Backgrounds (6)
 
 | Slug | Tags | Tier | Intent |
 |---|---|---|---|
@@ -107,8 +107,9 @@ Weights shifted after dedup: spatial collapsed from +8 to +3 because `device-moc
 | `topographic-lines-bg` | background | core | Contour lines drifting. |
 | `caustics-bg` | background | advanced | Underwater light caustics. |
 | `animated-noise-grain` | background | core | Film grain overlay. **Watch render cost** — precompute or use CSS, don't generate noise per frame. |
+| `light-rays` | background | core | Volumetric god rays drifting across the stage. Distinct from `light-sweep-text` (text-only) and `mesh-gradient-bg` (blobs). |
 
-### Effects (6)
+### Effects (8)
 
 | Slug | Tags | Tier | Intent |
 |---|---|---|---|

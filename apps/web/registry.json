@@ -2837,6 +2837,23 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "skew-in",
+      "type": "registry:ui",
+      "description": "Skew + translate, editorial feel",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/skew-in.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

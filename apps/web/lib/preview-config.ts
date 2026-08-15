@@ -128,6 +128,7 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "transition-whip-pan": { durationInFrames: 120 },
   "transition-morph-shape": { durationInFrames: 120 },
   "transition-liquid-warp": { durationInFrames: 120 },
+  "skew-in": { durationInFrames: 120 },
 };
 
 export function previewMeta(slug: string): Required<PreviewMeta> {

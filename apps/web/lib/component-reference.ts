@@ -2717,6 +2717,16 @@ const { lines } = useSplitText({ text, mode: "words" });`,
     note: "Configuration of the shared displacement presentation: the turbulence channel with no mask.",
     related: ["transition-morph-shape", "transition-fade"],
   },
+  "skew-in": {
+    category: "primitive",
+    usage: `import { SkewIn } from "@/remotion/primitives/skew-in";
+
+<SkewIn />`,
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
 };
 
 export function getComponentReference(name: string): ComponentReference | undefined {

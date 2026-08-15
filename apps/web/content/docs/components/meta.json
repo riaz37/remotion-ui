@@ -29,6 +29,7 @@
     "progress-bar",
     "rotate-in",
     "scale-in",
+    "skew-in",
     "slide-left",
     "slide-up",
     "spring-in",
