@@ -160,3 +160,8 @@ export { CaptionEmojiBeat } from "../registry/bases/default/primitives/caption-e
 export { SpeakerLabelCaptions } from "../registry/bases/default/primitives/speaker-label-captions";
 export { TranscriptScroll } from "../registry/bases/default/primitives/transcript-scroll";
 export { SubtitleTranslate } from "../registry/bases/default/primitives/subtitle-translate";
+export { WaveformBarsRadial } from "../registry/bases/default/primitives/waveform-bars-radial";
+export { VuMeter } from "../registry/bases/default/primitives/vu-meter";
+export { VoiceNoteBubble } from "../registry/bases/default/primitives/voice-note-bubble";
+export { BeatPulseGrid } from "../registry/bases/default/primitives/beat-pulse-grid";
+export { AudioScrubber } from "../registry/bases/default/primitives/audio-scrubber";

@@ -164,6 +164,11 @@ import { CaptionEmojiBeatPreview } from "./previews/caption-emoji-beat";
 import { SpeakerLabelCaptionsPreview } from "./previews/speaker-label-captions";
 import { TranscriptScrollPreview } from "./previews/transcript-scroll";
 import { SubtitleTranslatePreview } from "./previews/subtitle-translate";
+import { WaveformBarsRadialPreview } from "./previews/waveform-bars-radial";
+import { VuMeterPreview } from "./previews/vu-meter";
+import { VoiceNoteBubblePreview } from "./previews/voice-note-bubble";
+import { BeatPulseGridPreview } from "./previews/beat-pulse-grid";
+import { AudioScrubberPreview } from "./previews/audio-scrubber";
 
 type AtlasMiniPreviewProps = {
   slug: string;
@@ -331,6 +336,11 @@ const PREVIEWS: Record<string, React.ComponentType> = {
   "speaker-label-captions": SpeakerLabelCaptionsPreview,
   "transcript-scroll": TranscriptScrollPreview,
   "subtitle-translate": SubtitleTranslatePreview,
+  "waveform-bars-radial": WaveformBarsRadialPreview,
+  "vu-meter": VuMeterPreview,
+  "voice-note-bubble": VoiceNoteBubblePreview,
+  "beat-pulse-grid": BeatPulseGridPreview,
+  "audio-scrubber": AudioScrubberPreview,
 };
 
 

@@ -3850,6 +3850,71 @@ import { parseSubtitles } from "@/remotion/lib/caption-utils";
     note: "The two lines are deliberately unequal in weight and ink — styled the same, the block reads as one four-line caption and the viewer has to work out which half is theirs. The secondary trails by a few frames so the eye is given an order. Nothing renders between cues; the block is tall enough that holding it would cover the shot.",
     related: ["srt-caption-track", "speaker-label-captions", "caption-highlight"],
   },
+  "waveform-bars-radial": {
+    category: "primitive",
+    usage: `import { WaveformBarsRadial } from "@/remotion/primitives/waveform-bars-radial";
+
+<WaveformBarsRadial />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "vu-meter": {
+    category: "primitive",
+    usage: `import { VuMeter } from "@/remotion/primitives/vu-meter";
+
+<VuMeter />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "voice-note-bubble": {
+    category: "primitive",
+    usage: `import { VoiceNoteBubble } from "@/remotion/primitives/voice-note-bubble";
+
+<VoiceNoteBubble />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "beat-pulse-grid": {
+    category: "primitive",
+    usage: `import { BeatPulseGrid } from "@/remotion/primitives/beat-pulse-grid";
+
+<BeatPulseGrid />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "audio-scrubber": {
+    category: "primitive",
+    usage: `import { AudioScrubber } from "@/remotion/primitives/audio-scrubber";
+
+<AudioScrubber />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
 };
 
 export function getComponentReference(name: string): ComponentReference | undefined {

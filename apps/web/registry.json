@@ -3595,6 +3595,91 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "waveform-bars-radial",
+      "type": "registry:ui",
+      "description": "Circular bars around a center element",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/waveform-bars-radial.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "vu-meter",
+      "type": "registry:ui",
+      "description": "Segmented level meter with peak hold",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/vu-meter.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "voice-note-bubble",
+      "type": "registry:ui",
+      "description": "Chat-style audio message with waveform and playhead",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/voice-note-bubble.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "beat-pulse-grid",
+      "type": "registry:ui",
+      "description": "Grid cells pulsing on detected beats",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/beat-pulse-grid.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "audio-scrubber",
+      "type": "registry:ui",
+      "description": "Waveform with traveling playhead and time labels",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/audio-scrubber.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

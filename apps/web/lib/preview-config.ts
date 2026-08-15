@@ -172,6 +172,11 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "speaker-label-captions": { durationInFrames: 120 },
   "transcript-scroll": { durationInFrames: 120 },
   "subtitle-translate": { durationInFrames: 120 },
+  "waveform-bars-radial": { durationInFrames: 120 },
+  "vu-meter": { durationInFrames: 120 },
+  "voice-note-bubble": { durationInFrames: 120 },
+  "beat-pulse-grid": { durationInFrames: 120 },
+  "audio-scrubber": { durationInFrames: 120 },
 };
 
 export function previewMeta(slug: string): Required<PreviewMeta> {

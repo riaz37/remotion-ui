@@ -1,0 +1,20 @@
+---
+title: Vu Meter
+description: Segmented level meter with peak hold. Install with npx remotion-ui@latest add vu-meter.
+---
+
+import { VuMeterPreview } from '@/components/previews/vu-meter';
+
+<ComponentPage name="vu-meter" preview={VuMeterPreview} durationInFrames={120}>
+
+Segmented level meter with peak hold. Level, not spectrum.
+
+## Usage
+
+```tsx
+import { VuMeter } from "@/remotion/primitives/vu-meter";
+
+<VuMeter />
+```
+
+</ComponentPage>
