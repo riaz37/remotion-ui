@@ -3966,6 +3966,71 @@ import { parseSubtitles } from "@/remotion/lib/caption-utils";
     note: "Position comes from frames rather than audio analysis, so the playhead lands on the frame the edit says it should. The waveform is static and the colour boundary moves through it — animating the heights would make it a live spectrum, which is `audiogram-bars`. Marks sit under the playhead so it is never hidden behind one.",
     related: ["voice-note-bubble", "audiogram-bars", "waveform-line"],
   },
+  "poll-overlay": {
+    category: "scene",
+    usage: `import { PollOverlay } from "@/remotion/scenes/poll-overlay";
+
+<PollOverlay />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "reaction-burst": {
+    category: "scene",
+    usage: `import { ReactionBurst } from "@/remotion/scenes/reaction-burst";
+
+<ReactionBurst />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "countdown-timer": {
+    category: "scene",
+    usage: `import { CountdownTimer } from "@/remotion/scenes/countdown-timer";
+
+<CountdownTimer />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "sports-scorebug": {
+    category: "scene",
+    usage: `import { SportsScorebug } from "@/remotion/scenes/sports-scorebug";
+
+<SportsScorebug />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "news-ticker-bar": {
+    category: "scene",
+    usage: `import { NewsTickerBar } from "@/remotion/scenes/news-ticker-bar";
+
+<NewsTickerBar />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
 };
 
 export function getComponentReference(name: string): ComponentReference | undefined {

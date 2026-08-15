@@ -169,6 +169,11 @@ import { VuMeterPreview } from "./previews/vu-meter";
 import { VoiceNoteBubblePreview } from "./previews/voice-note-bubble";
 import { BeatPulseGridPreview } from "./previews/beat-pulse-grid";
 import { AudioScrubberPreview } from "./previews/audio-scrubber";
+import { PollOverlayPreview } from "./previews/poll-overlay";
+import { ReactionBurstPreview } from "./previews/reaction-burst";
+import { CountdownTimerPreview } from "./previews/countdown-timer";
+import { SportsScorebugPreview } from "./previews/sports-scorebug";
+import { NewsTickerBarPreview } from "./previews/news-ticker-bar";
 
 type AtlasMiniPreviewProps = {
   slug: string;
@@ -341,6 +346,11 @@ const PREVIEWS: Record<string, React.ComponentType> = {
   "voice-note-bubble": VoiceNoteBubblePreview,
   "beat-pulse-grid": BeatPulseGridPreview,
   "audio-scrubber": AudioScrubberPreview,
+  "poll-overlay": PollOverlayPreview,
+  "reaction-burst": ReactionBurstPreview,
+  "countdown-timer": CountdownTimerPreview,
+  "sports-scorebug": SportsScorebugPreview,
+  "news-ticker-bar": NewsTickerBarPreview,
 };
 
 

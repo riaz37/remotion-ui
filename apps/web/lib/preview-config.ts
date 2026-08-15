@@ -177,6 +177,11 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "voice-note-bubble": { durationInFrames: 120 },
   "beat-pulse-grid": { durationInFrames: 120 },
   "audio-scrubber": { durationInFrames: 120 },
+  "poll-overlay": { durationInFrames: 120 },
+  "reaction-burst": { durationInFrames: 120 },
+  "countdown-timer": { durationInFrames: 120 },
+  "sports-scorebug": { durationInFrames: 120 },
+  "news-ticker-bar": { durationInFrames: 120 },
 };
 
 export function previewMeta(slug: string): Required<PreviewMeta> {

@@ -165,3 +165,8 @@ export { VuMeter } from "../registry/bases/default/primitives/vu-meter";
 export { VoiceNoteBubble } from "../registry/bases/default/primitives/voice-note-bubble";
 export { BeatPulseGrid } from "../registry/bases/default/primitives/beat-pulse-grid";
 export { AudioScrubber } from "../registry/bases/default/primitives/audio-scrubber";
+export { PollOverlay } from "../registry/bases/default/scenes/poll-overlay";
+export { ReactionBurst } from "../registry/bases/default/scenes/reaction-burst";
+export { CountdownTimer } from "../registry/bases/default/scenes/countdown-timer";
+export { SportsScorebug } from "../registry/bases/default/scenes/sports-scorebug";
+export { NewsTickerBar } from "../registry/bases/default/scenes/news-ticker-bar";

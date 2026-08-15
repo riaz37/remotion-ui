@@ -3679,6 +3679,91 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "poll-overlay",
+      "type": "registry:block",
+      "description": "Question with bars filling to results",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/poll-overlay/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "reaction-burst",
+      "type": "registry:block",
+      "description": "Narrowed: hearts/likes rising continuously",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/reaction-burst/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "countdown-timer",
+      "type": "registry:block",
+      "description": "Numeric or ring countdown to zero",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/countdown-timer/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "sports-scorebug",
+      "type": "registry:block",
+      "description": "Broadcast score furniture with clock",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/sports-scorebug/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "news-ticker-bar",
+      "type": "registry:block",
+      "description": "Broadcast lower ticker with headlines",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/news-ticker-bar/index.tsx",
+          "type": "registry:block"
+        }
+      ]
     }
   ]
 }
