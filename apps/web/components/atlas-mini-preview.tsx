@@ -65,6 +65,9 @@ import { SlideLeftPreview } from "./previews/slide-left";
 import { SlideUpPreview } from "./previews/slide-up";
 import { SocialClipPreview } from "./previews/social-clip";
 import { SplitScreenPreview } from "./previews/split-screen";
+import { SplitTextCharsPreview } from "./previews/split-text-chars";
+import { AudioReactiveScalePreview } from "./previews/audio-reactive-scale";
+import { SrtCaptionTrackPreview } from "./previews/srt-caption-track";
 import { SpringInPreview } from "./previews/spring-in";
 import { StaggerChildrenPreview } from "./previews/stagger-children";
 import { StatCardPreview } from "./previews/stat-card";
@@ -88,6 +91,12 @@ import { TransitionBlurRevealPreview } from "./previews/transition-blur-reveal";
 import { TransitionChromaticAberrationWipePreview } from "./previews/transition-chromatic-aberration-wipe";
 import { TransitionDirectionalWipePreview } from "./previews/transition-directional-wipe";
 import { TransitionFrostedGlassWipePreview } from "./previews/transition-frosted-glass-wipe";
+import { TransitionCircleRevealPreview } from "./previews/transition-circle-reveal";
+import { TransitionCardFlipPreview } from "./previews/transition-card-flip";
+import { TransitionBlindsPreview } from "./previews/transition-blinds";
+import { TransitionWhipPanPreview } from "./previews/transition-whip-pan";
+import { TransitionMorphShapePreview } from "./previews/transition-morph-shape";
+import { TransitionLiquidWarpPreview } from "./previews/transition-liquid-warp";
 import { TransitionGridPixelateWipePreview } from "./previews/transition-grid-pixelate-wipe";
 import { TransitionSpatialPushPreview } from "./previews/transition-spatial-push";
 import { TransitionZoomThroughPreview } from "./previews/transition-zoom-through";
@@ -196,6 +205,9 @@ const PREVIEWS: Record<string, React.ComponentType> = {
   "slide-up": SlideUpPreview,
   "social-clip": SocialClipPreview,
   "split-screen": SplitScreenPreview,
+  "split-text-chars": SplitTextCharsPreview,
+  "audio-reactive-scale": AudioReactiveScalePreview,
+  "srt-caption-track": SrtCaptionTrackPreview,
   "spring-in": SpringInPreview,
   "stagger-children": StaggerChildrenPreview,
   "stat-card": StatCardPreview,
@@ -216,6 +228,12 @@ const PREVIEWS: Record<string, React.ComponentType> = {
   "dynamic-grid": DynamicGridPreview,
   "grid-pixelate-wipe": TransitionGridPixelateWipePreview,
   "frosted-glass-wipe": TransitionFrostedGlassWipePreview,
+  "transition-circle-reveal": TransitionCircleRevealPreview,
+  "transition-card-flip": TransitionCardFlipPreview,
+  "transition-blinds": TransitionBlindsPreview,
+  "transition-whip-pan": TransitionWhipPanPreview,
+  "transition-morph-shape": TransitionMorphShapePreview,
+  "transition-liquid-warp": TransitionLiquidWarpPreview,
   "mesh-gradient-bg": MeshGradientBgPreview,
   "simulated-cursor": SimulatedCursorPreview,
   "spatial-push": TransitionSpatialPushPreview,

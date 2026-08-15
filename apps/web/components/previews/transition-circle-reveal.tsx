@@ -1,0 +1,22 @@
+"use client";
+
+import { transitionCircleReveal } from "../registry-exports";
+import {
+  TRANSITION_FRAMES,
+  TransitionSeriesPreview,
+} from "./transition-previews";
+
+/**
+ * Timed at `TRANSITION_FRAMES` so the two scenes still fill the preview
+ * composition exactly (69 + 69 - 18 = 120) and the cut itself straddles the
+ * audit's 50% sample. A transition preview timed any other way samples two
+ * still scenes and reads as dead.
+ */
+export const TransitionCircleRevealPreview: React.FC = () => (
+  <TransitionSeriesPreview
+    transition={transitionCircleReveal({
+      durationInFrames: TRANSITION_FRAMES,
+      originX: 0.34, originY: 0.42,
+    })}
+  />
+);

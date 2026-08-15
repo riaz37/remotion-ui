@@ -1,0 +1,30 @@
+---
+title: Card Flip
+description: A whole-frame 3D flip that hands one scene off to the next on backface culling.
+---
+
+import { TransitionCardFlipPreview } from "@/components/previews/transition-card-flip";
+
+<ComponentPage name="transition-card-flip" preview={TransitionCardFlipPreview}>
+
+Each scene turns a half-circle in its own direction and the hand-off is done by
+backface culling: the outgoing face passes 90° at the midpoint and is hidden for
+the rest of the window, and the incoming one stays hidden until it crosses back
+through -90°. Clamping both at 90° instead leaves two faces parked edge-on,
+flickering against each other.
+
+A flipping frame is zero pixels wide at the halfway point, so *something* is
+visible behind it. `backdrop` is that something — the outgoing layer paints it,
+since it sits under the incoming one for the whole cut. Set it to your scene
+background rather than leaving the page through.
+
+`shading` darkens the face as it turns away, on `cos()` of the turn, which is
+exactly 1 at 0° and so leaves a settled scene untouched. `dip` recedes the card
+at the midpoint on a parabola that is exactly 1 at both ends.
+
+Exports `transitionCardFlip()` and `getTransitionCardFlipDuration()` for use
+with `TransitionSeries.Transition`.
+
+Requires `@remotion/transitions`. Run `npx remotion add @remotion/transitions` if not already installed.
+
+</ComponentPage>

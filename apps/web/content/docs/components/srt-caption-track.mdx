@@ -1,0 +1,48 @@
+---
+title: SRT Caption Track
+description: Render Remotion captions straight from an SRT or WebVTT file. Install with npx remotion-ui@latest add srt-caption-track.
+---
+
+import { SrtCaptionTrackPreview } from '@/components/previews/srt-caption-track';
+
+<ComponentPage name="srt-caption-track" preview={SrtCaptionTrackPreview} durationInFrames={170}>
+
+Renders a caption track directly from an SRT or WebVTT file.
+
+This is a utility, not a look. Every caption style in the registry takes a
+`TikTokPage`, which until now had to be hand-authored — so the styles could only
+be demoed against a handful of fake words. This turns a real transcript into
+those pages and sequences them.
+
+## Any caption style
+
+`renderPage` swaps in whichever style should draw the page. The default is
+`caption-highlight`.
+
+```tsx
+<SrtCaptionTrack
+  src={staticFile("episode.srt")}
+  renderPage={(page) => <KaraokeCaptions page={page} mode="underline" />}
+/>
+```
+
+## Subtitle files have no word timing
+
+An SRT cue says "these nine words happen between 4.2s and 6.8s" and nothing
+more, so a word-highlight style fed raw cues has nothing to highlight.
+
+`wordTiming="distribute"` (the default) spreads each cue's span across its words
+weighted by length, which tracks a read closely enough for a highlight to follow
+it. `wordTiming="cue"` keeps each cue as one token instead — honest, but only
+useful for styles that show a whole line at once.
+
+If real word timestamps are available — from Whisper, for instance — pass them
+through `captions` and no distribution happens.
+
+## Loading
+
+`src` is fetched behind `delayRender()`, so the render waits for the file rather
+than producing empty frames. Pass `source` instead when the transcript text is
+already in hand.
+
+</ComponentPage>

@@ -394,6 +394,105 @@ export function useAudioBands({
   };
 }
 
+/**
+ * Which slice of the spectrum drives a single level.
+ *
+ * `bass` is the weighting the pulse and scale wrappers use: mostly low end so
+ * the element moves on the kick, with enough of the full mix mixed back in that
+ * a bass-light passage still reads as playing.
+ */
+export type AudioBandSelector = "low" | "mid" | "high" | "full" | "bass";
+
+export type UseAudioAmplitudeOptions = UseAudioBandsOptions & {
+  band?: AudioBandSelector;
+  /** Multiplies the level before compression. */
+  sensitivity?: number;
+  /**
+   * Exponent applied to the 0-1 level. Below 1 lifts quiet passages without
+   * flattening transients; above 1 pushes them down.
+   */
+  compression?: number;
+  /**
+   * Smoothsteps the result. Removes the hard corners a raw envelope puts on a
+   * scale, which read as a stutter on a large element.
+   */
+  smooth?: boolean;
+};
+
+export type AudioAmplitude = {
+  /** The selected band, compressed and clamped to 0-1. Drive motion with this. */
+  level: number;
+  /** Uncompressed 0-1 energy per region, for callers that want their own mix. */
+  low: number;
+  mid: number;
+  high: number;
+  full: number;
+  /** True once real audio data is driving the level. */
+  isReady: boolean;
+  /** Resolved frame, so callers stay in sync inside a `<Sequence>`. */
+  frame: number;
+  fps: number;
+};
+
+const smoothstep01 = (value: number) => {
+  const x = clamp01(value);
+  return x * x * (3 - 2 * x);
+};
+
+/**
+ * One amplitude number per frame, for anything that reacts to audio without
+ * drawing a spectrum.
+ *
+ * Every audio-reactive component previously repeated the same four steps —
+ * windowed data, FFT, band energy, compression — with slightly different
+ * constants, so two components pointed at the same track pulsed out of step
+ * with each other. This is that path, once.
+ */
+export function useAudioAmplitude({
+  band = "bass",
+  sensitivity = 1,
+  compression = 0.78,
+  smooth = true,
+  bandCount = 24,
+  ...bandsOptions
+}: UseAudioAmplitudeOptions): AudioAmplitude {
+  const { bands, isReady, frame, fps } = useAudioBands({
+    ...bandsOptions,
+    bandCount,
+  });
+
+  const third = Math.max(1, Math.round(bands.length / 3));
+  const low = bandEnergy(bands, 0, third);
+  const mid = bandEnergy(bands, third, third * 2);
+  const high = bandEnergy(bands, third * 2, bands.length);
+  const full = bandEnergy(bands);
+
+  const selected =
+    band === "low"
+      ? low
+      : band === "mid"
+        ? mid
+        : band === "high"
+          ? high
+          : band === "full"
+            ? full
+            : low * 0.72 + full * 0.28;
+
+  const raw = clamp01(selected * sensitivity);
+  const compressed = clamp01(raw ** compression);
+
+  return {
+    level: smooth ? smoothstep01(compressed) : compressed,
+    low,
+    mid,
+    high,
+    full,
+    isReady,
+    frame,
+    fps,
+  };
+}
+
 /** Logarithmic scaling for more balanced bar heights. */
 export function scaleFrequenciesForDisplay(
   frequencies: number[],

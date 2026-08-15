@@ -2541,6 +2541,182 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     note: "1920×1080 thumbnail expands to full frame.",
     related: ["media-frame", "zoom-pan-frame"],
   },
+  "split-text-chars": {
+    category: "primitive",
+    usage: `import { SplitTextChars } from "@/remotion/primitives/split-text-chars";
+
+<SplitTextChars text="Ship it on Friday" mode="chars" order="center" />
+
+// Headless: build your own effect on the same split and stagger.
+import { useSplitText } from "@/remotion/lib/text-split";
+const { lines } = useSplitText({ text, mode: "words" });`,
+    props: [
+      { name: "text", type: "string", required: true, description: "Copy to split. `\\n` starts a new line.", schema: { type: "string" } },
+      { name: "mode", type: '"chars" | "words" | "lines"', default: '"chars"', description: "What one animated unit is. `words` is a word-by-word reveal.", schema: { type: "string", enum: ["chars", "words", "lines"] } },
+      { name: "order", type: '"start" | "end" | "center" | "edges" | "random"', default: '"start"', description: "Which unit animates first. Document order is never changed.", schema: { type: "string", enum: ["start", "end", "center", "edges", "random"] } },
+      { name: "effect", type: '"fade-up" | "fade" | "scale" | "blur" | "none"', default: '"fade-up"', description: "Built-in look. `none` positions the units and animates nothing.", schema: { type: "string" } },
+      { name: "renderUnit", type: "(unit: SplitUnitState) => ReactNode", description: "Draws one unit from its own 0-1 progress. This is the composition point for custom text effects.", schema: { type: "object" } },
+      { name: "staggerInFrames", type: "number", default: "2 chars / 4 words / 7 lines", description: "Frames between consecutive units.", schema: { type: "number" } },
+      { name: "durationInFrames", type: "number", default: "20 chars / 24 words / 28 lines", description: "Length of one unit's entrance.", schema: { type: "number" } },
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames before the first unit starts.", schema: { type: "number" } },
+      { name: "spring", type: "boolean | 'smooth' | 'snappy' | 'bouncy' | Partial<SpringConfig>", description: "Drive the entrance with a spring instead of the ease-out curve.", schema: { type: "string" } },
+      { name: "exit", type: "boolean", default: "false", description: "Animate back out, landing inside the surrounding Sequence.", schema: { type: "boolean" } },
+      { name: "exitStaggerInFrames", type: "number", default: "= staggerInFrames", description: "Frames between consecutive units leaving.", schema: { type: "number" } },
+      { name: "travel", type: "number", default: "0.42", description: "`fade-up` travel distance in em.", schema: { type: "number" } },
+      { name: "fontSize", type: "number", default: "84 (scaled)", description: "Font size in pixels.", schema: { type: "number" } },
+      { name: "frame", type: "number", description: "Frame override — pass the parent frame inside a Sequence.", schema: { type: "number" } },
+    ],
+    note: "The splitting foundation. Other text effects should call `useSplitText()` from `text-split` rather than re-implementing a split.",
+    related: ["staggered-fade-up", "tracking-in", "typewriter"],
+  },
+  "audio-reactive-scale": {
+    category: "primitive",
+    usage: `import { AudioReactiveScale } from "@/remotion/primitives/audio-reactive-scale";
+
+<AudioReactiveScale src={staticFile("track.wav")} maxScale={1.2}>
+  <Img src={staticFile("logo.png")} />
+</AudioReactiveScale>`,
+    props: [
+      { name: "src", type: "string", required: true, description: "Audio source. `useWindowedAudioData()` requires an uncompressed .wav.", schema: { type: "string" } },
+      { name: "children", type: "ReactNode", required: true, description: "Anything to scale with the track.", schema: { type: "object" } },
+      { name: "minScale", type: "number", default: "1", description: "Scale at silence.", schema: { type: "number" } },
+      { name: "maxScale", type: "number", default: "1.16", description: "Scale at a full-amplitude hit.", schema: { type: "number" } },
+      { name: "band", type: '"low" | "mid" | "high" | "full" | "bass"', default: '"bass"', description: "Which slice of the spectrum drives the motion.", schema: { type: "string", enum: ["low", "mid", "high", "full", "bass"] } },
+      { name: "sensitivity", type: "number", default: "1", description: "Multiplies the level before compression.", schema: { type: "number" } },
+      { name: "compression", type: "number", default: "0.78", description: "Exponent on the level. Below 1 lifts quiet passages.", schema: { type: "number" } },
+      { name: "axis", type: '"both" | "x" | "y"', default: '"both"', description: "Restrict the scale to one axis.", schema: { type: "string", enum: ["both", "x", "y"] } },
+      { name: "tilt", type: "number", default: "0", description: "Degrees of rotation at a full hit.", schema: { type: "number" } },
+      { name: "minOpacity", type: "number", default: "1", description: "Opacity at silence. Left at 1 the wrapper never touches opacity.", schema: { type: "number" } },
+      { name: "frame", type: "number", description: "Frame override — pass the parent frame inside a Sequence.", schema: { type: "number" } },
+    ],
+    note: "Shares `useAudioAmplitude()` with audio-pulse, so two components on one track pump in step.",
+    related: ["audio-pulse", "audiogram-bars", "waveform-line"],
+  },
+  "srt-caption-track": {
+    category: "primitive",
+    usage: `import { SrtCaptionTrack } from "@/remotion/primitives/srt-caption-track";
+
+<SrtCaptionTrack src={staticFile("episode.srt")} />
+
+// Any caption style can render the pages.
+<SrtCaptionTrack
+  src={staticFile("episode.srt")}
+  renderPage={(page) => <KaraokeCaptions page={page} mode="underline" />}
+/>`,
+    props: [
+      { name: "src", type: "string", description: "URL of an SRT or WebVTT file. Fetched behind delayRender().", schema: { type: "string" } },
+      { name: "source", type: "string", description: "Raw subtitle text, when the transcript is already in hand.", schema: { type: "string" } },
+      { name: "captions", type: "Caption[]", description: "Pre-parsed captions — e.g. from Whisper, which has real word timing.", schema: { type: "array" } },
+      { name: "wordTiming", type: '"distribute" | "cue"', default: '"distribute"', description: "Subtitle files have no word timestamps. `distribute` spreads each cue across its words by length so highlight styles have something to highlight.", schema: { type: "string", enum: ["distribute", "cue"] } },
+      { name: "combineTokensWithinMilliseconds", type: "number", default: "1200", description: "Tokens closer than this share a page.", schema: { type: "number" } },
+      { name: "offsetInFrames", type: "number", default: "0", description: "Shift the whole track. Positive delays it.", schema: { type: "number" } },
+      { name: "renderPage", type: "(page: TikTokPage, index: number) => ReactNode", description: "Draws one page. Defaults to CaptionHighlight.", schema: { type: "object" } },
+      { name: "activeColor", type: "string", default: '"#ff6b00"', description: "Passed to the default renderer.", schema: { type: "string" } },
+      { name: "inactiveColor", type: "string", default: '"#ffffff"', description: "Passed to the default renderer.", schema: { type: "string" } },
+      { name: "fontSize", type: "number", description: "Passed to the default renderer.", schema: { type: "number" } },
+    ],
+    note: "Utility, not a look. Installs @remotion/captions and caption-highlight.",
+    related: ["caption-highlight", "karaoke-captions", "caption-scene"],
+  },
+  "transition-circle-reveal": {
+    category: "primitive",
+    usage: `import { transitionCircleReveal } from "@/remotion/primitives/transition-circle-reveal";
+
+<TransitionSeries.Transition {...transitionCircleReveal({ originX: 0.3, originY: 0.4 })} />`,
+    props: [
+      { name: "durationInFrames", type: "number", default: "22", description: "Transition overlap length." },
+      { name: "originX", type: "number", default: "0.5", description: "Centre of the circle, 0→1 of the frame width." },
+      { name: "originY", type: "number", default: "0.5", description: "Centre of the circle, 0→1 of the frame height." },
+      { name: "edgeSoftness", type: "number", default: "0.04", description: "Feathered edge as a share of the final radius. 0 cuts hard." },
+      { name: "underScale", type: "number", default: "1", description: "Scale the outgoing scene drifts to under the hole. 1 holds it still." },
+      { name: "variant", type: '"linear" | "spring" | "editorial"', default: '"editorial"', description: "Timing curve." },
+    ],
+    related: ["transition-morph-shape", "transition-wipe"],
+  },
+  "transition-card-flip": {
+    category: "primitive",
+    usage: `import { transitionCardFlip } from "@/remotion/primitives/transition-card-flip";
+
+<TransitionSeries.Transition {...transitionCardFlip({ axis: "y" })} />`,
+    props: [
+      { name: "durationInFrames", type: "number", default: "24", description: "Transition overlap length." },
+      { name: "axis", type: '"y" | "x"', default: '"y"', description: "y flips left-to-right like a page; x flips top over bottom." },
+      { name: "perspective", type: "number", default: "1600", description: "Perspective distance in px. Lower is a wider-angle flip." },
+      { name: "backdrop", type: "string", default: '"#05060a"', description: "Colour behind the card while it is edge-on. Without it the page background shows at the halfway frame." },
+      { name: "shading", type: "number", default: "0.55", description: "Peak darkening of the face turning away, 0→1." },
+      { name: "dip", type: "number", default: "0.86", description: "How far the card recedes at the halfway point." },
+      { name: "variant", type: '"linear" | "spring" | "editorial"', default: '"editorial"', description: "Timing curve." },
+    ],
+    related: ["transition-whip-pan", "spatial-push"],
+  },
+  "transition-blinds": {
+    category: "primitive",
+    usage: `import { transitionBlinds } from "@/remotion/primitives/transition-blinds";
+
+<TransitionSeries.Transition {...transitionBlinds({ slats: 12, stagger: 0.45 })} />`,
+    props: [
+      { name: "durationInFrames", type: "number", default: "24", description: "Transition overlap length." },
+      { name: "orientation", type: '"horizontal" | "vertical"', default: '"horizontal"', description: "Horizontal slats stack top to bottom and sweep sideways." },
+      { name: "slats", type: "number", default: "12", description: "Number of slats. Above ~24 it stops reading as slats at 1080p." },
+      { name: "stagger", type: "number", default: "0.45", description: "Share of the window the cascade spans. 0 opens every slat together." },
+      { name: "alternate", type: "boolean", default: "false", description: "Reverse alternate slats for a woven counter-sweep." },
+      { name: "edgeSoftness", type: "number", default: "0.06", description: "Soft leading edge per slat, as a share of its length." },
+      { name: "variant", type: '"linear" | "spring" | "editorial"', default: '"editorial"', description: "Timing curve." },
+    ],
+    related: ["grid-pixelate-wipe", "directional-wipe"],
+  },
+  "transition-whip-pan": {
+    category: "primitive",
+    usage: `import { transitionWhipPan } from "@/remotion/primitives/transition-whip-pan";
+
+<TransitionSeries.Transition {...transitionWhipPan({ direction: "from-left", blur: 26 })} />`,
+    props: [
+      { name: "durationInFrames", type: "number", default: "14", description: "Transition overlap length. A whip is short by definition." },
+      { name: "direction", type: '"from-left" | "from-right" | "from-top" | "from-bottom"', default: '"from-left"', description: "Side the next scene arrives from." },
+      { name: "blur", type: "number", default: "26", description: "Peak blur in px along the travel axis, at the fastest point." },
+      { name: "travel", type: "number", default: "1", description: "Share of the frame each scene travels. Below 1 shows background between them." },
+      { name: "punch", type: "number", default: "2.2", description: "How hard the move is front-loaded into the middle. 1 is the house ease and reads as a push." },
+      { name: "variant", type: '"linear" | "spring" | "editorial"', default: '"editorial"', description: "Timing curve." },
+    ],
+    related: ["spatial-push", "chromatic-aberration-wipe"],
+  },
+  "transition-morph-shape": {
+    category: "primitive",
+    usage: `import { transitionMorphShape } from "@/remotion/primitives/transition-morph-shape";
+
+<TransitionSeries.Transition {...transitionMorphShape({ from: "circle", to: "diamond" })} />`,
+    props: [
+      { name: "durationInFrames", type: "number", default: "24", description: "Transition overlap length." },
+      { name: "from", type: '"circle" | "square" | "squircle" | "triangle" | "diamond" | "blob" | string', default: '"circle"', description: "Shape the reveal starts as, at zero size. A raw path d also works." },
+      { name: "to", type: '"circle" | "square" | "squircle" | "triangle" | "diamond" | "blob" | string', default: '"squircle"', description: "Shape it has become once it covers the frame." },
+      { name: "originX", type: "number", default: "0.5", description: "Where the shape grows from, 0→1 of the frame width." },
+      { name: "originY", type: "number", default: "0.5", description: "Where the shape grows from, 0→1 of the frame height." },
+      { name: "overshoot", type: "number", default: "1.06", description: "Final size as a multiple of the frame diagonal. Below 1 leaves corners unrevealed." },
+      { name: "warp", type: "number", default: "0", description: "Optional turbulence on the revealed scene, in px. 0 keeps the silhouette crisp." },
+      { name: "variant", type: '"linear" | "spring" | "editorial"', default: '"editorial"', description: "Timing curve." },
+    ],
+    note: "Configuration of the shared displacement presentation: the mask channel with turbulence off.",
+    related: ["transition-circle-reveal", "transition-liquid-warp", "path-morph"],
+  },
+  "transition-liquid-warp": {
+    category: "primitive",
+    usage: `import { transitionLiquidWarp } from "@/remotion/primitives/transition-liquid-warp";
+
+<TransitionSeries.Transition {...transitionLiquidWarp({ scale: 140 })} />`,
+    props: [
+      { name: "durationInFrames", type: "number", default: "26", description: "Transition overlap length. Long enough for the field to boil." },
+      { name: "scale", type: "number", default: "140", description: "Peak displacement in px at the middle of the cut." },
+      { name: "frequency", type: "number", default: "0.006", description: "Turbulence base frequency. Below 0.004 reads as a lens, above 0.02 as noise." },
+      { name: "octaves", type: "number", default: "2", description: "Turbulence octaves. Above 3 costs a lot and adds almost nothing." },
+      { name: "churn", type: "number", default: "6", description: "How much the noise field re-seeds across the cut. 0 holds one static lens." },
+      { name: "blur", type: "number", default: "3", description: "Peak blur in px, on the same curve as the displacement." },
+      { name: "seed", type: "number", default: "7", description: "Turbulence seed." },
+      { name: "affect", type: '"both" | "entering"', default: '"both"', description: "Warp both scenes, or only the arriving one." },
+      { name: "variant", type: '"linear" | "spring" | "editorial"', default: '"editorial"', description: "Timing curve." },
+    ],
+    note: "Configuration of the shared displacement presentation: the turbulence channel with no mask.",
+    related: ["transition-morph-shape", "transition-fade"],
+  },
 };
 
 export function getComponentReference(name: string): ComponentReference | undefined {

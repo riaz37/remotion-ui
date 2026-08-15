@@ -1,0 +1,29 @@
+---
+title: Blinds
+description: Staggered slats sweeping open to reveal the next scene.
+---
+
+import { TransitionBlindsPreview } from "@/components/previews/transition-blinds";
+
+<ComponentPage name="transition-blinds" preview={TransitionBlindsPreview}>
+
+The arriving scene is masked by `slats` bands, each sweeping open along the
+short axis with a cascading start. The outgoing scene holds whole beneath them —
+cutting it into slats too would open every gap onto the background rather than
+onto the next scene.
+
+`stagger` is the share of the window the cascade spans. The per-slat window is
+compressed so the *last* slat still finishes exactly at full coverage; a naive
+delay leaves the tail of the stack short of open at the end of the transition,
+which shows as permanent stripes over the scene for the rest of its sequence.
+
+`alternate` reverses every second slat for a woven counter-sweep, and
+`edgeSoftness` feathers each slat's leading edge. The feather is measured
+outside the slat, so a slat at full progress is solid all the way across.
+
+Exports `transitionBlinds()` and `getTransitionBlindsDuration()` for use with
+`TransitionSeries.Transition`.
+
+Requires `@remotion/transitions`. Run `npx remotion add @remotion/transitions` if not already installed.
+
+</ComponentPage>

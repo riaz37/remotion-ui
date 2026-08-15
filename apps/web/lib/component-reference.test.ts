@@ -2,14 +2,19 @@ import Ajv from "ajv";
 import { describe, expect, it } from "vitest";
 import { componentReference } from "./component-reference";
 
-// Flagship components authored with `schema` in Workstream 3 of the agent-native plan.
-// Full coverage across all ~102 components is an explicit backlog item, not a bug here.
+// Flagship components authored with `schema` in Workstream 3 of the agent-native plan,
+// plus the expansion foundations — those are the entries other components are meant to
+// be composed against, so an agent reading the reference needs their prop types machine
+// -readable. Full coverage across the whole catalog is a backlog item, not a bug here.
 const FLAGSHIP_COMPONENTS = [
   "social-clip",
   "creator-reel",
   "intro",
   "fade-in",
   "caption-highlight",
+  "split-text-chars",
+  "audio-reactive-scale",
+  "srt-caption-track",
 ] as const;
 
 const ajv = new Ajv({ strict: false });

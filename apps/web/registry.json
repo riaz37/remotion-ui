@@ -2601,6 +2601,242 @@
           "type": "registry:block"
         }
       ]
+    },
+    {
+      "name": "text-split",
+      "type": "registry:lib",
+      "description": "Split a string into chars, words or lines with staggered per-unit timing",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "motion-primitive",
+        "timing"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/lib/text-split.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "path-morph",
+      "type": "registry:lib",
+      "description": "Cached SVG path morphing with winding alignment and box fitting",
+      "dependencies": [
+        "@remotion/paths"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/bases/default/lib/path-morph.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "displacement-transition",
+      "type": "registry:lib",
+      "description": "Frame maths for displacement-map and shape-mask transitions",
+      "dependencies": [],
+      "registryDependencies": [
+        "path-morph"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/lib/displacement-transition.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "displacement-presentation",
+      "type": "registry:lib",
+      "description": "Shared TransitionSeries presentation for warp and shape-mask cuts",
+      "dependencies": [
+        "remotion",
+        "@remotion/transitions"
+      ],
+      "registryDependencies": [
+        "displacement-transition",
+        "path-morph",
+        "transition-timing"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/lib/displacement-presentation.tsx",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "split-text-chars",
+      "type": "registry:ui",
+      "description": "Split text into chars, words or lines and stagger them in",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "text-split",
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/split-text-chars.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "audio-reactive-scale",
+      "type": "registry:ui",
+      "description": "Scales any child by per-frame audio amplitude",
+      "dependencies": [
+        "remotion",
+        "@remotion/media-utils"
+      ],
+      "registryDependencies": [
+        "audio-viz-utils"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/audio-reactive-scale.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "srt-caption-track",
+      "type": "registry:ui",
+      "description": "Renders a caption track straight from an SRT or WebVTT file",
+      "dependencies": [
+        "remotion",
+        "@remotion/captions"
+      ],
+      "registryDependencies": [
+        "caption-utils",
+        "caption-highlight"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/srt-caption-track.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "transition-circle-reveal",
+      "type": "registry:ui",
+      "description": "Circular mask that opens from any point onto the next scene",
+      "dependencies": [
+        "remotion",
+        "@remotion/transitions"
+      ],
+      "registryDependencies": [
+        "transition-timing"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/transition-circle-reveal.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "transition-card-flip",
+      "type": "registry:ui",
+      "description": "Whole-frame 3D flip that hands off on backface culling",
+      "dependencies": [
+        "remotion",
+        "@remotion/transitions"
+      ],
+      "registryDependencies": [
+        "transition-timing"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/transition-card-flip.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "transition-blinds",
+      "type": "registry:ui",
+      "description": "Staggered slats sweeping open to reveal the next scene",
+      "dependencies": [
+        "remotion",
+        "@remotion/transitions"
+      ],
+      "registryDependencies": [
+        "transition-timing"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/transition-blinds.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "transition-whip-pan",
+      "type": "registry:ui",
+      "description": "Fast pan with directional motion blur along the travel axis",
+      "dependencies": [
+        "remotion",
+        "@remotion/transitions"
+      ],
+      "registryDependencies": [
+        "transition-timing"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/transition-whip-pan.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "transition-morph-shape",
+      "type": "registry:ui",
+      "description": "Reveal through a shape that morphs as it grows across the frame",
+      "dependencies": [
+        "remotion",
+        "@remotion/transitions"
+      ],
+      "registryDependencies": [
+        "displacement-presentation",
+        "displacement-transition",
+        "path-morph",
+        "transition-timing"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/transition-morph-shape.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "transition-liquid-warp",
+      "type": "registry:ui",
+      "description": "Liquid displacement warp that stirs one scene into the next",
+      "dependencies": [
+        "remotion",
+        "@remotion/transitions"
+      ],
+      "registryDependencies": [
+        "displacement-presentation",
+        "displacement-transition",
+        "transition-timing"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/transition-liquid-warp.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

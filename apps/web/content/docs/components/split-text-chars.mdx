@@ -1,0 +1,50 @@
+---
+title: Split Text Chars
+description: Split a string into characters, words, or lines and stagger them in. Install with npx remotion-ui@latest add split-text-chars.
+---
+
+import { SplitTextCharsPreview } from '@/components/previews/split-text-chars';
+
+<ComponentPage name="split-text-chars" preview={SplitTextCharsPreview} durationInFrames={120}>
+
+Splits a string into characters, words, or lines and staggers each unit in.
+
+The default look is deliberately plain. This is the foundation the other text
+effects are built on: it owns the split, the layout, and the stagger, and hands
+each unit's own 0–1 progress to `renderUnit` so an effect only has to describe
+one glyph.
+
+## Modes
+
+`mode` decides what one animated unit is — `chars`, `words`, or `lines`. The
+layout is always three levels (line → word → unit) whichever mode is used, so a
+character split can never break a word across a line.
+
+`mode="words"` is a word-by-word reveal; there is no separate component for it.
+
+## Ordering
+
+`order` re-ranks which unit animates first without touching document order:
+`start`, `end`, `center` (middle outward), `edges` (ends inward), or `random`.
+`random` is seeded, so the same `seed` renders the same shuffle on every machine
+and every frame.
+
+## Building an effect on it
+
+Effects that draw something other than plain text should skip the component and
+call the hook, which gives identical splitting and stagger semantics:
+
+```tsx
+import { useSplitText } from "@/remotion/lib/text-split";
+
+const { lines, lastEnterFrame } = useSplitText({
+  text,
+  mode: "chars",
+  order: "center",
+});
+```
+
+`lastEnterFrame` is the frame the final unit lands on — size a `<Sequence>` with
+it rather than guessing.
+
+</ComponentPage>

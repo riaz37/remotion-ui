@@ -1,4 +1,4 @@
-import { bandEnergy, useAudioBands } from "@/remotion/lib/audio-viz-utils";
+import { useAudioAmplitude } from "@/remotion/lib/audio-viz-utils";
 
 export type AudioPulseProps = {
   src: string;
@@ -13,13 +13,6 @@ export type AudioPulseProps = {
   frame?: number;
 };
 
-const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
-
-const smoothstep = (t: number) => {
-  const x = clamp01(t);
-  return x * x * (3 - 2 * x);
-};
-
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
 export const AudioPulse: React.FC<AudioPulseProps> = ({
@@ -31,20 +24,22 @@ export const AudioPulse: React.FC<AudioPulseProps> = ({
   frame: frameOverride,
 }) => {
   // 24 bands keeps the low end resolved enough to separate a kick from the
-  // body of the mix; the pulse only reads the bottom third of them.
-  const { bands, frame, fps } = useAudioBands({
+  // body of the mix; `bass` weights the orb toward the beat rather than the
+  // hats, and the compression keeps quiet passages visible without flattening
+  // the transients. Shared with `audio-reactive-scale` so two components on the
+  // same track pump in step.
+  const {
+    level: intensity,
+    frame,
+    fps,
+  } = useAudioAmplitude({
     src,
+    band: "bass",
     bandCount: 24,
+    sensitivity,
+    compression: 0.78,
     frame: frameOverride,
   });
-
-  const low = bandEnergy(bands, 0, 8);
-  const full = bandEnergy(bands);
-  // Weighted toward the bass so the orb pumps on the beat rather than on hats.
-  const raw = clamp01((low * 0.72 + full * 0.28) * sensitivity);
-
-  // Compress: keeps quiet passages visible without flattening the transients.
-  const intensity = smoothstep(Math.pow(raw, 0.78));
   const idle = 0.5 + 0.5 * Math.sin((frame / fps) * Math.PI * 2 * 0.18);
   const breathe = 0.03 * idle;
 

@@ -243,6 +243,15 @@ export const DEMO_SOCIAL_CLIP_CAPTIONS: Caption[] = [
   { text: " source", startMs: 980, endMs: 1800, timestampMs: 980, confidence: 1 },
 ];
 
+/**
+ * Real subtitle file for the `srt-caption-track` demo.
+ *
+ * A `staticFile()` URL rather than an inline string on purpose: the preview
+ * then exercises the fetch-behind-`delayRender()` path that a real transcript
+ * takes, so a broken loader fails the audit render instead of passing it.
+ */
+export const DEMO_SRT_SRC = staticFile("fixtures/demo-captions.srt");
+
 export const DEMO_CAPTIONS: Caption[] = [
   { text: " Clip", startMs: 0, endMs: 400, timestampMs: 0, confidence: 1 },
   { text: " the", startMs: 400, endMs: 600, timestampMs: 400, confidence: 1 },

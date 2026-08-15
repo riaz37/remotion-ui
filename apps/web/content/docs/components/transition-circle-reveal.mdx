@@ -1,0 +1,30 @@
+---
+title: Circle Reveal
+description: A circular mask that opens from any point in the frame onto the next scene.
+---
+
+import { TransitionCircleRevealPreview } from "@/components/previews/transition-circle-reveal";
+
+<ComponentPage name="transition-circle-reveal" preview={TransitionCircleRevealPreview}>
+
+The incoming scene is revealed through a circle growing from `originX`/`originY`,
+while the outgoing one holds whole underneath. Only the arriving scene is
+masked — punching the hole in both would open it onto the page background
+instead of onto the next scene.
+
+The radius is sized against the corner furthest from the origin, so an
+off-centre reveal still clears the frame; half the diagonal would leave a wedge
+unrevealed for any origin that is not dead centre. `edgeSoftness` feathers the
+edge as a share of that radius, and the mask is grown past full coverage by the
+feather width so no translucent ring survives into the last frames.
+
+`underScale` gives the outgoing scene a little push-back under the hole, which
+sells the circle as depth rather than as a sticker. Leave it at `1` for a flat
+graphic reveal.
+
+Exports `transitionCircleReveal()` and `getTransitionCircleRevealDuration()` for
+use with `TransitionSeries.Transition`.
+
+Requires `@remotion/transitions`. Run `npx remotion add @remotion/transitions` if not already installed.
+
+</ComponentPage>

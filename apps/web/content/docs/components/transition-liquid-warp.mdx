@@ -1,0 +1,33 @@
+---
+title: Liquid Warp
+description: A liquid displacement warp that stirs one scene into the next.
+---
+
+import { TransitionLiquidWarpPreview } from "@/components/previews/transition-liquid-warp";
+
+<ComponentPage name="transition-liquid-warp" preview={TransitionLiquidWarpPreview}>
+
+A turbulence field displaces the frame hardest in the middle of the cut and is
+exactly zero at both ends, so a settled scene carries no filter at all. The
+default `frequency` of `0.006` gives large, slow lobes that read as liquid; the
+core's higher default reads as sand at 30 fps, and anything above about `0.02`
+reads as noise rather than as a warp.
+
+A warp on its own never reveals anything — the frame is still the old scene,
+just stirred — so the arriving scene dissolves onto the outgoing one underneath.
+Only the arriving scene fades: ramping both at once leaves two half-transparent
+layers and the page background flashes through the middle of the cut.
+
+`churn` is how much the noise field re-seeds across the cut. `0` holds one
+static field and reads as a lens; the default boils. `affect` chooses whether
+both scenes warp or only the arriving one.
+
+This is a configuration of the shared displacement presentation: the turbulence
+channel with no mask.
+
+Exports `transitionLiquidWarp()` and `getTransitionLiquidWarpDuration()` for use
+with `TransitionSeries.Transition`.
+
+Requires `@remotion/transitions`. Run `npx remotion add @remotion/transitions` if not already installed.
+
+</ComponentPage>

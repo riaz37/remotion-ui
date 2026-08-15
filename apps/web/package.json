@@ -14,7 +14,8 @@
     "test": "vitest run",
     "postinstall": "fumadocs-mdx",
     "audit:stills": "tsx scripts/audit-stills.mts",
-    "audit:montage": "tsx scripts/audit-montage.mts"
+    "audit:montage": "tsx scripts/audit-montage.mts",
+    "audit:frames": "tsx scripts/audit-frames.mts"
   },
   "dependencies": {
     "@remotion/captions": "^4.0.505",

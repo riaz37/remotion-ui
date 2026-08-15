@@ -107,3 +107,12 @@ export { PricingFocus } from "../registry/bases/default/compositions/pricing-foc
 export { LandingCodeShowcase } from "../registry/bases/default/compositions/landing-code-showcase";
 export { ToolMenuSlide } from "../registry/bases/default/compositions/tool-menu-slide";
 export { ImageExpand } from "../registry/bases/default/compositions/image-expand";
+export { SplitTextChars } from "../registry/bases/default/primitives/split-text-chars";
+export { AudioReactiveScale } from "../registry/bases/default/primitives/audio-reactive-scale";
+export { SrtCaptionTrack } from "../registry/bases/default/primitives/srt-caption-track";
+export { transitionCircleReveal, getTransitionCircleRevealDuration } from "../registry/bases/default/primitives/transition-circle-reveal";
+export { transitionCardFlip, getTransitionCardFlipDuration } from "../registry/bases/default/primitives/transition-card-flip";
+export { transitionBlinds, getTransitionBlindsDuration } from "../registry/bases/default/primitives/transition-blinds";
+export { transitionWhipPan, getTransitionWhipPanDuration } from "../registry/bases/default/primitives/transition-whip-pan";
+export { transitionMorphShape, getTransitionMorphShapeDuration } from "../registry/bases/default/primitives/transition-morph-shape";
+export { transitionLiquidWarp, getTransitionLiquidWarpDuration } from "../registry/bases/default/primitives/transition-liquid-warp";

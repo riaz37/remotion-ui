@@ -105,6 +105,7 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   "infinite-marquee": { lane: "atoms", drive: "time", tier: "advanced", tags: ["text"] },
   "perspective-marquee": { lane: "atoms", drive: "time", tier: "advanced", tags: ["text"] },
   "strikethrough-replace": { lane: "atoms", drive: "time", tier: "advanced", tags: ["text"] },
+  "split-text-chars": { lane: "atoms", drive: "time", tier: "core", tags: ["text"] },
   // Cuts
   "transition-fade": { lane: "cuts", drive: "time", tier: "core" },
   "transition-slide": { lane: "cuts", drive: "time", tier: "core" },
@@ -234,6 +235,18 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
     tier: "advanced",
     tags: ["audio"],
   },
+  "audio-reactive-scale": {
+    lane: "signals",
+    drive: "media",
+    tier: "core",
+    tags: ["audio"],
+  },
+  "srt-caption-track": {
+    lane: "signals",
+    drive: "data",
+    tier: "core",
+    tags: ["captions"],
+  },
   // Vectors
   "path-draw": { lane: "vectors", drive: "time", tier: "advanced" },
   "logo-reveal": { lane: "vectors", drive: "time", tier: "advanced" },
@@ -271,6 +284,13 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   "landing-code-showcase": {lane:"reels",drive:"time",tier:"advanced"},
   "tool-menu-slide": {lane:"reels",drive:"time",tier:"advanced"},
   "image-expand": {lane:"reels",drive:"media",tier:"advanced"},
+  // cuts +6
+  "transition-circle-reveal": { lane: "cuts", drive: "time", tier: "core" },
+  "transition-card-flip": { lane: "cuts", drive: "time", tier: "core" },
+  "transition-blinds": { lane: "cuts", drive: "time", tier: "core" },
+  "transition-whip-pan": { lane: "cuts", drive: "time", tier: "core" },
+  "transition-morph-shape": { lane: "cuts", drive: "time", tier: "advanced" },
+  "transition-liquid-warp": { lane: "cuts", drive: "time", tier: "advanced" },
 };
 
 export function getAtlasMeta(name: string): AtlasMeta | undefined {

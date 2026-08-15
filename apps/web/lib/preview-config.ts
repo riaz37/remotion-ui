@@ -46,6 +46,13 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "marker-highlight": { durationInFrames: 110 },
   "progress-bar": { durationInFrames: 110 },
   "audio-pulse": { durationInFrames: 120 },
+  "audio-reactive-scale": { durationInFrames: 120 },
+  /* The demo transcript runs 5.6s. The window covers it end to end so the
+   * 90% sample lands on the last cue rather than on an empty track. */
+  "srt-caption-track": { durationInFrames: 170 },
+  /* Enter staggers in over frames 8-90, then a staggered exit from 90 — so the
+   * 15% / 50% / 90% samples catch arrival, hold and departure. */
+  "split-text-chars": { durationInFrames: 120 },
   "audiogram-bars": { durationInFrames: 120 },
   "audiogram-scene": { durationInFrames: 150 },
   "caption-scene": { durationInFrames: 150 },
@@ -110,6 +117,17 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "mesh-gradient-bg": { durationInFrames: 90 },
   "simulated-cursor": { durationInFrames: 72 },
   "tutorial-clip": { durationInFrames: 248, ...VERTICAL },
+  /* Transitions. `transition-previews.tsx` sizes its two scenes from this
+   * number and the 18-frame overlap — 69 + 69 - 18 = 120 — so the pair fills
+   * the window exactly and the cut lands on the audit's 50% sample. Pinned
+   * rather than left to the default because a change to `PREVIEW_DEFAULTS`
+   * would silently move every cut off the sample and read as a dead preview. */
+  "transition-circle-reveal": { durationInFrames: 120 },
+  "transition-card-flip": { durationInFrames: 120 },
+  "transition-blinds": { durationInFrames: 120 },
+  "transition-whip-pan": { durationInFrames: 120 },
+  "transition-morph-shape": { durationInFrames: 120 },
+  "transition-liquid-warp": { durationInFrames: 120 },
 };
 
 export function previewMeta(slug: string): Required<PreviewMeta> {

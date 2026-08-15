@@ -1,0 +1,33 @@
+---
+title: Audio Reactive Scale
+description: Scale any child by per-frame audio amplitude in Remotion. Install with npx remotion-ui@latest add audio-reactive-scale.
+---
+
+import { AudioReactiveScalePreview } from '@/components/previews/audio-reactive-scale';
+
+<ComponentPage name="audio-reactive-scale" preview={AudioReactiveScalePreview} durationInFrames={120}>
+
+Wraps anything and scales it by the track's per-frame amplitude.
+
+It draws nothing of its own on purpose — a logo, a chart, or a whole scene can
+be made to breathe with the music by wrapping it, and the wrapper stays
+composable with the enter/exit primitives above and below it.
+
+## Picking a band
+
+`band` selects which part of the spectrum drives the motion. `bass` (the
+default) is weighted toward the low end so the element moves on the kick rather
+than on hats. `full` follows overall loudness, which suits speech.
+
+## Shared amplitude
+
+The level comes from `useAudioAmplitude()` in `audio-viz-utils`, the same path
+`audio-pulse` uses. Two components pointed at one track therefore pump in step
+instead of each running their own FFT with slightly different constants.
+
+## Source format
+
+`useWindowedAudioData()` only accepts uncompressed audio, so `src` must be a
+`.wav`. Pass it through `staticFile()`.
+
+</ComponentPage>

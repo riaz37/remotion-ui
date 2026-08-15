@@ -1,0 +1,34 @@
+---
+title: Morph Shape
+description: A reveal through a shape that changes form as it grows across the frame.
+---
+
+import { TransitionMorphShapePreview } from "@/components/previews/transition-morph-shape";
+
+<ComponentPage name="transition-morph-shape" preview={TransitionMorphShapePreview}>
+
+The arriving scene is revealed through a shape that both grows and morphs, so
+the reveal has a silhouette rather than an edge. A circle that only grows is
+[Circle Reveal](/docs/components/transition-circle-reveal); reach for this when
+the shape itself should be part of the cut.
+
+`from` and `to` take the shared `MORPH_SHAPES` presets — `circle`, `square`,
+`squircle`, `triangle`, `diamond`, `blob` — which are authored on one box with
+matched curve counts. A raw path `d` works too, but a pair with mismatched
+segment counts interpolates into geometry that is valid SVG and nonsense on
+screen.
+
+`overshoot` is the final size as a multiple of the frame diagonal; below `1` the
+corners furthest from the origin are never revealed. `warp` adds turbulence to
+the revealed scene and is `0` by default — the warp is
+[Liquid Warp](/docs/components/transition-liquid-warp)'s job.
+
+This is a configuration of the shared displacement presentation: the mask
+channel with the turbulence channel switched off.
+
+Exports `transitionMorphShape()` and `getTransitionMorphShapeDuration()` for use
+with `TransitionSeries.Transition`.
+
+Requires `@remotion/transitions`. Run `npx remotion add @remotion/transitions` if not already installed.
+
+</ComponentPage>

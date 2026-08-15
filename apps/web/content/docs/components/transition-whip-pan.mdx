@@ -1,0 +1,31 @@
+---
+title: Whip Pan
+description: A fast pan between scenes with directional motion blur along the travel axis.
+---
+
+import { TransitionWhipPanPreview } from "@/components/previews/transition-whip-pan";
+
+<ComponentPage name="transition-whip-pan" preview={TransitionWhipPanPreview}>
+
+Both scenes travel locked edge to edge — `travel` below `1` leaves a strip of
+background between them — and the blur is directional. `filter: blur()` is
+isotropic and smears the frame across the axis it is *not* moving on, which
+reads as out-of-focus rather than as speed, so this uses an SVG
+`feGaussianBlur` with a single-axis deviation instead.
+
+A blurred layer has soft, part-transparent edges and the seam between the two
+scenes sits inside the frame for the whole cut, so each layer is grown past its
+own edges by roughly 3σ. That overscan is sized against the **short** axis: a
+uniform scale driven by the width under-covers the short side of a 16:9 frame
+and bites a transparent corner mid-cut.
+
+`punch` front-loads the move into the middle of the window — `1` is the house
+ease and reads as a push. The shaping curve is exact at both ends by
+construction, so a settled scene carries neither offset nor filter.
+
+Exports `transitionWhipPan()` and `getTransitionWhipPanDuration()` for use with
+`TransitionSeries.Transition`.
+
+Requires `@remotion/transitions`. Run `npx remotion add @remotion/transitions` if not already installed.
+
+</ComponentPage>
