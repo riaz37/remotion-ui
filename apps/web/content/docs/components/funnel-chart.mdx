@@ -5,16 +5,43 @@ description: Stage bars narrowing with drop-off percentages. Install with npx re
 
 import { FunnelChartPreview } from '@/components/previews/funnel-chart';
 
-<ComponentPage name="funnel-chart" preview={FunnelChartPreview} durationInFrames={120}>
+<ComponentPage name="funnel-chart" preview={FunnelChartPreview}>
 
-Stage bars narrowing with drop-off percentages.
-
-## Usage
+Stage bands narrowing toward the bottom, with the loss between each pair
+printed alongside.
 
 ```tsx
 import { FunnelChart } from "@/remotion/primitives/funnel-chart";
 
-<FunnelChart />
+<FunnelChart
+  stages={[
+    { label: "Visited docs", value: 42800 },
+    { label: "Ran the CLI", value: 18600 },
+    { label: "Shipped it", value: 1750 },
+  ]}
+  staggerInFrames={15}
+/>
 ```
+
+## The taper is the number
+
+Each band runs from its own width down to the *next* stage's width, so the shape
+carries the drop before anyone reads a label. The last band is a rectangle:
+there is no next stage to taper to, and inventing one would overstate the final
+step.
+
+## Why the labels sit outside
+
+Names and values live in a left gutter, not inside the bands. A real funnel ends
+narrow, and type set inside the last band would either overflow it or shrink
+until it was unreadable — which is usually where the interesting number is.
+`labelWidth` sizes that gutter; drop-off chips get their own on the right.
+
+## Timing
+
+Bands wipe downward in order. Each drop-off chip waits for the band *below* it,
+because the chip is a claim about two stages and cannot land before both exist.
+
+With `exitAtInFrames` the funnel drains bottom-up, narrow end first.
 
 </ComponentPage>

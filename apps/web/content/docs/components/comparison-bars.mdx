@@ -5,16 +5,44 @@ description: Two-series before/after with delta callout. Install with npx remoti
 
 import { ComparisonBarsPreview } from '@/components/previews/comparison-bars';
 
-<ComponentPage name="comparison-bars" preview={ComparisonBarsPreview} durationInFrames={120}>
+<ComponentPage name="comparison-bars" preview={ComparisonBarsPreview}>
 
-Two-series before/after with delta callout.
-
-## Usage
+Before-and-after pairs, with the percentage change called out beside each one.
 
 ```tsx
 import { ComparisonBars } from "@/remotion/primitives/comparison-bars";
 
-<ComparisonBars />
+<ComparisonBars
+  rows={[
+    { label: "Time to first cut", before: 240, after: 96 },
+    { label: "Renders / week", before: 120, after: 310 },
+  ]}
+  seriesLabels={["Before", "After"]}
+  staggerInFrames={18}
+/>
 ```
+
+## One scale for every row
+
+Both bars in every pair are measured against the largest value in the whole
+set. Scaling each row to itself is what makes a small category look like it beat
+a large one — the pairs have to stay comparable to each other, not only
+internally.
+
+## The pair reads as a change
+
+The second bar trails the first by `pairOffsetInFrames`. That short gap is what
+makes the two bars read as one movement rather than as neighbours that happen to
+be adjacent, and it is brief enough that both are still growing at once.
+
+The figure inside the coloured bar waits until the bar is wide enough to hold
+it, and the delta chip waits until the bar has stopped — it is the conclusion of
+the pair, so it cannot arrive first.
+
+## Deltas
+
+`delta` is computed from `before` and `after` unless you pass your own string.
+A rise takes `afterColor`, a fall takes `downColor`; when a fall is the good
+outcome — render times, error counts — pass `delta` explicitly to say so.
 
 </ComponentPage>

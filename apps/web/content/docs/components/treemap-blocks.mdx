@@ -5,16 +5,47 @@ description: Nested rectangles sized by value. Install with npx remotion-ui@late
 
 import { TreemapBlocksPreview } from '@/components/previews/treemap-blocks';
 
-<ComponentPage name="treemap-blocks" preview={TreemapBlocksPreview} durationInFrames={120}>
+<ComponentPage name="treemap-blocks" preview={TreemapBlocksPreview}>
 
-Nested rectangles sized by value.
-
-## Usage
+Value blocks tiled to fill the frame, arriving largest first.
 
 ```tsx
 import { TreemapBlocks } from "@/remotion/primitives/treemap-blocks";
 
-<TreemapBlocks />
+<TreemapBlocks
+  blocks={[
+    { label: "Atoms", value: 46 },
+    { label: "Blocks", value: 31 },
+    { label: "Signals", value: 26 },
+  ]}
+  staggerInFrames={12}
+/>
 ```
+
+## Squarified, not sliced
+
+The layout is the Bruls–Huizing–van Wijk squarified algorithm: rows grow along
+the shorter side of whatever space is left, and a row closes as soon as adding
+the next value would worsen its aspect ratio. Slice-and-dice layouts turn small
+values into long splinters that cannot be labelled and misread badly at a
+glance; keeping every tile near square is the only reason a treemap is legible.
+
+The layout is pure geometry over the values, so the same data always produces
+the same map.
+
+## Labels
+
+A block prints its name and value only when the tile can hold them — a label
+that overflows its own rectangle reads as a rendering fault. In a long-tailed
+set the small tiles are deliberately left blank; the area still carries them.
+
+## Motion
+
+Blocks scale up from their own centres in descending order, so the map builds
+outward from its dominant value. With `exitAtInFrames` the smallest leave first
+and the map collapses back onto that value.
+
+Use `bubble-chart-pack` when the values should not tile — a treemap implies the
+parts make up a whole.
 
 </ComponentPage>

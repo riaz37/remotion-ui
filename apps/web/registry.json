@@ -3371,7 +3371,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "chart-utils",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -3388,7 +3389,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "chart-utils",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -3405,7 +3407,7 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "motion-tokens"
       ],
       "files": [
         {
@@ -3422,7 +3424,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "chart-utils",
+        "motion-tokens"
       ],
       "files": [
         {

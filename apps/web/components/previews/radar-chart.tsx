@@ -3,16 +3,31 @@
 import { RadarChart } from "../registry-exports";
 import { PreviewFrame } from "./preview-frame";
 
+const AXES = ["Speed", "Polish", "Reuse", "Docs", "Types", "Motion"];
+
+const SERIES = [
+  { label: "Hand-rolled", values: [42, 38, 24, 30, 46, 34] },
+  { label: "RemotionUI", values: [88, 92, 84, 78, 90, 86] },
+];
+
 /**
- * The audit samples at 15% / 50% / 90% of the window — frames 18, 60 and 108 on
- * the 120-frame default. Motion must still be running at frame 18 and not yet
- * settled at 60, or all three samples land on a still image and the preview is
- * reported dead. See docs-internal/preview-audit-rubric.md.
+ * Samples land at frames 18, 60 and 108. Two polygons reach out axis by axis
+ * from frame 12 to 93 — the first is half drawn at the first sample and the
+ * second is mid-reach at the second — and the collapse at 96 pulls both back to
+ * the centre for the third.
  */
 export const RadarChartPreview: React.FC = () => (
   <PreviewFrame lane="signals" padding={72}>
-    <div style={{ display: "grid", placeItems: "center", width: "100%" }}>
-      <RadarChart delayInFrames={2} durationInFrames={40} />
-    </div>
+    <RadarChart
+      axes={AXES}
+      series={SERIES}
+      size={260}
+      maxValue={100}
+      delayInFrames={4}
+      durationInFrames={20}
+      staggerInFrames={7}
+      seriesOffsetInFrames={26}
+      exitAtInFrames={96}
+    />
   </PreviewFrame>
 );

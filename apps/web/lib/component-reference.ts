@@ -3492,53 +3492,119 @@ import { TextMaskVideo } from "@/remotion/primitives/text-mask-video";
     category: "primitive",
     usage: `import { ComparisonBars } from "@/remotion/primitives/comparison-bars";
 
-<ComparisonBars />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<ComparisonBars
+  rows={[
+    { label: "Time to first cut", before: 240, after: 96 },
+    { label: "Renders / week", before: 120, after: 310 },
+  ]}
+  seriesLabels={["Before", "After"]}
+  staggerInFrames={18}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "rows", type: "ComparisonRowDatum[]", default: "required", description: "`{ label, before, after, delta? }`. The delta is computed when omitted." },
+      { name: "width", type: "number", default: "820", description: "Overall width, label column included." },
+      { name: "rowHeight", type: "number", default: "74", description: "Height of one pair, both bars and their gap included." },
+      { name: "gap", type: "number", default: "26", description: "Space between rows." },
+      { name: "labelWidth", type: "number", default: "190", description: "Width reserved for the row labels." },
+      { name: "beforeColor", type: "string", default: "rgba(250,250,250,0.22)", description: "Baseline bar. Muted on purpose — it is the thing being beaten." },
+      { name: "afterColor", type: "string", default: '"#e8b86d"', description: "New-value bar, and the colour of a rising delta." },
+      { name: "downColor", type: "string", default: '"#f472b6"', description: "Delta colour when the change is a fall." },
+      { name: "seriesLabels", type: "[string, string]", default: "undefined", description: "Legend above the rows, e.g. `[\"Before\", \"After\"]`." },
+      { name: "showDelta", type: "boolean", default: "true", description: "Percentage-change chip at the end of the second bar." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of one bar's growth." },
+      { name: "staggerInFrames", type: "number", default: "12", description: "Frames between one row and the next." },
+      { name: "pairOffsetInFrames", type: "number", default: "6", description: "Frames the second bar trails the first by." },
+      { name: "exitAtInFrames", type: "number", default: "undefined", description: "Frame the rows start leaving on, in arrival order." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "Every bar is measured against the largest value in the whole set, so pairs stay comparable to each other and not only internally. The second bar trails the first by a few frames, which is what makes a pair read as one change rather than two adjacent bars.",
+    related: ["animated-bar-chart", "stat-card", "funnel-chart"],
   },
   "funnel-chart": {
     category: "primitive",
     usage: `import { FunnelChart } from "@/remotion/primitives/funnel-chart";
 
-<FunnelChart />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<FunnelChart
+  stages={[
+    { label: "Visited docs", value: 42800 },
+    { label: "Ran the CLI", value: 18600 },
+    { label: "Shipped it", value: 1750 },
+  ]}
+  staggerInFrames={15}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "stages", type: "FunnelStage[]", default: "required", description: "`{ label, value, color? }`, top to bottom." },
+      { name: "width", type: "number", default: "820", description: "Overall width: label gutter, funnel and drop-off gutter." },
+      { name: "height", type: "number", default: "420", description: "Overall height. Bands split it evenly." },
+      { name: "gap", type: "number", default: "10", description: "Space between bands." },
+      { name: "tailOpacity", type: "number", default: "0.5", description: "Opacity of the last band; earlier bands ramp toward 1." },
+      { name: "labelWidth", type: "number", default: "30% of width", description: "Left gutter holding stage names and values." },
+      { name: "showDropoff", type: "boolean", default: "true", description: "Drop-off chip between consecutive stages." },
+      { name: "showConversion", type: "boolean", default: "false", description: "Share of the first stage, printed beside each value." },
+      { name: "durationInFrames", type: "number", default: "22", description: "Length of one band's wipe." },
+      { name: "staggerInFrames", type: "number", default: "12", description: "Frames between one band and the next." },
+      { name: "exitAtInFrames", type: "number", default: "undefined", description: "Frame the funnel drains on, narrow end first." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "Each band tapers from its own width to the next stage's, so the shape carries the loss before a label is read; the last band is a rectangle because there is no next stage to taper to. Names and values sit in a left gutter — a real funnel ends narrow, and type inside the last band would have to shrink until it was unreadable.",
+    related: ["comparison-bars", "animated-bar-chart", "stat-card"],
   },
   "radar-chart": {
     category: "primitive",
     usage: `import { RadarChart } from "@/remotion/primitives/radar-chart";
 
-<RadarChart />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<RadarChart
+  axes={["Speed", "Polish", "Reuse", "Docs", "Types", "Motion"]}
+  series={[
+    { label: "Before", values: [42, 38, 24, 30, 46, 34] },
+    { label: "After", values: [88, 92, 84, 78, 90, 86] },
+  ]}
+  maxValue={100}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "axes", type: "string[]", default: "required", description: "Axis names, clockwise from the top. Three minimum." },
+      { name: "series", type: "RadarSeries[]", default: "required", description: "`{ label, values, color? }`, one value per axis in axis order." },
+      { name: "size", type: "number", default: "420", description: "Diameter of the web. Labels sit outside it." },
+      { name: "maxValue", type: "number", default: "largest value", description: "Value at the outer ring. Pin it when comparing two charts." },
+      { name: "ringCount", type: "number", default: "4", description: "Concentric rings behind the polygons." },
+      { name: "showLabels", type: "boolean", default: "true", description: "Axis names around the web." },
+      { name: "showVertices", type: "boolean", default: "true", description: "Dot on each vertex." },
+      { name: "fillOpacity", type: "number", default: "0.22", description: "Fill under each polygon." },
+      { name: "durationInFrames", type: "number", default: "18", description: "Length of one vertex's reach." },
+      { name: "staggerInFrames", type: "number", default: "5", description: "Frames between axes, sweeping clockwise." },
+      { name: "seriesOffsetInFrames", type: "number", default: "10", description: "Frames one series trails the previous one by." },
+      { name: "exitAtInFrames", type: "number", default: "undefined", description: "Frame the polygons collapse to the centre on." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "Vertices reach out one axis at a time rather than the polygon scaling as a whole: a growing polygon says nothing about which axis is strong. The web arrives whole and ahead of the data — it is the instrument, and animating it would suggest the scale was changing. The box grows with the longest axis label so nothing clips.",
+    related: ["line-chart-draw", "comparison-bars", "scatter-plot-pop"],
   },
   "treemap-blocks": {
     category: "primitive",
     usage: `import { TreemapBlocks } from "@/remotion/primitives/treemap-blocks";
 
-<TreemapBlocks />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<TreemapBlocks
+  blocks={[
+    { label: "Atoms", value: 46 },
+    { label: "Blocks", value: 31 },
+    { label: "Signals", value: 26 },
+  ]}
+  staggerInFrames={12}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "blocks", type: "ChartDatum[]", default: "required", description: "`{ label, value, color? }`. Area is proportional to value." },
+      { name: "width", type: "number", default: "820", description: "Box the tiles fill." },
+      { name: "height", type: "number", default: "460", description: "Box height." },
+      { name: "gap", type: "number", default: "8", description: "Space between tiles." },
+      { name: "cornerRadius", type: "number", default: "12", description: "Tile corner radius, clamped on small tiles." },
+      { name: "showShare", type: "boolean", default: "true", description: "Percentage of the total, printed beside the value." },
+      { name: "durationInFrames", type: "number", default: "20", description: "Length of one tile's arrival." },
+      { name: "staggerInFrames", type: "number", default: "6", description: "Frames between tiles, largest first." },
+      { name: "exitAtInFrames", type: "number", default: "undefined", description: "Frame the map collapses on, smallest first." },
+      { name: "frame", type: "number", default: "undefined", description: "Frame override — pass the parent frame inside a `<Sequence>`." },
     ],
+    note: "Squarified layout (Bruls, Huizing & van Wijk): rows grow along the shorter free side and close when the next value would worsen the aspect ratio. Slice-and-dice turns small values into unlabelable splinters. A tile prints its label only when it can hold it — overflowing type reads as a rendering fault, and the area still carries the small values.",
+    related: ["bubble-chart-pack", "heatmap-grid", "donut-chart"],
   },
 };
 

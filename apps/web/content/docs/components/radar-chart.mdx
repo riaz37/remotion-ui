@@ -5,16 +5,44 @@ description: Multi-axis spider chart drawing its polygon. Install with npx remot
 
 import { RadarChartPreview } from '@/components/previews/radar-chart';
 
-<ComponentPage name="radar-chart" preview={RadarChartPreview} durationInFrames={120}>
+<ComponentPage name="radar-chart" preview={RadarChartPreview}>
 
-Multi-axis spider chart drawing its polygon.
-
-## Usage
+A spider chart whose polygon reaches out one axis at a time.
 
 ```tsx
 import { RadarChart } from "@/remotion/primitives/radar-chart";
 
-<RadarChart />
+<RadarChart
+  axes={["Speed", "Polish", "Reuse", "Docs", "Types", "Motion"]}
+  series={[
+    { label: "Before", values: [42, 38, 24, 30, 46, 34] },
+    { label: "After", values: [88, 92, 84, 78, 90, 86] },
+  ]}
+  maxValue={100}
+/>
 ```
+
+## Axis by axis, not scale-up
+
+Vertices are staggered clockwise rather than the whole polygon scaling from the
+centre. A polygon that simply grows says nothing about which axis is strong;
+reaching axis by axis assembles the shape in the order the labels are read, and
+the silhouette only resolves when the last vertex lands.
+
+Several series stagger against each other by `seriesOffsetInFrames`, so a
+comparison arrives as two statements rather than one tangle.
+
+## The web arrives whole
+
+Rings and spokes fade in together, ahead of the data. They are the measuring
+instrument, not part of the reading — animating them would suggest the scale
+itself was changing.
+
+## Sizing
+
+The SVG box is the web plus a margin computed from the longest axis label, so
+long names are not clipped and short ones do not waste space. `maxValue` pins
+the outer ring; leave it unset and the largest value present defines it, which
+is rarely what you want when two charts sit side by side.
 
 </ComponentPage>
