@@ -3606,6 +3606,58 @@ import { TextMaskVideo } from "@/remotion/primitives/text-mask-video";
     note: "Squarified layout (Bruls, Huizing & van Wijk): rows grow along the shorter free side and close when the next value would worsen the aspect ratio. Slice-and-dice turns small values into unlabelable splinters. A tile prints its label only when it can hold it — overflowing type reads as a rendering fault, and the area still carries the small values.",
     related: ["bubble-chart-pack", "heatmap-grid", "donut-chart"],
   },
+  "waterfall-chart": {
+    category: "primitive",
+    usage: `import { WaterfallChart } from "@/remotion/primitives/waterfall-chart";
+
+<WaterfallChart />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "stacked-area-chart": {
+    category: "primitive",
+    usage: `import { StackedAreaChart } from "@/remotion/primitives/stacked-area-chart";
+
+<StackedAreaChart />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "candlestick-chart": {
+    category: "primitive",
+    usage: `import { CandlestickChart } from "@/remotion/primitives/candlestick-chart";
+
+<CandlestickChart />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "gantt-timeline": {
+    category: "primitive",
+    usage: `import { GanttTimeline } from "@/remotion/primitives/gantt-timeline";
+
+<GanttTimeline />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
 };
 
 export function getComponentReference(name: string): ComponentReference | undefined {

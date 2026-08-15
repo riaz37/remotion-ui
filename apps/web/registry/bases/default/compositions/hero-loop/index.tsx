@@ -129,7 +129,7 @@ const INSTALL_FILES = [
  * Edit the curated card order in scripts/build-registry.mts, not here.
  */
 // #region generated:registry-facts
-const REGISTRY_COUNT = 153;
+const REGISTRY_COUNT = 157;
 
 const CATALOG_ITEMS = [
   { name: "social-clip", kind: "composition", stripe: LANE.reels },

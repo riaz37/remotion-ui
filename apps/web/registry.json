@@ -3433,6 +3433,74 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "waterfall-chart",
+      "type": "registry:ui",
+      "description": "Cumulative bridge with positive/negative steps",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/waterfall-chart.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "stacked-area-chart",
+      "type": "registry:ui",
+      "description": "Multiple series stacking as they draw on",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/stacked-area-chart.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "candlestick-chart",
+      "type": "registry:ui",
+      "description": "OHLC financial series",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/candlestick-chart.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "gantt-timeline",
+      "type": "registry:ui",
+      "description": "Date-scaled schedule bars",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/gantt-timeline.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

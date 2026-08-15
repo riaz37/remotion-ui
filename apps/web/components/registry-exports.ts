@@ -151,3 +151,7 @@ export { ComparisonBars } from "../registry/bases/default/primitives/comparison-
 export { FunnelChart } from "../registry/bases/default/primitives/funnel-chart";
 export { RadarChart } from "../registry/bases/default/primitives/radar-chart";
 export { TreemapBlocks } from "../registry/bases/default/primitives/treemap-blocks";
+export { WaterfallChart } from "../registry/bases/default/primitives/waterfall-chart";
+export { StackedAreaChart } from "../registry/bases/default/primitives/stacked-area-chart";
+export { CandlestickChart } from "../registry/bases/default/primitives/candlestick-chart";
+export { GanttTimeline } from "../registry/bases/default/primitives/gantt-timeline";

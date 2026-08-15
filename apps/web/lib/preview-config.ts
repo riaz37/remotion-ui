@@ -163,6 +163,10 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "funnel-chart": { durationInFrames: 120 },
   "radar-chart": { durationInFrames: 120 },
   "treemap-blocks": { durationInFrames: 120 },
+  "waterfall-chart": { durationInFrames: 120 },
+  "stacked-area-chart": { durationInFrames: 120 },
+  "candlestick-chart": { durationInFrames: 120 },
+  "gantt-timeline": { durationInFrames: 120 },
 };
 
 export function previewMeta(slug: string): Required<PreviewMeta> {

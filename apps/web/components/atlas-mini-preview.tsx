@@ -155,6 +155,10 @@ import { ComparisonBarsPreview } from "./previews/comparison-bars";
 import { FunnelChartPreview } from "./previews/funnel-chart";
 import { RadarChartPreview } from "./previews/radar-chart";
 import { TreemapBlocksPreview } from "./previews/treemap-blocks";
+import { WaterfallChartPreview } from "./previews/waterfall-chart";
+import { StackedAreaChartPreview } from "./previews/stacked-area-chart";
+import { CandlestickChartPreview } from "./previews/candlestick-chart";
+import { GanttTimelinePreview } from "./previews/gantt-timeline";
 
 type AtlasMiniPreviewProps = {
   slug: string;
@@ -313,6 +317,10 @@ const PREVIEWS: Record<string, React.ComponentType> = {
   "funnel-chart": FunnelChartPreview,
   "radar-chart": RadarChartPreview,
   "treemap-blocks": TreemapBlocksPreview,
+  "waterfall-chart": WaterfallChartPreview,
+  "stacked-area-chart": StackedAreaChartPreview,
+  "candlestick-chart": CandlestickChartPreview,
+  "gantt-timeline": GanttTimelinePreview,
 };
 
 

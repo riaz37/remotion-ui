@@ -326,6 +326,10 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   "funnel-chart": { lane: "signals", drive: "data", tier: "core", tags: ["charts"] },
   "radar-chart": { lane: "signals", drive: "data", tier: "advanced", tags: ["charts"] },
   "treemap-blocks": { lane: "signals", drive: "data", tier: "advanced", tags: ["charts"] },
+  "waterfall-chart": { lane: "signals", drive: "data", tier: "advanced", tags: ["charts"] },
+  "stacked-area-chart": { lane: "signals", drive: "data", tier: "advanced", tags: ["charts"] },
+  "candlestick-chart": { lane: "signals", drive: "data", tier: "advanced", tags: ["charts"] },
+  "gantt-timeline": { lane: "signals", drive: "data", tier: "advanced", tags: ["charts"] },
 };
 
 export function getAtlasMeta(name: string): AtlasMeta | undefined {
