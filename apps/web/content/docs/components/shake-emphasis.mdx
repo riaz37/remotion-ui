@@ -1,20 +1,48 @@
 ---
 title: Shake Emphasis
-description: Short impact shake. Install with npx remotion-ui@latest add shake-emphasis.
+description: A short impact shake with a decaying envelope. Install with npx remotion-ui@latest add shake-emphasis.
 ---
 
 import { ShakeEmphasisPreview } from '@/components/previews/shake-emphasis';
 
-<ComponentPage name="shake-emphasis" preview={ShakeEmphasisPreview} durationInFrames={120}>
+<ComponentPage name="shake-emphasis" preview={ShakeEmphasisPreview}>
 
-Short impact shake.
-
-## Usage
+Something just landed.
 
 ```tsx
 import { ShakeEmphasis } from "@/remotion/primitives/shake-emphasis";
 
-<ShakeEmphasis />
+<ShakeEmphasis startAtInFrames={24}>
+  <Headline />
+</ShakeEmphasis>
 ```
+
+## Noise, not a sine
+
+A shake driven by `sin(frame)` is a vibration: every swing is the same size, so
+it reads as a motor rather than as an impact. This samples a deterministic value
+noise at `frequency` samples per second and smoothsteps between samples, which
+gives the uneven amplitude a real hit has. The smoothstep is what keeps it from
+strobing when `frequency` is high.
+
+## The envelope is the component
+
+Displacement peaks on the impact frame and decays to nothing, so the element is
+at rest before and after. Nothing loops by default — a shake that keeps going is
+a vibration, and the emphasis is gone within half a second of the hit anyway.
+Pass `repeatEveryInFrames` only when the shake is riding a beat.
+
+`punch` compresses the element on impact and lets it overshoot past rest on the
+way back. Without it the shake reads as the camera moving rather than as the
+element being hit.
+
+## Timing it
+
+An impact wants to land on a cut, a beat, or the frame a number finishes
+counting. `startAtInFrames` is in the surrounding sequence's frame space, so
+inside a `<Sequence>` it is relative to that sequence's start.
+
+`durationInFrames` is the decay, not a hold: 12 frames is a snap, 24 is a heavy
+landing, and much beyond that stops reading as an impact at all.
 
 </ComponentPage>

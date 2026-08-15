@@ -1,20 +1,57 @@
 ---
-title: Scanline Crt
-description: CRT scanlines and curvature overlay. Install with npx remotion-ui@latest add scanline-crt.
+title: Scanline CRT
+description: CRT scanlines, aperture grille and tube curvature. Install with npx remotion-ui@latest add scanline-crt.
 ---
 
 import { ScanlineCrtPreview } from '@/components/previews/scanline-crt';
 
-<ComponentPage name="scanline-crt" preview={ScanlineCrtPreview} durationInFrames={120}>
+<ComponentPage name="scanline-crt" preview={ScanlineCrtPreview}>
 
-CRT scanlines and curvature overlay.
-
-## Usage
+Put the picture back inside a tube.
 
 ```tsx
 import { ScanlineCrt } from "@/remotion/primitives/scanline-crt";
 
-<ScanlineCrt />
+<ScanlineCrt curvature={0.6}>
+  <YourScene />
+</ScanlineCrt>
 ```
+
+Pass `children` to put content inside the tube, or drop it over a stack as a
+bare overlay — it paints no plate of its own either way.
+
+## Four overlays that only work together
+
+Bowed scanlines for the tube, a fine RGB grille for the phosphor mask, a rolling
+refresh bar for the shot-a-monitor look, and per-frame flicker for the mains
+hum. Take away the flicker and it reads as a static texture, which is the
+failure mode of every CSS CRT filter.
+
+The flicker is a slow hum plus a per-frame jitter. The hum is what stops it
+reading as random noise; the jitter is what stops the hum reading as a fade.
+
+## Curvature is drawn
+
+Each scanline is a quadratic whose midpoint is pushed away from the centre of
+the tube in proportion to its distance from it, so lines near the top bow up and
+lines near the bottom bow down. That read — glass, not glass-effect — arrives
+long before any corner shading does.
+
+Content underneath is **not** geometrically warped. Warping a live subtree needs
+a displacement map per frame and costs far more than the effect is worth; the
+bowed lines plus the rounded tube face carry it.
+
+## Give it a picture
+
+Every overlay here works by removing light: scanlines darken, the grille masks,
+the vignette shades. Over a near-black plate the whole component is invisible.
+If your tile looks empty, the tube has nothing to show — that is the first thing
+to check, not `intensity`.
+
+## Stacking
+
+For emulsion rather than phosphor, reach for `animated-noise-grain`. The two
+stack, and grain over a CRT is exactly what a camera pointed at a monitor
+produces.
 
 </ComponentPage>

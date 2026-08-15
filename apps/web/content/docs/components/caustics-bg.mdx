@@ -1,20 +1,58 @@
 ---
 title: Caustics Bg
-description: Underwater light caustics. Install with npx remotion-ui@latest add caustics-bg.
+description: Underwater light caustics, with no shader and no per-frame noise. Install with npx remotion-ui@latest add caustics-bg.
 ---
 
 import { CausticsBgPreview } from '@/components/previews/caustics-bg';
 
-<ComponentPage name="caustics-bg" preview={CausticsBgPreview} durationInFrames={120}>
+<ComponentPage name="caustics-bg" preview={CausticsBgPreview}>
 
-Underwater light caustics.
-
-## Usage
+The bright web that light makes on the bottom of a pool.
 
 ```tsx
 import { CausticsBg } from "@/remotion/primitives/caustics-bg";
 
-<CausticsBg />
+<AbsoluteFill>
+  <CausticsBg scale={130} />
+  <YourScene />
+</AbsoluteFill>
 ```
+
+## How it is made
+
+Five wave trains, tilted at angles that share no common divisor, added together
+with `plus-lighter` so they combine the way light does. A slow, large-scale
+swell multiplies the sum so it only reaches full brightness in patches. Then
+`contrast()` thresholds the result into the sharp-edged web.
+
+No shader, no canvas, no noise texture regenerated per frame — six `div`s and
+one filter chain.
+
+## Why five layers
+
+Two crossed wave trains give a plaid. Three give a hexagonal lattice, and
+detuning their wavelengths does not help: the pattern is still periodic in two
+directions and the eye finds the tiling immediately. Five incommensurate
+directions make the sum *quasi*-periodic, so it never repeats. That is the
+difference between water and wallpaper, and both intermediate cuts of this
+component were rejected on exactly that point.
+
+## Tuning
+
+`contrast` is the important one. Too low and the web dissolves back into the
+plaid it came from; too high and the bright regions saturate and the cells
+invert into dark blobs on a light field, which is the opposite of a caustic.
+Around 3-4 is the usable band.
+
+The filter order is blur, then contrast. Thresholding first and blurring after
+gives soft-edged blobs instead of a web.
+
+## Motion
+
+Each train slides at its own rate and rocks by a few degrees on its own clock,
+so the cells stretch and pinch rather than sliding as a rigid pattern. Two
+trains on the same clock would swim in lockstep and give the whole thing away.
+
+`speed={0}` freezes the surface. There is no entrance; this is a stage layer.
 
 </ComponentPage>

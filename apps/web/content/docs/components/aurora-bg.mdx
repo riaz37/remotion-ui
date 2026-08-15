@@ -1,20 +1,63 @@
 ---
 title: Aurora Bg
-description: Drifting light ribbons. Install with npx remotion-ui@latest add aurora-bg.
+description: Drifting aurora curtains. Install with npx remotion-ui@latest add aurora-bg.
 ---
 
 import { AuroraBgPreview } from '@/components/previews/aurora-bg';
 
-<ComponentPage name="aurora-bg" preview={AuroraBgPreview} durationInFrames={120}>
+<ComponentPage name="aurora-bg" preview={AuroraBgPreview}>
 
-Drifting light ribbons. Ribbons, not blobs — mesh-gradient-bg owns blobs.
-
-## Usage
+A full-frame stage layer of aurora curtains.
 
 ```tsx
 import { AuroraBg } from "@/remotion/primitives/aurora-bg";
 
-<AuroraBg />
+<AbsoluteFill>
+  <AuroraBg ribbonCount={4} />
+  <YourScene />
+</AbsoluteFill>
 ```
+
+## Where it sits
+
+Ribbons, not blobs — `mesh-gradient-bg` owns blobs, and the difference is
+structural rather than stylistic. A blob is a radial gradient that moves; a
+ribbon is a tapered path whose *shape* is recomputed every frame. If what you
+want is colour that drifts, use the gradient. If you want something that folds,
+use this.
+
+Set `backgroundColor="transparent"` to lay the curtains over footage instead of
+over their own plate.
+
+## Why it does not look like a smear
+
+Three things, and the layer falls apart without any of them.
+
+Each curtain tapers to nothing at both ends. A constant-height shape reads as a
+painted stripe no matter how it undulates.
+
+Each curtain is filled with a vertical gradient that is brightest along its
+lower edge, composited on `screen`, so overlapping curtains add light instead of
+stacking alpha and going muddy.
+
+And `striation` runs vertical rays through the whole band. Real aurora has ray
+structure; without it a curtain is a coloured blur. The mask is applied after
+the blur, so the rays stay crisp while the folds stay soft.
+
+## Keep the blur down
+
+`blur` is the prop that decides whether this reads as curtains or as blobs.
+Much above 20 and the fold structure is gone — the first cut of this component
+ran at 34 and the preview was indistinguishable from a mesh gradient.
+
+## Motion
+
+There is no entrance; the content on top of a background owns the entrance.
+
+Every fold runs on two clocks at once, 2.3s beaten against 1.1s. A single
+travelling wave repeats exactly once per period, which is enough for two frames
+a second and a half apart to hold the same shape. Beating two periods against
+each other means a curtain never returns to a shape it has already held.
+`speed` scales all of it, and `speed={0}` freezes the sky.
 
 </ComponentPage>

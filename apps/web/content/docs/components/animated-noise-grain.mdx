@@ -1,20 +1,75 @@
 ---
 title: Animated Noise Grain
-description: Film grain overlay. Install with npx remotion-ui@latest add animated-noise-grain.
+description: Film grain that boils, without generating noise per frame. Install with npx remotion-ui@latest add animated-noise-grain.
 ---
 
 import { AnimatedNoiseGrainPreview } from '@/components/previews/animated-noise-grain';
 
-<ComponentPage name="animated-noise-grain" preview={AnimatedNoiseGrainPreview} durationInFrames={120}>
+<ComponentPage name="animated-noise-grain" preview={AnimatedNoiseGrainPreview}>
 
-Film grain overlay. Watch render cost — precompute or use CSS, don't generate noise per frame.
-
-## Usage
+An emulsion pass for anything that looks too clean.
 
 ```tsx
 import { AnimatedNoiseGrain } from "@/remotion/primitives/animated-noise-grain";
 
-<AnimatedNoiseGrain />
+<AnimatedNoiseGrain opacity={0.18}>
+  <YourScene />
+</AnimatedNoiseGrain>
 ```
+
+Pass `children` to grain a subtree, or drop it into a stack with no children to
+grain everything beneath it.
+
+## How the noise is made once
+
+The noise itself is a single stitched `feTurbulence` tile baked into a data URI.
+The browser rasterises that URL the first time it decodes it and then caches it
+like any other image — and because the URL depends only on props, never on
+`frame`, a 300-frame render rasterises it once.
+
+What changes every step is where the tile is sampled from and which way it is
+flipped: a hashed sub-tile offset plus one of four mirrorings. The tile
+stitches, so the offset wraps invisibly, and the flip breaks the translation so
+the eye reads new grain rather than a sliding texture.
+
+## What that saves
+
+Rendering this page's 120-frame preview at 960x540:
+
+| Variant | Wall clock | CPU |
+| --- | --- | --- |
+| No grain | 7.5s | 20s |
+| Grain, cached tile (shipped) | 15.7s | 78s |
+| Grain, `feTurbulence` re-seeded every frame | 27.8s | 144s |
+
+Two things to read out of that. Regenerating the noise per frame nearly doubles
+the render again — which is the whole reason for the cached tile. And grain is
+not free even when it is cached: it takes the encoder from a 206 kB file to a
+15.1 MB one, because noise is incompressible. Most of the gap between the first
+two rows is H.264, not rendering. Budget for the bitrate, not just the frames.
+
+## Blend mode matters more than opacity
+
+`overlay` is the default and the right choice over footage — it pivots around
+mid grey and leaves the extremes alone. Over a near-black plate it does nothing
+at all, because there is nothing to modulate. Use `screen` there: it lifts the
+blacks, which is both what makes the grain visible and what grain does in the
+shadows of a real print.
+
+This is worth knowing because the failure is silent. The first cut of this
+page's preview measured as a completely static frame while the component was
+working perfectly.
+
+## Stock
+
+`holdInFrames` is the film-stock control. Grain that changes on every frame of a
+30fps render looks like video noise; holding each pattern for two frames gives
+the coarser chatter of film shot at 15fps.
+
+`size` and `density` set the grain's coarseness. `vignette` adds a second,
+edge-masked pass, because real film grain is heaviest away from the centre — an
+even field of grain reads as a digital filter.
+
+For phosphor rather than emulsion, see `scanline-crt`. The two stack.
 
 </ComponentPage>

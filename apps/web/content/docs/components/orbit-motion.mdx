@@ -1,20 +1,50 @@
 ---
 title: Orbit Motion
-description: Element orbiting a center point. Install with npx remotion-ui@latest add orbit-motion.
+description: Elements orbiting a centre point, with depth. Install with npx remotion-ui@latest add orbit-motion.
 ---
 
 import { OrbitMotionPreview } from '@/components/previews/orbit-motion';
 
-<ComponentPage name="orbit-motion" preview={OrbitMotionPreview} durationInFrames={120}>
+<ComponentPage name="orbit-motion" preview={OrbitMotionPreview}>
 
-Element orbiting a center point.
-
-## Usage
+Satellites around a hub.
 
 ```tsx
 import { OrbitMotion } from "@/remotion/primitives/orbit-motion";
 
-<OrbitMotion />
+<OrbitMotion periodInFrames={120} center={<Logo />} showPath>
+  <Chip label="Scenes" />
+  <Chip label="Atoms" />
+  <Chip label="Cuts" />
+</OrbitMotion>
 ```
+
+## Depth is what makes it an orbit
+
+The ellipse is the easy half. What separates an orbit from a circular slide is
+that a child on the far side of the ring is smaller, dimmer, and painted
+*behind* whatever sits at the centre. All three come from the same sine, so the
+pass behind the middle happens by itself — there is nothing to schedule and
+nothing to get out of sync.
+
+Set `depth={0}` for a flat, diagrammatic ring; raise it for a tilted, physical
+one.
+
+## Multiple children
+
+Every child gets its own slot, evenly spaced, so a satellite diagram is the
+default case rather than something you assemble by hand.
+
+Give them different content. Identical children on an evenly spaced ring make
+the whole picture repeat every `periodInFrames / count` frames, which looks like
+a much faster loop than the one you asked for — and, if you are sampling stills,
+can make a moving component look frozen.
+
+## Layout
+
+`centerX` and `centerY` are percentages of the frame; `radiusX` and `radiusY`
+are pixels. `upright` keeps children level while they travel, which is almost
+always what type wants; turn it off for something that should bank into the
+curve.
 
 </ComponentPage>

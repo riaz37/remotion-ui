@@ -1,20 +1,51 @@
 ---
 title: Motion Trail
-description: Echo trails behind a moving element. Install with npx remotion-ui@latest add motion-trail.
+description: Echo trails behind a moving element, rendered from earlier frames. Install with npx remotion-ui@latest add motion-trail.
 ---
 
 import { MotionTrailPreview } from '@/components/previews/motion-trail';
 
-<ComponentPage name="motion-trail" preview={MotionTrailPreview} durationInFrames={120}>
+<ComponentPage name="motion-trail" preview={MotionTrailPreview}>
 
-Echo trails behind a moving element.
-
-## Usage
+Where the thing just was.
 
 ```tsx
 import { MotionTrail } from "@/remotion/primitives/motion-trail";
 
-<MotionTrail />
+<MotionTrail count={6} gapInFrames={3}>
+  <TheMovingThing />
+</MotionTrail>
 ```
+
+## The trick
+
+An echo is not a copy of the element's *position* — it is the element itself,
+rendered at an earlier frame. `<Sequence from={n}>` shifts the frame its
+children see by `-n`, so an echo at `from={gap * i}` renders exactly what the
+subject looked like `gap * i` frames ago.
+
+That means the trail is correct for any motion at all: rotation, colour changes,
+shape changes, a chart redrawing itself. There is no path to describe, no
+previous position to store, and nothing to keep in sync when the subject's
+animation changes.
+
+## The requirement
+
+**The child must animate from `useCurrentFrame()`.** A subject positioned by a
+prop, or by a parent's transform, looks identical on every past frame and every
+echo stacks in one place. This is the one way to hold it wrong.
+
+## Cost
+
+`count` echoes render the subtree `count + 1` times per frame. Keep the subject
+small, and prefer a wider `gapInFrames` over a higher `count` when the trail
+needs length — a longer gap stretches the trail for free, where a higher count
+buys smoothness at full price.
+
+## Behaviour at the start
+
+Echoes before frame `gap * i` do not exist yet, so a trail grows in naturally
+over its own length at the start of a composition rather than appearing fully
+formed on frame 0.
 
 </ComponentPage>

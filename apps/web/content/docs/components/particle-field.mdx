@@ -1,20 +1,54 @@
 ---
 title: Particle Field
-description: Ambient drifting particles with depth. Install with npx remotion-ui@latest add particle-field.
+description: Ambient particles drifting with depth. Install with npx remotion-ui@latest add particle-field.
 ---
 
 import { ParticleFieldPreview } from '@/components/previews/particle-field';
 
-<ComponentPage name="particle-field" preview={ParticleFieldPreview} durationInFrames={120}>
+<ComponentPage name="particle-field" preview={ParticleFieldPreview}>
 
-Ambient drifting particles with depth. Continuous, unlike confetti-burst.
-
-## Usage
+A full-frame layer of drifting particles.
 
 ```tsx
 import { ParticleField } from "@/remotion/primitives/particle-field";
 
-<ParticleField />
+<AbsoluteFill>
+  <ParticleField count={70} angle={8} />
+  <YourScene />
+</AbsoluteFill>
 ```
+
+## Where it sits
+
+Continuous, unlike `confetti-burst`, which is a single impulse with physics
+behind it. This has no beginning and no end, so it can sit under a whole scene
+without ever resolving. Reach for the burst when something *happened*; reach for
+this when nothing has.
+
+## Depth is one number
+
+Each particle gets a `depth` and everything else follows from it: near particles
+are larger, faster, brighter and in focus, far ones are small, slow and
+defocused. That single correlation is what makes a plane of `div`s read as
+volume. Break it — same size, different speeds — and the field flattens
+immediately.
+
+Depths are distributed towards the back on purpose. An even spread gives a field
+of same-sized dots, which reads as a texture rather than as air.
+
+## Travel
+
+`angle` is the direction, in degrees, with 0 drifting straight up. Particles
+wrap on a track whose both ends sit outside the frame, so nothing ever pops into
+existence on screen. `drift` adds a per-particle sideways wander on its own
+clock, which keeps the field from moving as a rigid sheet.
+
+`speed={1}` puts a near particle across the frame in about eight seconds.
+
+## Cost
+
+`count` divs per frame, each with a radial-gradient background and a small blur.
+Seventy is comfortable at 1080p. Several hundred is not — raise `size` and drop
+`count` instead, since a bigger particle carries the same read for less.
 
 </ComponentPage>

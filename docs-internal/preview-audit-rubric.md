@@ -359,3 +359,35 @@ image. A 44-frame sine and a 46-frame axis morph both did this.
 Check an oscillating preview's period against 42 and 48, not against the
 120-frame window. Periods near 32–34 land the three samples on distinct
 phases.
+
+## Two more, from the backgrounds and effects batch (2026-08-15)
+
+### A blend mode that makes a working component invisible
+
+`animated-noise-grain` measured 52.8 dB — flat dead — with nothing wrong with
+it. The default blend is `overlay`, which pivots around mid grey; the preview
+stage is `#050505`. Grain composited onto near-black changes nothing, so the
+component rendered perfectly and produced three identical frames.
+
+Any component whose output is a blend — grain, scanlines, a grille, a vignette,
+anything that works by *removing* or *modulating* light — has nothing to work
+with on the dark stage. `scanline-crt` had the same problem visually: the
+numbers passed because of its rolling bar, but the tube was empty and every
+overlay was invisible. Give those previews a picture, not a plate.
+
+Also worth knowing: the audit renders at `--scale 0.5` by default, which
+averages fine, high-frequency detail out of existence. Grain that reads at
+1080p can measure as a static frame at 480px. Coarsen the preview rather than
+trusting the component's defaults.
+
+### A periodic preview that never samples the pose the component is *for*
+
+`squash-stretch` on a 33-frame bounce measured 16.6/21.4 dB — healthy, three
+different heights — and put all three samples mid-flight. The squash, which is
+the entire point, was never in a still. Retimed to 27 frames so frame 108 is
+exactly a contact frame.
+
+The rule the PSNR pairs cannot express: pick the period so that a sample lands
+on the component's signature pose, not merely so the samples differ. The same
+check applies to any impulse component — `shake-emphasis` needed a repeat
+interval (28) chosen so one sample sits on the hit and one sits at rest.

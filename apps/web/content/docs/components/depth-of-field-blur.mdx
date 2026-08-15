@@ -1,20 +1,55 @@
 ---
 title: Depth Of Field Blur
-description: Rack focus between layers. Install with npx remotion-ui@latest add depth-of-field-blur.
+description: A rack focus across depth planes. Install with npx remotion-ui@latest add depth-of-field-blur.
 ---
 
 import { DepthOfFieldBlurPreview } from '@/components/previews/depth-of-field-blur';
 
-<ComponentPage name="depth-of-field-blur" preview={DepthOfFieldBlurPreview} durationInFrames={120}>
+<ComponentPage name="depth-of-field-blur" preview={DepthOfFieldBlurPreview}>
 
-Rack focus between layers. blur-focus-in is text-only; this is spatial.
-
-## Usage
+Pull the audience's attention from one plane to another.
 
 ```tsx
 import { DepthOfFieldBlur } from "@/remotion/primitives/depth-of-field-blur";
 
-<DepthOfFieldBlur />
+<DepthOfFieldBlur
+  focusFrom={1}
+  focusTo={0}
+  layers={[
+    { content: <Background />, depth: 1 },
+    { content: <Card />, depth: 0.4 },
+    { content: <Foreground />, depth: 0 },
+  ]}
+/>
 ```
+
+## Where it sits
+
+Spatial, unlike `blur-focus-in`, which resolves a single piece of type as it
+arrives. Here every plane is blurred by its *distance from the focal plane*, so
+racking the focus pulls one layer in exactly as it pushes another out. That
+relationship is the shot; blurring one element on its own reads as an effect
+rather than as a camera.
+
+## Two details that do the convincing
+
+Defocused planes dim slightly, because a lens spreads the same light over a
+larger circle of confusion. And they scale slightly, which is the focus
+breathing every real lens has. Both are small enough to be invisible on their
+own and obvious by their absence.
+
+`aperture` controls how fast focus falls off with distance. A high number is a
+wide aperture: a plane goes soft over a very small change in depth.
+
+## Land the rack on a plane
+
+Time the rack so it is *on* a plane whenever anyone is looking. A rack that is
+halfway between two planes at the moment a viewer's eye settles — or at the
+moment a thumbnail is captured — has nothing sharp in it, and an all-soft frame
+reads as a broken render rather than as a camera move.
+
+The default runs across 78% of the surrounding window, starting at frame 6.
+Override `startAtInFrames` and `durationInFrames` to place it against a beat, or
+pass `progress` and drive it yourself.
 
 </ComponentPage>

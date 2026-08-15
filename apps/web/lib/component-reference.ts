@@ -2933,66 +2933,118 @@ import { TextMaskVideo } from "@/remotion/primitives/text-mask-video";
     category: "primitive",
     usage: `import { AuroraBg } from "@/remotion/primitives/aurora-bg";
 
-<AuroraBg />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<AbsoluteFill>
+  <AuroraBg ribbonCount={4} />
+  <YourScene />
+</AbsoluteFill>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "backgroundColor", type: "string", default: '"#05070f"', description: "Plate behind the curtains. `transparent` layers them over footage." },
+      { name: "colors", type: "string[]", default: '["#4cd6a6", "#4f9cf9", "#a273ff"]', description: "Curtain colours, cycled." },
+      { name: "ribbonCount", type: "number", default: "4", description: "How many curtains." },
+      { name: "amplitude", type: "number", default: "9", description: "Vertical travel of a fold, in percent of the frame." },
+      { name: "thickness", type: "number", default: "15", description: "Curtain height at its thickest point, in percent." },
+      { name: "centerY", type: "number", default: "46", description: "Where the band sits, in percent of the frame height." },
+      { name: "spread", type: "number", default: "34", description: "How far the curtains spread around `centerY`." },
+      { name: "speed", type: "number", default: "1", description: "Drift speed. 0 freezes the sky." },
+      { name: "blur", type: "number", default: "14", description: "Softness in px. Much above 20 and the folds become blobs." },
+      { name: "intensity", type: "number", default: "1.3", description: "Overall brightness." },
+      { name: "horizonGlow", type: "number", default: "0.5", description: "Ground glow under the band. 0 removes it." },
+      { name: "striation", type: "number", default: "0.55", description: "Vertical ray structure through the curtains, 0-1." },
+      { name: "seed", type: "number", default: "1", description: "Changes the fold layout without changing any other prop." },
     ],
+    note: "Tapered paths whose shape changes every frame, not gradients that move — that is the line between this and `mesh-gradient-bg`. Two incommensurate fold clocks (2.3s against 1.1s) mean a curtain never repeats a shape. Background layer, so it has no entrance.",
+    related: ["mesh-gradient-bg", "light-rays", "particle-field"],
   },
   "particle-field": {
     category: "primitive",
     usage: `import { ParticleField } from "@/remotion/primitives/particle-field";
 
-<ParticleField />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<AbsoluteFill>
+  <ParticleField count={70} angle={8} />
+  <YourScene />
+</AbsoluteFill>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "backgroundColor", type: "string", default: '"#05070f"', description: "Plate behind the field. `transparent` layers it over footage." },
+      { name: "color", type: "string", default: '"#e8b86d"', description: "Particle colour." },
+      { name: "count", type: "number", default: "70", description: "How many particles." },
+      { name: "angle", type: "number", default: "8", description: "Direction of travel in degrees. 0 drifts straight up." },
+      { name: "speed", type: "number", default: "1", description: "Traverse speed. 1 crosses the frame in about eight seconds." },
+      { name: "size", type: "number", default: "14", description: "Diameter of the nearest particle, in px." },
+      { name: "minSize", type: "number", default: "2", description: "Diameter of the furthest particle, in px." },
+      { name: "depthBlur", type: "number", default: "3", description: "Defocus on the furthest particles. 0 flattens the field." },
+      { name: "drift", type: "number", default: "4", description: "Sideways wander, in percent of the frame." },
+      { name: "intensity", type: "number", default: "1", description: "Overall brightness." },
+      { name: "glow", type: "number", default: "1.6", description: "Halo per particle, as a multiple of its size. 0 draws hard dots." },
+      { name: "seed", type: "number", default: "1", description: "Changes the layout without changing any other prop." },
     ],
+    note: "Continuous, unlike `confetti-burst`, which is a single impulse. One depth value per particle drives size, speed, brightness and focus together — that correlation is what makes a plane of divs read as volume. Travel wraps on a track whose ends sit outside the frame.",
+    related: ["confetti-burst", "aurora-bg", "mesh-gradient-bg"],
   },
   "topographic-lines-bg": {
     category: "primitive",
     usage: `import { TopographicLinesBg } from "@/remotion/primitives/topographic-lines-bg";
 
-<TopographicLinesBg />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<AbsoluteFill>
+  <TopographicLinesBg speed={1} />
+  <YourScene />
+</AbsoluteFill>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "backgroundColor", type: "string", default: '"#07080e"', description: "Plate behind the contours. `transparent` layers them over footage." },
+      { name: "lineColor", type: "string", default: '"rgba(232,184,109,0.5)"', description: "Contour colour." },
+      { name: "indexColor", type: "string", default: '"rgba(232,184,109,0.95)"', description: "Colour of the heavier index contour." },
+      { name: "peaks", type: "TopographicPeak[]", default: "two peaks", description: "Landforms: `{ x, y, size, roughness }` in percent. One peak reads as a target; two read as terrain." },
+      { name: "lineCount", type: "number", default: "12", description: "Contours per landform." },
+      { name: "indexEvery", type: "number", default: "4", description: "Every n-th contour is drawn heavier. 0 makes them uniform." },
+      { name: "lineWidth", type: "number", default: "1.4", description: "Contour weight in px, independent of output size." },
+      { name: "speed", type: "number", default: "1", description: "How fast elevation rises. 0 freezes the map." },
+      { name: "intensity", type: "number", default: "1", description: "Overall brightness." },
+      { name: "seed", type: "number", default: "1", description: "Changes the terrain without changing any other prop." },
     ],
+    note: "Not marching squares — far too expensive per frame. Each landform is a stack of polar curves modulated by three harmonics, so the family is nested by construction. Contours travel outward and wrap, fading in at the peak and out at the rim.",
+    related: ["dynamic-grid", "map-canvas", "aurora-bg"],
   },
   "caustics-bg": {
     category: "primitive",
     usage: `import { CausticsBg } from "@/remotion/primitives/caustics-bg";
 
-<CausticsBg />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<AbsoluteFill>
+  <CausticsBg scale={130} />
+  <YourScene />
+</AbsoluteFill>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "backgroundColor", type: "string", default: "deep water gradient", description: "Water behind the light. `transparent` layers the caustics over footage." },
+      { name: "color", type: "string", default: '"#9fe8ff"', description: "Colour of the light itself." },
+      { name: "scale", type: "number", default: "120", description: "Cell size, in px." },
+      { name: "speed", type: "number", default: "1", description: "Swim speed. 0 freezes the surface." },
+      { name: "contrast", type: "number", default: "3.4", description: "How hard the cells threshold. Too low and the web dissolves into plaid." },
+      { name: "blur", type: "number", default: "8", description: "Softness of a cell edge, in px." },
+      { name: "intensity", type: "number", default: "1", description: "Overall brightness." },
+      { name: "falloff", type: "number", default: "0.55", description: "Depth shading down the frame. 0 lights it evenly." },
     ],
+    note: "Five wave trains at incommensurate angles, added with `plus-lighter`, dimmed in patches by a slow swell, then thresholded with `contrast()`. Three trains — at any wavelengths — make a lattice, and a lattice reads as wallpaper; five make the sum quasi-periodic. No shader and no per-frame noise.",
+    related: ["mesh-gradient-bg", "light-rays", "aurora-bg"],
   },
   "animated-noise-grain": {
     category: "primitive",
     usage: `import { AnimatedNoiseGrain } from "@/remotion/primitives/animated-noise-grain";
 
-<AnimatedNoiseGrain />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<AnimatedNoiseGrain opacity={0.18}>
+  <YourScene />
+</AnimatedNoiseGrain>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "children", type: "ReactNode", description: "Content the grain sits over. Omit to use it as a bare overlay." },
+      { name: "opacity", type: "number", default: "0.18", description: "Grain strength. Film sits around 0.12-0.25; above 0.4 reads as damage." },
+      { name: "size", type: "number", default: "220", description: "Tile size on screen, in px. Larger grain is coarser and cheaper." },
+      { name: "density", type: "number", default: "0.85", description: "Noise frequency inside the tile. Higher is finer." },
+      { name: "detail", type: "number", default: "3", description: "Octaves of noise. 1 is smooth, 4 is gritty." },
+      { name: "holdInFrames", type: "number", default: "2", description: "Frames each pattern is held. 2 gives the 15fps chatter of film." },
+      { name: "blendMode", type: "CSS mix-blend-mode", default: '"overlay"', description: "How the grain composites. Use `screen` over a near-black plate — overlay pivots on mid grey and does nothing to blacks." },
+      { name: "colored", type: "boolean", default: "false", description: "Keep the noise coloured instead of desaturating it to silver." },
+      { name: "vignette", type: "number", default: "0.35", description: "Extra grain in the corners, where film grain actually lives." },
+      { name: "seed", type: "number", default: "1", description: "Changes the pattern without changing any other prop." },
     ],
+    note: "The noise is one stitched `feTurbulence` tile baked into a data URI, so the browser rasterises it once for the whole render. Per-frame variation comes from a hashed sub-tile offset plus one of four mirrorings — never from regenerating noise. Rendering the preview costs about 3% more per frame than the same frame without it.",
+    related: ["scanline-crt", "mesh-gradient-bg", "light-rays"],
   },
   "light-rays": {
     category: "primitive",
@@ -3022,105 +3074,198 @@ import { TextMaskVideo } from "@/remotion/primitives/text-mask-video";
     category: "primitive",
     usage: `import { ParallaxLayers } from "@/remotion/primitives/parallax-layers";
 
-<ParallaxLayers />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<ParallaxLayers
+  travel={420}
+  layers={[
+    { content: <Sky />, depth: 0.2, blur: 2 },
+    { content: <Headline />, depth: 0.55 },
+    { content: <Foreground />, depth: 1, blur: 8 },
+  ]}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "layers", type: "ParallaxLayer[]", description: "Back to front. Each is `{ content, depth, blur, opacity, scale }`; depth 0 is the focal plane, 1 travels furthest, negative travels the other way." },
+      { name: "travel", type: "number", default: "320", description: "Travel of a depth-1 plane across the whole move, in px." },
+      { name: "angle", type: "number", default: "0", description: "Direction of the camera move. 0 tracks right, 90 cranes down." },
+      { name: "zoom", type: "number", default: "0.12", description: "Extra scale the nearest plane picks up. 0 is a flat track." },
+      { name: "progress", type: "number", description: "Drive the move yourself, 0-1. Overrides the frame-based sweep." },
+      { name: "startAtInFrames", type: "number", default: "0", description: "Frame the sweep starts on." },
+      { name: "durationInFrames", type: "number", default: "the composition", description: "Length of the sweep." },
+      { name: "motion", type: '"ease" | "linear"', default: '"ease"', description: "`ease` settles at both ends; `linear` is a constant-speed dolly." },
+      { name: "backgroundColor", type: "string", default: '"#07080e"', description: "Plate behind every plane." },
     ],
+    note: "Multi-layer, unlike `zoom-pan-frame`, which moves a camera over one still. Parallax is a relationship, so one driver feeds every plane and `depth` is the only number a caller sets. The sweep runs -0.5 to 0.5, so the middle of the window is the layout you composed.",
+    related: ["zoom-pan-frame", "depth-of-field-blur", "bento-pan"],
   },
   "shake-emphasis": {
     category: "primitive",
     usage: `import { ShakeEmphasis } from "@/remotion/primitives/shake-emphasis";
 
-<ShakeEmphasis />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<ShakeEmphasis startAtInFrames={24}>
+  <Headline />
+</ShakeEmphasis>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "children", type: "ReactNode", description: "What gets hit." },
+      { name: "startAtInFrames", type: "number", default: "0", description: "Frame the impact lands on." },
+      { name: "durationInFrames", type: "number", default: "18", description: "How long the shake takes to die out. Impacts are short." },
+      { name: "intensity", type: "number", default: "16", description: "Peak displacement, in px." },
+      { name: "rotation", type: "number", default: "1.6", description: "Peak rotation in degrees. 3 already reads as violent." },
+      { name: "punch", type: "number", default: "0.05", description: "Scale compression on impact. 0 shakes without a hit." },
+      { name: "frequency", type: "number", default: "22", description: "Rattle rate, in shakes per second." },
+      { name: "axis", type: '"both" | "x" | "y"', default: '"both"', description: "Which way it moves." },
+      { name: "decay", type: "number", default: "2.2", description: "How fast the shake dies. 1 is even, 3 is a sharp hit." },
+      { name: "repeatEveryInFrames", type: "number", description: "Repeat the impact on this interval. Omit for a single hit." },
+      { name: "seed", type: "number", default: "1", description: "Changes the rattle without changing any other prop." },
     ],
+    note: "Value noise, not a sine: every swing is a different size, which is the difference between an impact and a motor. The envelope decays to rest, so the element is still before and after — a shake that keeps going is a vibration.",
+    related: ["squash-stretch", "glow-pulse", "rgb-glitch-text"],
   },
   "glow-pulse": {
     category: "primitive",
     usage: `import { GlowPulse } from "@/remotion/primitives/glow-pulse";
 
-<GlowPulse />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<GlowPulse mode="beat" periodInFrames={36}>
+  <CtaPill />
+</GlowPulse>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "children", type: "ReactNode", description: "What glows." },
+      { name: "color", type: "string", default: '"#e8b86d"', description: "Glow colour." },
+      { name: "radius", type: "number", default: "26", description: "Glow radius at full brightness, in px." },
+      { name: "intensity", type: "number", default: "1", description: "Brightness at the top of the pulse." },
+      { name: "floor", type: "number", default: "0.28", description: "Brightness at the bottom. Never 0 for a live indicator." },
+      { name: "periodInFrames", type: "number", default: "36", description: "Length of one pulse." },
+      { name: "mode", type: '"breathe" | "beat"', default: '"breathe"', description: "`breathe` is a sine; `beat` is a fast attack and a long decay." },
+      { name: "scale", type: "number", default: "0.04", description: "Scale added at the top of the pulse. 0 glows without moving." },
+      { name: "halo", type: "number", default: "2.4", description: "Halo behind the element, as a multiple of `radius`. 0 removes it." },
+      { name: "echo", type: "number", default: "0", description: "Second, smaller tap per cycle — a heartbeat rather than a metronome." },
     ],
+    note: "The glow is a `drop-shadow` filter, so it follows the alpha of whatever it wraps — a pill, a ring, type, an SVG mark — rather than the bounding box. `floor` matters more than `intensity`: a live indicator that reaches zero reads as broken.",
+    related: ["shake-emphasis", "neon-flicker-text", "end-card"],
   },
   "motion-trail": {
     category: "primitive",
     usage: `import { MotionTrail } from "@/remotion/primitives/motion-trail";
 
-<MotionTrail />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<MotionTrail count={6} gapInFrames={3}>
+  <TheMovingThing />
+</MotionTrail>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "children", type: "ReactNode", description: "The moving element. It must animate from `useCurrentFrame()`." },
+      { name: "count", type: "number", default: "6", description: "How many echoes trail behind." },
+      { name: "gapInFrames", type: "number", default: "3", description: "Frames between echoes. Wider gaps stretch the trail for free." },
+      { name: "opacity", type: "number", default: "0.45", description: "Opacity of the freshest echo." },
+      { name: "falloff", type: "number", default: "1.6", description: "How fast echoes fade. 1 is linear, 2 keeps the tail short." },
+      { name: "scale", type: "number", default: "0.82", description: "Scale of the oldest echo. 1 keeps them all the same size." },
+      { name: "blur", type: "number", default: "4", description: "Blur on the oldest echo, in px." },
+      { name: "color", type: "string", description: "Tint the echoes. Omit to echo the element's own colours." },
+      { name: "blendMode", type: "CSS mix-blend-mode", default: '"screen"', description: "How echoes composite. `screen` is right on a dark stage." },
+      { name: "block", type: "boolean", default: "false", description: "Fill the parent instead of shrink-wrapping the subject." },
     ],
+    note: "An echo is not a copy of a position — it is the subject re-rendered at an earlier frame, via `<Sequence from={gap * i}>`. That makes the trail correct for any motion, including rotation and colour change, with no path to describe. It also costs `count + 1` renders of the subtree per frame, so prefer a wider gap over a higher count.",
+    related: ["cursor-path", "confetti-burst", "orbit-motion"],
   },
   "squash-stretch": {
     category: "primitive",
     usage: `import { SquashStretch } from "@/remotion/primitives/squash-stretch";
 
-<SquashStretch />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<SquashStretch mode="bounce" periodInFrames={36}>
+  <Ball />
+</SquashStretch>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "children", type: "ReactNode", description: "What deforms." },
+      { name: "mode", type: '"bounce" | "pulse" | "impact"', default: '"bounce"', description: "Travel and deform, breathe in place, or deform once." },
+      { name: "periodInFrames", type: "number", default: "36", description: "Length of one cycle." },
+      { name: "travel", type: "number", default: "90", description: "Bounce height, in px. 0 deforms in place." },
+      { name: "squash", type: "number", default: "0.28", description: "How hard it flattens on contact. Above 0.4 reads as cartoon." },
+      { name: "stretch", type: "number", default: "0.16", description: "How far it elongates at speed." },
+      { name: "startAtInFrames", type: "number", default: "0", description: "Frame the cycle starts on." },
+      { name: "contact", type: "number", default: "0.22", description: "How much of the cycle the contact lasts, 0-1." },
+      { name: "origin", type: '"bottom" | "center" | "top"', default: '"bottom"', description: "Pivot. `bottom` is the floor contact." },
     ],
+    note: "Volume is preserved: `scaleX` is the reciprocal square root of `scaleY`, because the eye tracks area and a one-axis squash reads as a scale bug. The pivot is the bottom by default — deforming around the centre lifts the element off its own baseline and the floor stops reading as a floor.",
+    related: ["spring-in", "shake-emphasis", "counter"],
   },
   "orbit-motion": {
     category: "primitive",
     usage: `import { OrbitMotion } from "@/remotion/primitives/orbit-motion";
 
-<OrbitMotion />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<OrbitMotion periodInFrames={120} center={<Logo />}>
+  <Chip label="One" />
+  <Chip label="Two" />
+</OrbitMotion>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "children", type: "ReactNode", description: "Each child gets its own slot on the ring, evenly spaced." },
+      { name: "radiusX", type: "number", default: "210", description: "Horizontal radius, in px." },
+      { name: "radiusY", type: "number", default: "78", description: "Vertical radius. Smaller reads as a tilted ring." },
+      { name: "periodInFrames", type: "number", default: "120", description: "Frames for one revolution." },
+      { name: "phase", type: "number", default: "0", description: "Where the first child starts, in degrees." },
+      { name: "tilt", type: "number", default: "-12", description: "Tilt of the whole ring, in degrees." },
+      { name: "direction", type: '"cw" | "ccw"', default: '"cw"', description: "Which way it turns." },
+      { name: "centerX", type: "number", default: "50", description: "Centre of the orbit, in percent of the frame." },
+      { name: "centerY", type: "number", default: "50", description: "Centre of the orbit, in percent of the frame." },
+      { name: "depth", type: "number", default: "0.28", description: "Scale difference between the near and far side. 0 is flat." },
+      { name: "depthFade", type: "number", default: "0.4", description: "How much the far side dims." },
+      { name: "upright", type: "boolean", default: "true", description: "Keep children upright instead of letting them ride the ring." },
+      { name: "showPath", type: "boolean", default: "false", description: "Draw the ring itself." },
+      { name: "pathColor", type: "string", default: '"rgba(255,255,255,0.14)"', description: "Colour of the drawn ring." },
+      { name: "center", type: "ReactNode", description: "What sits at the centre." },
     ],
+    note: "The ellipse is the easy half; depth is what makes it an orbit. One sine drives scale, opacity and `zIndex` together, so a satellite passes behind whatever is at the centre by itself. Give satellites different content — identical ones make the ring repeat every revolution divided by their count.",
+    related: ["ecosystem-orbit", "motion-trail", "squash-stretch"],
   },
   "depth-of-field-blur": {
     category: "primitive",
     usage: `import { DepthOfFieldBlur } from "@/remotion/primitives/depth-of-field-blur";
 
-<DepthOfFieldBlur />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<DepthOfFieldBlur
+  focusFrom={1}
+  focusTo={0}
+  layers={[
+    { content: <Background />, depth: 1 },
+    { content: <Card />, depth: 0.4 },
+    { content: <Foreground />, depth: 0 },
+  ]}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "layers", type: "DepthOfFieldLayer[]", description: "Back to front. Each is `{ content, depth }`, depth 0 nearest to 1 furthest." },
+      { name: "focusFrom", type: "number", default: "0", description: "Depth the lens starts focused on." },
+      { name: "focusTo", type: "number", default: "1", description: "Depth the lens racks to. Equal to `focusFrom` holds focus." },
+      { name: "startAtInFrames", type: "number", default: "6", description: "Frame the rack starts on." },
+      { name: "durationInFrames", type: "number", default: "78% of the window", description: "Length of the rack." },
+      { name: "maxBlur", type: "number", default: "16", description: "Blur at maximum defocus, in px." },
+      { name: "aperture", type: "number", default: "2.2", description: "How fast focus falls off with distance. Higher is a wider aperture." },
+      { name: "dim", type: "number", default: "0.35", description: "How much an out-of-focus plane darkens." },
+      { name: "breathe", type: "number", default: "0.03", description: "Scale a defocused plane picks up — focus breathing." },
+      { name: "progress", type: "number", description: "Drive the rack yourself, 0-1." },
+      { name: "backgroundColor", type: "string", default: '"#07080e"', description: "Plate behind every plane." },
     ],
+    note: "Spatial, unlike `blur-focus-in`, which resolves one piece of type. Blur comes from each plane's distance to the focal plane, so racking pulls one layer in exactly as it pushes another out. Time the rack so it lands *on* planes: a rack that is between two planes at the moment anyone looks has nothing sharp in frame.",
+    related: ["blur-focus-in", "parallax-layers", "zoom-pan-frame"],
   },
   "scanline-crt": {
     category: "primitive",
     usage: `import { ScanlineCrt } from "@/remotion/primitives/scanline-crt";
 
-<ScanlineCrt />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<ScanlineCrt curvature={0.6}>
+  <YourScene />
+</ScanlineCrt>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "children", type: "ReactNode", description: "What the tube is showing. Omit to use it as a bare overlay." },
+      { name: "lineCount", type: "number", default: "90", description: "How many scanlines across the frame." },
+      { name: "lineOpacity", type: "number", default: "0.34", description: "Darkness of a scanline." },
+      { name: "lineWidth", type: "number", default: "1.6", description: "Scanline weight in px, independent of output size." },
+      { name: "curvature", type: "number", default: "0.55", description: "How hard the tube face bows. 0 draws dead straight lines." },
+      { name: "cornerRadius", type: "number", default: "22", description: "Corner radius of the tube face, in px." },
+      { name: "rollInFrames", type: "number", default: "96", description: "Frames for the refresh bar to cross. 0 removes it." },
+      { name: "rollOpacity", type: "number", default: "0.16", description: "Brightness of the refresh bar." },
+      { name: "flicker", type: "number", default: "0.05", description: "Frame-to-frame brightness jitter." },
+      { name: "grille", type: "number", default: "0.22", description: "Strength of the RGB aperture grille." },
+      { name: "vignette", type: "number", default: "0.55", description: "Corner darkening." },
+      { name: "tint", type: "string", default: '"transparent"', description: "Phosphor tint over the picture." },
+      { name: "tintBlend", type: "CSS mix-blend-mode", default: '"overlay"', description: "How the tint composites." },
+      { name: "intensity", type: "number", default: "1", description: "Strength of every overlay at once." },
     ],
+    note: "Curvature is drawn: each scanline is a quadratic whose midpoint is pushed away from the tube centre, so lines bow up at the top and down at the bottom. Content underneath is not geometrically warped. Every overlay here removes light, so over a near-black plate the component is invisible — give it a picture.",
+    related: ["animated-noise-grain", "rgb-glitch-text", "terminal-simulator"],
   },
   "bar-chart-race": {
     category: "primitive",

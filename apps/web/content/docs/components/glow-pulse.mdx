@@ -1,20 +1,45 @@
 ---
 title: Glow Pulse
-description: Rhythmic glow for CTAs and live indicators. Install with npx remotion-ui@latest add glow-pulse.
+description: A rhythmic glow for CTAs and live indicators. Install with npx remotion-ui@latest add glow-pulse.
 ---
 
 import { GlowPulsePreview } from '@/components/previews/glow-pulse';
 
-<ComponentPage name="glow-pulse" preview={GlowPulsePreview} durationInFrames={120}>
+<ComponentPage name="glow-pulse" preview={GlowPulsePreview}>
 
-Rhythmic glow for CTAs and live indicators.
-
-## Usage
+The thing that says *this one*.
 
 ```tsx
 import { GlowPulse } from "@/remotion/primitives/glow-pulse";
 
-<GlowPulse />
+<GlowPulse mode="beat" periodInFrames={36}>
+  <CtaPill />
+</GlowPulse>
 ```
+
+## Why it is a wrapper
+
+The glow is a `drop-shadow` filter, not a `box-shadow`, so it follows the alpha
+of whatever it wraps — a pill, a ring, a piece of type, an SVG mark — instead of
+the bounding box. That is the entire reason this is a component and not a class:
+a box-shadow on a circular badge glows in a square.
+
+## Two shapes
+
+`breathe` is a sine, for something ambient that should not demand attention.
+
+`beat` rises in the first eighth of the cycle and decays across the rest, which
+is why a live dot reads as pulsing rather than as fading in and out. Add `echo`
+for the second, smaller tap that turns a metronome into a heartbeat.
+
+## floor matters more than intensity
+
+A live indicator that reaches zero reads as broken. The pulse rides above a
+standing glow set by `floor`, and dropping that to 0 is the fastest way to make
+a working component look like a bug.
+
+`scale` adds a small size change at the top of the pulse. It is optional, but a
+glow that changes brightness while the element stays exactly still reads as a
+lighting change rather than as the element itself pulsing.
 
 </ComponentPage>

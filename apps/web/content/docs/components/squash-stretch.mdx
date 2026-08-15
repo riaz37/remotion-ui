@@ -1,20 +1,51 @@
 ---
 title: Squash Stretch
-description: The animation principle as a primitive. Install with npx remotion-ui@latest add squash-stretch.
+description: The animation principle, as a primitive. Install with npx remotion-ui@latest add squash-stretch.
 ---
 
 import { SquashStretchPreview } from '@/components/previews/squash-stretch';
 
-<ComponentPage name="squash-stretch" preview={SquashStretchPreview} durationInFrames={120}>
+<ComponentPage name="squash-stretch" preview={SquashStretchPreview}>
 
-The animation principle as a primitive.
-
-## Usage
+Weight, without a physics engine.
 
 ```tsx
 import { SquashStretch } from "@/remotion/primitives/squash-stretch";
 
-<SquashStretch />
+<SquashStretch mode="bounce" periodInFrames={36}>
+  <Ball />
+</SquashStretch>
 ```
+
+## Three shapes of one idea
+
+`bounce` is the textbook ball: it flattens on contact, elongates through the
+fast part of the travel, and hangs round at the apex where it is slowest.
+
+`pulse` is the same deform without the travel, for a logo or an icon that needs
+weight in place.
+
+`impact` fires once, for something landing into a layout — pair it with an
+entrance primitive, which owns the arrival, and let this own the landing.
+
+## Volume preservation
+
+`scaleX` is the reciprocal square root of `scaleY`, which keeps
+`scaleX² × scaleY` constant — the volume of a body of revolution, and the same
+rule an animator draws by. Squashing one axis without widening the other is the
+single thing that makes a deform read as a scale bug rather than as rubber,
+because the eye tracks area.
+
+## Pivot
+
+`origin` defaults to `bottom`, the floor contact. A deform around the centre
+lifts the element off its own baseline and the floor stops reading as a floor.
+Use `center` only when the element is genuinely free-floating.
+
+## Timing
+
+`contact` is how much of the cycle the flatten lasts. Short contacts read as
+hard surfaces; long ones read as soft ones. The squash is the frame everyone
+remembers, so if you are picking a poster frame or a loop point, pick a contact.
 
 </ComponentPage>

@@ -1,20 +1,65 @@
 ---
 title: Topographic Lines Bg
-description: Contour lines drifting. Install with npx remotion-ui@latest add topographic-lines-bg.
+description: Contour lines drifting outward, like elevation rising. Install with npx remotion-ui@latest add topographic-lines-bg.
 ---
 
 import { TopographicLinesBgPreview } from '@/components/previews/topographic-lines-bg';
 
-<ComponentPage name="topographic-lines-bg" preview={TopographicLinesBgPreview} durationInFrames={120}>
+<ComponentPage name="topographic-lines-bg" preview={TopographicLinesBgPreview}>
 
-Contour lines drifting.
-
-## Usage
+A survey-map background.
 
 ```tsx
 import { TopographicLinesBg } from "@/remotion/primitives/topographic-lines-bg";
 
-<TopographicLinesBg />
+<AbsoluteFill>
+  <TopographicLinesBg speed={1} />
+  <YourScene />
+</AbsoluteFill>
 ```
+
+## How the contours are built
+
+Real contours come out of a height field by marching squares, which is far too
+expensive to run per frame. This inverts the problem. A landform is a stack of
+closed polar curves around a centre, each radius modulated by three harmonics,
+so the family is nested by construction and can never self-intersect — which is
+the one thing a contour map must never do.
+
+Two overlapping landforms give the crossing, merging look of a real survey
+sheet. One landform on its own reads as a target.
+
+## Peaks
+
+```tsx
+<TopographicLinesBg
+  peaks={[
+    { x: 20, y: 34, size: 72, roughness: 1.05 },
+    { x: 84, y: 74, size: 54, roughness: 1.35 },
+  ]}
+/>
+```
+
+`x` and `y` are percentages of the frame, `size` is the outermost contour's
+radius as a percentage of the short edge, and `roughness` scales the harmonics.
+At `roughness={0}` you get concentric circles.
+
+## Index contours
+
+Every `indexEvery`-th line is drawn heavier, which is the convention that makes
+a real map legible. A contour keeps its identity as it travels outward, so an
+index contour stays an index contour rather than flickering between weights when
+the stack wraps.
+
+## Motion
+
+Contours travel outward, which reads as elevation rising under the camera. They
+fade in at the peak and out at the rim, so nothing appears or vanishes
+mid-frame. `speed={0}` freezes the map into a still.
+
+`lineWidth` is in pixels at any output size — the stroke is pinned with
+`vectorEffect="non-scaling-stroke"`, because the drawing space is a fixed
+160x90 box and an unpinned stroke would triple in weight between a preview and
+a 4K render.
 
 </ComponentPage>

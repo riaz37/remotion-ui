@@ -1,20 +1,57 @@
 ---
 title: Parallax Layers
-description: Depth-offset layers on one driver. Install with npx remotion-ui@latest add parallax-layers.
+description: Depth-offset planes driven by one camera move. Install with npx remotion-ui@latest add parallax-layers.
 ---
 
 import { ParallaxLayersPreview } from '@/components/previews/parallax-layers';
 
-<ComponentPage name="parallax-layers" preview={ParallaxLayersPreview} durationInFrames={120}>
+<ComponentPage name="parallax-layers" preview={ParallaxLayersPreview}>
 
-Depth-offset layers on one driver. Multi-layer, unlike zoom-pan-frame's single still.
-
-## Usage
+Planes at different depths, moving at different rates, on one driver.
 
 ```tsx
 import { ParallaxLayers } from "@/remotion/primitives/parallax-layers";
 
-<ParallaxLayers />
+<ParallaxLayers
+  travel={420}
+  layers={[
+    { content: <Sky />, depth: 0.2, blur: 2 },
+    { content: <Headline />, depth: 0.55 },
+    { content: <Foreground />, depth: 1, blur: 8 },
+  ]}
+/>
 ```
+
+## Where it sits
+
+Multi-layer, unlike `zoom-pan-frame`, which moves a camera over a single still.
+The split matters because parallax is a *relationship*: the illusion comes from
+planes moving at different rates against each other, so one driver has to feed
+all of them. Animating three layers separately gets you three animations that
+happen to overlap.
+
+## Depth
+
+`depth` is the only number a caller has to think about. A plane at `depth={0}`
+is the focal plane and never moves; everything else is offset by
+`depth × travel` relative to it. Negative depths move the other way, which is
+what an element in front of the lens does.
+
+Layers are listed back to front, and a layer with no `depth` gets one from its
+position in the list, so the simplest call is just an ordered array.
+
+## The sweep
+
+The move runs from -0.5 to 0.5 rather than 0 to 1, so the middle of the window
+is the layout you actually composed and the planes are offset in both directions
+around it. A sweep that started in frame and slid out would mean designing
+against a position nobody sees.
+
+`zoom` adds scale to the nearer planes as they travel, which is the difference
+between a dolly and a pan and the half people forget.
+
+Drive it from the frame — `startAtInFrames`, `durationInFrames`, `motion` — or
+pass `progress` and drive it from a scroll position, a spring, or a scene's own
+clock.
 
 </ComponentPage>
