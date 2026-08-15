@@ -1,0 +1,20 @@
+---
+title: Depth Of Field Blur
+description: Rack focus between layers. Install with npx remotion-ui@latest add depth-of-field-blur.
+---
+
+import { DepthOfFieldBlurPreview } from '@/components/previews/depth-of-field-blur';
+
+<ComponentPage name="depth-of-field-blur" preview={DepthOfFieldBlurPreview} durationInFrames={120}>
+
+Rack focus between layers. blur-focus-in is text-only; this is spatial.
+
+## Usage
+
+```tsx
+import { DepthOfFieldBlur } from "@/remotion/primitives/depth-of-field-blur";
+
+<DepthOfFieldBlur />
+```
+
+</ComponentPage>

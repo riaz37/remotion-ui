@@ -2854,6 +2854,380 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "scramble-text",
+      "type": "registry:ui",
+      "description": "Random-glyph scramble resolving per character",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/scramble-text.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "text-mask-video",
+      "type": "registry:ui",
+      "description": "Video or gradient showing through letterforms",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/text-mask-video.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "handwriting-text",
+      "type": "registry:ui",
+      "description": "Takes a string and strokes it on",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/handwriting-text.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "stroke-to-fill-text",
+      "type": "registry:ui",
+      "description": "Outline text filling solid",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/stroke-to-fill-text.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "variable-font-morph",
+      "type": "registry:ui",
+      "description": "Animates weight/width axes of a variable font",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/variable-font-morph.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "liquid-text-morph",
+      "type": "registry:ui",
+      "description": "Letterforms morphing between two words",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/liquid-text-morph.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "wave-text",
+      "type": "registry:ui",
+      "description": "Per-character sine displacement",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/wave-text.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "neon-flicker-text",
+      "type": "registry:ui",
+      "description": "Neon sign flicker and settle",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/neon-flicker-text.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "aurora-bg",
+      "type": "registry:ui",
+      "description": "Drifting light ribbons",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/aurora-bg.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "particle-field",
+      "type": "registry:ui",
+      "description": "Ambient drifting particles with depth",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/particle-field.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "topographic-lines-bg",
+      "type": "registry:ui",
+      "description": "Contour lines drifting",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/topographic-lines-bg.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "caustics-bg",
+      "type": "registry:ui",
+      "description": "Underwater light caustics",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/caustics-bg.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "animated-noise-grain",
+      "type": "registry:ui",
+      "description": "Film grain overlay",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/animated-noise-grain.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "light-rays",
+      "type": "registry:ui",
+      "description": "Volumetric god rays drifting across the stage",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/light-rays.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "parallax-layers",
+      "type": "registry:ui",
+      "description": "Depth-offset layers on one driver",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/parallax-layers.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "shake-emphasis",
+      "type": "registry:ui",
+      "description": "Short impact shake",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/shake-emphasis.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "glow-pulse",
+      "type": "registry:ui",
+      "description": "Rhythmic glow for CTAs and live indicators",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/glow-pulse.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "motion-trail",
+      "type": "registry:ui",
+      "description": "Echo trails behind a moving element",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/motion-trail.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "squash-stretch",
+      "type": "registry:ui",
+      "description": "The animation principle as a primitive",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/squash-stretch.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "orbit-motion",
+      "type": "registry:ui",
+      "description": "Element orbiting a center point",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/orbit-motion.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "depth-of-field-blur",
+      "type": "registry:ui",
+      "description": "Rack focus between layers",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/depth-of-field-blur.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "scanline-crt",
+      "type": "registry:ui",
+      "description": "CRT scanlines and curvature overlay",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/scanline-crt.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

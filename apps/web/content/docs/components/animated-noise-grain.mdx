@@ -1,0 +1,20 @@
+---
+title: Animated Noise Grain
+description: Film grain overlay. Install with npx remotion-ui@latest add animated-noise-grain.
+---
+
+import { AnimatedNoiseGrainPreview } from '@/components/previews/animated-noise-grain';
+
+<ComponentPage name="animated-noise-grain" preview={AnimatedNoiseGrainPreview} durationInFrames={120}>
+
+Film grain overlay. Watch render cost — precompute or use CSS, don't generate noise per frame.
+
+## Usage
+
+```tsx
+import { AnimatedNoiseGrain } from "@/remotion/primitives/animated-noise-grain";
+
+<AnimatedNoiseGrain />
+```
+
+</ComponentPage>

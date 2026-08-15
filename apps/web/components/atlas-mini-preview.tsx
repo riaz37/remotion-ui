@@ -121,6 +121,28 @@ import { WaveformLinePreview } from "./previews/waveform-line";
 import { MarkerHighlightPreview } from "./previews/marker-highlight";
 import { ZoomPanFramePreview } from "./previews/zoom-pan-frame";
 import { SkewInPreview } from "./previews/skew-in";
+import { ScrambleTextPreview } from "./previews/scramble-text";
+import { TextMaskVideoPreview } from "./previews/text-mask-video";
+import { HandwritingTextPreview } from "./previews/handwriting-text";
+import { StrokeToFillTextPreview } from "./previews/stroke-to-fill-text";
+import { VariableFontMorphPreview } from "./previews/variable-font-morph";
+import { LiquidTextMorphPreview } from "./previews/liquid-text-morph";
+import { WaveTextPreview } from "./previews/wave-text";
+import { NeonFlickerTextPreview } from "./previews/neon-flicker-text";
+import { AuroraBgPreview } from "./previews/aurora-bg";
+import { ParticleFieldPreview } from "./previews/particle-field";
+import { TopographicLinesBgPreview } from "./previews/topographic-lines-bg";
+import { CausticsBgPreview } from "./previews/caustics-bg";
+import { AnimatedNoiseGrainPreview } from "./previews/animated-noise-grain";
+import { LightRaysPreview } from "./previews/light-rays";
+import { ParallaxLayersPreview } from "./previews/parallax-layers";
+import { ShakeEmphasisPreview } from "./previews/shake-emphasis";
+import { GlowPulsePreview } from "./previews/glow-pulse";
+import { MotionTrailPreview } from "./previews/motion-trail";
+import { SquashStretchPreview } from "./previews/squash-stretch";
+import { OrbitMotionPreview } from "./previews/orbit-motion";
+import { DepthOfFieldBlurPreview } from "./previews/depth-of-field-blur";
+import { ScanlineCrtPreview } from "./previews/scanline-crt";
 
 type AtlasMiniPreviewProps = {
   slug: string;
@@ -245,6 +267,28 @@ const PREVIEWS: Record<string, React.ComponentType> = {
   "marker-highlight": MarkerHighlightPreview,
   "zoom-pan-frame": ZoomPanFramePreview,
   "skew-in": SkewInPreview,
+  "scramble-text": ScrambleTextPreview,
+  "text-mask-video": TextMaskVideoPreview,
+  "handwriting-text": HandwritingTextPreview,
+  "stroke-to-fill-text": StrokeToFillTextPreview,
+  "variable-font-morph": VariableFontMorphPreview,
+  "liquid-text-morph": LiquidTextMorphPreview,
+  "wave-text": WaveTextPreview,
+  "neon-flicker-text": NeonFlickerTextPreview,
+  "aurora-bg": AuroraBgPreview,
+  "particle-field": ParticleFieldPreview,
+  "topographic-lines-bg": TopographicLinesBgPreview,
+  "caustics-bg": CausticsBgPreview,
+  "animated-noise-grain": AnimatedNoiseGrainPreview,
+  "light-rays": LightRaysPreview,
+  "parallax-layers": ParallaxLayersPreview,
+  "shake-emphasis": ShakeEmphasisPreview,
+  "glow-pulse": GlowPulsePreview,
+  "motion-trail": MotionTrailPreview,
+  "squash-stretch": SquashStretchPreview,
+  "orbit-motion": OrbitMotionPreview,
+  "depth-of-field-blur": DepthOfFieldBlurPreview,
+  "scanline-crt": ScanlineCrtPreview,
 };
 
 
