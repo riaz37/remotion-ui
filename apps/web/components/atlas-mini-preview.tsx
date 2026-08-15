@@ -179,6 +179,11 @@ import { NotificationStackPreview } from "./previews/notification-stack";
 import { TabSwitchPanelPreview } from "./previews/tab-switch-panel";
 import { SearchResultsPopulatePreview } from "./previews/search-results-populate";
 import { FileTreeRevealPreview } from "./previews/file-tree-reveal";
+import { KanbanMovePreview } from "./previews/kanban-move";
+import { CommitGraphPreview } from "./previews/commit-graph";
+import { ComparisonTablePreview } from "./previews/comparison-table";
+import { PricingCardPreview } from "./previews/pricing-card";
+import { FaqAccordionPreview } from "./previews/faq-accordion";
 
 type AtlasMiniPreviewProps = {
   slug: string;
@@ -361,6 +366,11 @@ const PREVIEWS: Record<string, React.ComponentType> = {
   "tab-switch-panel": TabSwitchPanelPreview,
   "search-results-populate": SearchResultsPopulatePreview,
   "file-tree-reveal": FileTreeRevealPreview,
+  "kanban-move": KanbanMovePreview,
+  "commit-graph": CommitGraphPreview,
+  "comparison-table": ComparisonTablePreview,
+  "pricing-card": PricingCardPreview,
+  "faq-accordion": FaqAccordionPreview,
 };
 
 

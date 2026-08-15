@@ -350,6 +350,11 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   "tab-switch-panel": { lane: "blocks", drive: "time", tier: "core", tags: ["ui"] },
   "search-results-populate": { lane: "blocks", drive: "time", tier: "core", tags: ["ui"] },
   "file-tree-reveal": { lane: "blocks", drive: "time", tier: "core", tags: ["code"] },
+  "kanban-move": { lane: "blocks", drive: "time", tier: "core", tags: ["ui"] },
+  "commit-graph": { lane: "blocks", drive: "time", tier: "advanced", tags: ["code"] },
+  "comparison-table": { lane: "blocks", drive: "time", tier: "core" },
+  "pricing-card": { lane: "blocks", drive: "time", tier: "core" },
+  "faq-accordion": { lane: "blocks", drive: "time", tier: "core", tags: ["ui"] },
 };
 
 export function getAtlasMeta(name: string): AtlasMeta | undefined {

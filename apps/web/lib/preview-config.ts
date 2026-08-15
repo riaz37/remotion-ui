@@ -187,6 +187,11 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "tab-switch-panel": { durationInFrames: 120 },
   "search-results-populate": { durationInFrames: 120 },
   "file-tree-reveal": { durationInFrames: 120 },
+  "kanban-move": { durationInFrames: 120 },
+  "commit-graph": { durationInFrames: 120 },
+  "comparison-table": { durationInFrames: 120 },
+  "pricing-card": { durationInFrames: 120 },
+  "faq-accordion": { durationInFrames: 120 },
 };
 
 export function previewMeta(slug: string): Required<PreviewMeta> {

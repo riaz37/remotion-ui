@@ -3866,6 +3866,91 @@
           "type": "registry:block"
         }
       ]
+    },
+    {
+      "name": "kanban-move",
+      "type": "registry:block",
+      "description": "Cards moving across columns",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/kanban-move/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "commit-graph",
+      "type": "registry:block",
+      "description": "Branch/merge graph drawing itself",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/commit-graph/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "comparison-table",
+      "type": "registry:block",
+      "description": "Multi-column feature matrix",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/comparison-table/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "pricing-card",
+      "type": "registry:block",
+      "description": "Tier card with price roll and features",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/pricing-card/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "faq-accordion",
+      "type": "registry:block",
+      "description": "Narrowed: Q/A text rows expanding",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/faq-accordion/index.tsx",
+          "type": "registry:block"
+        }
+      ]
     }
   ]
 }

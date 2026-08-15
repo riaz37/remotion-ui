@@ -175,3 +175,8 @@ export { NotificationStack } from "../registry/bases/default/scenes/notification
 export { TabSwitchPanel } from "../registry/bases/default/scenes/tab-switch-panel";
 export { SearchResultsPopulate } from "../registry/bases/default/scenes/search-results-populate";
 export { FileTreeReveal } from "../registry/bases/default/scenes/file-tree-reveal";
+export { KanbanMove } from "../registry/bases/default/scenes/kanban-move";
+export { CommitGraph } from "../registry/bases/default/scenes/commit-graph";
+export { ComparisonTable } from "../registry/bases/default/scenes/comparison-table";
+export { PricingCard } from "../registry/bases/default/scenes/pricing-card";
+export { FaqAccordion } from "../registry/bases/default/scenes/faq-accordion";

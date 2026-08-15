@@ -4226,6 +4226,71 @@ import { parseSubtitles } from "@/remotion/lib/caption-utils";
     note: "Rows reveal in depth-first display order, so a folder is always on screen before its contents, and each row takes its own height as it arrives — the rows beneath are pushed down rather than cross-faded onto a fixed grid. File names take their colour from the extension using the code token palette. Shows structure; code-reveal and code-diff-wipe show the contents of a file.",
     related: ["code-reveal", "code-diff-wipe", "terminal-simulator"],
   },
+  "kanban-move": {
+    category: "scene",
+    usage: `import { KanbanMove } from "@/remotion/scenes/kanban-move";
+
+<KanbanMove />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "commit-graph": {
+    category: "scene",
+    usage: `import { CommitGraph } from "@/remotion/scenes/commit-graph";
+
+<CommitGraph />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "comparison-table": {
+    category: "scene",
+    usage: `import { ComparisonTable } from "@/remotion/scenes/comparison-table";
+
+<ComparisonTable />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "pricing-card": {
+    category: "scene",
+    usage: `import { PricingCard } from "@/remotion/scenes/pricing-card";
+
+<PricingCard />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "faq-accordion": {
+    category: "scene",
+    usage: `import { FaqAccordion } from "@/remotion/scenes/faq-accordion";
+
+<FaqAccordion />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
 };
 
 export function getComponentReference(name: string): ComponentReference | undefined {
