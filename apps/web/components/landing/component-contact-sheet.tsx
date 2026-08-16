@@ -5,7 +5,6 @@ import { Reveal } from "@/components/landing/reveal";
 import { getAtlasMeta, type AtlasLane } from "@/lib/atlas";
 import { getComponentDocPath } from "@/lib/component-doc-path";
 import { LANE_VISUALS, laneAccent } from "@/lib/lane-visuals";
-import { previewMeta } from "@/lib/preview-config";
 
 /**
  * A contact sheet: every frame the same size, the subject letterboxed inside,
@@ -41,12 +40,11 @@ function displayName(slug: string): string {
 function Frame({ slug, index }: { slug: string; index: number }) {
   const lane: AtlasLane = getAtlasMeta(slug)?.lane ?? "reels";
   const name = displayName(slug);
-  // Every tile in the sheet defaults to a 16:9 frame, but a handful of
-  // compositions (social clips, reels, etc.) are shot 9:16. Squeezing those
-  // into a 16:9 tile letterboxes the subject, so the tile's own aspect ratio
-  // has to follow the composition's real dimensions instead of a fixed one.
-  const { width, height } = previewMeta(slug);
-  const aspectRatio = height > width ? "9 / 16" : "16 / 9";
+  // Every tile is one 16:9 frame, the way a contact sheet prints one strip
+  // size. A 9:16 composition given its own taller tile makes its grid row
+  // twice as tall as its neighbours, which leaves the rest of that row blank —
+  // a worse artifact than pillarboxing the vertical inside a uniform frame.
+  const aspectRatio = "16 / 9";
 
   return (
     <Reveal
