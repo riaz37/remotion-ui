@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@remotion/captions": "^4.0.505",
+    "@remotion/effects": "4.0.505",
     "@remotion/google-fonts": "^4.0.505",
     "@remotion/layout-utils": "^4.0.505",
     "@remotion/light-leaks": "^4.0.505",

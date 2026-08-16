@@ -16,6 +16,10 @@ const registryAliases = {
 
 Config.setVideoImageFormat("jpeg");
 Config.setOverwriteOutput(true);
+
+// GPU-backed components (`@remotion/effects`, `<Solid>`, `<HtmlInCanvas>`)
+// render blank or unshaded without this, and the render still exits 0.
+Config.setChromiumOpenGlRenderer("angle");
 Config.overrideWebpackConfig((config) => {
   config.resolve ??= {};
   const previous = config.resolve.alias;

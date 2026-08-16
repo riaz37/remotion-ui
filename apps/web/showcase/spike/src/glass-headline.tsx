@@ -1,0 +1,49 @@
+import { barrelDistortion } from "@remotion/effects/barrel-distortion";
+import { chromaticAberration } from "@remotion/effects/chromatic-aberration";
+import { scanlines } from "@remotion/effects/scanlines";
+import {
+  AbsoluteFill,
+  HtmlInCanvas,
+  interpolate,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
+import { LightSweepText } from "@/remotion/primitives/light-sweep-text";
+
+/**
+ * Tier 2 — takes an existing DOM primitive of ours and runs its pixels through
+ * a shader stack. Preview needs Chrome 149 + chrome://flags/#canvas-draw-element;
+ * rendering works unmodified because Remotion ships Chrome with the flag on.
+ */
+export const GlassHeadline: React.FC = () => {
+  const { width, height } = useVideoConfig();
+  const frame = useCurrentFrame();
+
+  const split = interpolate(frame, [0, 20, 45], [26, 4, 1.5], {
+    extrapolateRight: "clamp",
+  });
+
+  return (
+    <HtmlInCanvas
+      width={width}
+      height={height}
+      effects={[
+        // Above ~0.05 the distortion pulls the frame edges inward and leaves
+        // black corners, which reads as a bug rather than a lens.
+        barrelDistortion({ amount: 0.04 }),
+        chromaticAberration({ amount: split, angle: 8 }),
+        scanlines({ amount: 0.08, spacing: 3, offset: frame * 0.5 }),
+      ]}
+    >
+      <AbsoluteFill
+        style={{
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "#08080c",
+        }}
+      >
+        <LightSweepText text="Rendered on the GPU" fontSize={132} />
+      </AbsoluteFill>
+    </HtmlInCanvas>
+  );
+};
