@@ -1,20 +1,29 @@
 ---
 title: Team Grid
-description: Avatar grid with role labels on stagger. Install with npx remotion-ui@latest add team-grid.
+description: A team arriving person by person — the avatar springs up first, the name and role follow it into place.
 ---
 
 import { TeamGridPreview } from '@/components/previews/team-grid';
 
-<ComponentPage name="team-grid" preview={TeamGridPreview} durationInFrames={120}>
+<ComponentPage name="team-grid" preview={TeamGridPreview}>
 
-Avatar grid with role labels on stagger.
+Each tile lands as one object: the avatar springs up, its ring closes from a
+thin stroke to a full one, and the name and role follow about a tenth of a
+second behind. Fading all three together is the version that looks like a
+placeholder loading; staggering them inside the tile is what gives the arrival
+depth.
 
-## Usage
+The stagger runs in reading order rather than by row or column. A grid of any
+width then feels like a list being read out, where a row-by-row wipe feels like
+a slide transition applied to people.
 
-```tsx
-import { TeamGrid } from "@/remotion/scenes/team-grid";
+Initials are derived from the name — first letters of the first two words —
+which is right for most Latin names and wrong for enough others that
+`initials` is worth passing by hand when it matters. Avatar colours cycle
+through `avatarColors` by index, so a longer team keeps varying without you
+assigning a colour to each person.
 
-<TeamGrid />
-```
+Four columns at 1080p keeps names on one line. Past eight or so people, drop to
+`columns={5}` and shorten the roles before you shrink the type.
 
 </ComponentPage>

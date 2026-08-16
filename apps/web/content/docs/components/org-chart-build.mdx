@@ -1,20 +1,30 @@
 ---
 title: Org Chart Build
-description: Hierarchy assembling top-down. Install with npx remotion-ui@latest add org-chart-build.
+description: A hierarchy assembling top-down — connectors draw down from the parents already standing, and nodes land on the ends of the lines.
 ---
 
 import { OrgChartBuildPreview } from '@/components/previews/org-chart-build';
 
-<ComponentPage name="org-chart-build" preview={OrgChartBuildPreview} durationInFrames={120}>
+<ComponentPage name="org-chart-build" preview={OrgChartBuildPreview}>
 
-Hierarchy assembling top-down.
+The root lands, its connectors draw downward, and the next level's nodes arrive
+on the ends of those lines — so the chart builds the way someone would draw it,
+rather than fading in as a finished diagram. Every connector leads its child by
+about a third of a second, which is long enough to read as cause and effect and
+short enough that the chart never feels like it is waiting.
 
-## Usage
+Positions come from a leaf walk rather than a grid. Leaves are spread evenly
+across the width and each parent centres over the span of its own children, so a
+lopsided tree — three reports on one side, one on the other — stays balanced
+without any node needing to know its siblings' widths.
 
-```tsx
-import { OrgChartBuild } from "@/remotion/scenes/org-chart-build";
+Connectors are elbows, not diagonals. Org charts are read as columns of
+authority; a straight line between two boxes reads as a relationship of a
+different kind entirely.
 
-<OrgChartBuild />
-```
+Nodes are a flat array with `parent` indices, which keeps the data trivially
+serialisable — parents must appear before their children. Depth picks the node's
+colour from `levelColors`, so a fourth level reuses the last entry rather than
+running out.
 
 </ComponentPage>

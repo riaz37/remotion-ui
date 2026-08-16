@@ -1,20 +1,29 @@
 ---
 title: Roadmap Lanes
-description: Swimlanes of shipped/building/planned. Install with npx remotion-ui@latest add roadmap-lanes.
+description: Swimlanes of shipped, building and planned work, each lane filling in turn and in-flight items growing to their real progress.
 ---
 
 import { RoadmapLanesPreview } from '@/components/previews/roadmap-lanes';
 
-<ComponentPage name="roadmap-lanes" preview={RoadmapLanesPreview} durationInFrames={120}>
+<ComponentPage name="roadmap-lanes" preview={RoadmapLanesPreview}>
 
-Swimlanes of shipped/building/planned.
+Lanes fill one after another. Items in a `done` lane land already ticked, items
+in a `showProgress` lane land empty and then fill to their own `progress` value,
+and items in a `dashed` lane arrive outlined and unlit — three states that are
+readable in a still frame, not just in motion.
 
-## Usage
+The fill starts *after* the pill has landed, and takes longer than the arrival
+did. A bar that grows while its pill is still moving reads as one blurred event;
+letting the pill settle first turns the progress into a second beat the eye can
+follow, and the percentage counting up beside it has somewhere to land.
 
-```tsx
-import { RoadmapLanes } from "@/remotion/scenes/roadmap-lanes";
+Lane appearance is driven by flags rather than by lane name, so the three
+defaults — Shipped, Building, Planned — are a starting point, not a contract.
+A "Blocked" lane is `dashed` with a red `color`; a "Next up" lane is
+`showProgress` with low values.
 
-<RoadmapLanes />
-```
+Three items per lane at three lanes is the comfortable maximum at 1080p; the
+item width is divided from the board, so a fourth item shortens every label
+rather than wrapping.
 
 </ComponentPage>

@@ -1,16 +1,16 @@
 "use client";
 
 import { TeamGrid } from "../registry-exports";
-import { PreviewFrame } from "./preview-frame";
+import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**
- * The audit samples at 15% / 50% / 90% of the window — frames 18, 60 and 108 on
- * the 120-frame default. Motion must still be running at frame 18 and not yet
- * settled at 60, or all three samples land on a still image and the preview is
- * reported dead. See docs-internal/preview-audit-rubric.md.
+ * Members arrive every 0.2s from 0.4s, so the last tile is still landing at
+ * ~2.25s: frame 18 catches the first row, frame 60 (2.0s) the last, and
+ * `holdSeconds={3.4}` puts frame 108 mid-exit. See
+ * docs-internal/preview-audit-rubric.md.
  */
 export const TeamGridPreview: React.FC = () => (
-  <PreviewFrame lane="blocks">
-    <TeamGrid />
-  </PreviewFrame>
+  <ScenePreviewPlate direct>
+    <TeamGrid holdSeconds={3.4} />
+  </ScenePreviewPlate>
 );

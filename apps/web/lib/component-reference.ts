@@ -4392,66 +4392,162 @@ import { parseSubtitles } from "@/remotion/lib/caption-utils";
     category: "scene",
     usage: `import { TeamGrid } from "@/remotion/scenes/team-grid";
 
-<TeamGrid />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<TeamGrid
+  title="The people behind it"
+  subtitle="Eight of us, four timezones."
+  members={[
+    { name: "Ada Okonjo", role: "Founder" },
+    { name: "Piotr Nowak", role: "Rendering" },
+    { name: "Dai Nakamura", role: "Design systems" },
+  ]}
+  columns={4}
+  holdSeconds={3.4}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "members", type: "TeamMember[]", default: "8 sample people", description: "Name, role, optional avatar tint and hand-written initials." },
+      { name: "title", type: "string", default: '"The people behind it"', description: "Heading above the grid. Omit to drop it." },
+      { name: "subtitle", type: "string", default: '"Eight of us, four timezones."', description: "Line under the heading." },
+      { name: "columns", type: "number", default: "4", description: "Members per row. Four keeps names on one line at 1080p." },
+      { name: "startAtSeconds", type: "number", default: "0.4", description: "Second the first avatar arrives." },
+      { name: "staggerSeconds", type: "number", default: "0.2", description: "Seconds between members, in reading order." },
+      { name: "holdSeconds", type: "number", description: "Seconds the settled grid holds before it retreats. Omit to leave it up." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Role line on the first member — the one you want read first." },
+      { name: "avatarColors", type: "string[]", default: "6 tints", description: "Cycled by index for members with no colour of their own." },
+      { name: "backgroundColor", type: "string", description: "Page behind the grid. Defaults to the theme page colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
+    note: "Initials are the first letters of the first two words — right for most Latin names and wrong for enough others that `initials` is worth passing by hand. The avatar springs up ahead of its name and role so each tile lands as one object with depth rather than three elements agreeing to fade.",
+    related: ["org-chart-build", "logo-wall", "feature-list"],
   },
   "logo-wall": {
     category: "scene",
     usage: `import { LogoWall } from "@/remotion/scenes/logo-wall";
 
-<LogoWall />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<LogoWall
+  eyebrow="Trusted by"
+  title="Teams shipping with RemotionUI"
+  logos={[
+    { name: "Northstar", color: "#E8B86D" },
+    { name: "Halcyon", color: "#7DD3E8" },
+    { name: "Fernweh", color: "#9BD4A0" },
+    { name: "Orbital", color: "#C99BE8" },
+  ]}
+  holdSeconds={3.4}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "logos", type: "WallLogo[]", default: "8 sample brands", description: "Wordmark, brand colour, and the glyph in the mark beside it." },
+      { name: "eyebrow", type: "string", default: '"Trusted by"', description: "Small line above the heading. Omit to drop it." },
+      { name: "title", type: "string", default: '"Teams shipping with RemotionUI"', description: "Heading above the wall. Omit to drop it." },
+      { name: "columns", type: "number", default: "4", description: "Tiles per row." },
+      { name: "startAtSeconds", type: "number", default: "0.32", description: "Second the first tile arrives." },
+      { name: "arriveStaggerSeconds", type: "number", default: "0.06", description: "Seconds between tiles arriving, in reading order. Deliberately fast." },
+      { name: "staggerSeconds", type: "number", default: "0.24", description: "Seconds between diagonals of the colour sweep." },
+      { name: "warmSeconds", type: "number", default: "0.6", description: "How long one tile takes to go from grey to brand colour." },
+      { name: "holdSeconds", type: "number", description: "Seconds the finished wall holds before it retreats. Omit to leave it up." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Eyebrow, and the fallback for logos with no colour." },
+      { name: "backgroundColor", type: "string", description: "Page behind the wall. Defaults to the theme page colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
+    note: "Arrival and colour are separate beats on purpose: tiles land fast so the wall is whole within a second, then the colour sweeps the diagonal across it. Grey is one saturate() on the tile rather than a second set of grey colours, so swapping in your own brand colours brings the monochrome stage with it. Wordmarks are text — no image assets to bundle or fail to load in a headless render.",
+    related: ["team-grid", "feature-list", "comparison-table"],
   },
   "changelog-entry": {
     category: "scene",
     usage: `import { ChangelogEntry } from "@/remotion/scenes/changelog-entry";
 
-<ChangelogEntry />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<ChangelogEntry
+  version="v2.4.0"
+  date="16 August"
+  summary="Captions, webhooks, and a queue that stops sulking."
+  changes={[
+    { kind: "added", text: "Caption presets for nine languages" },
+    { kind: "fixed", text: "Retry backoff no longer stalls the queue" },
+    { kind: "removed", text: "Legacy waveform atom" },
+  ]}
+  holdSeconds={3.4}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "changes", type: "ChangeRow[]", default: "5 sample changes", description: "A kind — added, fixed, changed or removed — and the sentence beside it." },
+      { name: "version", type: "string", default: '"v2.4.0"', description: "Version string, set at display size." },
+      { name: "date", type: "string", default: '"16 August"', description: "Date beside the version." },
+      { name: "summary", type: "string", default: '"Captions, webhooks, and a queue that stops sulking."', description: "Headline under the version. Omit for releases without one." },
+      { name: "kindColors", type: "Partial<Record<ChangeKind, string>>", default: "green / blue / amber / red", description: "Override any tag colour without supplying the rest." },
+      { name: "startAtSeconds", type: "number", default: "0.66", description: "Second the first change row arrives." },
+      { name: "staggerSeconds", type: "number", default: "0.28", description: "Seconds between rows. Each sentence trails its own tag by 0.08s." },
+      { name: "holdSeconds", type: "number", description: "Seconds the finished entry holds before it retreats. Omit to leave it up." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Fallback tag colour for kinds with no colour set." },
+      { name: "backgroundColor", type: "string", description: "Page behind the card. Defaults to the theme page colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
+    note: "Tags are fixed width so every sentence shares a left edge — ragged text beside ragged tags is what makes a changelog look unmaintained. The tag lands before its sentence because the kind of change is what a viewer scans for. Five or six rows is the ceiling before the card outgrows a 1080p frame; split a larger release into two entries.",
+    related: ["commit-graph", "feature-list", "roadmap-lanes"],
   },
   "roadmap-lanes": {
     category: "scene",
     usage: `import { RoadmapLanes } from "@/remotion/scenes/roadmap-lanes";
 
-<RoadmapLanes />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<RoadmapLanes
+  title="What we are building"
+  lanes={[
+    { title: "Shipped", color: "#9BD4A0", done: true, items: [{ label: "Render API" }] },
+    {
+      title: "Building",
+      color: "#E8B86D",
+      showProgress: true,
+      items: [{ label: "Timeline scrubber", progress: 0.72 }],
+    },
+    { title: "Planned", color: "#7A828F", dashed: true, items: [{ label: "Stem export" }] },
+  ]}
+  holdSeconds={3.4}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "lanes", type: "RoadmapLane[]", default: "Shipped / Building / Planned", description: "Title, colour, items, and the flags that set the lane's state: done, showProgress, dashed." },
+      { name: "title", type: "string", default: '"What we are building"', description: "Heading above the lanes. Omit to drop it." },
+      { name: "startAtSeconds", type: "number", default: "0.42", description: "Second the first lane's items arrive." },
+      { name: "laneStaggerSeconds", type: "number", default: "0.42", description: "Seconds between lanes." },
+      { name: "itemStaggerSeconds", type: "number", default: "0.14", description: "Seconds between items inside a lane." },
+      { name: "fillSeconds", type: "number", default: "0.8", description: "How long a progress bar takes to reach its value, starting 0.3s after the pill lands." },
+      { name: "holdSeconds", type: "number", description: "Seconds the settled roadmap holds before it retreats. Omit to leave it up." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Fallback colour for lanes with none of their own." },
+      { name: "backgroundColor", type: "string", description: "Page behind the lanes. Defaults to the theme page colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
+    note: "Lane appearance comes from flags, not from lane names — a blocked lane is `dashed` with a red colour, a next-up lane is `showProgress` with low values. The fill starts after the pill lands and takes longer than the arrival, so progress is a second beat rather than a blur inside the first. Three items per lane is the comfortable maximum at 1080p; item width divides the board rather than wrapping.",
+    related: ["kanban-move", "timeline-steps", "changelog-entry"],
   },
   "org-chart-build": {
     category: "scene",
     usage: `import { OrgChartBuild } from "@/remotion/scenes/org-chart-build";
 
-<OrgChartBuild />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<OrgChartBuild
+  title="How the team is wired"
+  nodes={[
+    { name: "Ada Okonjo", role: "Founder" },
+    { name: "Piotr Nowak", role: "Engineering", parent: 0 },
+    { name: "Dai Nakamura", role: "Design", parent: 0 },
+    { name: "Sam Rhodes", role: "Infrastructure", parent: 1 },
+  ]}
+  holdSeconds={3.4}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "nodes", type: "OrgNode[]", default: "a 7-person tree", description: "Name, role and a `parent` index. Omit parent for the root; parents must appear before their children." },
+      { name: "title", type: "string", default: '"How the team is wired"', description: "Heading above the chart. Omit to drop it." },
+      { name: "startAtSeconds", type: "number", default: "0.34", description: "Second the root lands." },
+      { name: "levelStaggerSeconds", type: "number", default: "0.62", description: "Seconds between levels. Connectors lead their child by 0.34s inside that gap." },
+      { name: "siblingStaggerSeconds", type: "number", default: "0.12", description: "Seconds between siblings, ordered left to right by position." },
+      { name: "holdSeconds", type: "number", description: "Seconds the finished chart holds before it retreats. Omit to leave it up." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Role line on the root." },
+      { name: "levelColors", type: "string[]", default: "3 depth colours", description: "One colour per depth. Deeper levels reuse the last entry." },
+      { name: "backgroundColor", type: "string", description: "Page behind the chart. Defaults to the theme page colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
+    note: "Positions come from a leaf walk rather than a grid: leaves spread evenly and each parent centres over the span of its own children, so a lopsided tree stays balanced. Connectors are elbows, not diagonals — a straight line between two boxes reads as a different kind of relationship entirely. Three levels fits 1080p comfortably; a fourth wants a taller frame rather than a smaller node.",
+    related: ["team-grid", "commit-graph", "roadmap-lanes"],
   },
 };
 

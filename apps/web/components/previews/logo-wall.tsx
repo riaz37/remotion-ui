@@ -1,16 +1,15 @@
 "use client";
 
 import { LogoWall } from "../registry-exports";
-import { PreviewFrame } from "./preview-frame";
+import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**
- * The audit samples at 15% / 50% / 90% of the window — frames 18, 60 and 108 on
- * the 120-frame default. Motion must still be running at frame 18 and not yet
- * settled at 60, or all three samples land on a still image and the preview is
- * reported dead. See docs-internal/preview-audit-rubric.md.
+ * The diagonal sweep runs to ~2.15s, so frame 18 has the first tiles warming,
+ * frame 60 (2.0s) the far corner still grey, and `holdSeconds={3.4}` puts frame
+ * 108 mid-exit. See docs-internal/preview-audit-rubric.md.
  */
 export const LogoWallPreview: React.FC = () => (
-  <PreviewFrame lane="blocks">
-    <LogoWall />
-  </PreviewFrame>
+  <ScenePreviewPlate direct>
+    <LogoWall holdSeconds={3.4} />
+  </ScenePreviewPlate>
 );

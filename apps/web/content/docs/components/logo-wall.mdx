@@ -1,20 +1,29 @@
 ---
 title: Logo Wall
-description: Client logo grid, grayscale to color. Install with npx remotion-ui@latest add logo-wall.
+description: A client wall that comes up to colour — tiles land grey, then warm to their brand colours on a diagonal sweep.
 ---
 
 import { LogoWallPreview } from '@/components/previews/logo-wall';
 
-<ComponentPage name="logo-wall" preview={LogoWallPreview} durationInFrames={120}>
+<ComponentPage name="logo-wall" preview={LogoWallPreview}>
 
-Client logo grid, grayscale to color.
+Tiles arrive quickly in reading order so the wall is whole within a second, and
+then the colour sweeps across it diagonally. Splitting the two is the whole
+trick: if the arrival is the slow part, the scene spends its first beats looking
+half-built, and the greyscale-to-colour idea never gets a stage to happen on.
 
-## Usage
+The sweep is driven by `row + column` rather than by index, so it crosses the
+wall as a wave at any grid width instead of running down it like a list.
 
-```tsx
-import { LogoWall } from "@/remotion/scenes/logo-wall";
+Grey is produced by one `saturate()` on the tile, not by a second set of grey
+colours. The wordmark and the mark both carry their brand colour the whole time
+and the filter takes it away, so the monochrome stage is a true desaturation of
+the finished tile — swap in your own colours and the grey stage follows for
+free. Brightness moves with saturation, because a desaturated tile at full
+brightness looks muddy rather than monochrome.
 
-<LogoWall />
-```
+Wordmarks are text, so there are no image assets to bundle or fail to load in a
+headless render. Pass `glyph` when a brand's mark is not simply its first
+letter.
 
 </ComponentPage>
