@@ -199,6 +199,9 @@ import { BlobMorphPreview } from "./previews/blob-morph";
 import { DashedPathTravelPreview } from "./previews/dashed-path-travel";
 import { ConnectorLinesPreview } from "./previews/connector-lines";
 import { SvgMaskRevealPreview } from "./previews/svg-mask-reveal";
+import { MapHeatOverlayPreview } from "./previews/map-heat-overlay";
+import { GlobeArcPreview } from "./previews/globe-arc";
+import { MultiDeviceLineupPreview } from "./previews/multi-device-lineup";
 
 type AtlasMiniPreviewProps = {
   slug: string;
@@ -401,6 +404,9 @@ const PREVIEWS: Record<string, React.ComponentType> = {
   "dashed-path-travel": DashedPathTravelPreview,
   "connector-lines": ConnectorLinesPreview,
   "svg-mask-reveal": SvgMaskRevealPreview,
+  "map-heat-overlay": MapHeatOverlayPreview,
+  "globe-arc": GlobeArcPreview,
+  "multi-device-lineup": MultiDeviceLineupPreview,
 };
 
 

@@ -195,3 +195,6 @@ export { BlobMorph } from "../registry/bases/default/primitives/blob-morph";
 export { DashedPathTravel } from "../registry/bases/default/primitives/dashed-path-travel";
 export { ConnectorLines } from "../registry/bases/default/primitives/connector-lines";
 export { SvgMaskReveal } from "../registry/bases/default/primitives/svg-mask-reveal";
+export { MapHeatOverlay } from "../registry/bases/default/primitives/map-heat-overlay";
+export { GlobeArc } from "../registry/bases/default/primitives/globe-arc";
+export { MultiDeviceLineup } from "../registry/bases/default/primitives/multi-device-lineup";

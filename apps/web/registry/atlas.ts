@@ -370,6 +370,9 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   "dashed-path-travel": { lane: "vectors", drive: "time", tier: "core" },
   "connector-lines": { lane: "vectors", drive: "time", tier: "advanced" },
   "svg-mask-reveal": { lane: "vectors", drive: "time", tier: "core" },
+  "map-heat-overlay": { lane: "spatial", drive: "spatial", tier: "advanced" },
+  "globe-arc": { lane: "spatial", drive: "spatial", tier: "advanced" },
+  "multi-device-lineup": { lane: "spatial", drive: "spatial", tier: "advanced" },
 };
 
 export function getAtlasMeta(name: string): AtlasMeta | undefined {

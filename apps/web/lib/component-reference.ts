@@ -4857,6 +4857,45 @@ import { parseSubtitles } from "@/remotion/lib/caption-utils";
     note: "The scale is computed from the distance to the furthest corner, not from the frame width — a shape opening from a corner has much further to travel, and a fixed multiplier either leaves a gap or spends half the animation doing nothing. It uses an SVG <mask> rather than a CSS clip-path, so any authored path drops in and the shape can carry soft edges. Custom paths must be authored on a 0–100 box, which is what the scale maths assumes.",
     related: ["shape-morph", "blob-morph", "directional-wipe"],
   },
+  "map-heat-overlay": {
+    category: "primitive",
+    usage: `import { MapHeatOverlay } from "@/remotion/primitives/map-heat-overlay";
+
+<MapHeatOverlay />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "globe-arc": {
+    category: "primitive",
+    usage: `import { GlobeArc } from "@/remotion/primitives/globe-arc";
+
+<GlobeArc />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "multi-device-lineup": {
+    category: "primitive",
+    usage: `import { MultiDeviceLineup } from "@/remotion/primitives/multi-device-lineup";
+
+<MultiDeviceLineup />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
 };
 
 export function getComponentReference(name: string): ComponentReference | undefined {

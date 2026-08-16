@@ -207,6 +207,9 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "dashed-path-travel": { durationInFrames: 120 },
   "connector-lines": { durationInFrames: 120 },
   "svg-mask-reveal": { durationInFrames: 120 },
+  "map-heat-overlay": { durationInFrames: 120 },
+  "globe-arc": { durationInFrames: 120 },
+  "multi-device-lineup": { durationInFrames: 120 },
 };
 
 export function previewMeta(slug: string): Required<PreviewMeta> {

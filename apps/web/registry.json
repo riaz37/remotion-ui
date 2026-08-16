@@ -4235,6 +4235,57 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "map-heat-overlay",
+      "type": "registry:ui",
+      "description": "Density overlay fading in over the basemap",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/map-heat-overlay.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "globe-arc",
+      "type": "registry:ui",
+      "description": "Arcs between points on a globe",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/globe-arc.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "multi-device-lineup",
+      "type": "registry:ui",
+      "description": "Phone + tablet + laptop showing one responsive design",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/multi-device-lineup.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
