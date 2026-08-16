@@ -1,0 +1,291 @@
+<title>Expansion Ledger</title>
+<style>
+  :root {
+    --ground: #FBFAFC;
+    --surface: #FFFFFF;
+    --edge: #E4E1EA;
+    --ink: #16151C;
+    --ink-soft: #56525F;
+    --ink-faint: #8C8797;
+    --accent: #0E7C74;
+    --accent-soft: #E2F1EF;
+    --warn: #A2620F;
+    --warn-soft: #F8EEDD;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0F0E13;
+      --surface: #17161D;
+      --edge: #2B2934;
+      --ink: #F1EFF4;
+      --ink-soft: #A8A3B3;
+      --ink-faint: #726D7E;
+      --accent: #4FD1C3;
+      --accent-soft: #12332F;
+      --warn: #E0A44B;
+      --warn-soft: #33270F;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0F0E13;
+    --surface: #17161D;
+    --edge: #2B2934;
+    --ink: #F1EFF4;
+    --ink-soft: #A8A3B3;
+    --ink-faint: #726D7E;
+    --accent: #4FD1C3;
+    --accent-soft: #12332F;
+    --warn: #E0A44B;
+    --warn-soft: #33270F;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.6;
+    margin: 0;
+    padding: clamp(28px, 5vw, 72px) clamp(20px, 5vw, 40px);
+    -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 78ch; margin: 0 auto; display: flex; flex-direction: column; gap: 44px; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 10px;
+  }
+  h1 {
+    font-size: clamp(30px, 5vw, 42px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0 0 12px;
+    text-wrap: balance;
+  }
+  h2 {
+    font-size: 19px;
+    letter-spacing: -0.01em;
+    margin: 0 0 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--edge);
+  }
+  h3 { font-size: 15px; margin: 0 0 6px; }
+  p { margin: 0 0 14px; color: var(--ink-soft); }
+  p.lede { color: var(--ink); font-size: 17px; }
+  strong { color: var(--ink); font-weight: 600; }
+  code {
+    font-family: var(--mono);
+    font-size: 0.88em;
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+  section { display: flex; flex-direction: column; }
+
+  /* Progress meter — the one number that matters */
+  .meter { display: flex; flex-direction: column; gap: 10px; }
+  .meter-track {
+    display: flex;
+    height: 34px;
+    border: 1px solid var(--edge);
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .seg { display: grid; place-items: center; font-family: var(--mono); font-size: 11px; font-weight: 600; }
+  .seg-done { background: var(--accent); color: var(--ground); flex: 128; }
+  .seg-stub { background: var(--warn-soft); color: var(--warn); flex: 13; }
+  .seg-todo { background: transparent; color: var(--ink-faint); flex: 59; }
+  .meter-key { display: flex; flex-wrap: wrap; gap: 18px; font-family: var(--mono); font-size: 11.5px; color: var(--ink-soft); }
+  .meter-key span::before { content: "■"; margin-right: 6px; }
+  .k-done::before { color: var(--accent); }
+  .k-stub::before { color: var(--warn); }
+  .k-todo::before { color: var(--edge); }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1px; background: var(--edge); border: 1px solid var(--edge); border-radius: 4px; overflow: hidden; }
+  .stat { background: var(--surface); padding: 14px 16px; }
+  .stat dt { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 4px; }
+  .stat dd { margin: 0; font-family: var(--mono); font-size: 24px; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+
+  /* Batches are a genuine ordered sequence, so they get ordinals */
+  .batches { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .batch { display: grid; grid-template-columns: 62px 1fr; gap: 18px; padding: 16px 0; border-top: 1px solid var(--edge); }
+  .batch:first-child { border-top: none; }
+  .sha { font-family: var(--mono); font-size: 12px; color: var(--accent); padding-top: 2px; }
+  .batch-body p { margin: 4px 0 0; font-size: 14.5px; }
+  .live { color: var(--warn); font-weight: 600; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--edge); }
+  th { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500; }
+  td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+  .scroll { overflow-x: auto; }
+
+  pre {
+    font-family: var(--mono);
+    font-size: 13px;
+    background: var(--surface);
+    border: 1px solid var(--edge);
+    border-radius: 4px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    margin: 0 0 14px;
+    line-height: 1.55;
+  }
+  pre .c { color: var(--ink-faint); }
+
+  .note { border-left: 2px solid var(--warn); background: var(--warn-soft); padding: 14px 18px; border-radius: 0 4px 4px 0; }
+  .note p { color: var(--ink); margin: 0; font-size: 14.5px; }
+  .note p + p { margin-top: 10px; }
+
+  .trap { padding: 16px 0; border-top: 1px solid var(--edge); }
+  .trap:first-of-type { border-top: none; padding-top: 0; }
+  .trap p { font-size: 14.5px; margin: 0; }
+
+  footer { border-top: 1px solid var(--edge); padding-top: 18px; font-family: var(--mono); font-size: 12px; color: var(--ink-faint); }
+</style>
+
+<main>
+  <header>
+    <p class="eyebrow">RemotionUI · branch chore/preview-audit-harness</p>
+    <h1>Expansion ledger: 109 → 200</h1>
+    <p class="lede">128 components finished, 13 scaffolded and waiting on animation, 59 specced and untouched. Everything below is committed; the tree is clean.</p>
+  </header>
+
+  <section class="meter">
+    <div class="meter-track" role="img" aria-label="128 finished, 13 scaffolded, 59 remaining of 200">
+      <div class="seg seg-done">128 done</div>
+      <div class="seg seg-stub">13</div>
+      <div class="seg seg-todo">59 to go</div>
+    </div>
+    <div class="meter-key">
+      <span class="k-done">Finished &amp; render-verified</span>
+      <span class="k-stub">Scaffolded, renders a TODO card</span>
+      <span class="k-todo">Specced, not started</span>
+    </div>
+  </section>
+
+  <section>
+    <dl class="stats">
+      <div class="stat"><dt>Net new</dt><dd>19</dd></div>
+      <div class="stat"><dt>Dead previews</dt><dd>0</dd></div>
+      <div class="stat"><dt>Frozen tails</dt><dd>0</dd></div>
+      <div class="stat"><dt>Tests</dt><dd>62</dd></div>
+    </dl>
+  </section>
+
+  <section>
+    <h2>What shipped, in order</h2>
+    <ol class="batches">
+      <li class="batch">
+        <span class="sha">5982a6d</span>
+        <div class="batch-body">
+          <h3>Audit defect fixes</h3>
+          <p>Closed the 5 dead previews and 20 frozen tails the 109-component audit found. All were type-clean.</p>
+        </div>
+      </li>
+      <li class="batch">
+        <span class="sha">1543c56</span>
+        <div class="batch-body">
+          <h3>Foundations + 6 transitions</h3>
+          <p><code>split-text-chars</code>, <code>audio-reactive-scale</code>, <code>srt-caption-track</code>, plus shared path-morph and displacement-transition libs.</p>
+        </div>
+      </li>
+      <li class="batch">
+        <span class="sha">ed1ee83</span>
+        <div class="batch-body">
+          <h3>The generator</h3>
+          <p><code>pnpm gen:component</code> writes all 9 registration points from the spec file. This is what makes the remaining 72 affordable.</p>
+        </div>
+      </li>
+      <li class="batch">
+        <span class="sha">6c5f2fe</span>
+        <div class="batch-body">
+          <h3>22 atom scaffolds</h3>
+          <p>198 registrations in one command — against the 129 tool calls the previous batch spent wiring six components by hand.</p>
+        </div>
+      </li>
+      <li class="batch">
+        <span class="sha">088d250</span>
+        <div class="batch-body">
+          <h3>10 text &amp; entrance atoms</h3>
+          <p>Seven compose against <code>split-text-chars</code>. Five defects caught by looking at stills, none visible in the numbers.</p>
+        </div>
+      </li>
+      <li class="batch">
+        <span class="sha">running</span>
+        <div class="batch-body">
+          <h3>13 background &amp; effect atoms <span class="live">— in flight</span></h3>
+          <p>Launched and unverified. Its output is <strong>uncommitted</strong> until someone checks it.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <div class="note">
+      <p><strong>First thing to do:</strong> batch 3b was still running when this handoff was written. Verify and commit it before starting anything else — an agent's output sitting uncommitted is how batch 1 was nearly lost to a stray <code>git checkout</code>.</p>
+      <p>Check for <code>TODO:</code> placeholders, then <code>pnpm test</code>, <code>npx tsc --noEmit</code>, <code>pnpm registry:build</code>, and <code>pnpm audit:stills --only &lt;slugs&gt;</code>.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Two traps PSNR cannot see</h2>
+    <p>Both found by opening rendered stills after clean numbers came back. They will recur across all 72 remaining components, so they now live in <code>docs-internal/preview-audit-rubric.md</code>.</p>
+    <div class="trap">
+      <h3>An exit that empties the last sample</h3>
+      <p>Opacity is gone by roughly 70% of an exit window, so an exit starting at frame 88 leaves frame 108 — the 90% sample — completely blank. PSNR <em>passes</em>, because a blank frame differs from a full one as much as any motion does. Start exits at frame 96.</p>
+    </div>
+    <div class="trap">
+      <h3>An oscillation aliased against the sample gaps</h3>
+      <p>Samples sit at frames 18, 60 and 108, so the gaps are 42 and 48 frames. A 44-frame sine puts two of three stills on the same phase: healthy numbers, visually a still image. Check periods against 42 and 48, not the 120-frame window. Periods near 32–34 are safe.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>What remains</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Lane</th><th class="num">Left</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>signals</td><td class="num">26</td><td>The strategic lane. Charts, then captions, then audio.</td></tr>
+          <tr><td>blocks</td><td class="num">23</td><td>Highest value, highest cost. Needs primitives to compose from.</td></tr>
+          <tr><td>atoms</td><td class="num">13</td><td>Already scaffolded; batch 3b is filling these in.</td></tr>
+          <tr><td>vectors</td><td class="num">7</td><td>Fast — the path-morph util already exists.</td></tr>
+          <tr><td>spatial</td><td class="num">3</td><td>Last. The two map entries are the riskiest renders left.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>How to resume</h2>
+    <pre><span class="c"># exactly what the spec still owes, by lane</span>
+pnpm gen:component --list
+
+<span class="c"># scaffold a whole lane, then commit before implementing</span>
+pnpm gen:component --lane signals
+pnpm registry:build &amp;&amp; git commit
+
+<span class="c"># then hand halves to remotion-speclist — never two agents at once,</span>
+<span class="c"># they collide on lib/component-reference.ts</span></pre>
+    <p>Scaffolding a lane first is what keeps the shared wiring files in one commit, so parallel build agents only ever touch their own component and preview files.</p>
+  </section>
+
+  <section>
+    <h2>Open debt</h2>
+    <p><strong>Do not deploy this branch</strong> while TODO scaffolds remain — they render visible placeholder cards and are live in the components hub.</p>
+    <p>The atlas↔registry parity guard is still unwritten. A component can be fully built, documented and installable yet invisible in the hub with no error, because <code>getAtlasSections()</code> is the only browse index. It is about ten lines in <code>scripts/build-registry.mts</code>.</p>
+    <p><code>scramble-text</code> now supersedes <code>matrix-decode</code>, which has no exit and breaks words on wrap. <code>slot-roll</code>, <code>tracking-in</code> and <code>staggered-fade-up</code> would each be smaller rebuilt on <code>useSplitText</code>.</p>
+    <p>One honest note on the destination: 200 is reachable on this machinery, but the count was never the argument — the concentration in signals and blocks is. If a batch starts feeling like padding, cutting it beats hitting the number.</p>
+  </section>
+
+  <footer>128 / 200 · 0 dead · 0 frozen tails · 62 tests · tsc clean</footer>
+</main>

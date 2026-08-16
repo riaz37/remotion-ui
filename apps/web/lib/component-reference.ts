@@ -4717,6 +4717,71 @@ import { parseSubtitles } from "@/remotion/lib/caption-utils";
     note: "Scale and rotation run on separate springs, so the rotation is still unwinding after the scale has stopped — that offset is what sells the weight, and collapsing them onto one spring makes the seal read as a sticker being placed. The shockwave is thrown from the impact frame rather than from the start, so it cannot arrive before its cause. Ring text uses two half-arcs because letters stand up from the direction of travel.",
     related: ["confetti-burst", "glow-pulse", "logo-reveal"],
   },
+  "shape-morph": {
+    category: "primitive",
+    usage: `import { ShapeMorph } from "@/remotion/primitives/shape-morph";
+
+<ShapeMorph />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "blob-morph": {
+    category: "primitive",
+    usage: `import { BlobMorph } from "@/remotion/primitives/blob-morph";
+
+<BlobMorph />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "dashed-path-travel": {
+    category: "primitive",
+    usage: `import { DashedPathTravel } from "@/remotion/primitives/dashed-path-travel";
+
+<DashedPathTravel />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "connector-lines": {
+    category: "primitive",
+    usage: `import { ConnectorLines } from "@/remotion/primitives/connector-lines";
+
+<ConnectorLines />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "svg-mask-reveal": {
+    category: "primitive",
+    usage: `import { SvgMaskReveal } from "@/remotion/primitives/svg-mask-reveal";
+
+<SvgMaskReveal />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
 };
 
 export function getComponentReference(name: string): ComponentReference | undefined {

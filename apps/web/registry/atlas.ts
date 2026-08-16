@@ -365,6 +365,11 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   "calendar-month-fill": { lane: "blocks", drive: "time", tier: "core" },
   "arrow-annotate": { lane: "vectors", drive: "time", tier: "core" },
   "badge-stamp": { lane: "vectors", drive: "time", tier: "core" },
+  "shape-morph": { lane: "vectors", drive: "time", tier: "advanced" },
+  "blob-morph": { lane: "vectors", drive: "time", tier: "core" },
+  "dashed-path-travel": { lane: "vectors", drive: "time", tier: "core" },
+  "connector-lines": { lane: "vectors", drive: "time", tier: "advanced" },
+  "svg-mask-reveal": { lane: "vectors", drive: "time", tier: "core" },
 };
 
 export function getAtlasMeta(name: string): AtlasMeta | undefined {

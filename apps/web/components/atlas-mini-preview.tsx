@@ -194,6 +194,11 @@ import { WeatherCardPreview } from "./previews/weather-card";
 import { CalendarMonthFillPreview } from "./previews/calendar-month-fill";
 import { ArrowAnnotatePreview } from "./previews/arrow-annotate";
 import { BadgeStampPreview } from "./previews/badge-stamp";
+import { ShapeMorphPreview } from "./previews/shape-morph";
+import { BlobMorphPreview } from "./previews/blob-morph";
+import { DashedPathTravelPreview } from "./previews/dashed-path-travel";
+import { ConnectorLinesPreview } from "./previews/connector-lines";
+import { SvgMaskRevealPreview } from "./previews/svg-mask-reveal";
 
 type AtlasMiniPreviewProps = {
   slug: string;
@@ -391,6 +396,11 @@ const PREVIEWS: Record<string, React.ComponentType> = {
   "calendar-month-fill": CalendarMonthFillPreview,
   "arrow-annotate": ArrowAnnotatePreview,
   "badge-stamp": BadgeStampPreview,
+  "shape-morph": ShapeMorphPreview,
+  "blob-morph": BlobMorphPreview,
+  "dashed-path-travel": DashedPathTravelPreview,
+  "connector-lines": ConnectorLinesPreview,
+  "svg-mask-reveal": SvgMaskRevealPreview,
 };
 
 

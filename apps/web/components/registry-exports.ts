@@ -190,3 +190,8 @@ export { WeatherCard } from "../registry/bases/default/scenes/weather-card";
 export { CalendarMonthFill } from "../registry/bases/default/scenes/calendar-month-fill";
 export { ArrowAnnotate } from "../registry/bases/default/primitives/arrow-annotate";
 export { BadgeStamp } from "../registry/bases/default/primitives/badge-stamp";
+export { ShapeMorph } from "../registry/bases/default/primitives/shape-morph";
+export { BlobMorph } from "../registry/bases/default/primitives/blob-morph";
+export { DashedPathTravel } from "../registry/bases/default/primitives/dashed-path-travel";
+export { ConnectorLines } from "../registry/bases/default/primitives/connector-lines";
+export { SvgMaskReveal } from "../registry/bases/default/primitives/svg-mask-reveal";

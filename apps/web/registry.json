@@ -4147,6 +4147,91 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "shape-morph",
+      "type": "registry:ui",
+      "description": "Path interpolation between two shapes",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/shape-morph.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "blob-morph",
+      "type": "registry:ui",
+      "description": "Organic blob continuously morphing",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/blob-morph.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "dashed-path-travel",
+      "type": "registry:ui",
+      "description": "Narrowed: any element traveling any path with a dashed trail",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/dashed-path-travel.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "connector-lines",
+      "type": "registry:ui",
+      "description": "Narrowed: primitive that draws edges between anchored elements",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/connector-lines.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "svg-mask-reveal",
+      "type": "registry:ui",
+      "description": "Arbitrary SVG shape as a reveal mask",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/svg-mask-reveal.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

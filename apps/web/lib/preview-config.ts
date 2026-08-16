@@ -202,6 +202,11 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "calendar-month-fill": { durationInFrames: 120 },
   "arrow-annotate": { durationInFrames: 120 },
   "badge-stamp": { durationInFrames: 120 },
+  "shape-morph": { durationInFrames: 120 },
+  "blob-morph": { durationInFrames: 120 },
+  "dashed-path-travel": { durationInFrames: 120 },
+  "connector-lines": { durationInFrames: 120 },
+  "svg-mask-reveal": { durationInFrames: 120 },
 };
 
 export function previewMeta(slug: string): Required<PreviewMeta> {
