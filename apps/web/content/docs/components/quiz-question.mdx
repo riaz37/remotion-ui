@@ -1,20 +1,29 @@
 ---
 title: Quiz Question
-description: Question, options, correct-answer reveal. Install with npx remotion-ui@latest add quiz-question.
+description: A question that resolves — options arrive, one is picked, then the right answer lights while the rest step back.
 ---
 
 import { QuizQuestionPreview } from '@/components/previews/quiz-question';
 
-<ComponentPage name="quiz-question" preview={QuizQuestionPreview} durationInFrames={120}>
+<ComponentPage name="quiz-question" preview={QuizQuestionPreview}>
 
-Question, options, correct-answer reveal. poll-overlay has no right answer.
+Options arrive one at a time, the scene picks one, and only then does the right
+answer light up. Keeping the pick and the reveal as separate beats is the whole
+design: the eye needs to have settled on a choice before it can register being
+told it was wrong, and quiz scenes that resolve in a single frame are unreadable
+at social speeds.
 
-## Usage
+Three states are drawn — picked, right, wrong — and correct always wins where
+they overlap, so `pickedIndex === correctIndex` gives you a scene where the pick
+is simply right. Pass `pickedIndex={-1}` for a reveal with no pick at all.
 
-```tsx
-import { QuizQuestion } from "@/remotion/scenes/quiz-question";
+On the reveal, every option that is neither picked nor correct steps back rather
+than changing colour. The resolution then reads as focus narrowing, which is
+what a viewer is actually doing, instead of as three new colours arriving at
+once.
 
-<QuizQuestion />
-```
+Four options is the readable maximum at 1080p, and shorter than about six words
+each. This is the shape with a right answer; for audience voting with no correct
+option, use `poll-overlay`.
 
 </ComponentPage>

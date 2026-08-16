@@ -4553,66 +4553,169 @@ import { parseSubtitles } from "@/remotion/lib/caption-utils";
     category: "scene",
     usage: `import { QuizQuestion } from "@/remotion/scenes/quiz-question";
 
-<QuizQuestion />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<QuizQuestion
+  question="What does the RemotionUI CLI actually do?"
+  options={[
+    "It bundles a runtime you ship",
+    "It copies the source into your repo",
+    "It renders on our servers",
+  ]}
+  correctIndex={1}
+  pickedIndex={2}
+  holdSeconds={3.4}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "question", type: "string", default: '"What does the RemotionUI CLI actually do?"', description: "The question, set at display size." },
+      { name: "options", type: "string[]", default: "4 sample answers", description: "Answer options in display order. Four is the readable maximum at 1080p." },
+      { name: "correctIndex", type: "number", default: "1", description: "Index of the right answer." },
+      { name: "pickedIndex", type: "number", default: "2", description: "Index picked before the reveal. Set it to correctIndex for a right pick, -1 for none." },
+      { name: "eyebrow", type: "string", default: '"Question 3 of 8"', description: "Small line above the question. Omit to drop it." },
+      { name: "optionsAtSeconds", type: "number", default: "0.55", description: "Second the first option arrives." },
+      { name: "staggerSeconds", type: "number", default: "0.2", description: "Seconds between options." },
+      { name: "pickAtSeconds", type: "number", default: "1.75", description: "Second the pick lands." },
+      { name: "revealAtSeconds", type: "number", default: "2.35", description: "Second the right answer is revealed." },
+      { name: "holdSeconds", type: "number", description: "Seconds the resolved question holds before it retreats. Omit to leave it up." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Eyebrow, and the picked-but-not-yet-resolved state." },
+      { name: "correctColor", type: "string", default: '"#7FD1A0"', description: "The right answer on reveal." },
+      { name: "wrongColor", type: "string", default: '"#E89B9B"', description: "A wrong pick on reveal." },
+      { name: "backgroundColor", type: "string", description: "Page behind the card. Defaults to the theme page colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
+    note: "The pick and the reveal are deliberately separate beats — the eye has to settle on a choice before it can register being told it was wrong. On the reveal everything neither picked nor correct steps back rather than changing colour, so the resolution reads as focus narrowing. For audience voting with no right answer, use poll-overlay.",
+    related: ["poll-overlay", "comparison-table", "reaction-burst"],
   },
   "weather-card": {
     category: "scene",
     usage: `import { WeatherCard } from "@/remotion/scenes/weather-card";
 
-<WeatherCard />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<WeatherCard
+  place="Lisbon"
+  temperature={24}
+  condition="sun"
+  conditionLabel="Clear, light breeze"
+  forecast={[
+    { label: "Sat", condition: "sun", high: 24, low: 14 },
+    { label: "Sun", condition: "cloud", high: 22, low: 13 },
+    { label: "Mon", condition: "rain", high: 18, low: 12 },
+  ]}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "place", type: "string", default: '"Lisbon"', description: "Place name across the top." },
+      { name: "detail", type: "string", default: '"Saturday · 14:20"', description: "Line under the place — a time, a date, a feels-like." },
+      { name: "temperature", type: "number", default: "24", description: "The temperature the card counts up to." },
+      { name: "unit", type: "string", default: '"°"', description: "Degree suffix, used on the headline and the forecast." },
+      { name: "condition", type: '"sun" | "cloud" | "rain" | "snow"', default: '"sun"', description: "Which glyph runs beside the headline." },
+      { name: "conditionLabel", type: "string", default: '"Clear, light breeze"', description: "Words under the temperature." },
+      { name: "forecast", type: "ForecastDay[]", default: "5 sample days", description: "Label, condition, high and low per column." },
+      { name: "temperatureAtSeconds", type: "number", default: "0.4", description: "Second the temperature starts counting." },
+      { name: "countSeconds", type: "number", default: "1", description: "How long the count takes." },
+      { name: "forecastAtSeconds", type: "number", default: "1.15", description: "Second the first forecast day arrives." },
+      { name: "staggerSeconds", type: "number", default: "0.2", description: "Seconds between forecast days." },
+      { name: "holdSeconds", type: "number", description: "Seconds the card holds before it retreats. Omit to leave it up — the iconography keeps moving either way." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "The degree symbol. Kept off the condition colour on purpose." },
+      { name: "backgroundColor", type: "string", description: "Page behind the card. Defaults to the theme page colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
+    note: "Every moving part is a pure function of the frame — frame × rate wrapped into its own period, with per-particle offsets from the particle's index — so a frame rendered out of order on a render farm is identical to the same frame rendered in sequence. Each forecast column runs its own clock nine frames apart, so the row is never five glyphs in lockstep. The card needs no exit to stay alive in a loop.",
+    related: ["stat-card", "gauge-dial", "calendar-month-fill"],
   },
   "calendar-month-fill": {
     category: "scene",
     usage: `import { CalendarMonthFill } from "@/remotion/scenes/calendar-month-fill";
 
-<CalendarMonthFill />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<CalendarMonthFill
+  month="August"
+  year="2026"
+  daysInMonth={31}
+  startWeekday={5}
+  todayDay={15}
+  events={[
+    { day: 4, label: "Kickoff", color: "#7DD3E8" },
+    { day: 15, label: "Render day", color: "#9BD4A0" },
+  ]}
+  holdSeconds={3.4}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "month", type: "string", default: '"August"', description: "Month name in the header." },
+      { name: "year", type: "string", default: '"2026"', description: "Year beside the month." },
+      { name: "daysInMonth", type: "number", default: "31", description: "How many day cells the month has." },
+      { name: "startWeekday", type: "number", default: "5", description: "Column the 1st falls in, counting from Monday as 0." },
+      { name: "todayDay", type: "number", default: "15", description: "Day given the accent ring. Pass -1 when the month is a plan." },
+      { name: "events", type: "CalendarEvent[]", default: "7 sample events", description: "Day number, label and chip colour. One chip per day." },
+      { name: "weekdayLabels", type: "string[]", default: "Mon–Sun", description: "Column headings; their count sets the grid width." },
+      { name: "gridAtSeconds", type: "number", default: "0.3", description: "Second the empty grid starts sweeping up." },
+      { name: "eventsAtSeconds", type: "number", default: "0.95", description: "Second the first event drops." },
+      { name: "staggerSeconds", type: "number", default: "0.2", description: "Seconds between events." },
+      { name: "holdSeconds", type: "number", description: "Seconds the filled month holds before it retreats. Omit to leave it up." },
+      { name: "accentColor", type: "string", default: '"#E8B86D"', description: "Today's ring, and the fallback chip colour." },
+      { name: "backgroundColor", type: "string", description: "Page behind the card. Defaults to the theme page colour." },
+      { name: "theme", type: '"dark" | "light"', default: '"dark"', description: "Surface palette." },
+      { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
     ],
+    note: "The month comes from daysInMonth and startWeekday rather than from a date — a scene needs a month that looks right, not one correct for a particular year, and this keeps the component free of a date library and a timezone bug. Chips drop onto their day rather than fading in place, so a filling month reads as things being scheduled. One chip per day is the ceiling at 1080p.",
+    related: ["gantt-timeline", "roadmap-lanes", "weather-card"],
   },
   "arrow-annotate": {
     category: "primitive",
     usage: `import { ArrowAnnotate } from "@/remotion/primitives/arrow-annotate";
 
-<ArrowAnnotate />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<ArrowAnnotate
+  from={{ x: 0.08, y: 0.16 }}
+  to={{ x: 0.82, y: 0.74 }}
+  bow={0.28}
+  label="this one"
+  durationInFrames={70}
+  exitAtInFrames={92}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "from", type: "{ x: number; y: number }", default: "{ x: 0.08, y: 0.16 }", description: "Start of the shaft, as a fraction of the box." },
+      { name: "to", type: "{ x: number; y: number }", default: "{ x: 0.82, y: 0.74 }", description: "The point the head lands on, as a fraction of the box." },
+      { name: "bow", type: "number", default: "0.28", description: "How far the shaft bows off the straight line, as a fraction of the distance. Negative bows the other way." },
+      { name: "label", type: "string", description: "Text set beside the start of the shaft." },
+      { name: "width", type: "number", default: "320", description: "Box width in pixels." },
+      { name: "height", type: "number", default: "220", description: "Box height in pixels." },
+      { name: "stroke", type: "string", default: '"#E8B86D"', description: "Colour of the shaft, head and label." },
+      { name: "strokeWidth", type: "number", default: "3", description: "Shaft weight. The second sketch pass runs at 60% of it." },
+      { name: "headSize", type: "number", default: "18", description: "Length of the head's barbs, in box units." },
+      { name: "sketch", type: "boolean", default: "true", description: "Draws the shaft twice at a sub-pixel offset. False for a single clean stroke." },
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before the shaft starts drawing." },
+      { name: "durationInFrames", type: "number", default: "40", description: "Frames the shaft takes. The head lands over the last quarter." },
+      { name: "exitAtInFrames", type: "number", description: "Frame the arrow starts leaving. Omit to leave it on screen." },
+      { name: "exitInFrames", type: "number", default: "14", description: "Frames the exit takes." },
     ],
+    note: "The head is angled to the curve's own tangent, not to the straight line between the ends, so the arrow points where it is travelling. The hand-drawn quality is two passes at a sub-pixel offset — not a path whose points move per frame, which reads as a shaking arrow. The stroke draws on an editorial curve; a strong ease-out would finish in its first frames and then crawl.",
+    related: ["path-draw", "handwriting-text", "cursor-path"],
   },
   "badge-stamp": {
     category: "primitive",
     usage: `import { BadgeStamp } from "@/remotion/primitives/badge-stamp";
 
-<BadgeStamp />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<BadgeStamp
+  label="APPROVED"
+  ringText="REMOTIONUI"
+  ringTextBottom="VERIFIED BUILD"
+  sublabel="2026"
+  delayInFrames={14}
+  exitAtInFrames={92}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "label", type: "string", default: '"APPROVED"', description: "The word in the middle of the seal." },
+      { name: "ringText", type: "string", default: '"REMOTIONUI"', description: "Text curved around the top. Keep it short enough not to run past the sides." },
+      { name: "ringTextBottom", type: "string", default: '"VERIFIED BUILD"', description: "Text curved around the bottom, on its own left-to-right arc so it reads upright." },
+      { name: "sublabel", type: "string", default: '"2026"', description: "Line under the label." },
+      { name: "size", type: "number", default: "220", description: "Rendered size in pixels." },
+      { name: "color", type: "string", default: '"#E8B86D"', description: "Ink colour for every part of the seal." },
+      { name: "rotation", type: "number", default: "-9", description: "Degrees the stamp settles at." },
+      { name: "windUp", type: "number", default: "16", description: "How much further round it starts, in degrees." },
+      { name: "delayInFrames", type: "number", default: "6", description: "Frame the stamp lands on." },
+      { name: "exitAtInFrames", type: "number", description: "Frame the stamp starts leaving. Omit to leave it on screen." },
+      { name: "exitInFrames", type: "number", default: "16", description: "Frames the exit takes." },
+      { name: "impactRing", type: "boolean", default: "true", description: "Shockwave thrown off on impact." },
     ],
+    note: "Scale and rotation run on separate springs, so the rotation is still unwinding after the scale has stopped — that offset is what sells the weight, and collapsing them onto one spring makes the seal read as a sticker being placed. The shockwave is thrown from the impact frame rather than from the start, so it cannot arrive before its cause. Ring text uses two half-arcs because letters stand up from the direction of travel.",
+    related: ["confetti-burst", "glow-pulse", "logo-reveal"],
   },
 };
 

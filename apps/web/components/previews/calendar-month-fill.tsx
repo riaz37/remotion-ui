@@ -1,16 +1,16 @@
 "use client";
 
 import { CalendarMonthFill } from "../registry-exports";
-import { PreviewFrame } from "./preview-frame";
+import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**
- * The audit samples at 15% / 50% / 90% of the window — frames 18, 60 and 108 on
- * the 120-frame default. Motion must still be running at frame 18 and not yet
- * settled at 60, or all three samples land on a still image and the preview is
- * reported dead. See docs-internal/preview-audit-rubric.md.
+ * Events drop every 0.2s from 0.95s and the last lands at ~2.45s, so frame 18
+ * catches the grid sweeping up, frame 60 (2.0s) the month still filling, and
+ * `holdSeconds={3.4}` puts frame 108 mid-exit. See
+ * docs-internal/preview-audit-rubric.md.
  */
 export const CalendarMonthFillPreview: React.FC = () => (
-  <PreviewFrame lane="blocks">
-    <CalendarMonthFill />
-  </PreviewFrame>
+  <ScenePreviewPlate direct>
+    <CalendarMonthFill holdSeconds={3.4} />
+  </ScenePreviewPlate>
 );

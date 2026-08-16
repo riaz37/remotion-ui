@@ -1,20 +1,28 @@
 ---
 title: Arrow Annotate
-description: Hand-drawn arrow pointing at a target. Install with npx remotion-ui@latest add arrow-annotate.
+description: A hand-drawn arrow that draws itself, with the head landing on the curve's own tangent.
 ---
 
 import { ArrowAnnotatePreview } from '@/components/previews/arrow-annotate';
 
-<ComponentPage name="arrow-annotate" preview={ArrowAnnotatePreview} durationInFrames={120}>
+<ComponentPage name="arrow-annotate" preview={ArrowAnnotatePreview}>
 
-Hand-drawn arrow pointing at a target.
+The shaft grows from its start and the head lands over the last quarter of the
+stroke, angled to the curve's tangent rather than to the straight line between
+the ends — so the arrow points where it is actually travelling.
 
-## Usage
+The hand-drawn quality is two passes over the same curve at a sub-pixel offset,
+the way a pen doubles back on a line. It is not a wobbling path: moving the
+points per frame reads as a *shaking* arrow, which is a different and much worse
+effect. Set `sketch={false}` for a single clean stroke.
 
-```tsx
-import { ArrowAnnotate } from "@/remotion/primitives/arrow-annotate";
+Endpoints are fractions of the box, so the same arrow works at any size, and
+`bow` pushes the midpoint along the line's own normal — the curve therefore
+stays proportional whatever the arrow's length or angle. Negative values bow the
+other way.
 
-<ArrowAnnotate />
-```
+The stroke draws on an editorial curve rather than an ease-out. A strong
+ease-out spends most of its duration barely moving, so a drawing stroke on it
+finishes in its first frames and then crawls; a pen keeps roughly one speed.
 
 </ComponentPage>

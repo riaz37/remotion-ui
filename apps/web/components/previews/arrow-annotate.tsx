@@ -4,15 +4,18 @@ import { ArrowAnnotate } from "../registry-exports";
 import { PreviewFrame } from "./preview-frame";
 
 /**
- * The audit samples at 15% / 50% / 90% of the window — frames 18, 60 and 108 on
- * the 120-frame default. Motion must still be running at frame 18 and not yet
- * settled at 60, or all three samples land on a still image and the preview is
- * reported dead. See docs-internal/preview-audit-rubric.md.
+ * The shaft draws over frames 6–76 so frame 18 is early in the stroke and frame
+ * 60 is near its end; the exit at frame 92 covers frame 108. See
+ * docs-internal/preview-audit-rubric.md.
  */
 export const ArrowAnnotatePreview: React.FC = () => (
-  <PreviewFrame lane="vectors" padding={72}>
-    <div style={{ display: "grid", placeItems: "center", width: "100%" }}>
-      <ArrowAnnotate delayInFrames={2} durationInFrames={40} />
-    </div>
+  <PreviewFrame lane="vectors">
+    <ArrowAnnotate
+      label="this one"
+      width={420}
+      height={260}
+      durationInFrames={70}
+      exitAtInFrames={92}
+    />
   </PreviewFrame>
 );

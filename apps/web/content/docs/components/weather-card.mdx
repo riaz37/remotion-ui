@@ -1,20 +1,29 @@
 ---
 title: Weather Card
-description: Conditions with animated iconography. Install with npx remotion-ui@latest add weather-card.
+description: Conditions with iconography that never stops — rays turn, clouds drift, drops and flakes fall on their own loops.
 ---
 
 import { WeatherCardPreview } from '@/components/previews/weather-card';
 
-<ComponentPage name="weather-card" preview={WeatherCardPreview} durationInFrames={120}>
+<ComponentPage name="weather-card" preview={WeatherCardPreview}>
 
-Conditions with animated iconography.
+The temperature counts up, the forecast row arrives day by day, and the
+iconography runs continuously underneath all of it — which means the card is
+never a still image, and needs no exit to stay alive in a loop.
 
-## Usage
+Every moving part is a pure function of the frame: `frame * rate` wrapped into
+its own period, with each ray, drop or flake offset by its own index. Nothing
+accumulates state between frames, so a frame rendered out of order on a render
+farm is identical to the same frame rendered in sequence. That is a hard
+requirement in Remotion, not a stylistic choice — anything driven by a
+`useRef` counter will drift.
 
-```tsx
-import { WeatherCard } from "@/remotion/scenes/weather-card";
+Four conditions ship: `sun`, `cloud`, `rain` and `snow`. Each forecast column
+runs its own clock, offset by nine frames per column, so the row never becomes
+five glyphs moving in lockstep.
 
-<WeatherCard />
-```
+The degree symbol takes `accentColor` while the glyph takes the condition
+colour. They are deliberately separate — the brand mark should not change hue
+when the weather does.
 
 </ComponentPage>

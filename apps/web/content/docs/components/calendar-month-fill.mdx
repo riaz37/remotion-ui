@@ -1,20 +1,27 @@
 ---
 title: Calendar Month Fill
-description: Month grid populating with events. Install with npx remotion-ui@latest add calendar-month-fill.
+description: A month grid sweeping up on a diagonal, then events dropping onto their days one at a time.
 ---
 
 import { CalendarMonthFillPreview } from '@/components/previews/calendar-month-fill';
 
-<ComponentPage name="calendar-month-fill" preview={CalendarMonthFillPreview} durationInFrames={120}>
+<ComponentPage name="calendar-month-fill" preview={CalendarMonthFillPreview}>
 
-Month grid populating with events.
+The empty grid fades up on a diagonal sweep and then the events land, each chip
+dropping onto its day rather than fading in place — so a filling month reads as
+things being scheduled instead of as a page loading.
 
-## Usage
+The month is laid out from `daysInMonth` and `startWeekday` rather than from a
+date, and there is no date library involved. A scene needs a month that *looks*
+right, not one that is correct for a particular year, and this keeps the
+component free of both a dependency and a timezone bug waiting to happen. Set
+`startWeekday` to the column the 1st falls in, counting from Monday.
 
-```tsx
-import { CalendarMonthFill } from "@/remotion/scenes/calendar-month-fill";
+`todayDay` rings one date in the accent colour. Pass `-1` when the month is a
+plan rather than a present-tense calendar.
 
-<CalendarMonthFill />
-```
+Events are keyed by day number, one chip per day — the cell has room for the day
+number and a single chip at 1080p. If two things happen on one day, say so in
+the label rather than stacking chips.
 
 </ComponentPage>

@@ -4,15 +4,12 @@ import { BadgeStamp } from "../registry-exports";
 import { PreviewFrame } from "./preview-frame";
 
 /**
- * The audit samples at 15% / 50% / 90% of the window — frames 18, 60 and 108 on
- * the 120-frame default. Motion must still be running at frame 18 and not yet
- * settled at 60, or all three samples land on a still image and the preview is
- * reported dead. See docs-internal/preview-audit-rubric.md.
+ * The stamp lands from frame 14, so frame 18 catches the impact with the
+ * shockwave still expanding and frame 60 the settled seal; the exit at frame 92
+ * covers frame 108. See docs-internal/preview-audit-rubric.md.
  */
 export const BadgeStampPreview: React.FC = () => (
-  <PreviewFrame lane="vectors" padding={72}>
-    <div style={{ display: "grid", placeItems: "center", width: "100%" }}>
-      <BadgeStamp delayInFrames={2} durationInFrames={40} />
-    </div>
+  <PreviewFrame lane="vectors">
+    <BadgeStamp size={260} delayInFrames={14} exitAtInFrames={92} />
   </PreviewFrame>
 );
