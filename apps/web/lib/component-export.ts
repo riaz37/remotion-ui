@@ -127,11 +127,21 @@ function previewNameToSlug(exportName: string) {
  * Transition items export a factory function rather than a component, so a
  * registry source is not always readable as one. Callers fall back to the
  * preview wrapper when this returns null.
+ *
+ * Only PascalCase exports are considered. A registry file may export config
+ * constants (`LIQUID_WARP_DEFAULTS`, `SHAPE_OVERSHOOT`) above the component,
+ * and taking the first export blindly makes those the composition id — which
+ * Remotion then rejects, because an id cannot contain an underscore.
  */
 function readNamedExport(filePath: string) {
   const content = fs.readFileSync(filePath, "utf8");
-  const match = content.match(/export const (\w+)(?::[^=]+)?\s*=/);
-  return match ? match[1] : null;
+  const matches = content.matchAll(/export const (\w+)(?::[^=]+)?\s*=/g);
+  for (const [, exportName] of matches) {
+    if (/^[A-Z][a-zA-Z0-9]*$/.test(exportName) && /[a-z]/.test(exportName)) {
+      return exportName;
+    }
+  }
+  return null;
 }
 
 function registryImportPath(registryFile: string) {
