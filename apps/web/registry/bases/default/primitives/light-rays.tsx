@@ -1,4 +1,5 @@
-import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, Solid, useCurrentFrame, useVideoConfig } from "remotion";
+import { hexToRgb, makeShaderEffect } from "@/remotion/lib/gpu";
 
 export type LightRaysProps = {
   /** Plate behind the rays. `transparent` layers them over whatever is below. */
@@ -34,6 +35,9 @@ type Ray = {
   sway: number;
 };
 
+/** Sized to the uniform array below; a fan past this reads as a solid wash anyway. */
+const MAX_RAYS = 32;
+
 /**
  * Deterministic 0–1 per ray. The fan has to be identical on every frame of a
  * render, so the variation is hashed from the index, never sampled.
@@ -62,16 +66,194 @@ function buildRays(count: number): Ray[] {
 }
 
 /**
+ * The wedge the CSS drew with `clip-path: polygon(42% 0, 58% 0, 100% 100%, 0 100%)`
+ * — 8% of the shaft's width either side of the axis at the source, opening to
+ * the full half-width at the far end.
+ */
+const HALF_AT_SOURCE = 0.08;
+const HALF_GAIN = 0.42;
+/** The `linear-gradient(to bottom, color 0%, transparent 92%)` down each shaft. */
+const LENGTH_FADE = 0.92;
+/** `height: 190%` on every shaft. */
+const SHAFT_LENGTH = 1.9;
+
+/**
+ * Each shaft is evaluated as a field rather than drawn and blurred.
+ *
+ * The CSS version stacked one blurred, clipped div per shaft — eleven
+ * full-frame filter passes a frame, and the blur radius set the softness in
+ * screen pixels, so the same props softened differently at 1080p and 4K. Here
+ * the edge is a `smoothstep` across the wedge boundary, which is what the blur
+ * was approximating in the first place.
+ *
+ * This is the distinction that made the primitive worth porting where
+ * `caustics-bg` was not: there the blur *formed* the structure by joining
+ * separate wave crests into ridges, so removing it left ragged patches. Here it
+ * only softens an edge the wedge geometry already defines.
+ */
+const FRAGMENT_SHADER = `#version 300 es
+precision highp float;
+in vec2 vUv;
+out vec4 fragColor;
+
+uniform sampler2D uSource;
+uniform vec2 uResolution;
+uniform vec3 uColor;
+/** Source of the fan, in pixels from the top-left. */
+uniform vec2 uOrigin;
+/** x = radius in pixels, y = peak alpha. Radius 0 disables the bloom. */
+uniform vec2 uBloom;
+/** Edge softness in pixels — what the CSS blur radius used to buy. */
+uniform float uBlur;
+/** Shaft length in pixels. */
+uniform float uLength;
+uniform int uRayCount;
+/** Per shaft: x = rotation in radians, y = full width in pixels, z = alpha. */
+uniform vec3 uRays[${MAX_RAYS}];
+
+void main() {
+  vec4 base = texture(uSource, vUv);
+
+  // vUv.y = 0 is the bottom of clip space, but the origin arrives as a DOM
+  // percentage measured from the top. Without this flip the fan renders
+  // mirrored — which still looks like plausible light, so it is easy to miss.
+  vec2 uv = vec2(vUv.x, 1.0 - vUv.y);
+  vec2 px = uv * uResolution;
+  vec2 d = px - uOrigin;
+
+  vec3 accum = base.rgb;
+  float alpha = base.a;
+
+  if (uBloom.x > 0.0) {
+    // Linear, not a smoothstep: the CSS gradient ramped straight from the
+    // colour to transparent, and a smoothstep holds the core near full for
+    // most of the radius, which at this size swamps the shafts it is meant to
+    // sit behind.
+    float bloom = (1.0 - clamp(length(d) / uBloom.x, 0.0, 1.0)) * uBloom.y;
+    accum = 1.0 - (1.0 - accum) * (1.0 - uColor * bloom);
+    alpha += bloom * (1.0 - alpha);
+  }
+
+  for (int i = 0; i < ${MAX_RAYS}; i++) {
+    if (i >= uRayCount) {
+      break;
+    }
+
+    float theta = uRays[i].x;
+    float width = uRays[i].y;
+
+    // CSS rotate() turns the shaft about its top edge in screen space, where y
+    // runs downward: rotate(t) sends the +x axis to (cos t, sin t) and the
+    // downward axis to (-sin t, cos t).
+    vec2 down = vec2(-sin(theta), cos(theta));
+    vec2 side = vec2(cos(theta), sin(theta));
+
+    float along = dot(d, down);
+    float across = dot(d, side);
+    float t = along / uLength;
+
+    // The wedge widens with distance, which is the difference between a shaft
+    // of light and a drawn line.
+    float halfWidth = width * (${HALF_AT_SOURCE} + ${HALF_GAIN} * t);
+
+    // 'half' is a reserved word in GLSL ES — naming this 'half' compiles to a
+    // black frame with the render still exiting 0.
+    float cover = 1.0 - smoothstep(halfWidth - uBlur, halfWidth + uBlur, abs(across));
+    float fade = clamp(1.0 - t / ${LENGTH_FADE}, 0.0, 1.0);
+    // Soften both ends the way the blur did, so a shaft does not begin or end
+    // on a hard line.
+    float ends =
+      smoothstep(0.0, uBlur, along) *
+      (1.0 - smoothstep(uLength - uBlur, uLength, along));
+
+    float amount = cover * fade * ends * uRays[i].z;
+    if (amount <= 0.0) {
+      continue;
+    }
+
+    // Screen, matching the CSS mixBlendMode: overlapping shafts add the way
+    // light does instead of stacking alpha and going muddy.
+    accum = 1.0 - (1.0 - accum) * (1.0 - uColor * amount);
+    alpha += amount * (1.0 - alpha);
+  }
+
+  // Floor vignette — a black plate at 45%, fading out by 62% of a
+  // farthest-corner circle centred below the frame.
+  vec2 toFloor = px - vec2(uResolution.x * 0.5, uResolution.y * 1.2);
+  float reach =
+    0.62 * length(vec2(uResolution.x * 0.5, uResolution.y * 1.2));
+  float vignette = 0.45 * (1.0 - clamp(length(toFloor) / reach, 0.0, 1.0));
+  accum *= 1.0 - vignette;
+  alpha += vignette * (1.0 - alpha);
+
+  fragColor = vec4(accum, alpha);
+}
+`;
+
+type LightShaftsParams = {
+  /** Per shaft: rotation in radians, full width in pixels, alpha. */
+  readonly rays: readonly (readonly [number, number, number])[];
+  /** RGB in 0..1. */
+  readonly color: readonly [number, number, number];
+  /** Fan source in pixels. */
+  readonly origin: readonly [number, number];
+  /** Bloom radius in pixels and its peak alpha. */
+  readonly bloom: readonly [number, number];
+  readonly blur: number;
+  readonly length: number;
+};
+
+const lightShafts = makeShaderEffect<LightShaftsParams>({
+  type: "dev.remotionui.effects.lightShafts",
+  label: "lightShafts()",
+  fragmentShader: FRAGMENT_SHADER,
+  calculateKey: (params) =>
+    `light-shafts-${params.rays.flat().join(",")}-${params.color.join(",")}-${params.origin.join(",")}-${params.bloom.join(",")}-${params.blur}-${params.length}`,
+  setUniforms: (gl, program, params) => {
+    // Padded to the declared array length: WebGL rejects a short uniform array
+    // upload, and the loop stops at uRayCount regardless.
+    const rays = new Float32Array(MAX_RAYS * 3);
+    rays.set(params.rays.flat());
+
+    gl.uniform3fv(gl.getUniformLocation(program, "uRays"), rays);
+    gl.uniform1i(gl.getUniformLocation(program, "uRayCount"), params.rays.length);
+    gl.uniform3fv(
+      gl.getUniformLocation(program, "uColor"),
+      new Float32Array(params.color),
+    );
+    gl.uniform2fv(
+      gl.getUniformLocation(program, "uOrigin"),
+      new Float32Array(params.origin),
+    );
+    gl.uniform2fv(
+      gl.getUniformLocation(program, "uBloom"),
+      new Float32Array(params.bloom),
+    );
+    gl.uniform1f(gl.getUniformLocation(program, "uBlur"), params.blur);
+    gl.uniform1f(gl.getUniformLocation(program, "uLength"), params.length);
+  },
+  validateParams: (params) => {
+    if (params.rays.length > MAX_RAYS) {
+      throw new RangeError(`lightShafts supports at most ${MAX_RAYS} rays`);
+    }
+    if (params.blur <= 0) {
+      // A zero here divides the smoothstep by nothing and the shaft edges alias.
+      throw new RangeError("lightShafts needs a blur above 0");
+    }
+  },
+});
+
+/**
  * Volumetric shafts fanning out of a point and drifting.
  *
  * A full-frame background, unlike `light-sweep-text`, which is a specular pass
  * clipped to letterforms — and shafts rather than blobs, which is
  * `mesh-gradient-bg`'s job.
  *
- * Each shaft is a tapered wedge on `screen`, so overlapping shafts add the way
- * light does instead of stacking alpha and going muddy. Width, brightness and
- * sway period are all hashed per index: an evenly spaced, evenly bright fan
- * reads as a printed sunburst rather than as light in air.
+ * Width, brightness and sway period are all hashed per index: an evenly spaced,
+ * evenly bright fan reads as a printed sunburst rather than as light in air.
+ * The motion is unchanged from the CSS version — only the compositing moved to
+ * the GPU, so an existing render keeps its timing.
  */
 export const LightRays: React.FC<LightRaysProps> = ({
   backgroundColor = "#080810",
@@ -87,70 +269,57 @@ export const LightRays: React.FC<LightRaysProps> = ({
   bloom = 42,
 }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, width, height } = useVideoConfig();
   const time = (frame / fps) * speed;
 
-  const rays = buildRays(Math.max(1, Math.round(rayCount)));
+  const rays = buildRays(
+    Math.min(MAX_RAYS, Math.max(1, Math.round(rayCount))),
+  );
   // The whole fan breathes as one, on a longer clock than any single shaft.
   const fanDrift = Math.sin(time * 0.52) * 5.5;
 
+  const shafts = rays.map((ray) => {
+    const sway = Math.sin(time / ray.period + ray.phase) * ray.sway;
+    const rotation = angle + fanDrift + ray.offset * spread + sway;
+    // Shafts pulse out of phase with their own sway, so nothing in the fan
+    // shares a beat.
+    const flicker = 0.45 + 0.55 * Math.sin(time / (ray.period * 0.6) + ray.phase * 1.7);
+
+    return [
+      (rotation * Math.PI) / 180,
+      (ray.width / 100) * width,
+      ray.alpha * flicker * 0.46 * intensity,
+    ] as const;
+  });
+
+  /**
+   * The CSS bloom was a square box `bloom * 2` percent wide holding a circular
+   * gradient that reached its farthest corner, cut to transparent at 68%, then
+   * blurred. That works out as the radius below.
+   */
+  const bloomRadius =
+    bloom > 0 ? 0.68 * Math.SQRT1_2 * (bloom / 50) * width + blur * 2 : 0;
+
   return (
     <AbsoluteFill style={{ background: backgroundColor, overflow: "hidden" }}>
-      {bloom > 0 ? (
-        <div
-          style={{
-            position: "absolute",
-            left: `${originX}%`,
-            top: `${originY}%`,
-            width: `${bloom * 2}%`,
-            aspectRatio: "1",
-            transform: "translate(-50%, -50%)",
-            borderRadius: "50%",
-            background: `radial-gradient(circle, ${color} 0%, transparent 68%)`,
-            opacity: 0.3 * intensity * (0.86 + 0.14 * Math.sin(time * 0.7)),
-            filter: `blur(${blur * 2}px)`,
-            mixBlendMode: "screen",
-          }}
-        />
-      ) : null}
-
-      {rays.map((ray, index) => {
-        const sway = Math.sin(time / ray.period + ray.phase) * ray.sway;
-        const rotation = angle + fanDrift + ray.offset * spread + sway;
-        // Shafts pulse out of phase with their own sway, so nothing in the fan
-        // shares a beat.
-        const flicker = 0.45 + 0.55 * Math.sin(time / (ray.period * 0.6) + ray.phase * 1.7);
-
-        return (
-          <div
-            key={index}
-            style={{
-              position: "absolute",
-              left: `${originX}%`,
-              top: `${originY}%`,
-              width: `${ray.width}%`,
-              height: "190%",
-              marginLeft: `${-ray.width / 2}%`,
-              transformOrigin: "50% 0%",
-              transform: `rotate(${rotation.toFixed(3)}deg)`,
-              background: `linear-gradient(to bottom, ${color} 0%, transparent 92%)`,
-              // The wedge widens with distance, which is the difference between
-              // a shaft of light and a drawn line.
-              clipPath: "polygon(42% 0%, 58% 0%, 100% 100%, 0% 100%)",
-              filter: `blur(${blur}px)`,
-              opacity: ray.alpha * flicker * 0.46 * intensity,
-              mixBlendMode: "screen",
-            }}
-          />
-        );
-      })}
-
-      <AbsoluteFill
-        style={{
-          background:
-            "radial-gradient(circle at 50% 120%, rgba(0,0,0,0.45), transparent 62%)",
-          pointerEvents: "none",
-        }}
+      <Solid
+        width={width}
+        height={height}
+        color={backgroundColor}
+        effects={[
+          lightShafts({
+            rays: shafts,
+            color: hexToRgb(color),
+            origin: [(originX / 100) * width, (originY / 100) * height],
+            bloom: [
+              bloomRadius,
+              0.3 * intensity * (0.86 + 0.14 * Math.sin(time * 0.7)),
+            ],
+            blur,
+            length: SHAFT_LENGTH * height,
+          }),
+        ]}
+        style={{ width: "100%", height: "100%" }}
       />
     </AbsoluteFill>
   );

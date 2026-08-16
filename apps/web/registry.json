@@ -3100,7 +3100,9 @@
       "dependencies": [
         "remotion"
       ],
-      "registryDependencies": [],
+      "registryDependencies": [
+        "gpu"
+      ],
       "files": [
         {
           "path": "registry/bases/default/primitives/light-rays.tsx",
