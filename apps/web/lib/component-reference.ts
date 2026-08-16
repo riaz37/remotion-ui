@@ -4388,6 +4388,71 @@ import { parseSubtitles } from "@/remotion/lib/caption-utils";
     note: "Panel heights are estimated from the answer's length against the measured content width, because a headless render has no layout to interrogate mid-animation — a height read from scrollHeight collapses to zero on exactly the frames that matter. Keep answers to two or three lines; long copy inflates the estimate's rounding slack. For code panels use code-accordion, for an ordered process use timeline-steps.",
     related: ["code-accordion", "timeline-steps", "feature-list"],
   },
+  "team-grid": {
+    category: "scene",
+    usage: `import { TeamGrid } from "@/remotion/scenes/team-grid";
+
+<TeamGrid />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "logo-wall": {
+    category: "scene",
+    usage: `import { LogoWall } from "@/remotion/scenes/logo-wall";
+
+<LogoWall />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "changelog-entry": {
+    category: "scene",
+    usage: `import { ChangelogEntry } from "@/remotion/scenes/changelog-entry";
+
+<ChangelogEntry />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "roadmap-lanes": {
+    category: "scene",
+    usage: `import { RoadmapLanes } from "@/remotion/scenes/roadmap-lanes";
+
+<RoadmapLanes />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "org-chart-build": {
+    category: "scene",
+    usage: `import { OrgChartBuild } from "@/remotion/scenes/org-chart-build";
+
+<OrgChartBuild />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
 };
 
 export function getComponentReference(name: string): ComponentReference | undefined {

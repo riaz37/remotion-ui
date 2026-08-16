@@ -184,6 +184,11 @@ import { CommitGraphPreview } from "./previews/commit-graph";
 import { ComparisonTablePreview } from "./previews/comparison-table";
 import { PricingCardPreview } from "./previews/pricing-card";
 import { FaqAccordionPreview } from "./previews/faq-accordion";
+import { TeamGridPreview } from "./previews/team-grid";
+import { LogoWallPreview } from "./previews/logo-wall";
+import { ChangelogEntryPreview } from "./previews/changelog-entry";
+import { RoadmapLanesPreview } from "./previews/roadmap-lanes";
+import { OrgChartBuildPreview } from "./previews/org-chart-build";
 
 type AtlasMiniPreviewProps = {
   slug: string;
@@ -371,6 +376,11 @@ const PREVIEWS: Record<string, React.ComponentType> = {
   "comparison-table": ComparisonTablePreview,
   "pricing-card": PricingCardPreview,
   "faq-accordion": FaqAccordionPreview,
+  "team-grid": TeamGridPreview,
+  "logo-wall": LogoWallPreview,
+  "changelog-entry": ChangelogEntryPreview,
+  "roadmap-lanes": RoadmapLanesPreview,
+  "org-chart-build": OrgChartBuildPreview,
 };
 
 

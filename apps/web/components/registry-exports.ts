@@ -180,3 +180,8 @@ export { CommitGraph } from "../registry/bases/default/scenes/commit-graph";
 export { ComparisonTable } from "../registry/bases/default/scenes/comparison-table";
 export { PricingCard } from "../registry/bases/default/scenes/pricing-card";
 export { FaqAccordion } from "../registry/bases/default/scenes/faq-accordion";
+export { TeamGrid } from "../registry/bases/default/scenes/team-grid";
+export { LogoWall } from "../registry/bases/default/scenes/logo-wall";
+export { ChangelogEntry } from "../registry/bases/default/scenes/changelog-entry";
+export { RoadmapLanes } from "../registry/bases/default/scenes/roadmap-lanes";
+export { OrgChartBuild } from "../registry/bases/default/scenes/org-chart-build";

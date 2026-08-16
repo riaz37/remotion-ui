@@ -192,6 +192,11 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "comparison-table": { durationInFrames: 120 },
   "pricing-card": { durationInFrames: 120 },
   "faq-accordion": { durationInFrames: 120 },
+  "team-grid": { durationInFrames: 120 },
+  "logo-wall": { durationInFrames: 120 },
+  "changelog-entry": { durationInFrames: 120 },
+  "roadmap-lanes": { durationInFrames: 120 },
+  "org-chart-build": { durationInFrames: 120 },
 };
 
 export function previewMeta(slug: string): Required<PreviewMeta> {

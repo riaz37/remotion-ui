@@ -3961,6 +3961,91 @@
           "type": "registry:block"
         }
       ]
+    },
+    {
+      "name": "team-grid",
+      "type": "registry:block",
+      "description": "Avatar grid with role labels on stagger",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/team-grid/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "logo-wall",
+      "type": "registry:block",
+      "description": "Client logo grid, grayscale to color",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/logo-wall/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "changelog-entry",
+      "type": "registry:block",
+      "description": "Version header with categorized change rows",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/changelog-entry/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "roadmap-lanes",
+      "type": "registry:block",
+      "description": "Swimlanes of shipped/building/planned",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/roadmap-lanes/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "org-chart-build",
+      "type": "registry:block",
+      "description": "Hierarchy assembling top-down",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/org-chart-build/index.tsx",
+          "type": "registry:block"
+        }
+      ]
     }
   ]
 }
