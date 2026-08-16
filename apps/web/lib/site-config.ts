@@ -15,4 +15,5 @@ export const navLinks = [
   { text: "Components", url: "/docs/components", active: "url" as const },
   { text: "Docs", url: "/docs", active: "url" as const },
   { text: "CLI", url: "/docs/cli", active: "url" as const },
+  { text: "Blog", url: "/blog", active: "nested-url" as const },
 ] as const;

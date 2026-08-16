@@ -23,6 +23,9 @@ export function SiteFooter() {
           <Link href="/docs/cli" className="transition-colors hover:text-fd-foreground">
             CLI
           </Link>
+          <Link href="/blog" className="transition-colors hover:text-fd-foreground">
+            Blog
+          </Link>
           <a
             href={siteConfig.githubUrl}
             target="_blank"

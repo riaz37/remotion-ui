@@ -1,0 +1,156 @@
+---
+title: Why your Remotion render doesn't match the preview
+description: Five ways a Remotion composition can look perfect in the Studio and come out wrong in the MP4 — and how we caught all of them by auditing 109 previews frame by frame.
+date: 2026-08-16
+author: RemotionUI
+tags: ["remotion", "rendering", "debugging"]
+---
+
+Remotion's Studio is a browser tab running your composition on a timeline. A render
+is a headless browser stepping through the same composition one frame at a time,
+screenshotting each one. Those two things are close enough that you stop thinking
+about the difference — until a client asks why the logo is missing from the first
+second of the export.
+
+We found five distinct ways that gap opens up while auditing every preview in the
+RemotionUI registry: 109 compositions, rendered to stills, sampled at 15%, 50% and
+90% of their duration, and inspected on contact sheets. Each of these shipped to
+production at some point. None of them were visible in the Studio.
+
+## 1. Async work with no `delayRender`
+
+This is the big one, and it is almost always the answer.
+
+The renderer captures a frame as soon as React has committed. If anything paints
+*after* that commit — a map tile, a font, an image decode, a canvas draw scheduled in
+an effect — the renderer does not know to wait. In the Studio you never notice,
+because you sit on frame 0 for several seconds while you look at it, and by the time
+you press play everything has settled.
+
+Our `map-markers` component added its MapLibre layers one commit after the map
+reported ready, with no `delayRender` around the paint:
+
+```tsx
+// Wrong: the renderer may screenshot before the markers exist.
+useEffect(() => {
+  if (!map) return;
+  applyMarkerReveal(map, markers, progress);
+}, [map, markers, progress]);
+```
+
+The markers dropped out of whichever frame the browser happened to capture first —
+which, in a batch still run, was reliably the *first* sample of the composition. The
+enter frame was a bare basemap. The fix is to hold the frame open until the map goes
+idle:
+
+```tsx
+useEffect(() => {
+  if (!map) return;
+  const handle = delayRender("map-markers paint");
+  applyMarkerReveal(map, markers, progress);
+  map.once("idle", () => continueRender(handle));
+}, [map, markers, progress]);
+```
+
+The rule that generalizes: **every per-frame mutation of an imperative canvas needs
+its own `delayRender`**, not one at mount. A map that animates its camera is doing
+async work on every single frame, and every one of those frames can be captured early.
+
+## 2. Effects that rebuild the world every frame
+
+The same map component had `zoom` in the dependency array of the effect that
+*constructs* the map, with no cleanup. In the Studio, scrubbing feels fine. In a
+render, animating the camera constructs a new MapLibre instance on every frame and
+leaks every previous one. A 10-second render at 30fps builds 300 WebGL contexts.
+
+Split it: create the instance keyed on size and style only, keep the initial camera
+in a ref, and move camera changes to a separate effect that early-returns when the
+camera is unchanged. A fixed map then costs nothing per frame, and an animated one
+costs one `flyTo`.
+
+## 3. The composition is shorter than the animation
+
+Three places in our codebase carried a composition's duration: the scene definitions
+themselves, a preview config table, and the `durationInFrames` in each docs page.
+Nothing checked that they agreed.
+
+When a scene rebuild lengthened five compositions, the other two copies stayed
+stale — so `showcase`, `tutorial-clip`, `podcast-clip`, `social-clip` and
+`creator-reel` all stopped mid-scene and never reached their end card. Renders came
+out looking like the component was broken, when the component was fine and the number
+next to it was wrong.
+
+If you use `TransitionSeries`, remember the arithmetic: total duration is
+`sum(scene durations) - (transition duration × number of transitions)`, because each
+transition overlaps its neighbours. Twelve frames per transition at 30fps, in our
+case. Get that wrong in the direction of "too short" and your render ends early;
+get it wrong in the other direction and you get a frozen tail.
+
+The cheap check: render, then look at the last frame. It must be the end card.
+
+## 4. Entrances that finish before anyone sees them
+
+Not a bug in the renderer, but the same class of problem — the thing you verified is
+not the thing that ships.
+
+Most components that read as "dead" in our audit were animating correctly. They just
+had a default entrance starting at frame 0 that finished by frame 18, so any sample
+taken after that showed a static image. On a docs page that autoplays a six-second
+loop, the motion is over before the reader's eye lands.
+
+Two rules came out of fixing them:
+
+- **A preview must be mid-motion at the 15% mark.** Delay the entrance and stretch it.
+- **Time the exit to straddle the 90% mark**, not to finish before it. The formula we
+  use is `holdSeconds ≈ 0.9 × window / fps - exitFor / 2`. An early exit trades a
+  frozen tail for an *empty* one, which looks worse.
+
+## 5. You're rendering a different file than the one on screen
+
+Our preview index was built by scanning a directory for `*Preview` exports and keying
+them by slug. A legacy batch file held stale copies of eleven of those exports. The
+site imported the per-file versions; the index silently kept whichever file it read
+last. So the render pipeline was faithfully rendering components that nobody had ever
+seen on the site.
+
+Two components looked like severe render bugs for a full audit pass. They were wiring
+bugs. The index now throws on a duplicate slug, which is the correct behavior for any
+convention-over-configuration lookup: ambiguity should be loud.
+
+**If a component looks broken only in a render, check which file the render pipeline
+resolved before you touch the component.**
+
+## The harness
+
+Catching this class of thing by eye does not scale past a handful of compositions.
+What worked for us:
+
+Render three stills per composition — at 15%, 50% and 90% of its duration — into one
+directory, from a single bundle and a single browser instance. For 109 compositions
+that is about twelve minutes. Then tile them into contact sheets and look at the
+sheets, not the files.
+
+Two traps in the harness itself, both of which cost us time:
+
+- **Do not compare PNG bytes to detect a frozen preview.** A visually identical frame
+  still re-encodes a few bytes differently. Shell out to `ffmpeg -filter_complex psnr`
+  and read the `average:` value off stderr. Above roughly 38 dB, the two frames are
+  indistinguishable to a viewer.
+- **A contact sheet cannot judge aspect ratio.** `xstack` refuses ragged inputs, so
+  every cell gets padded into one box and your vertical compositions always look
+  letterboxed. We filed a bug against ourselves for that artifact. Judge framing in a
+  browser; judge motion on the sheet.
+
+The second pass came back 109 of 109 rendering, zero errors, zero dead previews, zero
+frozen tails. Everything above is what the first pass found.
+
+## The short version
+
+A Remotion preview tells you the composition *can* look right. Only a render tells
+you it *does*. If you ship video from code, put a still-render pass in front of every
+release, sample more than one frame, and treat "looks fine in the Studio" as the
+weakest possible evidence.
+
+RemotionUI ships all 200 components with this audit behind them. You can
+[browse the registry](/docs/components), or install any of them with
+`npx remotion-ui@latest add <name>` and read the source in your own repo.

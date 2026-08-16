@@ -1,0 +1,92 @@
+---
+title: "RemotionUI 0.9.0: 200 components"
+description: The registry went from 108 to 200 components — a full chart set, six caption treatments, twelve transitions, and an MCP server on npm. No CLI upgrade required.
+date: 2026-08-16
+author: RemotionUI
+tags: ["release", "remotion"]
+---
+
+RemotionUI 0.9.0 takes the registry from 108 components to 200. Ninety-two new
+entries across every lane, all of them already served from
+`https://remotionui.com/r`.
+
+The install flow is unchanged. The CLI is byte-identical to 0.8.0, so if you have
+`remotion-ui` installed, `add` reaches all 200 today with no upgrade:
+
+```bash
+npx remotion-ui@latest add radar-chart
+```
+
+## What's new
+
+**Data and media — 28 components.** The chart set is now complete enough to build a
+data story without dropping to raw SVG: `bar-chart-race`, `donut-chart`,
+`pie-slice-reveal`, `scatter-plot-pop`, `bubble-chart-pack`, `gauge-dial`,
+`sparkline-row`, `heatmap-grid`, `comparison-bars`, `funnel-chart`, `radar-chart`,
+`treemap-blocks`, `waterfall-chart`, `stacked-area-chart`, `candlestick-chart` and
+`gantt-timeline`. Alongside them, six caption treatments (`word-pop-captions`,
+`caption-emoji-beat`, `speaker-label-captions`, `transcript-scroll`,
+`subtitle-translate`, `srt-caption-track`) and six audio surfaces including
+`waveform-bars-radial`, `vu-meter` and `beat-pulse-grid`.
+
+**Primitives — 24 components.** Nine text effects (`split-text-chars`,
+`scramble-text`, `text-mask-video`, `handwriting-text`, `stroke-to-fill-text`,
+`variable-font-morph`, `liquid-text-morph`, `wave-text`, `neon-flicker-text`), eight
+backgrounds (`aurora-bg`, `particle-field`, `topographic-lines-bg`, `caustics-bg`,
+`animated-noise-grain`, `light-rays`, `parallax-layers`, `scanline-crt`) and seven
+motion primitives (`skew-in`, `shake-emphasis`, `glow-pulse`, `motion-trail`,
+`squash-stretch`, `orbit-motion`, `depth-of-field-blur`).
+
+**Scenes — 23 components.** Broadcast overlays (`poll-overlay`, `reaction-burst`,
+`countdown-timer`, `sports-scorebug`, `news-ticker-bar`), product-UI motion
+(`form-fill-sequence`, `notification-stack`, `tab-switch-panel`,
+`search-results-populate`, `file-tree-reveal`), and planning blocks like
+`kanban-move`, `commit-graph`, `comparison-table`, `pricing-card`, `roadmap-lanes`
+and `org-chart-build`.
+
+**Paths and shapes — 7.** `arrow-annotate`, `badge-stamp`, `shape-morph`,
+`blob-morph`, `dashed-path-travel`, `connector-lines`, `svg-mask-reveal`.
+
+**Transitions — 6 more**, bringing the set to twelve: `transition-circle-reveal`,
+`transition-card-flip`, `transition-blinds`, `transition-whip-pan`,
+`transition-morph-shape`, `transition-liquid-warp`.
+
+**Maps and device — 3.** `map-heat-overlay`, `globe-arc`, `multi-device-lineup`.
+
+**Compositions — 1.** `ai-composer-showcase`.
+
+## `remotion-ui-mcp` is on npm
+
+The MCP server is published, so agents can reach the registry without a monorepo
+checkout:
+
+```bash
+npx remotion-ui-mcp
+```
+
+Four tools over stdio: `list-components`, `search-components`,
+`get-component-detail`, `get-install-command`. Config for Claude Code and other stdio
+clients is on the [MCP page](/docs/mcp).
+
+## Fixed: previews that never animated
+
+Ninety-two new components is a lot of surface to get wrong, so this release also
+brought an audit harness that renders every component preview and samples frames
+across its duration. It found previews that never animated and previews that froze
+before their last frame — neither of which is visible when you're looking at the
+Studio.
+
+All P0 findings are closed: 109 of 109 previews render, zero dead, zero frozen tails.
+The five failure modes it surfaced are written up in
+[Why your Remotion render doesn't match the preview](/blog/render-does-not-match-preview),
+and they generalize well beyond this codebase.
+
+## Maintenance
+
+`pnpm gen:component` now scaffolds a new component across all nine registration
+points from a spec, which is how ninety-two components landed without the registry
+drifting out of sync with the docs, the previews, or the Atlas.
+
+Full notes are in the [changelog](https://github.com/riaz37/remotion-ui/blob/main/CHANGELOG.md).
+
+[Browse the 200 →](/docs/components)

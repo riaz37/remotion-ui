@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { getBlogPosts } from "@/lib/blog";
 import { source } from "@/lib/source";
 import { siteConfig } from "@/lib/site-config";
 
@@ -12,12 +13,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: page.url === "/docs" ? 0.9 : 0.7,
   }));
 
+  const blogPages = getBlogPosts().map((post) => ({
+    url: `${siteConfig.url}/blog/${post.slug}`,
+    lastModified: new Date(post.isoDate),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
   const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: `${siteConfig.url}/docs/ai/start`,
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.75,
+    },
+    {
+      url: `${siteConfig.url}/blog`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.8,
     },
   ];
 
@@ -29,6 +43,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     ...staticRoutes,
+    ...blogPages,
     ...docsPages,
   ];
 }

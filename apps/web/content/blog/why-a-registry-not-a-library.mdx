@@ -1,0 +1,107 @@
+---
+title: Why RemotionUI is a registry, not a component library
+description: A motion component you can't edit is a motion component you'll delete. The case for copying source into your repo instead of importing it from node_modules.
+date: 2026-08-15
+author: RemotionUI
+tags: ["remotion", "architecture", "registry"]
+---
+
+The usual way to ship reusable components is an npm package. You `install`, you
+`import`, you pass props. When the component doesn't do what you need, you file an
+issue, or you fork, or you fight the props API until something gives.
+
+RemotionUI does the other thing. `npx remotion-ui@latest add lower-third` writes a
+TSX file into your project. There is no `@remotionui/lower-third` in your
+`package.json`. The component is now your code, in your repo, in your diff.
+
+This is the shadcn/ui model applied to motion, and for video it matters more than it
+does for buttons.
+
+## Motion is never generic
+
+A design system component has a small number of correct appearances. A button is a
+button; you theme it and move on.
+
+A lower third is different. Its safe area depends on where the platform puts its
+UI chrome. Its entrance timing depends on what the cut before it did. Its typography
+is your brand. Its exit has to clear before the next scene's transition starts, and
+"the next scene" is specific to your edit.
+
+There is no props API wide enough to cover that, and every attempt produces the same
+artifact: a component with forty optional props, of which every real user sets
+fifteen and still wraps the thing in a div to fix the last problem.
+
+The honest version is to hand you seventy lines of readable TSX and let you change
+line 40.
+
+## What you actually need to change
+
+From the components in our own registry, the edits that come up constantly:
+
+- **Timing.** Every entrance is tuned for a particular pacing. Yours is different.
+  You want to change a duration from 18 frames to 24, and that should be a one-token
+  diff, not a prop request.
+- **Layout inside the frame.** Where the text sits relative to the safe area, how a
+  card is padded, what happens at 9:16 versus 16:9.
+- **The exit contract.** Whether a scene holds through its transition or animates out
+  before it. In our components this is one optional `holdSeconds` — but *which*
+  default is right depends entirely on whether the scene sits in a `TransitionSeries`.
+- **Composition duration.** Which in Remotion is arithmetic, not configuration:
+  `sum(scenes) - (transitionFrames × transitions)`. You will do that arithmetic. Better
+  that you can see the scene list while you do it.
+
+None of these are exotic. They're the first four things anyone does.
+
+## What you give up, honestly
+
+Copy-paste is not free, and the tradeoffs are real:
+
+**No automatic updates.** If we fix a bug in `map-markers`, your copy doesn't change.
+You run `remotion-ui diff` to see what moved and decide whether to take it. That is
+more work than `pnpm up`. It's also the only reason your edits survive.
+
+**Your repo gets bigger.** Two hundred components are not going into your project —
+you install the four you use — but those four are files you now own, review, and lint.
+
+**Duplication across projects.** Three videos, three copies. If you're an agency
+shipping the same intro every week, wrap your own package around the copies; the
+registry is a starting point, not a religion.
+
+We think that trade is correct for video specifically because the alternative isn't
+"import and it works." It's "import, discover it's 80% right, and now the 20% is
+someone else's abstraction."
+
+## How the registry stays honest
+
+A registry only works if what it serves matches what it documents. Ours is one JSON
+manifest built from source at deploy time, and everything downstream reads from it:
+
+- The CLI fetches from `https://remotionui.com/r` — the same files the docs site
+  renders previews from.
+- The component count on the landing page is generated at build time from the
+  manifest, so the number on the page cannot drift from the number in the registry.
+  (It's also burned into the hero video, from the same source.)
+- Scaffolding a new component writes all nine registration points at once — registry
+  entry, source file, preview, docs page, Atlas entry, and the rest — because the
+  failure mode of a hand-wired registry is a component that exists in one place and
+  not the others.
+- An MCP server exposes the same manifest to agents as four tools, so an assistant
+  installing a component reads the real catalog rather than guessing names.
+
+That last one is worth dwelling on. Agents are increasingly the thing typing
+`remotion-ui add`, and an agent that hallucinates a component name gets a hard error
+instead of a plausible import. Copy-paste distribution is unusually agent-friendly:
+after install, the source is right there in context, and the model edits real code
+instead of reasoning about a props signature it can't see.
+
+## Start here
+
+```bash
+npx remotion-ui@latest init
+npx remotion-ui@latest add social-clip
+```
+
+That second command pulls the composition and every scene and primitive it depends on
+into your project. Open one. Change a duration. That's the whole pitch.
+
+[Browse all 200 components →](/docs/components)
