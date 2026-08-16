@@ -1,20 +1,34 @@
 ---
 title: Map Heat Overlay
-description: Density overlay fading in over the basemap. Install with npx remotion-ui@latest add map-heat-overlay.
+description: A density overlay fading in over the basemap, with the hot cores arriving last.
 ---
 
 import { MapHeatOverlayPreview } from '@/components/previews/map-heat-overlay';
 
-<ComponentPage name="map-heat-overlay" preview={MapHeatOverlayPreview} durationInFrames={120}>
+<ComponentPage name="map-heat-overlay" preview={MapHeatOverlayPreview}>
 
-Density overlay fading in over the basemap.
+Pass it the map from `MapCanvas`'s `onMapReady` and a point collection, and it
+adds a heatmap layer that fades up. Intensity climbs with the fade rather than
+sitting at its final value, so the hot cores arrive last and the density reads
+as accumulating instead of being there from the first frame at low alpha.
 
-## Usage
+Like every MapLibre primitive here, the paint holds the frame open with its own
+`delayRender`. Layers are added a commit after the map reports ready, and
+without the hold the overlay drops out of whichever frame the browser captures
+first — reliably the first sample of a still run, which then shows a bare
+basemap and looks like a broken component.
 
-```tsx
-import { MapHeatOverlay } from "@/remotion/primitives/map-heat-overlay";
+Two settings decide whether this reads as data or as a smear. `radius` is in
+screen pixels, so it ramps with zoom — otherwise the same overlay means
+different things at different camera heights. And it wants to stay small:
+roughly 12–24 for a few hundred points. Too large and every point merges into
+one saturated blob with no density left to read.
 
-<MapHeatOverlay />
-```
+The first colour stop must be transparent. A heatmap ramp is painted across the
+whole layer, so an opaque density-zero colour floods the entire viewport rather
+than showing the hot spots.
+
+`beforeLayerId` slides the overlay under a basemap layer, which is how you keep
+place labels legible through the heat.
 
 </ComponentPage>

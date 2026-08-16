@@ -4859,42 +4859,87 @@ import { parseSubtitles } from "@/remotion/lib/caption-utils";
   },
   "map-heat-overlay": {
     category: "primitive",
-    usage: `import { MapHeatOverlay } from "@/remotion/primitives/map-heat-overlay";
+    usage: `import { MapCanvas } from "@/remotion/primitives/map-canvas";
+import { MapHeatOverlay } from "@/remotion/primitives/map-heat-overlay";
 
-<MapHeatOverlay />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+const [map, setMap] = useState<Map | null>(null);
+
+<AbsoluteFill>
+  <MapCanvas center={[2.2, 49.6]} zoom={4} onMapReady={setMap} />
+  <MapHeatOverlay map={map} points={points} radius={18} />
+</AbsoluteFill>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "map", type: "Map | null", description: "The map to paint on, from MapCanvas's onMapReady." },
+      { name: "points", type: "FeatureCollection<Point>", description: "Points to weigh." },
+      { name: "weightProperty", type: "string", default: '"weight"', description: "Feature property holding each point's weight." },
+      { name: "radius", type: "number", default: "18", description: "Kernel radius in screen pixels at radiusZoom. Roughly 12–24 for a few hundred points." },
+      { name: "radiusZoom", type: "number", default: "3", description: "The zoom the radius is authored at; it ramps from there." },
+      { name: "intensity", type: "number", default: "0.85", description: "Peak opacity once the overlay has faded up." },
+      { name: "colors", type: "string[]", default: "5-stop cool-to-hot ramp", description: "Density ramp, low first. The first stop must be transparent." },
+      { name: "beforeLayerId", type: "string", description: "Layer to sit under, so place labels stay legible through the heat." },
+      { name: "sourceId", type: "string", default: '"heat-points"', description: "Source and layer id prefix, for more than one overlay on a map." },
+      { name: "revealProgress", type: "number", description: "Drive the fade yourself, 0–1. Omit for the built-in frame ramp." },
     ],
+    note: "The paint holds the frame open with its own delayRender: layers are added a commit after the map reports ready, and without the hold the overlay drops out of the first captured frame and the still shows a bare basemap. Intensity climbs with the fade so hot cores arrive last. The first colour stop must be transparent — a heatmap ramp paints across the whole layer, so an opaque density-zero colour floods the viewport.",
+    related: ["map-canvas", "map-markers", "heatmap-grid"],
   },
   "globe-arc": {
     category: "primitive",
     usage: `import { GlobeArc } from "@/remotion/primitives/globe-arc";
 
-<GlobeArc />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<GlobeArc
+  size={380}
+  routes={[
+    { from: { lng: -74, lat: 40.7, label: "NYC" }, to: { lng: -0.1, lat: 51.5, label: "London" } },
+  ]}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "routes", type: "GlobeArcRoute[]", default: "4 sample routes", description: "from / to coordinates with optional labels, colour and its own delay." },
+      { name: "size", type: "number", default: "420", description: "Rendered size in pixels." },
+      { name: "spinPerSecond", type: "number", default: "14", description: "Degrees of longitude turned per second. Above ~20 it reads as a loading spinner." },
+      { name: "startLongitude", type: "number", default: "-40", description: "Longitude facing the viewer at frame 0." },
+      { name: "tilt", type: "number", default: "18", description: "Camera latitude. Positive tilts the north pole toward you." },
+      { name: "delayInFrames", type: "number", default: "6", description: "Frames to wait before the first arc draws." },
+      { name: "durationInFrames", type: "number", default: "34", description: "Frames one arc takes to draw." },
+      { name: "staggerInFrames", type: "number", default: "16", description: "Frames between arcs, when a route sets no delay of its own." },
+      { name: "sphereColor", type: "string", default: '"#0E1524"', description: "Fill of the globe itself." },
+      { name: "graticuleColor", type: "string", default: '"rgba(125,211,232,0.22)"', description: "Meridians, parallels and the limb." },
+      { name: "arcColor", type: "string", default: '"#E8B86D"', description: "Default route colour." },
+      { name: "cityColor", type: "string", default: '"#7DD3E8"', description: "City dots and labels." },
+      { name: "exitAtInFrames", type: "number", description: "Frame the globe starts leaving. Omit to leave it on screen." },
+      { name: "exitInFrames", type: "number", default: "16", description: "Frames the exit takes." },
     ],
+    note: "Projected arithmetically rather than drawn from tiles, so there is no network dependency and no delayRender — every frame is a pure function of its number. Arcs are great circles clipped to the front hemisphere: without the visibility test, far-side points project onto the near side and routes fold across the disc, which is what makes a hand-rolled globe look wrong. For real coastlines and place names, use map-flight.",
+    related: ["map-flight", "map-route", "connector-lines"],
   },
   "multi-device-lineup": {
     category: "primitive",
     usage: `import { MultiDeviceLineup } from "@/remotion/primitives/multi-device-lineup";
 
-<MultiDeviceLineup />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<MultiDeviceLineup
+  scale={0.72}
+  phone={{ label: "Phone" }}
+  tablet={{ label: "Tablet" }}
+  laptop={{ label: "Laptop" }}
+>
+  <YourResponsiveScreen />
+</MultiDeviceLineup>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "children", type: "ReactNode", description: "Rendered inside every device that has no content of its own — one responsive design at three widths." },
+      { name: "phone", type: "LineupScreen", description: "Optional content and caption for the phone." },
+      { name: "tablet", type: "LineupScreen", description: "Optional content and caption for the tablet." },
+      { name: "laptop", type: "LineupScreen", description: "Optional content and caption for the laptop." },
+      { name: "scale", type: "number", default: "1", description: "Overall size of the lineup. The first prop to reach for when it is wider than the frame." },
+      { name: "delayInFrames", type: "number", default: "4", description: "Frame the first device arrives." },
+      { name: "staggerInFrames", type: "number", default: "9", description: "Frames between devices." },
+      { name: "exitAtInFrames", type: "number", description: "Frame the lineup starts leaving. Omit to leave it on screen." },
+      { name: "exitInFrames", type: "number", default: "16", description: "Frames the exit takes." },
+      { name: "bezelColor", type: "string", default: '"#15171D"', description: "Device body." },
+      { name: "screenColor", type: "string", default: '"#0B0C11"', description: "Screen behind your content." },
+      { name: "labelColor", type: "string", default: '"#7A828F"', description: "Captions under the devices." },
     ],
+    note: "Each screen is a real element at that device's own pixel size, not one screenshot scaled three ways — pass the same children and a responsive layout lays itself out per width, which is the only reason to show three devices. Devices land smallest first so the laptop arrives onto a lineup that already exists. Hardware ratios are the real ones, and the laptop's base and hinge are drawn as their own strip. For one device with a camera move into the screen, use device-mockup-zoom.",
+    related: ["device-mockup-zoom", "tab-switch-panel", "notification-stack"],
   },
 };
 

@@ -1,20 +1,32 @@
 ---
 title: Multi Device Lineup
-description: Phone + tablet + laptop showing one responsive design. Install with npx remotion-ui@latest add multi-device-lineup.
+description: Phone, tablet and laptop showing one responsive design, arriving in order.
 ---
 
 import { MultiDeviceLineupPreview } from '@/components/previews/multi-device-lineup';
 
-<ComponentPage name="multi-device-lineup" preview={MultiDeviceLineupPreview} durationInFrames={120}>
+<ComponentPage name="multi-device-lineup" preview={MultiDeviceLineupPreview}>
 
-Phone + tablet + laptop showing one responsive design. The only device entry that survived — extend device-mockup-zoom's hardware detail, don't fork it.
+Three devices land in order, smallest first. The laptop is the widest object and
+the thing a viewer ends up reading, so it arrives onto a lineup that already
+exists rather than being the thing everything else lands beside.
 
-## Usage
+Each screen is a real element at that device's own pixel size — not one
+screenshot scaled three ways. Pass the same `children` and whatever you render
+lays itself out per width, which is the only reason to show three devices at
+all. Give a device its own `content` when you want to show a different view on
+one of them.
 
-```tsx
-import { MultiDeviceLineup } from "@/remotion/primitives/multi-device-lineup";
+Hardware ratios are the real ones, and each device carries the detail that
+identifies it: the phone's speaker cutout, the tablet's camera dot, the laptop's
+base and hinge drawn as their own strip. A laptop rendered as a slab with
+rounded corners is the giveaway that a mockup was never looked at.
 
-<MultiDeviceLineup />
-```
+`scale` sizes the whole lineup. It is the prop to reach for first when the
+lineup is wider than your frame — the devices divide a fixed width between them,
+so scaling the group is what keeps the phone from walking off the left edge.
+
+For a single device with a camera move into the screen, use
+`device-mockup-zoom`.
 
 </ComponentPage>

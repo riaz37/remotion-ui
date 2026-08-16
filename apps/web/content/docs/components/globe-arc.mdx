@@ -1,20 +1,32 @@
 ---
 title: Globe Arc
-description: Arcs between points on a globe. Install with npx remotion-ui@latest add globe-arc.
+description: Great-circle arcs drawing between cities on a slowly spinning globe.
 ---
 
 import { GlobeArcPreview } from '@/components/previews/globe-arc';
 
-<ComponentPage name="globe-arc" preview={GlobeArcPreview} durationInFrames={120}>
+<ComponentPage name="globe-arc" preview={GlobeArcPreview}>
 
-Arcs between points on a globe.
+The globe is projected arithmetically — orthographic, the way a sphere looks
+from far away — rather than drawn from map tiles. There is no network
+dependency and no `delayRender`: every frame is a pure function of its own
+number, which is what a render farm wants and what a spinning globe made of
+tiles cannot give you.
 
-## Usage
+Arcs are great circles, sampled and clipped to the front hemisphere. The
+clipping is the part that matters: without a visibility test, points on the far
+side project onto the near side and routes fold back across the disc, which is
+the single thing that makes a hand-rolled globe look wrong. A route that leaves
+the front hemisphere breaks its path and picks up again where it returns.
 
-```tsx
-import { GlobeArc } from "@/remotion/primitives/globe-arc";
+Each route draws in turn, with a head dot riding the line while it grows. The
+origin's label exists from the first frame and the destination's only once the
+arc has landed, so a label never precedes its route.
 
-<GlobeArc />
-```
+`spinPerSecond` and `tilt` set the camera. Keep the spin slow — 10 to 20 degrees
+a second reads as a globe; faster reads as a loading spinner.
+
+For real geography with coastlines and place names, use `map-flight`, which
+flies a MapLibre camera along the route instead.
 
 </ComponentPage>

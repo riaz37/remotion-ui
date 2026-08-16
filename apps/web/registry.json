@@ -4244,7 +4244,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "map-utils",
+        "motion-tokens"
       ],
       "files": [
         {
@@ -4261,7 +4262,7 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "motion-tokens"
       ],
       "files": [
         {
@@ -4278,7 +4279,7 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "motion-tokens"
       ],
       "files": [
         {
