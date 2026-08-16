@@ -78,8 +78,26 @@ The landing page renders **live `<Player>`s for twelve slugs** in the contact sh
 
 1. **Decide the question above** — primitive-by-primitive, or go at the eleven scenes' inline backdrops.
 2. **Remaining tier-1 primitives worth testing against the candidate rule:** `animated-noise-grain` (feTurbulence — a shader does real noise, CSS cannot), `light-rays`, `particle-field`, `topographic-lines-bg`, `scanline-crt`. Apply the rule before writing any shader.
-3. **Apply the existing 69 shipped effects to components that already exist.** Still the highest quality-per-hour move and still barely started — `scanline-crt`→`scanlines`, `animated-noise-grain`→`noise`, `glow-pulse`→`glow`, `transition-light-leak`→`light-leak`, `topographic-lines-bg`→`contour-lines`.
+3. ~~**Apply the existing 69 shipped effects to components that already exist.**~~ **Audited 2026-08-16 and mostly withdrawn — see "The effects sweep did not survive the audit" below.** Only `transition-light-leak`→`light-leak` is still worth trying.
 4. **Decide the tier-2 preview story** — pre-rendered video previews on the docs site, since tier 2 can't play live for most visitors.
+
+## The effects sweep did not survive the audit
+
+Session 3 took item 3 as the next build and checked each named mapping before writing code. Four of the five fail, for two distinct reasons. Zero registry files import `@remotion/effects`; only `mesh-gradient-bg` uses `lib/gpu.ts`.
+
+**Reason one — the component wraps `children`, so the effect is tier 2.** A Remotion effect consumes the frame as a texture. To modulate arbitrary DOM content it has to go through `<HtmlInCanvas>`, which needs the Chrome flag for preview. These three are overlay components that composite over `children`, so applying the mapped effect to their content moves a working tier-1 component to tier 2 — backwards, and straight into the seam we were exploiting:
+
+| Component | Mapped to | Why it fails |
+|---|---|---|
+| `scanline-crt` | `scanlines` | Wraps `children` and brightness-filters them. Also its scanlines are **bowed** for tube curvature; the effect only does flat lines (`spacing`, `thickness`, `offset`). Strictly less capable. |
+| `animated-noise-grain` | `noise` | Wraps `children`, composites via `mixBlendMode`. Its `feTurbulence` tile is real fractal noise rasterised **once per render**; a per-frame shader gives fresher grain but gives up that caching. |
+| `glow-pulse` | `glow` | `children` is required, wrapped in `drop-shadow` filters. |
+
+**Reason two — vector identity, which the candidate rule already forbids.** `topographic-lines-bg` is closed SVG contours: a `peaks[]` array, three harmonics per peak, and `indexEvery`-th contours drawn heavier — the convention that makes it read as a survey map. The `contourLines` effect generates one global noise height field (`scale`, `complexity`, `seed`). It cannot express `peaks[]`, cannot express index contours, and swapping would break the public prop API. Same category as `aurora-bg`.
+
+**Still worth trying:** `transition-light-leak`→`light-leak`. It takes no `children`, so it is tier-1 safe, and `@remotion/light-leaks` is already a dependency.
+
+**The lesson, which generalises past this list:** the tier-1/tier-2 split is decided by *whether a component wraps `children`*, not by which effect you reach for. Check that first — it is one grep — before planning any effect adoption.
 
 ## Traps, both cost a render to find
 
