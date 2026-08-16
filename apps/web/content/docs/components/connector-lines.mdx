@@ -1,20 +1,30 @@
 ---
 title: Connector Lines
-description: Narrowed: primitive that draws edges between anchored elements. Install with npx remotion-ui@latest add connector-lines.
+description: The edges between anchored elements, and nothing else — the primitive under a diagram.
 ---
 
 import { ConnectorLinesPreview } from '@/components/previews/connector-lines';
 
-<ComponentPage name="connector-lines" preview={ConnectorLinesPreview} durationInFrames={120}>
+<ComponentPage name="connector-lines" preview={ConnectorLinesPreview}>
 
-Narrowed: primitive that draws edges between anchored elements. data-flow-pipes is a full scene with payloads.
+This draws lines between named points and leaves the boxes to you. Position your
+own nodes at the same fractional coordinates the anchors use — as the preview
+does — and the lines and the layout stay in register at any size. That is why
+anchors are fractions rather than pixels.
 
-## Usage
+Three edge shapes ship. `curve` bows toward the midpoint's own normal, so the
+bow stays proportional whatever the edge's length or angle; `elbow` turns once
+at right angles, for hierarchies read as columns; `straight` goes direct.
 
-```tsx
-import { ConnectorLines } from "@/remotion/primitives/connector-lines";
+Edges draw in order with a stagger, each on its own `pathLength={1}`, so a long
+curve and a short hop take the same time and the diagram assembles at an even
+pace. An edge naming an anchor that does not exist is dropped rather than drawn
+to the origin, which would put a line through the corner of the box.
 
-<ConnectorLines />
-```
+`dashed` fades its edges in rather than drawing them — a dash pattern cannot
+both space the line and reveal it. Use it when the lines are a relationship
+rather than a flow.
+
+For a full scene with payloads travelling the edges, use `data-flow-pipes`.
 
 </ComponentPage>

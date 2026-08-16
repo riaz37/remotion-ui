@@ -1,20 +1,29 @@
 ---
-title: Svg Mask Reveal
-description: Arbitrary SVG shape as a reveal mask. Install with npx remotion-ui@latest add svg-mask-reveal.
+title: SVG Mask Reveal
+description: An arbitrary SVG shape used as a reveal mask over anything.
 ---
 
 import { SvgMaskRevealPreview } from '@/components/previews/svg-mask-reveal';
 
-<ComponentPage name="svg-mask-reveal" preview={SvgMaskRevealPreview} durationInFrames={120}>
+<ComponentPage name="svg-mask-reveal" preview={SvgMaskRevealPreview}>
 
-Arbitrary SVG shape as a reveal mask.
+The shape grows from `origin` until it covers the frame, revealing whatever you
+pass as children — media, a scene, a gradient, another component.
 
-## Usage
+The scale it has to reach is computed from the distance to the furthest corner,
+not from the frame's width. A shape opening from a corner has much further to
+travel than one opening from the middle, and a fixed multiplier either leaves a
+gap on one side or overshoots so far that the last half of the animation is
+nothing happening.
 
-```tsx
-import { SvgMaskReveal } from "@/remotion/primitives/svg-mask-reveal";
+It uses an SVG `<mask>` rather than a CSS `clip-path`, so any `d` string
+authored anywhere drops straight in and the same shape can carry soft edges.
+Names from `MORPH_SHAPES` work directly; custom paths should be authored on a
+0–100 box, since that is the box the scale maths assumes.
 
-<SvgMaskReveal />
-```
+`invert` runs the shape backwards over the content, which is how you close a
+scene with the same figure you opened it with. `bouncy` springs the growth
+instead of easing it, and `rotation` turns the shape as it opens — worth a few
+degrees on an angular mask so the edge does not arrive parallel to the frame.
 
 </ComponentPage>

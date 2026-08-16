@@ -1,20 +1,33 @@
 ---
 title: Blob Morph
-description: Organic blob continuously morphing. Install with npx remotion-ui@latest add blob-morph.
+description: An organic blob that never settles, travelling a ring of generated shapes and coming back to where it started.
 ---
 
 import { BlobMorphPreview } from '@/components/previews/blob-morph';
 
-<ComponentPage name="blob-morph" preview={BlobMorphPreview} durationInFrames={120}>
+<ComponentPage name="blob-morph" preview={BlobMorphPreview}>
 
-Organic blob continuously morphing. An SVG shape, not a background.
+The blob loops through a ring of generated outlines and returns to the first, so
+the wrap from the end of the period back to the start lands on the same geometry
+and the loop has no seam. There is no entrance and no exit — it is alive from
+the first frame.
 
-## Usage
+Outlines are generated, not authored: points around a circle, displaced by three
+sine harmonics whose phases come from the `seed`. Two harmonics leave a shape
+that reads as symmetrical; the third breaks it. Every variant uses the same
+point count, so they all reduce to the same number of curve commands and morph
+into each other without the interpolator inventing segments.
 
-```tsx
-import { BlobMorph } from "@/remotion/primitives/blob-morph";
+Control arms are computed from the point count rather than being a constant —
+the arm wants to be `(4/3)·tan(π/2N)` of the radius, taken along the neighbours'
+chord. A guessed constant gives you a polygon when it is too short and scalloped
+bulges between the points when it is too long, and both look like a bug rather
+than a blob.
 
-<BlobMorph />
-```
+`rotation` is continuous rather than wrapping, so for a seamless loop set it to
+0 or a multiple of 360.
+
+It is an SVG shape, not a background. Give it a colour and put it behind
+something, or hand the same idea to `svg-mask-reveal` as a mask.
 
 </ComponentPage>

@@ -4721,66 +4721,141 @@ import { parseSubtitles } from "@/remotion/lib/caption-utils";
     category: "primitive",
     usage: `import { ShapeMorph } from "@/remotion/primitives/shape-morph";
 
-<ShapeMorph />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<ShapeMorph
+  shapes={["circle", "squircle", "triangle", "diamond"]}
+  size={300}
+  durationInFrames={96}
+  exitAtInFrames={92}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "shapes", type: "(MorphShapeName | string)[]", default: '["circle", "squircle", "triangle", "diamond"]', description: "Shapes to travel through. Preset names, or raw d strings authored on a 0–100 box." },
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before the morph starts." },
+      { name: "durationInFrames", type: "number", default: "90", description: "Frames the whole chain takes, end to end." },
+      { name: "loop", type: "boolean", default: "false", description: "Returns to the first shape so a looping driver has no seam." },
+      { name: "size", type: "number", default: "220", description: "Rendered size in pixels." },
+      { name: "fill", type: "string", default: '"#E8B86D"', description: "Shape fill. Pass undefined for an outline only." },
+      { name: "stroke", type: "string", description: "Outline colour. Omit for a filled shape with no outline." },
+      { name: "strokeWidth", type: "number", default: "3", description: "Outline weight, when stroke is set." },
+      { name: "rotation", type: "number", default: "18", description: "Degrees turned across the chain. Stops a symmetrical pair looking static." },
+      { name: "exitAtInFrames", type: "number", description: "Frame the shape starts leaving. Omit to leave it on screen." },
+      { name: "exitInFrames", type: "number", default: "16", description: "Frames the exit takes." },
     ],
+    note: "The chain is prepared once and evaluated per frame — preparation (parsing, winding alignment, box fitting) depends only on the d strings, so doing it in the render would re-parse every path 30 times a second. Steps inside the chain are linear on purpose: easing each hop puts a stall at every shape, which reads as a slideshow. Shapes morph cleanly when they reduce to a similar curve count; the presets are all four-curve closed paths.",
+    related: ["blob-morph", "path-draw", "svg-mask-reveal"],
   },
   "blob-morph": {
     category: "primitive",
     usage: `import { BlobMorph } from "@/remotion/primitives/blob-morph";
 
-<BlobMorph />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<BlobMorph size={320} periodInFrames={96} amplitude={0.22} seed={1} />`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "size", type: "number", default: "260", description: "Rendered size in pixels." },
+      { name: "fill", type: "string", default: '"#E8B86D"', description: "Blob fill. Pass undefined for an outline only." },
+      { name: "stroke", type: "string", description: "Outline colour. Omit for a filled blob." },
+      { name: "strokeWidth", type: "number", default: "3", description: "Outline weight, when stroke is set." },
+      { name: "periodInFrames", type: "number", default: "150", description: "Frames for one full trip around the ring of shapes." },
+      { name: "states", type: "number", default: "4", description: "How many shapes the loop travels through. Three to six reads as organic." },
+      { name: "points", type: "number", default: "10", description: "Points around the outline. More points, more detail and more wobble." },
+      { name: "amplitude", type: "number", default: "0.22", description: "How far the outline deviates from a circle, as a fraction of the radius." },
+      { name: "seed", type: "number", default: "1", description: "Changes the shape family without changing anything else." },
+      { name: "rotation", type: "number", default: "12", description: "Degrees per period. Continuous, so a seamless loop wants 0 or a multiple of 360." },
     ],
+    note: "Outlines are generated from three sine harmonics seeded by the seed prop — two alone leave a shape that reads as symmetrical. Every variant shares a point count so they reduce to the same curve commands and morph without invented segments. Control arms are computed from the point count, (4/3)·tan(π/2N) of the radius along the neighbours' chord: a guessed constant gives a polygon when short and scalloped bulges when long. No entrance or exit — it is alive from frame 0.",
+    related: ["shape-morph", "aurora-bg", "svg-mask-reveal"],
   },
   "dashed-path-travel": {
     category: "primitive",
     usage: `import { DashedPathTravel } from "@/remotion/primitives/dashed-path-travel";
 
-<DashedPathTravel />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<DashedPathTravel
+  waypoints={[
+    { x: 20, y: 150 },
+    { x: 90, y: 60 },
+    { x: 280, y: 40 },
+  ]}
+  orient
+  durationInFrames={86}
+  exitAtInFrames={92}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "d", type: "string", description: "The route as a path string. Give this or waypoints." },
+      { name: "waypoints", type: "TravelPoint[]", default: "4 sample points", description: "Points the route passes through, in path units." },
+      { name: "smoothing", type: "number", default: "0.4", description: "Corner rounding when building from waypoints. 0 gives straight hops." },
+      { name: "children", type: "ReactNode", description: "What travels the path. Centred on the point; falls back to a dot." },
+      { name: "dotRadius", type: "number", default: "7", description: "Radius of the default dot, used when no children are given." },
+      { name: "orient", type: "boolean", default: "false", description: "Turns the traveller to the path's tangent." },
+      { name: "width", type: "number", default: "320", description: "Box width in pixels." },
+      { name: "height", type: "number", default: "200", description: "Box height in pixels." },
+      { name: "viewBox", type: "string", description: "Omit to frame the route automatically from its bounding box." },
+      { name: "trailColor", type: "string", default: '"#E8B86D"', description: "The dashed route behind the traveller." },
+      { name: "trackColor", type: "string", default: '"rgba(255,255,255,0.12)"', description: "The route not yet travelled. Omit to hide where this is going." },
+      { name: "strokeWidth", type: "number", default: "2.5", description: "Weight of both the track and the trail." },
+      { name: "dash", type: "number", default: "9", description: "Dash and gap length, in path units." },
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before setting off." },
+      { name: "durationInFrames", type: "number", default: "70", description: "Frames the trip takes." },
+      { name: "exitAtInFrames", type: "number", description: "Frame the whole thing starts leaving. Omit to leave it on screen." },
+      { name: "exitInFrames", type: "number", default: "16", description: "Frames the exit takes." },
     ],
+    note: "The trail is a fixed dash pattern revealed by a mask that grows with the head, not a dashed stroke that grows — growing the pattern slides every dash along the route, which reads as a stretching line rather than a road being marked. Position and angle come from arc-length sampling, so the traveller keeps a constant speed around corners. For a cursor with its own hardware shape and click beats, use cursor-path.",
+    related: ["cursor-path", "path-draw", "connector-lines"],
   },
   "connector-lines": {
     category: "primitive",
     usage: `import { ConnectorLines } from "@/remotion/primitives/connector-lines";
 
-<ConnectorLines />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<ConnectorLines
+  anchors={[
+    { id: "source", x: 0.12, y: 0.5 },
+    { id: "parse", x: 0.44, y: 0.18 },
+    { id: "output", x: 0.86, y: 0.5 },
+  ]}
+  edges={[
+    { from: "source", to: "parse", shape: "curve", bow: 0.12, dot: true },
+    { from: "parse", to: "output", shape: "curve", bow: 0.12, dot: true },
+  ]}
+/>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "anchors", type: "ConnectorAnchor[]", default: "4 sample anchors", description: "Named points as fractions of the box, so the same table drives your layout." },
+      { name: "edges", type: "ConnectorEdge[]", default: "4 sample edges", description: "from / to anchor ids, plus shape, bow, colour and an optional arrival dot." },
+      { name: "width", type: "number", default: "420", description: "Box width in pixels." },
+      { name: "height", type: "number", default: "240", description: "Box height in pixels." },
+      { name: "stroke", type: "string", default: '"#E8B86D"', description: "Default edge colour." },
+      { name: "strokeWidth", type: "number", default: "2", description: "Edge weight." },
+      { name: "dashed", type: "boolean", default: "false", description: "Dashes every edge. Dashed edges fade in rather than draw." },
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before the first edge draws." },
+      { name: "durationInFrames", type: "number", default: "26", description: "Frames one edge takes to draw." },
+      { name: "staggerInFrames", type: "number", default: "10", description: "Frames between edges." },
+      { name: "exitAtInFrames", type: "number", description: "Frame the lines start leaving. Omit to leave them on screen." },
+      { name: "exitInFrames", type: "number", default: "16", description: "Frames the exit takes." },
     ],
+    note: "This is the primitive under a diagram, not the diagram: position your own nodes at the same fractional anchors and the lines stay in register at any size. Each edge draws on its own pathLength={1}, so a long curve and a short hop take the same time. An edge naming a missing anchor is dropped rather than drawn to the origin. For a full scene with payloads travelling the edges, use data-flow-pipes.",
+    related: ["data-flow-pipes", "org-chart-build", "dashed-path-travel"],
   },
   "svg-mask-reveal": {
     category: "primitive",
     usage: `import { SvgMaskReveal } from "@/remotion/primitives/svg-mask-reveal";
 
-<SvgMaskReveal />`,
-    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
-    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
-    // Add them by hand when the component is finished and promoted.
+<SvgMaskReveal
+  shape="squircle"
+  origin={{ x: 0.32, y: 0.36 }}
+  durationInFrames={90}
+  rotation={40}
+>
+  <YourContent />
+</SvgMaskReveal>`,
     props: [
-      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
-      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+      { name: "children", type: "ReactNode", description: "What the mask reveals — media, a scene, a gradient, another component." },
+      { name: "shape", type: "MorphShapeName | string", default: '"circle"', description: "Mask shape: a preset name, or any d string authored on a 0–100 box." },
+      { name: "origin", type: "{ x: number; y: number }", default: "{ x: 0.5, y: 0.5 }", description: "Where the shape opens from, as a fraction of the frame." },
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before the reveal starts." },
+      { name: "durationInFrames", type: "number", default: "40", description: "Frames the reveal takes." },
+      { name: "rotation", type: "number", default: "0", description: "Degrees the shape turns as it opens." },
+      { name: "bouncy", type: "boolean", default: "false", description: "Springs the growth instead of easing it." },
+      { name: "invert", type: "boolean", default: "false", description: "Shrinks the shape back over the content, to close a scene with the figure that opened it." },
+      { name: "backgroundColor", type: "string", description: "Painted behind the masked content. Omit for transparency." },
     ],
+    note: "The scale is computed from the distance to the furthest corner, not from the frame width — a shape opening from a corner has much further to travel, and a fixed multiplier either leaves a gap or spends half the animation doing nothing. It uses an SVG <mask> rather than a CSS clip-path, so any authored path drops in and the shape can carry soft edges. Custom paths must be authored on a 0–100 box, which is what the scale maths assumes.",
+    related: ["shape-morph", "blob-morph", "directional-wipe"],
   },
 };
 

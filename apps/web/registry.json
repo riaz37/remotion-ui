@@ -4156,7 +4156,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "motion-tokens",
+        "path-morph"
       ],
       "files": [
         {
@@ -4173,7 +4174,7 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "path-morph"
       ],
       "files": [
         {
@@ -4190,7 +4191,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "motion-tokens",
+        "path-utils"
       ],
       "files": [
         {
@@ -4207,7 +4209,7 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "motion-tokens"
       ],
       "files": [
         {
@@ -4224,7 +4226,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "layout"
+        "motion-tokens",
+        "path-morph"
       ],
       "files": [
         {

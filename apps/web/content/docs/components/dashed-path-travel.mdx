@@ -1,20 +1,31 @@
 ---
 title: Dashed Path Travel
-description: Narrowed: any element traveling any path with a dashed trail. Install with npx remotion-ui@latest add dashed-path-travel.
+description: Anything travelling any route, laying a dashed trail behind it.
 ---
 
 import { DashedPathTravelPreview } from '@/components/previews/dashed-path-travel';
 
-<ComponentPage name="dashed-path-travel" preview={DashedPathTravelPreview} durationInFrames={120}>
+<ComponentPage name="dashed-path-travel" preview={DashedPathTravelPreview}>
 
-Narrowed: any element traveling any path with a dashed trail. cursor-path is cursor-specific.
+Give it a `d` string or a list of waypoints and it builds the route, sends
+something along it, and marks the road behind. The traveller is `children` —
+anything renderable, centred on the point, and turned to face along the route
+with `orient`.
 
-## Usage
+The trail is a fixed dash pattern revealed by a mask that grows with the head,
+not a dashed stroke that grows. Growing the pattern slides every dash along the
+route as the line extends, which reads as a line being stretched; a fixed
+pattern under a growing mask reads as a road being marked out.
 
-```tsx
-import { DashedPathTravel } from "@/remotion/primitives/dashed-path-travel";
+Position and angle come from arc-length sampling, so the traveller moves at a
+constant speed around corners instead of hurrying through the straight sections
+the way a per-segment lerp does.
 
-<DashedPathTravel />
-```
+`trackColor` draws the part of the route not yet travelled. Leave it on when the
+destination matters and the viewer should see where this is going; omit it when
+the reveal is the point.
+
+For a cursor specifically — with its own hardware shape and click beats — use
+`cursor-path`.
 
 </ComponentPage>

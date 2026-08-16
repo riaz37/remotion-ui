@@ -1,18 +1,44 @@
 "use client";
 
+import { AbsoluteFill } from "remotion";
 import { SvgMaskReveal } from "../registry-exports";
-import { PreviewFrame } from "./preview-frame";
+import { ScenePreviewPlate } from "./scene-preview-plate";
+
+/** Stand-in for whatever the mask is opening onto. */
+const Revealed: React.FC = () => (
+  <AbsoluteFill
+    style={{
+      background:
+        "radial-gradient(circle at 30% 26%, rgba(232,184,109,0.55), transparent 46%), linear-gradient(140deg, #1b1408 0%, #2a1f10 46%, #0b0a08 100%)",
+      alignItems: "center",
+      justifyContent: "center",
+      color: "#F3E7D2",
+      fontFamily: "system-ui, sans-serif",
+      fontSize: 64,
+      fontWeight: 700,
+      letterSpacing: "-0.03em",
+    }}
+  >
+    Ship it
+  </AbsoluteFill>
+);
 
 /**
- * The audit samples at 15% / 50% / 90% of the window — frames 18, 60 and 108 on
- * the 120-frame default. Motion must still be running at frame 18 and not yet
- * settled at 60, or all three samples land on a still image and the preview is
- * reported dead. See docs-internal/preview-audit-rubric.md.
+ * The squircle opens over frames 6–96 from the upper left, so frames 18 and 60
+ * catch it part way across and frame 108 lands just after it clears the corner.
+ * See docs-internal/preview-audit-rubric.md.
  */
 export const SvgMaskRevealPreview: React.FC = () => (
-  <PreviewFrame lane="vectors" padding={72}>
-    <div style={{ display: "grid", placeItems: "center", width: "100%" }}>
-      <SvgMaskReveal delayInFrames={2} durationInFrames={40} />
-    </div>
-  </PreviewFrame>
+  <ScenePreviewPlate direct>
+    <SvgMaskReveal
+      shape="squircle"
+      origin={{ x: 0.32, y: 0.36 }}
+      delayInFrames={6}
+      durationInFrames={90}
+      rotation={40}
+      backgroundColor="#07070B"
+    >
+      <Revealed />
+    </SvgMaskReveal>
+  </ScenePreviewPlate>
 );
