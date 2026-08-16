@@ -1,4 +1,3 @@
-import { barrelDistortion } from "@remotion/effects/barrel-distortion";
 import { chromaticAberration } from "@remotion/effects/chromatic-aberration";
 import { scanlines } from "@remotion/effects/scanlines";
 import {
@@ -9,6 +8,7 @@ import {
   useVideoConfig,
 } from "remotion";
 import { LightSweepText } from "@/remotion/primitives/light-sweep-text";
+import { lensWarp } from "./lens-warp";
 
 /**
  * Tier 2 — takes an existing DOM primitive of ours and runs its pixels through
@@ -28,9 +28,11 @@ export const GlassHeadline: React.FC = () => {
       width={width}
       height={height}
       effects={[
-        // Above ~0.05 the distortion pulls the frame edges inward and leaves
-        // black corners, which reads as a bug rather than a lens.
-        barrelDistortion({ amount: 0.04 }),
+        // Our own warp rather than barrelDistortion(), which blackens any
+        // sample that falls outside the texture and so rings the frame with a
+        // dark rounded border. lensWarp fits the warp inside the texture, which
+        // leaves the amount free to be a strength the eye can actually read.
+        lensWarp({ amount: 0.1 }),
         chromaticAberration({ amount: split, angle: 8 }),
         scanlines({ amount: 0.08, spacing: 3, offset: frame * 0.5 }),
       ]}
