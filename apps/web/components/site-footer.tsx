@@ -39,6 +39,21 @@ export function SiteFooter() {
           >
             remotion-ui
           </a>
+          <a
+            href="https://tools.launchllama.co?utm_source=badge&utm_medium=referral"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-opacity hover:opacity-80"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://tools.launchllama.co/featured-badge.png?v=2"
+              alt="As seen on Launch Llama Newsletter"
+              width={200}
+              height={50}
+              className="h-8 w-auto"
+            />
+          </a>
         </div>
       </div>
     </footer>
