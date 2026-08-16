@@ -59,7 +59,14 @@ void main() {
   // progress runs 0 -> 1 as the transition advances.
   float progress = 1.0 - u_time;
   float soft = max(u_softness, 0.001);
-  float mask = smoothstep(threshold - soft, threshold + soft, progress);
+
+  // Thresholds span 0..1 and each cell needs progress to clear threshold+soft
+  // before it is fully flipped. Feeding raw progress leaves the highest-threshold
+  // cells short of 1 at the end of the transition, so a ghost of the outgoing
+  // scene survives past the cut. Widen the sweep to -soft..1+soft so every cell
+  // is guaranteed to complete.
+  float sweptProgress = progress * (1.0 + 2.0 * soft) - soft;
+  float mask = smoothstep(threshold - soft, threshold + soft, sweptProgress);
 
   vec4 base = mix(prev, next, mask);
 
