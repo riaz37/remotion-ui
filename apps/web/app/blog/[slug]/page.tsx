@@ -80,6 +80,7 @@ export async function generateMetadata(props: {
       title: post.title,
       description: post.description,
       type: "article",
+      siteName: siteConfig.name,
       publishedTime: post.isoDate,
       authors: [post.author],
       tags: post.tags,
