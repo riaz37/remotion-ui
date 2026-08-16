@@ -1,20 +1,22 @@
 <div align="center">
 
+<img src="apps/web/public/logo.svg" alt="RemotionUI" width="56" height="56" />
+
 # RemotionUI
 
-<img src="apps/web/public/logo.svg" alt="RemotionUI" width="64" height="64" />
+**200 copy-paste components for [Remotion](https://www.remotion.dev). Source you own, frame by frame.**
 
-**Production-ready motion for Remotion. Source you own.**
+<a href="https://remotionui.com"><img src="https://img.shields.io/badge/docs-remotionui.com-e8b563?style=flat-square" alt="Docs" /></a>
+<a href="https://www.npmjs.com/package/remotion-ui"><img src="https://img.shields.io/npm/v/remotion-ui?style=flat-square&color=e8b563" alt="npm version" /></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="MIT License" /></a>
 
-<a href="https://remotionui.com/docs"><img src="https://img.shields.io/badge/docs-remotionui.com-60a5fa?style=flat-square" alt="Docs" /></a>
-&nbsp;
-<a href="https://www.npmjs.com/package/remotion-ui"><img src="https://img.shields.io/npm/v/remotion-ui?style=flat-square" alt="npm version" /></a>
-&nbsp;
-<a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" alt="MIT License" /></a>
+<img src=".github/assets/hero.gif" alt="RemotionUI: install a composition with one command, 200 components in one registry" width="820" />
+
+[Browse components](https://remotionui.com/docs/components/browse) · [Quick start](https://remotionui.com/docs/installation) · [CLI](https://remotionui.com/docs/cli) · [MCP server](https://remotionui.com/docs/mcp)
 
 </div>
 
-## Quick start
+## Install
 
 ```bash
 npx remotion-ui@latest init my-video
@@ -22,68 +24,56 @@ cd my-video
 npx remotion-ui@latest add social-clip
 ```
 
-Production-ready motion for Remotion. Source you own. Docs: [remotionui.com](https://remotionui.com)
+Already have a Remotion project? `npx remotion-ui@latest init --existing`.
 
-## What you get
+## Why
 
-- **108 components**: 51 primitives + 57 scenes and compositions (captions, charts, AI composers, social clips, creator reels)
-- **Source you own**: components land in your repo; edit every frame
-- **CLI workflow**: `init`, `add`, `doctor`, `search`, `diff`, `update`, `list` — all support `--json` for agent/script consumption
-- **AI-ready**: [agent index](https://remotionui.com/ai/components.json), [llms.txt](https://remotionui.com/llms.txt), an [MCP server](packages/remotion-ui-mcp/README.md), and an installable Claude Code skill (`remotion-ui init --agent-skill`)
+- **You own the source.** Components land in your repo as plain `.tsx`. No black-box npm package to fight — edit any frame, any easing, any color.
+- **Composed, not just primitives.** Full compositions (social clips, data stories, creator reels) alongside the primitives they're built from.
+- **Built for agents.** Every command speaks `--json`, plus an [agent index](https://remotionui.com/ai/components.json), [llms.txt](https://remotionui.com/llms.txt), an [MCP server](packages/remotion-ui-mcp/README.md), and an installable Claude Code skill.
 
-## Monorepo Structure
+## What's inside
 
-```
-remotionui/
-├── apps/web/                  # Docs site + component registry host
-├── packages/remotion-ui/      # CLI (published to npm)
-├── packages/remotion-ui-mcp/  # MCP server exposing the registry as agent tools
-├── packages/typescript-config/
-├── packages/eslint-config/
-├── templates/                 # Starter project scaffolds
-├── skills/                    # Agent skills (vendored Remotion + RemotionUI-authored)
-└── scripts/                   # Repo maintenance scripts
-```
+200 components, grouped by how they behave on the timeline:
 
-## Philosophy
+| Lane | Count | What it covers |
+|------|------:|----------------|
+| **Primitives** | 51 | Motion, text effects, backgrounds |
+| **Scenes** | 53 | Composed layouts, cards, UI blocks |
+| **Data & media** | 38 | Captions, audio, charts, live metrics |
+| **Compositions** | 21 | Full video templates, ready to render |
+| **Transitions** | 18 | `TransitionSeries` scene cuts |
+| **Paths & shapes** | 11 | SVG draw-on, logos, cursors |
+| **Maps & device** | 8 | Map scenes and device mockups |
 
-- **Registry-first**: Component source lives in `apps/web/registry/`
-- **CLI distribution**: Users run `npx remotion-ui add <component>`
-- **Source you own**: Components install as source files in your repo
-- **Only the CLI is published**: No `@remotionui/primitives` npm package
+[Browse the full catalog →](https://remotionui.com/docs/components/browse)
 
-## Getting Started (development)
+## CLI
 
 ```bash
-pnpm install
-pnpm skills:sync    # Pull Remotion Agent Skills + wire Codex/Claude Code
-pnpm dev
+npx remotion-ui@latest search -q caption   # find components
+npx remotion-ui@latest add caption-scene   # install with dependencies
+npx remotion-ui@latest diff caption-scene  # see your edits vs registry
+npx remotion-ui@latest doctor              # diagnose config and aliases
 ```
 
-### Agent Skills
+Full reference: [remotionui.com/docs/cli](https://remotionui.com/docs/cli)
 
-RemotionUI uses [Agent Skills](https://agentskills.io/home) to give AI agents domain expertise:
+## Use it with your agent
 
-| Skill | Location | Purpose |
-|-------|----------|---------|
-| `remotion-best-practices` + 11 more | `skills/remotion/<skill>/` | Official [Remotion Agent Skills](https://www.remotion.dev/docs/ai/skills), vendored from upstream |
-| `remotion-ui` | `skills/remotion-ui/` | RemotionUI monorepo, CLI, and registry authoring |
-| `remotionui-agent` | `skills/remotionui-agent/` | Building full compositions with RemotionUI |
+```bash
+npx remotion-ui@latest init --agent-skill   # install the Claude Code skill
+```
 
-Upstream ships focused skills (`remotion-markup`, `remotion-captions`, `remotion-create`, `remotion-maps`, `remotion-render`, …) with `remotion-best-practices` as the router. `skills/remotion/docs/` is a RemotionUI-maintained mirror of the official docs MDX, refreshed with `pnpm docs:remotion`.
+Or point any MCP client at the [RemotionUI MCP server](packages/remotion-ui-mcp/README.md) to give it search-and-install over the registry.
 
-Run `pnpm skills:sync` to vendor the latest skills from upstream and link every skill into `.agents/skills/` (Codex) and `.claude/skills/` (Claude Code).
+## Guides
 
-## Scripts
+[Captions](https://remotionui.com/docs/guides/captions) · [Audio visualization](https://remotionui.com/docs/guides/audio-viz) · [Transitions](https://remotionui.com/docs/guides/transitions) · [Motion tokens](https://remotionui.com/docs/guides/motion-tokens) · [Maps](https://remotionui.com/docs/guides/maps) · [Authoring scenes](https://remotionui.com/docs/guides/authoring-scenes)
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start all apps in development mode |
-| `pnpm build` | Build all packages and apps |
-| `pnpm registry:build` | Build registry JSON for CLI consumption |
-| `pnpm skills:sync` | Sync Remotion Agent Skills and wire Codex + Claude Code |
-| `pnpm prepare:publish` | Preflight: build, test, registry count, npm dry-run |
-| `pnpm publish:cli` | Publish `remotion-ui` to npm (requires auth) |
+## Contributing
+
+Component ideas, bug reports, and PRs are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for the monorepo layout, dev setup, and how to author a registry component.
 
 ## License
 
