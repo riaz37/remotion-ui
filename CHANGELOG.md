@@ -1,11 +1,34 @@
 # Changelog
 
-## Unreleased
+## 0.9.0
+
+**200 components.** The registry grew from 108 to 200 — 92 new components across every lane. Nothing about the install flow changed: the CLI is byte-identical to 0.8.0, and every new component is already served from `https://remotionui.com/r`. If you have `remotion-ui` installed, `add` reaches all 200 today with no upgrade.
 
 ### Added
 
-- **`remotion-ui-mcp@0.1.1`** — README corrected; the npm package page no longer claims the server is unpublished. No code changes from 0.1.0.
-- **`remotion-ui-mcp@0.1.0` is on npm** — `npx remotion-ui-mcp` runs the MCP server directly; no monorepo checkout needed. Four tools over stdio: `list-components`, `search-components`, `get-component-detail`, `get-install-command`. The docs now carry the `npx` config for Claude Code and other stdio clients.
+- **Data & media — 28 components.** A full chart set (`bar-chart-race`, `donut-chart`, `pie-slice-reveal`, `scatter-plot-pop`, `bubble-chart-pack`, `gauge-dial`, `sparkline-row`, `heatmap-grid`, `comparison-bars`, `funnel-chart`, `radar-chart`, `treemap-blocks`, `waterfall-chart`, `stacked-area-chart`, `candlestick-chart`, `gantt-timeline`), caption treatments (`word-pop-captions`, `caption-emoji-beat`, `speaker-label-captions`, `transcript-scroll`, `subtitle-translate`, `srt-caption-track`), and audio surfaces (`waveform-bars-radial`, `vu-meter`, `voice-note-bubble`, `beat-pulse-grid`, `audio-scrubber`, `audio-reactive-scale`).
+- **Primitives — 24 components.** Text effects (`split-text-chars`, `scramble-text`, `text-mask-video`, `handwriting-text`, `stroke-to-fill-text`, `variable-font-morph`, `liquid-text-morph`, `wave-text`, `neon-flicker-text`), backgrounds (`aurora-bg`, `particle-field`, `topographic-lines-bg`, `caustics-bg`, `animated-noise-grain`, `light-rays`, `parallax-layers`, `scanline-crt`), and motion (`skew-in`, `shake-emphasis`, `glow-pulse`, `motion-trail`, `squash-stretch`, `orbit-motion`, `depth-of-field-blur`).
+- **Scenes — 23 components.** Broadcast overlays (`poll-overlay`, `reaction-burst`, `countdown-timer`, `sports-scorebug`, `news-ticker-bar`), product-UI motion (`form-fill-sequence`, `notification-stack`, `tab-switch-panel`, `search-results-populate`, `file-tree-reveal`), and team and planning blocks (`kanban-move`, `commit-graph`, `comparison-table`, `pricing-card`, `faq-accordion`, `team-grid`, `logo-wall`, `changelog-entry`, `roadmap-lanes`, `org-chart-build`, `quiz-question`, `weather-card`, `calendar-month-fill`).
+- **Paths & shapes — 7 components.** `arrow-annotate`, `badge-stamp`, `shape-morph`, `blob-morph`, `dashed-path-travel`, `connector-lines`, `svg-mask-reveal`.
+- **Transitions — 6 components.** `transition-circle-reveal`, `transition-card-flip`, `transition-blinds`, `transition-whip-pan`, `transition-morph-shape`, `transition-liquid-warp`.
+- **Maps & device — 3 components.** `map-heat-overlay`, `globe-arc`, `multi-device-lineup`.
+- **Compositions — 1.** `ai-composer-showcase`.
+- **`remotion-ui-mcp@0.1.0` is on npm** — `npx remotion-ui-mcp` runs the MCP server directly; no monorepo checkout needed. Four tools over stdio: `list-components`, `search-components`, `get-component-detail`, `get-install-command`. The docs carry the `npx` config for Claude Code and other stdio clients. `0.1.1` corrected the README, which still claimed the server was unpublished.
+
+### Fixed
+
+- **Dead previews and frozen tails** — an audit harness now renders every component preview and samples frames, which caught previews that never animated and previews that froze before their last frame. All P0 findings are closed.
+- **MCP server version** — the server reported a hardcoded `0.1.0` to clients regardless of the published version. It is now injected from `package.json` at build time. Unreleased on npm; ships with the next `remotion-ui-mcp` publish.
+
+### Maintenance
+
+- **`pnpm gen:component`** scaffolds a new component across all nine registration points from the spec, so registry wiring can't drift out of sync with docs, previews, or the Atlas.
+- The stale `registry.json` at the repo root is gone. The live manifest has always been `apps/web/registry.json`; the root copy was an unreferenced 126-item snapshot.
+
+### Notes for maintainers
+
+- The CLI is unchanged from 0.8.0. This release is the registry plus docs — the published npm version may stay at `0.8.0`.
+- Deploy the docs site (`pnpm registry:build && pnpm --filter web build`) **before** tagging so `https://remotionui.com/r` serves the new registry JSON.
 
 ## 0.8.0
 
