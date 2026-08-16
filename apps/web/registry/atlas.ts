@@ -360,6 +360,11 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   "changelog-entry": { lane: "blocks", drive: "time", tier: "core" },
   "roadmap-lanes": { lane: "blocks", drive: "time", tier: "core" },
   "org-chart-build": { lane: "blocks", drive: "time", tier: "advanced" },
+  "quiz-question": { lane: "blocks", drive: "time", tier: "core", tags: ["social"] },
+  "weather-card": { lane: "blocks", drive: "time", tier: "core" },
+  "calendar-month-fill": { lane: "blocks", drive: "time", tier: "core" },
+  "arrow-annotate": { lane: "vectors", drive: "time", tier: "core" },
+  "badge-stamp": { lane: "vectors", drive: "time", tier: "core" },
 };
 
 export function getAtlasMeta(name: string): AtlasMeta | undefined {

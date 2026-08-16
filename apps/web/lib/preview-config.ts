@@ -197,6 +197,11 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "changelog-entry": { durationInFrames: 120 },
   "roadmap-lanes": { durationInFrames: 120 },
   "org-chart-build": { durationInFrames: 120 },
+  "quiz-question": { durationInFrames: 120 },
+  "weather-card": { durationInFrames: 120 },
+  "calendar-month-fill": { durationInFrames: 120 },
+  "arrow-annotate": { durationInFrames: 120 },
+  "badge-stamp": { durationInFrames: 120 },
 };
 
 export function previewMeta(slug: string): Required<PreviewMeta> {

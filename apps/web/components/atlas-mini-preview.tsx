@@ -189,6 +189,11 @@ import { LogoWallPreview } from "./previews/logo-wall";
 import { ChangelogEntryPreview } from "./previews/changelog-entry";
 import { RoadmapLanesPreview } from "./previews/roadmap-lanes";
 import { OrgChartBuildPreview } from "./previews/org-chart-build";
+import { QuizQuestionPreview } from "./previews/quiz-question";
+import { WeatherCardPreview } from "./previews/weather-card";
+import { CalendarMonthFillPreview } from "./previews/calendar-month-fill";
+import { ArrowAnnotatePreview } from "./previews/arrow-annotate";
+import { BadgeStampPreview } from "./previews/badge-stamp";
 
 type AtlasMiniPreviewProps = {
   slug: string;
@@ -381,6 +386,11 @@ const PREVIEWS: Record<string, React.ComponentType> = {
   "changelog-entry": ChangelogEntryPreview,
   "roadmap-lanes": RoadmapLanesPreview,
   "org-chart-build": OrgChartBuildPreview,
+  "quiz-question": QuizQuestionPreview,
+  "weather-card": WeatherCardPreview,
+  "calendar-month-fill": CalendarMonthFillPreview,
+  "arrow-annotate": ArrowAnnotatePreview,
+  "badge-stamp": BadgeStampPreview,
 };
 
 

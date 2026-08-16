@@ -4549,6 +4549,71 @@ import { parseSubtitles } from "@/remotion/lib/caption-utils";
     note: "Positions come from a leaf walk rather than a grid: leaves spread evenly and each parent centres over the span of its own children, so a lopsided tree stays balanced. Connectors are elbows, not diagonals — a straight line between two boxes reads as a different kind of relationship entirely. Three levels fits 1080p comfortably; a fourth wants a taller frame rather than a smaller node.",
     related: ["team-grid", "commit-graph", "roadmap-lanes"],
   },
+  "quiz-question": {
+    category: "scene",
+    usage: `import { QuizQuestion } from "@/remotion/scenes/quiz-question";
+
+<QuizQuestion />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "weather-card": {
+    category: "scene",
+    usage: `import { WeatherCard } from "@/remotion/scenes/weather-card";
+
+<WeatherCard />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "calendar-month-fill": {
+    category: "scene",
+    usage: `import { CalendarMonthFill } from "@/remotion/scenes/calendar-month-fill";
+
+<CalendarMonthFill />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "arrow-annotate": {
+    category: "primitive",
+    usage: `import { ArrowAnnotate } from "@/remotion/primitives/arrow-annotate";
+
+<ArrowAnnotate />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "badge-stamp": {
+    category: "primitive",
+    usage: `import { BadgeStamp } from "@/remotion/primitives/badge-stamp";
+
+<BadgeStamp />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
 };
 
 export function getComponentReference(name: string): ComponentReference | undefined {

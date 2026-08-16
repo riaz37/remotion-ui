@@ -185,3 +185,8 @@ export { LogoWall } from "../registry/bases/default/scenes/logo-wall";
 export { ChangelogEntry } from "../registry/bases/default/scenes/changelog-entry";
 export { RoadmapLanes } from "../registry/bases/default/scenes/roadmap-lanes";
 export { OrgChartBuild } from "../registry/bases/default/scenes/org-chart-build";
+export { QuizQuestion } from "../registry/bases/default/scenes/quiz-question";
+export { WeatherCard } from "../registry/bases/default/scenes/weather-card";
+export { CalendarMonthFill } from "../registry/bases/default/scenes/calendar-month-fill";
+export { ArrowAnnotate } from "../registry/bases/default/primitives/arrow-annotate";
+export { BadgeStamp } from "../registry/bases/default/primitives/badge-stamp";

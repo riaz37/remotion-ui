@@ -4056,6 +4056,91 @@
           "type": "registry:block"
         }
       ]
+    },
+    {
+      "name": "quiz-question",
+      "type": "registry:block",
+      "description": "Question, options, correct-answer reveal",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/quiz-question/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "weather-card",
+      "type": "registry:block",
+      "description": "Conditions with animated iconography",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/weather-card/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "calendar-month-fill",
+      "type": "registry:block",
+      "description": "Month grid populating with events",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/calendar-month-fill/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "arrow-annotate",
+      "type": "registry:ui",
+      "description": "Hand-drawn arrow pointing at a target",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/arrow-annotate.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "badge-stamp",
+      "type": "registry:ui",
+      "description": "Stamp/seal impact with rotation settle",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "layout"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/badge-stamp.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
