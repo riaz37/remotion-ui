@@ -77,9 +77,24 @@ The landing page renders **live `<Player>`s for twelve slugs** in the contact sh
 ## Still open
 
 1. **Decide the question above** — primitive-by-primitive, or go at the eleven scenes' inline backdrops.
-2. **Remaining tier-1 primitives worth testing against the candidate rule:** `animated-noise-grain` (feTurbulence — a shader does real noise, CSS cannot), `light-rays`, `particle-field`, `topographic-lines-bg`, `scanline-crt`. Apply the rule before writing any shader.
+2. **Remaining tier-1 primitives worth testing against the candidate rule.** `light-rays` is **done** (session 3) — it passed the rule and the port is better than the CSS original; see below. `topographic-lines-bg` and `scanline-crt` are ruled out above. `animated-noise-grain` wraps `children`, so a shader can only replace its tile, not composite it. That leaves **`particle-field`**, which is the borderline case: discrete sprites are vector identity by the rule, but particles are what a GPU is for. Apply the rule before writing any shader.
 3. ~~**Apply the existing 69 shipped effects to components that already exist.**~~ **Audited 2026-08-16 and mostly withdrawn — see "The effects sweep did not survive the audit" below.** Only `transition-light-leak`→`light-leak` is still worth trying.
 4. **Decide the tier-2 preview story** — pre-rendered video previews on the docs site, since tier 2 can't play live for most visitors.
+
+## `light-rays` — the second primitive on the GPU
+
+Landed session 3. Eleven clipped divs under a 13px blur on `screen` became one field evaluation, with a `smoothstep` across the wedge boundary where the blur used to be. Props, hashes and sway are untouched, so existing renders keep their timing.
+
+**Why it passed where `caustics-bg` failed** — and this is the sharper form of the candidate rule. Both used `blur()`. The question is what the blur was *doing*:
+
+- In `caustics-bg` the blur **formed the structure**, joining separate wave crests into continuous ridges. Remove it and an analytic threshold gives ragged patches. That is why four iterations could not close the gap.
+- In `light-rays` the blur only **softens an edge the geometry already defines** — the wedge exists in the clip path with or without it. `smoothstep` does that natively, and better, because it is defined in the field rather than in screen pixels.
+
+So: *is the blur load-bearing to the structure, or is it just an edge treatment?* Ask that before porting anything that uses `blur()`.
+
+**One tuning note worth keeping.** The bloom falloff has to be **linear**, not a `smoothstep` — the same finding already recorded for `mesh-gradient-bg`'s blobs. The CSS ramps straight from colour to transparent; a smoothstep holds the core near full across most of its radius, and since that radius is ~40% of the frame width, the bloom swamps the shafts it is supposed to sit behind. Caught on the first render comparison, not by reading.
+
+**Registry wiring:** importing `lib/gpu` means the entry needs `"registryDependencies": ["gpu"]`. Without it the CLI copies a component importing a lib it never installs. Verified in the built `public/r/presets/default/light-rays.json`.
 
 ## The effects sweep did not survive the audit
 
