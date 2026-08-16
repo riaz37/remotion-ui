@@ -1,11 +1,11 @@
 import {
   AbsoluteFill,
-  createEffect,
   interpolate,
   Solid,
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
+import { hexToRgb, makeShaderEffect } from "@/remotion/lib/gpu";
 import { EASING } from "@/remotion/lib/motion-tokens";
 
 export type MeshGradientBgProps = {
@@ -42,16 +42,6 @@ const BLOBS: BlobConfig[] = [
  * radius of `size / 2` reads as three separate dots instead of a mesh.
  */
 const REACH = 0.6;
-
-const VERTEX_SHADER = `#version 300 es
-layout(location = 0) in vec2 aPos;
-layout(location = 1) in vec2 aUv;
-out vec2 vUv;
-void main() {
-  vUv = aUv;
-  gl_Position = vec4(aPos, 0.0, 1.0);
-}
-`;
 
 /**
  * The field each blob contributes is evaluated per pixel, so the falloff is
@@ -107,134 +97,21 @@ void main() {
 }
 `;
 
-const QUAD = new Float32Array([
-  -1, -1, 0, 0, 1, -1, 1, 0, -1, 1, 0, 1, 1, 1, 1, 1,
-]);
-
 type MeshBlobsParams = {
   /** Per blob: centre x, centre y and radius, all in pixels. */
   readonly blobs: readonly (readonly [number, number, number])[];
-  /** Per blob: linear RGB in 0..1. */
+  /** Per blob: RGB in 0..1. */
   readonly colors: readonly (readonly [number, number, number])[];
   readonly alphas: readonly number[];
 };
 
-type MeshBlobsState = {
-  readonly gl: WebGL2RenderingContext;
-  readonly program: WebGLProgram;
-  readonly vao: WebGLVertexArrayObject;
-  readonly vbo: WebGLBuffer;
-  readonly texture: WebGLTexture;
-};
-
-const compile = (
-  gl: WebGL2RenderingContext,
-  source: string,
-  type: number,
-): WebGLShader => {
-  const shader = gl.createShader(type);
-  if (!shader) {
-    throw new Error("Could not create shader");
-  }
-
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-
-  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    // Without this the shader fails silently and the background renders black.
-    throw new Error(`Shader failed to compile: ${gl.getShaderInfoLog(shader)}`);
-  }
-
-  return shader;
-};
-
-const meshBlobs = createEffect<MeshBlobsParams, MeshBlobsState>({
+const meshBlobs = makeShaderEffect<MeshBlobsParams>({
   type: "dev.remotionui.effects.meshBlobs",
   label: "meshBlobs()",
-  documentationLink: null,
-  backend: "webgl2",
+  fragmentShader: FRAGMENT_SHADER,
   calculateKey: (params) =>
     `mesh-blobs-${params.blobs.flat().join(",")}-${params.colors.flat().join(",")}-${params.alphas.join(",")}`,
-  setup: (target) => {
-    const gl = target.getContext("webgl2", {
-      premultipliedAlpha: true,
-      alpha: true,
-      preserveDrawingBuffer: true,
-    });
-    if (!gl) {
-      throw new Error("WebGL2 unavailable for MeshGradientBg");
-    }
-
-    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
-
-    const program = gl.createProgram();
-    if (!program) {
-      throw new Error("Could not create program");
-    }
-
-    const vertex = compile(gl, VERTEX_SHADER, gl.VERTEX_SHADER);
-    const fragment = compile(gl, FRAGMENT_SHADER, gl.FRAGMENT_SHADER);
-    gl.attachShader(program, vertex);
-    gl.attachShader(program, fragment);
-    gl.linkProgram(program);
-
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      throw new Error(`Program failed to link: ${gl.getProgramInfoLog(program)}`);
-    }
-
-    gl.deleteShader(vertex);
-    gl.deleteShader(fragment);
-
-    const vao = gl.createVertexArray();
-    const vbo = gl.createBuffer();
-    const texture = gl.createTexture();
-    if (!vao || !vbo || !texture) {
-      throw new Error("Could not create WebGL resources");
-    }
-
-    gl.bindVertexArray(vao);
-    gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
-    gl.bufferData(gl.ARRAY_BUFFER, QUAD, gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 16, 0);
-    gl.enableVertexAttribArray(1);
-    gl.vertexAttribPointer(1, 2, gl.FLOAT, false, 16, 8);
-    gl.bindVertexArray(null);
-
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.bindTexture(gl.TEXTURE_2D, null);
-
-    return { gl, program, vao, vbo, texture };
-  },
-  apply: ({ state, source, width, height, params, flipSourceY }) => {
-    const { gl, program, vao, texture } = state;
-
-    gl.viewport(0, 0, width, height);
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipSourceY);
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    // `source` is typed as CanvasImageSource, whose SVGImageElement member
-    // texImage2D does not accept. Remotion only ever hands over a canvas.
-    gl.texImage2D(
-      gl.TEXTURE_2D,
-      0,
-      gl.RGBA,
-      gl.RGBA,
-      gl.UNSIGNED_BYTE,
-      source as TexImageSource,
-    );
-    gl.bindTexture(gl.TEXTURE_2D, null);
-
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    gl.clearColor(0, 0, 0, 0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-
-    gl.useProgram(program);
-    gl.uniform1i(gl.getUniformLocation(program, "uSource"), 0);
-    gl.uniform2f(gl.getUniformLocation(program, "uResolution"), width, height);
+  setUniforms: (gl, program, params) => {
     gl.uniform3fv(
       gl.getUniformLocation(program, "uBlobs"),
       new Float32Array(params.blobs.flat()),
@@ -247,50 +124,13 @@ const meshBlobs = createEffect<MeshBlobsParams, MeshBlobsState>({
       gl.getUniformLocation(program, "uAlphas"),
       new Float32Array(params.alphas),
     );
-
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.bindVertexArray(vao);
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    gl.bindVertexArray(null);
-    gl.bindTexture(gl.TEXTURE_2D, null);
-    gl.useProgram(null);
   },
-  cleanup: ({ gl, program, vao, vbo, texture }) => {
-    gl.deleteTexture(texture);
-    gl.deleteBuffer(vbo);
-    gl.deleteProgram(program);
-    gl.deleteVertexArray(vao);
-  },
-  schema: {},
   validateParams: (params) => {
     if (params.blobs.length !== 3 || params.colors.length !== 3) {
       throw new TypeError("meshBlobs expects exactly three blobs and colors");
     }
   },
 });
-
-/** `#rgb` or `#rrggbb` to 0..1 components. Unparseable input falls back to black. */
-const parseHex = (hex: string): [number, number, number] => {
-  const raw = hex.replace("#", "");
-  const full =
-    raw.length === 3
-      ? raw
-          .split("")
-          .map((c) => c + c)
-          .join("")
-      : raw;
-
-  if (!/^[0-9a-fA-F]{6}$/.test(full)) {
-    return [0, 0, 0];
-  }
-
-  return [
-    parseInt(full.slice(0, 2), 16) / 255,
-    parseInt(full.slice(2, 4), 16) / 255,
-    parseInt(full.slice(4, 6), 16) / 255,
-  ];
-};
 
 export const MeshGradientBg: React.FC<MeshGradientBgProps> = ({
   backgroundColor = "#080810",
@@ -334,7 +174,7 @@ export const MeshGradientBg: React.FC<MeshGradientBgProps> = ({
         effects={[
           meshBlobs({
             blobs,
-            colors: colors.map(parseHex),
+            colors: colors.map(hexToRgb),
             alphas,
           }),
         ]}

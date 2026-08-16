@@ -113,6 +113,21 @@
       ]
     },
     {
+      "name": "gpu",
+      "type": "registry:lib",
+      "description": "WebGL2 fragment-shader effect factory for GPU primitives",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/bases/default/lib/gpu.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "layout",
       "type": "registry:lib",
       "description": "Format-agnostic layout helpers",
@@ -141,7 +156,7 @@
     {
       "name": "motion-primitive",
       "type": "registry:lib",
-      "description": "Enter/exit motion contract shared by the animation primitives — opacity leads, exits are shorter, and a bounded Sequence times the exit itself",
+      "description": "Enter/exit motion contract shared by the animation primitives \u2014 opacity leads, exits are shorter, and a bounded Sequence times the exit itself",
       "dependencies": [
         "remotion"
       ],
@@ -308,7 +323,7 @@
     {
       "name": "blur-in",
       "type": "registry:ui",
-      "description": "Resolve out of a defocus — blur clears before the move lands",
+      "description": "Resolve out of a defocus \u2014 blur clears before the move lands",
       "dependencies": [
         "remotion"
       ],
@@ -1037,7 +1052,8 @@
         "remotion"
       ],
       "registryDependencies": [
-        "motion-tokens"
+        "motion-tokens",
+        "gpu"
       ],
       "files": [
         {
