@@ -54,17 +54,37 @@ This bypasses the registry's 9 registration points — good for spikes. See proj
 
 The grain-dissolve fix was **structural, not numeric**: pure per-cell noise makes every cell flip independently and reads as TV static. Blending the threshold toward a diagonal ramp makes the dissolve travel while still breaking along a grain edge.
 
-## Next session
+## Session 2 — what landed
 
-1. **Finish `GlassHeadline`** — faint dark rounded border at the frame edge, from barrel sampling past texture bounds. Either drop barrel (keep chromatic + scanlines) or clamp the sample. Small.
-2. **Audit the registry for GPU candidates.** This list does not exist yet and was deliberately not guessed. Sort on:
-   - *Tier 1* — anything containing a background, gradient, or field. Cheapest wins, shows live on the site. Likely concentrated in the `atoms` lane.
-   - *Tier 2* — text/UI whose pixels want a lens or material treatment. Only where the treatment is the point.
-   - *Neither* — charts, captions, code panels. Appeal is layout/data/timing; a shader makes those worse.
+- **`GlassHeadline` border fixed.** `barrelDistortion()` writes `vec4(0.0)` for any sample outside the texture and exposes only `amount`, so no clamp is reachable. Replaced with a first-party `lensWarp` (`showcase/spike/src/lens-warp.tsx`) that divides the warped coordinate by `1 + amount` — the largest stretch the warp can produce — so no sample can leave the texture. Verified clean at `0.1` and at `0.6`.
+- **`gpu` registry lib** (`lib/gpu.ts`) — `makeShaderEffect({ fragmentShader, calculateKey, setUniforms })` wraps the program/quad/texture plumbing. `uSource` and `uResolution` are bound before `setUniforms` runs. Use this for every further GPU primitive.
+- **`mesh-gradient-bg` swapped in place** and is better than the CSS original: same props, same drift, no blur banding. It is also one of the twelve contact-sheet slugs, so it plays live on the landing page.
 
-   **The real sort is which components a visitor tries in the first thirty seconds.** That input comes from the user, not the code — ask.
-3. **Apply the existing 69 effects to components that already exist.** We use 3. Highest quality-per-hour in the library; beats authoring new components.
+## The candidate rule — earned, not guessed
+
+Two components were attempted and only one survived. The rule that fell out:
+
+- **Good candidate** — CSS is *approximating a per-pixel field* with gradients and blur. `mesh-gradient-bg` was three blurred radial-gradient divs standing in for a distance function. The shader is strictly better and cheaper.
+- **Bad candidate — vector identity.** `aurora-bg` is tapered SVG paths whose *shape* changes per frame, with 13 props (`blur`, `striation`, `seed`) that map badly onto uniforms. **Skipped deliberately.** SVG expresses this well; a port risks making it worse.
+- **Bad candidate — the filter pipeline is the algorithm.** `caustics-bg` sums five wave trains, then `blur()` → `contrast()` turns that sum into the sharp web. **Attempted over four iterations and reverted.** An analytic threshold on the exact sum gives ragged patches, not ridges; a 12-tap disc average did not close the gap because the blur radius is small against the wavelength. The CSS version is better and was already refined through two rejected cuts. Do not retry without a real separable blur pass.
+
+## What the first-thirty-seconds audit actually found
+
+The landing page renders **live `<Player>`s for twelve slugs** in the contact sheet — that is the surface, and being live it is tier-1-only. The twelve: `data-story`, `karaoke-captions`, `terminal-simulator`, `device-mockup-zoom`, `social-clip`, `audiogram-scene`, `lower-third`, `grid-pixelate-wipe`, `ai-generation-canvas`, `logo-reveal`, `code-reveal`, `mesh-gradient-bg`.
+
+**None of the other eleven compose the background primitives** — each inlines its own CSS gradient. So swapping primitives reaches the sheet only through `mesh-gradient-bg` itself. **This is the open decision:** either accept that primitive swaps mostly improve their own docs pages, or give the sheet's scenes GPU backdrops directly, which changes each scene's design and is a bigger call than a swap.
+
+## Still open
+
+1. **Decide the question above** — primitive-by-primitive, or go at the eleven scenes' inline backdrops.
+2. **Remaining tier-1 primitives worth testing against the candidate rule:** `animated-noise-grain` (feTurbulence — a shader does real noise, CSS cannot), `light-rays`, `particle-field`, `topographic-lines-bg`, `scanline-crt`. Apply the rule before writing any shader.
+3. **Apply the existing 69 shipped effects to components that already exist.** Still the highest quality-per-hour move and still barely started — `scanline-crt`→`scanlines`, `animated-noise-grain`→`noise`, `glow-pulse`→`glow`, `transition-light-leak`→`light-leak`, `topographic-lines-bg`→`contour-lines`.
 4. **Decide the tier-2 preview story** — pre-rendered video previews on the docs site, since tier 2 can't play live for most visitors.
+
+## Traps, both cost a render to find
+
+- **`vUv.y = 0` is the bottom of clip space.** Anything positioned from DOM percentages must flip it. The mirrored output still looks like a plausible background, so only a side-by-side against the old version catches it.
+- **`half` is a reserved word in GLSL ES.** Shader compile errors are thrown loudly by `lib/gpu.ts` — keep that guard, since the silent failure mode is a black frame with the render still exiting 0.
 
 ## Two honest limits
 
