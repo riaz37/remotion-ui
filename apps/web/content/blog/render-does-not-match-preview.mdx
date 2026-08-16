@@ -30,27 +30,28 @@ you press play everything has settled.
 Our `map-markers` component added its MapLibre layers one commit after the map
 reported ready, with no `delayRender` around the paint:
 
-```tsx
-// Wrong: the renderer may screenshot before the markers exist.
-useEffect(() => {
+<CodeSnippet
+  label="Wrong — the renderer may screenshot before the markers exist"
+  code={`useEffect(() => {
   if (!map) return;
   applyMarkerReveal(map, markers, progress);
-}, [map, markers, progress]);
-```
+}, [map, markers, progress]);`}
+/>
 
 The markers dropped out of whichever frame the browser happened to capture first —
 which, in a batch still run, was reliably the *first* sample of the composition. The
 enter frame was a bare basemap. The fix is to hold the frame open until the map goes
 idle:
 
-```tsx
-useEffect(() => {
+<CodeSnippet
+  label="Right — hold the frame until the map is idle"
+  code={`useEffect(() => {
   if (!map) return;
   const handle = delayRender("map-markers paint");
   applyMarkerReveal(map, markers, progress);
   map.once("idle", () => continueRender(handle));
-}, [map, markers, progress]);
-```
+}, [map, markers, progress]);`}
+/>
 
 The rule that generalizes: **every per-frame mutation of an imperative canvas needs
 its own `delayRender`**, not one at mount. A map that animates its camera is doing

@@ -13,9 +13,7 @@ entries across every lane, all of them already served from
 The install flow is unchanged. The CLI is byte-identical to 0.8.0, so if you have
 `remotion-ui` installed, `add` reaches all 200 today with no upgrade:
 
-```bash
-npx remotion-ui@latest add radar-chart
-```
+<CommandRail label="Install" command="npx remotion-ui@latest add radar-chart" />
 
 ## What's new
 
@@ -60,9 +58,7 @@ and `org-chart-build`.
 The MCP server is published, so agents can reach the registry without a monorepo
 checkout:
 
-```bash
-npx remotion-ui-mcp
-```
+<CommandRail label="MCP server" command="npx remotion-ui-mcp" />
 
 Four tools over stdio: `list-components`, `search-components`,
 `get-component-detail`, `get-install-command`. Config for Claude Code and other stdio
