@@ -43,7 +43,7 @@ export const StrikethroughReplacePreview: React.FC = () => {
           strikeDurationInFrames={18}
           holdInFrames={5}
           departDurationInFrames={14}
-          replaceDelayInFrames={16}
+          replaceDelayInFrames={12}
           replaceDurationInFrames={22}
           fontSize={62}
           textAlign="left"
@@ -77,7 +77,7 @@ export const StrikethroughReplacePreview: React.FC = () => {
                 strikeDurationInFrames={18}
                 holdInFrames={5}
                 departDurationInFrames={14}
-                replaceDelayInFrames={16}
+                replaceDelayInFrames={12}
                 replaceDurationInFrames={22}
                 fontSize={32}
                 textAlign="left"

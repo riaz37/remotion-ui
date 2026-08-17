@@ -200,7 +200,7 @@ export const InfiniteMarqueePreview = () => (
         width: "100%",
         display: "flex",
         flexDirection: "column",
-        gap: 44,
+        gap: 56,
       }}
     >
       {marqueeRows.map((row) => (

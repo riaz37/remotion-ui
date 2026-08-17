@@ -23,6 +23,11 @@ export type StrikethroughReplaceProps = {
   travel?: number;
   /** Thickness of the stroke, in em. */
   strikeWeight?: number;
+  /**
+   * Height of the stroke above the baseline, in `ex` — that is, in units of the
+   * font's own x-height. `0.5` is centred through the lowercase mass.
+   */
+  strikeHeight?: number;
   /** Angle of the stroke in degrees off level — a hand does not rule it flat. */
   tilt?: number;
   color?: string;
@@ -42,13 +47,11 @@ const clamp = {
 } as const;
 
 /**
- * Line box the geometry is measured in. Both phrases share it, so the stroke
- * sits at the same height whichever phrase is longer and the new line lands on
- * the old line's baseline rather than near it.
+ * Line box both phrases share, so the new line lands on the old line's baseline
+ * rather than near it. Nothing about the stroke is measured against it — see
+ * the note on the stroke layer.
  */
 const LINE_HEIGHT = 1.15;
-/** Distance from the top of the em box to mid x-height, in em. */
-const STRIKE_CENTRE = 0.54;
 /** Stroke overshoot past each end of the phrase, in em. A pen does not stop on the glyph. */
 const OVERHANG = 0.06;
 /** Opacity is gone this far into the departure — the tail of the lift is unseen. */
@@ -60,7 +63,7 @@ const ARRIVE_OPACITY_LEAD = 0.55;
  * Strikes out one phrase and puts another in its place — the correction gesture.
  *
  * The whole component is the timing relationship between three beats, and they
- * are deliberately sequential rather than overlapped:
+ * run in order rather than as one cross-fade:
  *
  * 1. **The stroke travels.** `strikeDurationInFrames` across the full width of
  *    `from`, on an ease-in-out, because a hand accelerates off the first letter
@@ -73,12 +76,13 @@ const ARRIVE_OPACITY_LEAD = 0.55;
  * 3. **The new phrase arrives**, `replaceDelayInFrames` after the stroke lands,
  *    rising from `travel` below.
  *
- * The defaults put the arrival's first visible frame after the departure's last
- * one. Opacity leads in both directions — gone at 62% of the lift, complete at
- * 55% of the rise — so the handoff is never two half-tone phrases stacked on the
- * same line, which is the one state in which neither is readable. Shorten
- * `replaceDelayInFrames` and they do cross-fade; that is a choice, not the
- * default.
+ * The defaults open the arrival as the departure passes half, which is the
+ * narrow window where the line is neither empty nor doubled. Opacity leads in
+ * both directions — gone at 62% of the lift, complete at 55% of the rise — so by
+ * the time the new phrase is readable the old one has gone, and while both are
+ * faint they are travelling in opposite directions. Push `replaceDelayInFrames`
+ * past `holdInFrames + departDurationInFrames` and the line goes briefly empty,
+ * which reads as a dropout rather than a beat.
  *
  * Both phrases occupy the same grid cell, so the box is as wide as the longer of
  * the two for the whole shot and a centred line never reflows on the swap.
@@ -90,11 +94,12 @@ export const StrikethroughReplace: React.FC<StrikethroughReplaceProps> = ({
   strikeDurationInFrames = 16,
   holdInFrames = 4,
   departDurationInFrames = 12,
-  replaceDelayInFrames = 12,
+  replaceDelayInFrames = 10,
   replaceDurationInFrames = 20,
   travel = 0.42,
   strikeWeight = 0.07,
-  tilt = -1.2,
+  strikeHeight = 0.5,
+  tilt = -0.6,
   color = "#ececec",
   strikeColor = "#e8b86d",
   replaceColor,
@@ -163,13 +168,18 @@ export const StrikethroughReplace: React.FC<StrikethroughReplaceProps> = ({
         ? "end"
         : "start";
 
-  /* The rule is rotated on its own wrapper and scaled on the child inside it.
-   * Scaling a rotated element stretches it along the frame's axis rather than
-   * its own, which walks the far end of the stroke off the line as it grows.
-   * The wrapper turns about its centre so the tilt costs the same deviation at
-   * both ends — pivoting on the left end drops a long phrase's stroke a full
-   * stroke width below its start before it reaches the last letter. */
-  const strikeTop = (LINE_HEIGHT - 1) / 2 + STRIKE_CENTRE - strikeWeight / 2;
+  /* The stroke is placed from the baseline, in the font's own x-height.
+   *
+   * It is an inline-block inside the stroke layer, not an absolutely positioned
+   * bar: an inline box is aligned by `vertical-align`, which is measured from
+   * the parent's baseline, so `strikeHeight` in `ex` puts the stroke's centre
+   * exactly half an x-height above the baseline whatever the size, weight,
+   * family or line height. A rule positioned against the line box instead —
+   * `top: 50%`, or an em offset from the top of the em box — is thrown off by
+   * half-leading the moment `lineHeight` changes, and is only ever right for the
+   * one face it was eyeballed on. The negative bottom margin re-centres the box
+   * on that height, since an inline-block's baseline is its bottom edge. */
+  const strikeShift = `-${(strikeWeight / 2).toFixed(4)}em`;
 
   return (
     <span
@@ -199,24 +209,31 @@ export const StrikethroughReplace: React.FC<StrikethroughReplaceProps> = ({
           }}
         >
           {from}
+          {/* The layer covers the phrase's own line box, so the line it lays out
+            * shares that box's baseline. It turns about its centre so `tilt`
+            * costs the same deviation at both ends; pivoting on one end drops
+            * the far end of a long phrase clear of the letters. The sweep is
+            * scaled inside the rotation rather than outside it — scaling a
+            * rotated box stretches it along the frame's axis, not its own. */}
           <span
             aria-hidden
             style={{
               position: "absolute",
-              left: `${-OVERHANG}em`,
-              right: `${-OVERHANG}em`,
-              top: `${strikeTop}em`,
-              height: `${strikeWeight}em`,
+              inset: 0,
               transform: `rotate(${tilt}deg)`,
               transformOrigin: "center center",
             }}
           >
             <span
               style={{
-                position: "absolute",
-                inset: 0,
-                background: strikeColor,
+                display: "inline-block",
+                width: `calc(100% + ${2 * OVERHANG}em)`,
+                marginLeft: `${-OVERHANG}em`,
+                marginBottom: strikeShift,
+                verticalAlign: `${strikeHeight}ex`,
+                height: `${strikeWeight}em`,
                 borderRadius: `${strikeWeight / 2}em`,
+                background: strikeColor,
                 transform: `scaleX(${sweep})`,
                 transformOrigin: "left center",
               }}

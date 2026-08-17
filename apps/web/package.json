@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@remotion/captions": "^4.0.505",
+    "@vercel/analytics": "^2.0.1",
     "@remotion/effects": "4.0.505",
     "@remotion/google-fonts": "^4.0.505",
     "@remotion/layout-utils": "^4.0.505",

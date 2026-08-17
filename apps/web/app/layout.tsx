@@ -2,6 +2,7 @@ import { RootProvider } from "fumadocs-ui/provider/next";
 import type { Metadata } from "next";
 import { IBM_Plex_Sans, JetBrains_Mono, Newsreader } from "next/font/google";
 import type { ReactNode } from "react";
+import { Analytics } from "@vercel/analytics/react";
 import {
   siteMetadata,
   softwareApplicationJsonLd,
@@ -98,6 +99,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <RootProvider theme={{ defaultTheme: "dark" }}>{children}</RootProvider>
+        <Analytics />
       </body>
     </html>
   );
