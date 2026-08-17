@@ -1,12 +1,18 @@
 ---
 title: Strikethrough Replace
-description: Strikethrough Replace text animation for Remotion.
+description: Strikes out one phrase and puts another in its place, on a three-beat correction timeline.
 ---
 
-import { StrikethroughReplacePreview } from '@/components/previews/text-effects-previews';
+import { StrikethroughReplacePreview } from '@/components/previews/strikethrough-replace';
 
-<ComponentPage name="strikethrough-replace" preview={StrikethroughReplacePreview} durationInFrames={60}>
+<ComponentPage name="strikethrough-replace" preview={StrikethroughReplacePreview}>
 
-Strikethrough Replace text animation primitive.
+Cancels `from` and puts `to` in its place — the correction gesture. The whole component is the timing relationship between three beats, and they are deliberately sequential rather than overlapped.
+
+First the stroke travels the full width of `from` over `strikeDurationInFrames`, on an ease-in-out, because a hand accelerates off the first letter and decelerates onto the last. It is drawn once, at full length, so the old phrase is visibly cancelled before anything moves. Then, after `holdInFrames`, the old phrase lifts by `travel` and fades on an ease-in. The stroke leaves inside that layer rather than being switched off: a rule that vanishes on its own frame reads as a glitch, while one that travels out with the text it cancelled reads as a single object. Last, `replaceDelayInFrames` after the stroke lands, the new phrase rises into the same baseline over `replaceDurationInFrames`.
+
+The defaults put the arrival's first visible frame after the departure's last one. Opacity leads the move in both directions — gone at 62% of the lift, complete at 55% of the rise — so the handoff is never two half-tone phrases stacked on one line, which is the single state in which neither is readable. Shorten `replaceDelayInFrames` and they do cross-fade; that is a choice, not the default.
+
+Both phrases sit in the same grid cell, so the box is as wide as the longer of the two for the whole shot and a centred line never reflows on the swap. The stroke overshoots each end of the phrase slightly and sits `tilt` degrees off level — it is rotated on its own wrapper and scaled on the child inside it, because scaling a rotated element stretches it along the frame's axis instead of its own and walks the far end off the line as it grows.
 
 </ComponentPage>

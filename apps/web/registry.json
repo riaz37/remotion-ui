@@ -1257,7 +1257,8 @@
         "audiogram-scene",
         "caption-scene",
         "end-card",
-        "motion-tokens"
+        "motion-tokens",
+        "sample-media"
       ],
       "composition": {
         "id": "SocialClip",
@@ -1728,7 +1729,8 @@
         "code-reveal",
         "end-card",
         "transition-fade",
-        "motion-tokens"
+        "motion-tokens",
+        "sample-media"
       ],
       "files": [
         {
@@ -1790,7 +1792,8 @@
         "b-roll-stack",
         "end-card",
         "transition-fade",
-        "motion-tokens"
+        "motion-tokens",
+        "sample-media"
       ],
       "composition": {
         "id": "CreatorReel",
@@ -2025,13 +2028,13 @@
     {
       "name": "strikethrough-replace",
       "type": "registry:ui",
-      "description": "Strike line draws then reveals replacement text",
+      "description": "Strikes out one phrase and puts another in its place, on a three-beat correction timeline",
       "dependencies": [
         "remotion"
       ],
       "registryDependencies": [
         "layout",
-        "timing"
+        "motion-tokens"
       ],
       "files": [
         {
@@ -2682,6 +2685,21 @@
       "files": [
         {
           "path": "registry/bases/default/lib/displacement-presentation.tsx",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "sample-media",
+      "type": "registry:lib",
+      "description": "Placeholder stills, captions, and audio for composition defaults",
+      "dependencies": [
+        "@remotion/captions"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/bases/default/lib/sample-media.ts",
           "type": "registry:lib"
         }
       ]

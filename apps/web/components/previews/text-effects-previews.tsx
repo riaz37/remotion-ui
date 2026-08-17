@@ -10,7 +10,6 @@ import {
   RgbGlitchText,
   SlotRoll,
   StaggeredFadeUp,
-  StrikethroughReplace,
   TrackingIn,
 } from "../registry-exports";
 import { DEMO_COPY } from "@/lib/demo-assets";
@@ -229,10 +228,5 @@ export const PerspectiveMarqueePreview = () => (
   </PreviewFrame>
 );
 
-export const StrikethroughReplacePreview = () => (
-  <PreviewFrame lane="atoms" padding={72}>
-    <div style={center}>
-      <StrikethroughReplace from="Draft clip" to="Shipped clip" />
-    </div>
-  </PreviewFrame>
-);
+/* StrikethroughReplacePreview lives in ./strikethrough-replace — it needs a
+ * composed stage rather than one centred line. */

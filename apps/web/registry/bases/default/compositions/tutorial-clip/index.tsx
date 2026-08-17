@@ -7,7 +7,7 @@ import { CalloutSpotlight, type SpotlightTarget } from "@/remotion/scenes/callou
 import { CodeReveal } from "@/remotion/scenes/code-reveal";
 import { EndCard } from "@/remotion/scenes/end-card";
 import { MediaFrame } from "@/remotion/scenes/media-frame";
-import { DEMO_MEDIA_SRC } from "@/lib/demo-assets";
+import { SAMPLE_STILL_SRC } from "@/remotion/lib/sample-media";
 
 const COLORS = {
   bg: "#041016",
@@ -48,7 +48,7 @@ const fade = transitionFade({ durationInFrames: DURATION.fast });
 export const TutorialClip: React.FC<TutorialClipProps> = ({
   title = "Walkthrough clip",
   subtitle = "Demo the flow, spotlight the action, show the command",
-  mediaSrc = DEMO_MEDIA_SRC,
+  mediaSrc = SAMPLE_STILL_SRC,
   mediaWidth = 1280,
   mediaHeight = 720,
   calloutTitle = "Spotlight the control",

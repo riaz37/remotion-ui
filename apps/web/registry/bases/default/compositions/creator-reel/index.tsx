@@ -13,25 +13,25 @@ import {
   type TalkingHeadLayoutProps,
 } from "@/remotion/scenes/talking-head-layout";
 import {
-  DEMO_MEDIA_ALT_SRC,
-  DEMO_MEDIA_SRC,
-  DEMO_MEDIA_THIRD_SRC,
-} from "@/lib/demo-assets";
+  SAMPLE_STILL_ALT_SRC,
+  SAMPLE_STILL_SRC,
+  SAMPLE_STILL_THIRD_SRC,
+} from "@/remotion/lib/sample-media";
 
 /** Sample deck so the out-of-the-box preview doesn't render an empty stack. */
 const DEFAULT_B_ROLL_ITEMS: BRollItem[] = [
   {
-    src: DEMO_MEDIA_SRC,
+    src: SAMPLE_STILL_SRC,
     title: "Script",
     caption: "Outline the hook and the proof beat",
   },
   {
-    src: DEMO_MEDIA_ALT_SRC,
+    src: SAMPLE_STILL_ALT_SRC,
     title: "Record",
     caption: "One take, framed for the talking head",
   },
   {
-    src: DEMO_MEDIA_THIRD_SRC,
+    src: SAMPLE_STILL_THIRD_SRC,
     title: "Publish",
     caption: "Cut, caption, and ship the clip",
   },
