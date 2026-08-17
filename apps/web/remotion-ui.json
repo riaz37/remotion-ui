@@ -1,5 +1,5 @@
 {
-  "$schema": "https://remotionui.dev/schema.json",
+  "$schema": "https://remotionui.com/schema.json",
   "preset": "default",
   "tsx": true,
   "remotion": {

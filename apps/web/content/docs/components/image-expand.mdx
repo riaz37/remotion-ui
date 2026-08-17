@@ -1,12 +1,18 @@
 ---
 title: Image Expand
-description: Image Expand for Remotion.
+description: A still opens from a card to full frame, then takes its caption.
 ---
 
 import { ImageExpandPreview } from '@/components/previews/wave-batch-previews';
 
-<ComponentPage name="image-expand" preview={ImageExpandPreview} durationInFrames={90}>
+<ComponentPage name="image-expand" preview={ImageExpandPreview}>
 
-Image Expand.
+Two beats. The frame opens from a small card to the full canvas on a perceptual
+scale ramp, and once it has landed the caption block rises over a scrim at the
+bottom: `eyebrow`, `title`, `subtitle`.
+
+`src` is the point of the component — without one the frame expands as a tinted
+plate, which is useful as a transition card but is not what the name promises.
+Any `<Img>`-compatible source works; use `staticFile()` for local media.
 
 </ComponentPage>

@@ -69,10 +69,13 @@ export const BadgeStamp: React.FC<BadgeStampProps> = ({
   const topPathId = `badge-stamp-top-${id}`;
   const bottomPathId = `badge-stamp-bottom-${id}`;
 
+  // `overshootClamping` because this spring drives scale: an overshoot past 1
+  // dips the settled seal under its own size, which reads as a wobble rather
+  // than as weight. The rotation spring below is free to overshoot.
   const land = spring({
     frame: frame - delayInFrames,
     fps,
-    config: { damping: 14, stiffness: 220, mass: 0.9 },
+    config: { damping: 14, stiffness: 220, mass: 0.9, overshootClamping: true },
   });
   // Rotation trails the scale by its own spring: the seal is still turning
   // fractionally after it has stopped moving toward the page.
@@ -82,19 +85,36 @@ export const BadgeStamp: React.FC<BadgeStampProps> = ({
     config: { damping: 11, stiffness: 120, mass: 1 },
   });
 
-  const scale = interpolate(land, [0, 1], [2.1, 1]);
-  const turn = interpolate(settle, [0, 1], [rotation + windUp, rotation]);
+  const scale = interpolate(land, [0, 1], [2.1, 1], {
+    ...clamp,
+    output: "perceptual-scale",
+  });
+  const turn = interpolate(settle, [0, 1], [rotation + windUp, rotation], clamp);
   const opacity = interpolate(land, [0, 0.35], [0, 1], clamp);
 
   // Ink strength: heavy on impact, easing back as the pressure comes off.
   const ink = interpolate(land, [0.35, 1], [1, 0.86], clamp);
 
-  const shock = interpolate(
+  // The ring's life and the ring's size are two different curves, and the
+  // original tied both to one ease-in. That put the ring inside the seal's own
+  // border for most of its window and thinned the stroke to nothing by the time
+  // it cleared: an impact ring nobody ever saw.
+  //
+  // `shockLife` is linear — it fades and thins the ring evenly over 14 frames.
+  const shockLife = interpolate(
     frame,
-    [delayInFrames + 2, delayInFrames + 20],
+    [delayInFrames, delayInFrames + 14],
     [0, 1],
-    { easing: EASING.exit, ...clamp },
+    clamp,
   );
+  // `shock` is the expansion, eased out, because a shockwave leaves the impact
+  // fast and decelerates. It has to reach twice the seal's radius: the seal is
+  // still oversized on the frames right after contact, and a ring that only
+  // grows to 1.55× is under it the whole time it is worth seeing.
+  const shock = interpolate(shockLife, [0, 1], [0, 1], {
+    easing: EASING.enter,
+    ...clamp,
+  });
 
   const exit =
     exitAtInFrames === undefined
@@ -129,22 +149,23 @@ export const BadgeStamp: React.FC<BadgeStampProps> = ({
         />
       </defs>
 
-      {impactRing && shock > 0 && shock < 1 ? (
+      {impactRing && shockLife > 0 && shockLife < 1 ? (
         <circle
           cx={60}
           cy={60}
-          r={r * (1 + shock * 0.55)}
+          r={r * (1 + shock)}
           fill="none"
           stroke={color}
-          strokeWidth={2.4 * (1 - shock)}
-          opacity={0.5 * (1 - shock)}
+          strokeWidth={2.6 * (1 - shockLife * 0.7)}
+          opacity={0.55 * (1 - shockLife)}
         />
       ) : null}
 
       <g
         style={{
           transformOrigin: "60px 60px",
-          transform: `rotate(${turn}deg) scale(${scale})`,
+          rotate: `${turn}deg`,
+          scale: `${scale}`,
           opacity: opacity * (1 - exit),
         }}
       >

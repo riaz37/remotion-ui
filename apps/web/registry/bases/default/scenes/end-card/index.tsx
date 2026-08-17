@@ -36,9 +36,14 @@ const T = {
   eyebrow: 0.14,
   title: 0.26,
   subtitle: 0.6,
-  /** The button assembles, then its label rises out of it. */
-  button: 0.82,
-  buttonLabel: 0.98,
+  /**
+   * The button assembles and its label rises out of it — overlapping, not in
+   * sequence. A label that waits for the pill to finish leaves a filled button
+   * with nothing written in it, which is a bug to any viewer who lands on that
+   * frame.
+   */
+  button: 0.78,
+  buttonLabel: 0.84,
   /** Address types under the button. */
   url: 1.24,
   handles: 1.6,
@@ -235,6 +240,13 @@ export const EndCard: React.FC<EndCardProps> = ({
                 fontWeight: 700,
                 letterSpacing: "-0.01em",
                 boxShadow: `0 ${14 * u}px ${40 * u}px ${accentColor}44`,
+                // The label rises out of the pill from below it, so the
+                // pill must clip vertically — which means a label long enough to
+                // wrap would be cut mid-glyph. Keep it on one line and bounded
+                // by the stage so a sentence degrades to an ellipsis, not to a
+                // sliced word.
+                maxWidth: stage.w,
+                whiteSpace: "nowrap",
                 opacity: Math.min(button, 1),
                 transform: `scale(${interpolate(
                   Math.min(button, 1),
@@ -247,7 +259,14 @@ export const EndCard: React.FC<EndCardProps> = ({
               <span
                 style={{
                   display: "block",
-                  transform: `translateY(${(1 - buttonLabel) * 130}%)`,
+                  minWidth: 0,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  // A short rise with its own fade: the label is legible while
+                  // the pill is still assembling, so no frame catches a filled
+                  // button with an empty middle.
+                  opacity: buttonLabel,
+                  translate: `0px ${(1 - buttonLabel) * 60}%`,
                 }}
               >
                 {cta}

@@ -26,9 +26,15 @@ const COLORS = {
   endAccent: "#e8b86d",
 } as const;
 
+/**
+ * 68 + 108 + 88 + 88 + 66 + 62 − 5×12 = 420, and the hook/chart split is
+ * 84 + 92 rather than 68 + 108: at 68 the hook's cut landed one seventh into
+ * the clip, which is where the docs tile samples its opening frame — the
+ * chart's first bar had not sprung yet and the frame was very nearly empty.
+ */
 const SCENE_DURATIONS = {
-  hook: 68,
-  chart: 108,
+  hook: 84,
+  chart: 92,
   metrics: 88,
   timeline: 88,
   insight: 66,
@@ -72,6 +78,11 @@ export const DataStory: React.FC<DataStoryProps> = ({
         <AutoFitTitle
           title={title}
           subtitle={subtitle}
+          // The hook leaves before the cut instead of during it: exit runs
+          // frames 58–70 at 30fps, and the crossfade to the chart only starts
+          // at frame 72 (84 − 12). Without this the hook headline and the
+          // chart's own title are both legible for the whole 12-frame overlap.
+          holdSeconds={58 / 30}
           maxFontSize={88}
           accentColor={COLORS.hookAccent}
           backgroundColor={COLORS.hookBg}

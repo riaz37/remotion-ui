@@ -25,6 +25,14 @@ export type AutoFitTitleProps = {
   theme?: "dark" | "light";
   /** Animation speed multiplier. */
   speed?: number;
+  /**
+   * Seconds after which the card leaves. Omit to hold. Inside a
+   * `TransitionSeries` set it so the exit finishes a few frames *before* the
+   * cut begins — otherwise the headline is still at full opacity while the next
+   * scene's own heading fades up over it, and the overlap reads as one title
+   * printed on top of another.
+   */
+  holdSeconds?: number;
 };
 
 /** Beat plan in seconds. */
@@ -57,6 +65,7 @@ export const AutoFitTitle: React.FC<AutoFitTitleProps> = ({
   backgroundColor,
   theme = "dark",
   speed = 1,
+  holdSeconds,
 }) => {
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
@@ -88,6 +97,9 @@ export const AutoFitTitle: React.FC<AutoFitTitleProps> = ({
   const subtitleIn = subtitle ? ease(T.subtitle, T.subtitle + 0.5) : 0;
   /** Slow push, so the card is never dead still on a hold. */
   const push = ease(0, 7, EASING.editorial);
+  /** Exits accelerate away; entrances decelerate in. Never ease-out an exit. */
+  const exit =
+    holdSeconds === undefined ? 0 : ease(holdSeconds, holdSeconds + 0.4, EASING.exit);
 
   return (
     <div
@@ -120,7 +132,11 @@ export const AutoFitTitle: React.FC<AutoFitTitleProps> = ({
           alignItems: "center",
           gap: 20 * u,
           textAlign: "center",
-          transform: `scale(${interpolate(push, [0, 1], [1, 1.02])})`,
+          opacity: 1 - exit,
+          scale: interpolate(push, [0, 1], [1, 1.02], {
+            output: "perceptual-scale",
+          }),
+          translate: `0px ${-exit * 8 * u}px`,
         }}
       >
         {logoSrc ? (

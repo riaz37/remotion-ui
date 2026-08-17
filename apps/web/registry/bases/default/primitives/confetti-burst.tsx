@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { interpolate, random, useCurrentFrame, useVideoConfig } from "remotion";
 import { DURATION, EASING } from "@/remotion/lib/motion-tokens";
 
@@ -8,10 +9,25 @@ export type ConfettiBurstProps = {
   spread?: number;
   seed?: string;
   colors?: string[];
+  /**
+   * Downward acceleration in px/s². The default throws the burst off the bottom
+   * of a 1080p frame in about two seconds, which is right for a punctuation
+   * beat; lower it when the confetti has to stay in shot for longer.
+   */
+  gravity?: number;
+  /** Air resistance on the outward throw, per second. Higher settles sooner. */
+  drag?: number;
   durationInFrames?: number;
 };
 
 const DEFAULT_COLORS = ["#e8b86d", "#2dd4bf", "#f472b6", "#f59e0b", "#fafafa"];
+
+/** px/s². Tuned so a 1080p frame empties in roughly two seconds. */
+const DEFAULT_GRAVITY = 680;
+/** Outward-velocity decay, per second. */
+const DEFAULT_DRAG = 1.6;
+/** Wobble oscillations per second — expressed in seconds, never in frames. */
+const WOBBLE_RATE = 5;
 
 type Particle = {
   angle: number;
@@ -49,13 +65,18 @@ export const ConfettiBurst: React.FC<ConfettiBurstProps> = ({
   spread = Math.PI * 0.9,
   seed = "confetti",
   colors = DEFAULT_COLORS,
+  gravity = DEFAULT_GRAVITY,
+  drag = DEFAULT_DRAG,
   durationInFrames = DURATION.slow,
 }) => {
   const frame = useCurrentFrame();
   const { width, height, fps } = useVideoConfig();
-  const particles = createParticles(count, spread, colors, seed);
-  const gravity = 680;
-  const drag = 1.6;
+  // The particle table is a pure function of these four props, so it must not be
+  // rebuilt per frame — 48 particles is 7 `random()` calls each, every frame.
+  const particles = useMemo(
+    () => createParticles(count, spread, colors, seed),
+    [count, spread, colors, seed],
+  );
   const time = frame / fps;
   const fade = interpolate(frame, [durationInFrames * 0.55, durationInFrames], [1, 0], {
     extrapolateLeft: "clamp",
@@ -80,7 +101,10 @@ export const ConfettiBurst: React.FC<ConfettiBurstProps> = ({
         const vy = Math.sin(particle.angle) * particle.speed;
         // Air drag decays outward velocity over time; gravity still integrates linearly.
         const settle = (1 - Math.exp(-drag * time)) / drag;
-        const x = originPxX + vx * settle + Math.sin(frame / 6 + particle.wobble) * particle.wobble * 0.15;
+        const x =
+          originPxX +
+          vx * settle +
+          Math.sin(time * WOBBLE_RATE + particle.wobble) * particle.wobble * 0.15;
         const y = originPxY + vy * settle + 0.5 * gravity * time * time;
         const rotation = particle.spin * time;
 

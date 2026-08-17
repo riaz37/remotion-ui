@@ -93,6 +93,13 @@ export const ShapeMorph: React.FC<ShapeMorphProps> = ({
 
   const d = pairs.length > 0 ? morphSequence(progress, pairs) : resolve(shapes[0] ?? "circle");
 
+  // Shrink on the way out. Driven off `exit` through its own interpolate so the
+  // ramp is perceptually even rather than linear in scale factor.
+  const exitScale = interpolate(exit, [0, 1], [1, 0.88], {
+    ...clamp,
+    output: "perceptual-scale",
+  });
+
   return (
     <svg
       width={size}
@@ -103,7 +110,8 @@ export const ShapeMorph: React.FC<ShapeMorphProps> = ({
       <g
         style={{
           transformOrigin: "50px 50px",
-          transform: `rotate(${progress * rotation}deg) scale(${1 - exit * 0.12})`,
+          rotate: `${progress * rotation}deg`,
+          scale: exitScale,
         }}
       >
         <path

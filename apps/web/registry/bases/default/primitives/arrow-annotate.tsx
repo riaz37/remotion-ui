@@ -13,6 +13,11 @@ export type ArrowAnnotateProps = {
   bow?: number;
   /** Text set beside the start of the shaft. */
   label?: string;
+  /**
+   * Label type size, in box units. The default suits a small annotation over a
+   * screenshot; raise it when the arrow is the subject of the frame.
+   */
+  labelSize?: number;
   width?: number;
   height?: number;
   stroke?: string;
@@ -43,6 +48,10 @@ const clamp = {
  * A deterministic wobble. Frames render out of order, and two calls with the
  * same seed must return the same number on every machine — so this is a hash of
  * the seed, never a random.
+ *
+ * `%` keeps the sign of its left operand, so this returns roughly -1..1 and the
+ * second pass can offset either way. That is wanted: a pen that always doubled
+ * back on the same side would read as a deliberate double line.
  */
 const jitter = (seed: number) => Math.sin(seed * 127.1) * 43758.5453 % 1;
 
@@ -61,6 +70,7 @@ export const ArrowAnnotate: React.FC<ArrowAnnotateProps> = ({
   to = { x: 0.82, y: 0.74 },
   bow = 0.28,
   label,
+  labelSize = 16,
   width = 320,
   height = 220,
   stroke = "#E8B86D",
@@ -167,9 +177,9 @@ export const ArrowAnnotate: React.FC<ArrowAnnotateProps> = ({
       {label ? (
         <text
           x={x1 + (cx - x1) * 0.1}
-          y={y1 - 10}
+          y={y1 - labelSize * 0.6}
           fill={stroke}
-          fontSize={16}
+          fontSize={labelSize}
           fontWeight={600}
           fontFamily="ui-sans-serif, system-ui, sans-serif"
           opacity={interpolate(draw, [0.1, 0.45], [0, 1], clamp)}

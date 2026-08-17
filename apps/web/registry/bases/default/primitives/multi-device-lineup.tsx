@@ -113,7 +113,7 @@ export const MultiDeviceLineup: React.FC<MultiDeviceLineupProps> = ({
         justifyContent: "center",
         gap: 26 * scale,
         opacity: 1 - exit,
-        transform: `translateY(${exit * 26 * scale}px)`,
+        translate: `0 ${exit * 26 * scale}px`,
       }}
     >
       {devices.map((device, index) => {
@@ -122,10 +122,21 @@ export const MultiDeviceLineup: React.FC<MultiDeviceLineupProps> = ({
         const rise = spring({
           frame: frame - start,
           fps,
-          config: { damping: 17, stiffness: 150, mass: 0.75 },
+          // Clamped: a bezel that pops past 1.0 is a device growing bigger than
+          // its own hardware, which reads as a wobble rather than an arrival.
+          config: {
+            damping: 17,
+            stiffness: 150,
+            mass: 0.75,
+            overshootClamping: true,
+          },
         });
         const fade = interpolate(frame, [start, start + 10], [0, 1], {
           easing: EASING.enter,
+          ...clamp,
+        });
+        const riseScale = interpolate(rise, [0, 1], [0.94, 1], {
+          output: "perceptual-scale",
           ...clamp,
         });
 
@@ -138,9 +149,8 @@ export const MultiDeviceLineup: React.FC<MultiDeviceLineupProps> = ({
               alignItems: "center",
               gap: 10 * scale,
               opacity: fade,
-              transform: `translateY(${(1 - rise) * 26 * scale}px) scale(${
-                0.94 + rise * 0.06
-              })`,
+              translate: `0 ${(1 - rise) * 26 * scale}px`,
+              scale: String(riseScale),
             }}
           >
             <div

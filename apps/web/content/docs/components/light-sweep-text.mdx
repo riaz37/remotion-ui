@@ -5,8 +5,12 @@ description: Light Sweep Text text animation for Remotion.
 
 import { LightSweepTextPreview } from '@/components/previews/text-effects-previews';
 
-<ComponentPage name="light-sweep-text" preview={LightSweepTextPreview} durationInFrames={60}>
+<ComponentPage name="light-sweep-text" preview={LightSweepTextPreview}>
 
-Light Sweep Text text animation primitive.
+A specular highlight travelling across the type, clipped to the glyphs.
+
+The gradient is 2.2× the width of the line, so `bandWidth` — the shine's half-width in percent of that gradient — controls how much of the line is lit at once: the default `8` is a hard streak, `14` lights up about three fifths of it. Widen the band for a long sweep, or the highlight spends the ends of its travel clear of the text.
+
+`easing` defaults to an ease-in-out, which is right for a short accent. A sweep long enough to read as light moving should pass `Easing.linear` — a specular reflection travels at constant speed.
 
 </ComponentPage>

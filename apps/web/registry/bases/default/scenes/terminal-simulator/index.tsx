@@ -61,6 +61,13 @@ export type TerminalSimulatorProps = {
   theme?: "dark" | "light";
   /** Animation speed multiplier. */
   speed?: number;
+  /**
+   * Multiplies the fitted stage scale. The window is laid out against a
+   * 1280×720 reference, which puts the 21px log type under 5px once a 960-wide
+   * preview is reduced to a 308px tile — raise this when the command has to
+   * survive that reduction.
+   */
+  zoom?: number;
 };
 
 type Palette = {
@@ -277,12 +284,13 @@ export const TerminalSimulator: React.FC<TerminalSimulatorProps> = ({
   backgroundColor,
   theme = "dark",
   speed = 1,
+  zoom = 1,
 }) => {
   const rawFrame = useCurrentFrame();
   const { width, height, fps } = useVideoConfig();
   const palette = TERMINAL_THEMES[theme];
   const page = backgroundColor ?? palette.page;
-  const scale = stageScale(width, height, REF_WIDTH, REF_HEIGHT);
+  const scale = stageScale(width, height, REF_WIDTH, REF_HEIGHT) * zoom;
   const frame = rawFrame * speed;
 
   const seconds = (value: number) => value * fps;

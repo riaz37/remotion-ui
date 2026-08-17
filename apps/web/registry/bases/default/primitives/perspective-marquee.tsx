@@ -17,7 +17,27 @@ export type PerspectiveMarqueeProps = {
   /** Perspective distance in px — lower values exaggerate depth. */
   perspective?: number;
   showFloorGrid?: boolean;
+  /**
+   * Hairline width for the horizon and the floor grid, in px.
+   *
+   * A 1px rule is half a device pixel once the frame is rendered below 1× (the
+   * still audit runs at 0.5, a contact-sheet tile at roughly 0.32) and Chromium
+   * drops it outright. Raise it for anything that will be downscaled.
+   */
+  lineWidth?: number;
+  /** Halo behind the near row, so the type survives a downscale. */
+  nearGlow?: boolean;
+  /**
+   * Width of one rendered item in px, if you already know it.
+   *
+   * The loop period is derived from this. Measuring is unreliable on the server
+   * and against a font that has not finished loading, so pass it when the exact
+   * scroll speed matters or when `fontFamily` is a webfont.
+   */
+  measuredTextWidth?: number;
 };
+
+const LETTER_SPACING_EM = 0.05;
 
 function getItemWidth(
   text: string,
@@ -26,17 +46,22 @@ function getItemWidth(
   fontFamily?: string,
 ) {
   const family = fontFamily ?? "system-ui";
+  const tracking = text.length * fontSize * LETTER_SPACING_EM;
 
   if (typeof document !== "undefined") {
+    // `letterSpacing` has to be handed over too: the track renders with it, and
+    // measuring without it understates the item by a whole character's width,
+    // which shows up as a scroll that is faster than the stated `speed`.
     return measureText({
       text,
       fontFamily: family,
       fontSize,
       fontWeight: String(fontWeight),
+      letterSpacing: `${LETTER_SPACING_EM}em`,
     }).width;
   }
 
-  return text.length * fontSize * 0.55;
+  return text.length * fontSize * 0.55 + tracking;
 }
 
 export const PerspectiveMarquee: React.FC<PerspectiveMarqueeProps> = ({
@@ -50,6 +75,9 @@ export const PerspectiveMarquee: React.FC<PerspectiveMarqueeProps> = ({
   floorTilt = 70,
   perspective = 640,
   showFloorGrid = true,
+  lineWidth = 1,
+  nearGlow = false,
+  measuredTextWidth,
 }) => {
   const frame = useCurrentFrame();
   const { width, height } = useVideoConfig();
@@ -58,25 +86,39 @@ export const PerspectiveMarquee: React.FC<PerspectiveMarqueeProps> = ({
   const farGap = Math.round(gap * 1.1);
   const displayText = text.toUpperCase();
 
-  const { repetitions, nearLoopWidth, loopPeriodFrames } = useMemo(() => {
-    const nearItemWidth = getItemWidth(
-      displayText,
-      fontSize,
-      fontWeight,
-      fontFamily,
-    );
-    const count = Math.max(4, Math.ceil(width / nearItemWidth) + 2);
+  const { repetitions, loopPeriodFrames } = useMemo(() => {
+    const nearItemWidth =
+      measuredTextWidth ??
+      getItemWidth(displayText, fontSize, fontWeight, fontFamily);
+    // The plane is 280% of the frame, so the track has to cover that much of it
+    // or the far side of the floor runs out of type mid-scroll.
+    const count = Math.max(6, Math.ceil((width * 2.8) / nearItemWidth) + 2);
     const nearLoop =
       count * nearItemWidth + count * gap;
 
     return {
       repetitions: count,
-      nearLoopWidth: nearLoop,
       loopPeriodFrames: Math.max(1, Math.round(nearLoop / speed)),
     };
-  }, [displayText, fontFamily, fontSize, fontWeight, gap, speed, width]);
+  }, [
+    displayText,
+    fontFamily,
+    fontSize,
+    fontWeight,
+    gap,
+    measuredTextWidth,
+    speed,
+    width,
+  ]);
 
   const progress = (frame % loopPeriodFrames) / loopPeriodFrames;
+  /**
+   * Both tracks hold `repetitions * 2` copies laid out with a uniform gap and a
+   * leading pad equal to that gap, so the row is exactly two identical halves
+   * and a −50% translate lands copy `n + repetitions` where copy `n` was. That
+   * is what makes the wrap seamless — and why the far row's pad has to be its
+   * own `farGap`, not the near row's `gap`.
+   */
   const scrollX = -progress * 50;
 
   const items = useMemo(
@@ -91,6 +133,13 @@ export const PerspectiveMarquee: React.FC<PerspectiveMarqueeProps> = ({
   const planeHeight = Math.round(height * 0.9);
   const gridCellW = Math.round(width * 0.11);
   const gridCellH = Math.round(fontSize * 0.75);
+  /**
+   * The grid cannot ride the tracks' −50% translate: a repeating background only
+   * wraps cleanly on a whole number of cells, and the loop width is not a
+   * multiple of one — every wrap jumped the floor sideways. It scrolls in px,
+   * modulo the cell, which is seamless at any speed.
+   */
+  const gridShift = -((frame * speed) % Math.max(1, gridCellW));
   /**
    * Track positions on the floor plane, as a share of its height.
    *
@@ -137,7 +186,7 @@ export const PerspectiveMarquee: React.FC<PerspectiveMarqueeProps> = ({
           top: horizonTop,
           left: "5%",
           right: "5%",
-          height: 1,
+          height: lineWidth,
           background:
             "linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent)",
         }}
@@ -167,36 +216,28 @@ export const PerspectiveMarquee: React.FC<PerspectiveMarqueeProps> = ({
             transformStyle: "preserve-3d",
           }}
         >
+          {/* The grid covers the whole plane. It used to hang off a wrapper whose
+              only child was a 1px spacer, so its `top: -240% / bottom: -45%`
+              resolved against a 1px containing block and the floor was a 4px
+              sliver — `showFloorGrid` rendered nothing anyone could see. */}
           {showFloorGrid ? (
             <div
               style={{
                 position: "absolute",
-                left: 0,
-                bottom: nearTrackBottom,
-                translate: `${scrollX}% 0`,
+                inset: 0,
+                backgroundImage: `
+                  linear-gradient(to right, rgba(255,255,255,0.22) ${lineWidth}px, transparent ${lineWidth}px),
+                  linear-gradient(to top, rgba(255,255,255,0.15) ${lineWidth}px, transparent ${lineWidth}px)
+                `,
+                backgroundSize: `${gridCellW}px ${gridCellH}px`,
+                backgroundPosition: `${gridShift}px 0`,
+                maskImage:
+                  "linear-gradient(to top, black 6%, rgba(0,0,0,0.45) 46%, transparent 78%)",
+                WebkitMaskImage:
+                  "linear-gradient(to top, black 6%, rgba(0,0,0,0.45) 46%, transparent 78%)",
+                pointerEvents: "none",
               }}
-            >
-              <div
-                style={{
-                  position: "absolute",
-                  left: "-12%",
-                  right: "-12%",
-                  top: "-240%",
-                  bottom: "-45%",
-                  backgroundImage: `
-                    linear-gradient(to right, rgba(255,255,255,0.2) 1px, transparent 1px),
-                    linear-gradient(to top, rgba(255,255,255,0.14) 1px, transparent 1px)
-                  `,
-                  backgroundSize: `${gridCellW}px ${gridCellH}px`,
-                  maskImage:
-                    "linear-gradient(to top, black 8%, rgba(0,0,0,0.5) 62%, transparent 100%)",
-                  WebkitMaskImage:
-                    "linear-gradient(to top, black 8%, rgba(0,0,0,0.5) 62%, transparent 100%)",
-                  pointerEvents: "none",
-                }}
-              />
-              <div style={{ width: nearLoopWidth * 2, height: 1, opacity: 0 }} />
-            </div>
+            />
           ) : null}
 
           <div
@@ -211,7 +252,7 @@ export const PerspectiveMarquee: React.FC<PerspectiveMarqueeProps> = ({
               style={{
                 display: "inline-flex",
                 gap: farGap,
-                paddingLeft: gap,
+                paddingLeft: farGap,
                 translate: `${scrollX}% 0`,
                 fontSize: farFontSize,
                 ...trackTypography,
@@ -236,6 +277,11 @@ export const PerspectiveMarquee: React.FC<PerspectiveMarqueeProps> = ({
                 translate: `${scrollX}% 0`,
                 fontSize,
                 ...trackTypography,
+                ...(nearGlow
+                  ? {
+                      textShadow: `0 0 ${Math.round(fontSize * 0.28)}px ${color}, 0 0 ${Math.round(fontSize * 0.9)}px rgba(255,255,255,0.32)`,
+                    }
+                  : {}),
               }}
             >
               {items}

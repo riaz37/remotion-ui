@@ -1,12 +1,17 @@
 ---
 title: Live Code Split
-description: Live Code Split for Remotion.
+description: An editor and its rendered output side by side.
 ---
 
 import { LiveCodeSplitPreview } from '@/components/previews/wave-batch-previews';
 
-<ComponentPage name="live-code-split" preview={LiveCodeSplitPreview} durationInFrames={90}>
+<ComponentPage name="live-code-split" preview={LiveCodeSplitPreview}>
 
-Live Code Split.
+The file is written on the left. The moment its JSX finishes typing, the pane on
+the right wakes up and starts rendering the clip that code describes, then replays
+it on a loop with a playhead running under it — the way a preview player does.
+
+`previewAt` is the frame the pane goes live. It defaults to the frame the sample
+code's JSX lands on, so change it whenever you pass your own `code`.
 
 </ComponentPage>

@@ -77,7 +77,7 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "lower-third": { durationInFrames: 150 },
   "media-frame": { durationInFrames: 130 },
   "quote-card": { durationInFrames: 113 },
-  "split-screen": { durationInFrames: 165 },
+  "split-screen": { durationInFrames: 120 },
   "stat-card": { durationInFrames: 123 },
   "title-card": { durationInFrames: 140 },
   "media-sequence": { durationInFrames: 210 },
@@ -85,7 +85,8 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "data-story": { durationInFrames: 420 },
   "drag-drop-flow": { durationInFrames: 150 },
   "hero-loop": { durationInFrames: 360 },
-  "hero-device-assemble": { durationInFrames: 168 },
+  /** 60 title + 88 device + 56 lineup − 2 × 12 fade. */
+  "hero-device-assemble": { durationInFrames: 180 },
   "ecosystem-orbit": { durationInFrames: 180 },
   "bento-pan": { durationInFrames: 180 },
   "browser-flow": { durationInFrames: 168 },
@@ -111,7 +112,7 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "comment-callout": { durationInFrames: 165 },
   "hook-card": { durationInFrames: 120 },
   "talking-head-layout": { durationInFrames: 195, ...VERTICAL },
-  "confetti-burst": { durationInFrames: 72 },
+  "confetti-burst": { durationInFrames: 96 },
   "device-mockup-zoom": { durationInFrames: 90 },
   "dynamic-grid": { durationInFrames: 90 },
   "mesh-gradient-bg": { durationInFrames: 90 },
@@ -122,6 +123,9 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
    * the window exactly and the cut lands on the audit's 50% sample. Pinned
    * rather than left to the default because a change to `PREVIEW_DEFAULTS`
    * would silently move every cut off the sample and read as a dead preview. */
+  /* The light leak is an overlay, not a presentation, so its preview sizes two
+   * 60-frame scenes against this number instead of the 18-frame overlap. */
+  "transition-light-leak": { durationInFrames: 120 },
   "transition-circle-reveal": { durationInFrames: 120 },
   "transition-card-flip": { durationInFrames: 120 },
   "transition-blinds": { durationInFrames: 120 },

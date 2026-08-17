@@ -78,17 +78,34 @@ function TransitionSeriesPreview({
   );
 }
 
+/**
+ * An overlay does *not* shorten the series the way a transition does, so the
+ * light-leak preview cannot reuse `SCENE_DURATION`: 69 + 69 = 138 against a
+ * 120-frame composition truncated Scene two and moved the cut to frame 69,
+ * where the audit's 18 / 60 / 108 samples straddle it and the flare — the whole
+ * component — appeared in none of them.
+ *
+ * Two scenes, no overlap: 60 + 60 = 120, so the cut is exactly frame 60. The
+ * overlay is centred on the cut by `TransitionSeries` itself
+ * (`overlayFrom = cutPoint - durationInFrames / 2`), so 24 frames spans 48-72
+ * and the 50% sample lands on the flare peak.
+ */
+const OVERLAY_SCENE_DURATION = PREVIEW_DEFAULTS.durationInFrames / 2;
+const OVERLAY_FRAMES = 24;
+
 function OverlaySeriesPreview() {
   return (
     <AbsoluteFill>
       <TransitionSeries>
-        <TransitionSeries.Sequence durationInFrames={SCENE_DURATION}>
+        <TransitionSeries.Sequence durationInFrames={OVERLAY_SCENE_DURATION}>
           <BeforeScene />
         </TransitionSeries.Sequence>
-        <TransitionSeries.Overlay durationInFrames={TRANSITION_FRAMES}>
-          <TransitionLightLeak seed={2} hueShift={28} />
+        <TransitionSeries.Overlay durationInFrames={OVERLAY_FRAMES}>
+          {/* Just under full intensity, so the peak frame still shows the cut
+              it is covering rather than a blown-out plate. */}
+          <TransitionLightLeak seed={2} hueShift={28} intensity={0.86} />
         </TransitionSeries.Overlay>
-        <TransitionSeries.Sequence durationInFrames={SCENE_DURATION}>
+        <TransitionSeries.Sequence durationInFrames={OVERLAY_SCENE_DURATION}>
           <AfterScene />
         </TransitionSeries.Sequence>
       </TransitionSeries>

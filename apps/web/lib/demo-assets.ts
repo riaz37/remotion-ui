@@ -81,7 +81,7 @@ export const DEMO_COPY = {
   },
   endCard: {
     ctaLabel: "Browse components",
-    ctaUrl: "remotionui.dev/docs/components",
+    ctaUrl: "remotionui.com/docs/components",
   },
 } as const;
 
@@ -133,6 +133,56 @@ export const DEMO_MEDIA_PLAIN_SRC = svgData(`
   <rect x="804" y="342" width="300" height="118" rx="34" fill="#f8fafc" opacity=".14"/>
   <rect x="154" y="580" width="380" height="24" rx="12" fill="#f8fafc" opacity=".22"/>
   <rect x="154" y="628" width="240" height="18" rx="9" fill="#f8fafc" opacity=".12"/>
+</svg>`);
+
+/**
+ * A picture, not a UI capture.
+ *
+ * Every other still in this file is a product card built out of grey bars — the
+ * shape of a loading skeleton. Any preview whose subject *is* the image
+ * (`image-expand`, ken-burns style frames) reads as an unfinished render when it
+ * is handed one of those. This is a scene: sky, sun, ridges, water.
+ */
+export const DEMO_PHOTO_SRC = svgData(`
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs>
+    <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
+      <stop stop-color="#1b1440"/>
+      <stop offset=".42" stop-color="#7b3f5e"/>
+      <stop offset=".68" stop-color="#e0784a"/>
+      <stop offset="1" stop-color="#f7c07a"/>
+    </linearGradient>
+    <radialGradient id="sun" cx=".5" cy=".5" r=".5">
+      <stop stop-color="#fff3d4"/>
+      <stop offset=".55" stop-color="#ffcf7a"/>
+      <stop offset="1" stop-color="#ffcf7a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="water" x1="0" x2="0" y1="0" y2="1">
+      <stop stop-color="#c9764f"/>
+      <stop offset=".4" stop-color="#5c3552"/>
+      <stop offset="1" stop-color="#231a3a"/>
+    </linearGradient>
+    <linearGradient id="haze" x1="0" x2="0" y1="0" y2="1">
+      <stop stop-color="#f7c07a" stop-opacity="0"/>
+      <stop offset="1" stop-color="#f7c07a" stop-opacity=".26"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#sky)"/>
+  <circle cx="742" cy="452" r="196" fill="url(#sun)"/>
+  <circle cx="742" cy="452" r="62" fill="#fff6e0"/>
+  <path d="M0 372 L152 268 L268 336 L372 246 L470 330 L560 292 L640 356 L640 470 L0 470 Z" fill="#3a2b52" opacity=".92"/>
+  <path d="M1280 356 L1150 262 L1044 330 L940 250 L846 322 L760 292 L688 356 L688 470 L1280 470 Z" fill="#3a2b52" opacity=".92"/>
+  <path d="M0 470 L0 402 L118 330 L236 396 L360 316 L470 392 L604 322 L724 400 L860 320 L980 396 L1104 328 L1280 412 L1280 470 Z" fill="#241a38"/>
+  <rect y="404" width="1280" height="66" fill="url(#haze)"/>
+  <rect y="470" width="1280" height="250" fill="url(#water)"/>
+  <ellipse cx="742" cy="484" rx="128" ry="11" fill="#ffe6b8" opacity=".4"/>
+  <ellipse cx="736" cy="514" rx="104" ry="6" fill="#ffd79a" opacity=".3"/>
+  <ellipse cx="756" cy="548" rx="132" ry="5" fill="#ffd79a" opacity=".22"/>
+  <ellipse cx="724" cy="592" rx="96" ry="5" fill="#ffd79a" opacity=".16"/>
+  <ellipse cx="768" cy="646" rx="150" ry="4" fill="#ffd79a" opacity=".11"/>
+  <ellipse cx="712" cy="694" rx="112" ry="4" fill="#ffd79a" opacity=".08"/>
+  <path d="M0 720 L0 604 C104 590 176 630 268 648 C352 664 402 700 448 720 Z" fill="#150f28"/>
+  <path d="M1280 720 L1280 632 C1188 626 1120 664 1042 686 C990 700 954 712 928 720 Z" fill="#150f28"/>
 </svg>`);
 
 export const DEMO_MEDIA_ALT_SRC = svgData(`
@@ -205,6 +255,12 @@ export const DEMO_MEDIA_THIRD_SRC = svgData(`
  * `object-fit: cover` inside a 1080x1920 composition, which turns their baked-in
  * headlines into unreadable letters — a vertical walkthrough needs a capture
  * that was framed vertically in the first place.
+ *
+ * Every control carries its real label. The earlier version was grey placeholder
+ * bars end to end, so a walkthrough that spotlit its primary button spotlit a
+ * blank pill: the whole media beat read as a loading state rather than a product.
+ * Copy sits away from the lower band, which is where overlaying scenes put their
+ * captions — see `DEMO_MEDIA_PLAIN_SRC`.
  */
 export const DEMO_APP_PORTRAIT_SRC = svgData(`
 <svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920">
@@ -216,21 +272,24 @@ export const DEMO_APP_PORTRAIT_SRC = svgData(`
   </defs>
   <rect width="1080" height="1920" fill="url(#app)"/>
   <circle cx="880" cy="250" r="260" fill="${DEMO_PALETTE.phosphor}" opacity=".14"/>
-  <rect x="96" y="150" width="300" height="34" rx="17" fill="#f8fafc" opacity=".42"/>
+  <text x="96" y="182" font-family="Arial,sans-serif" font-size="38" font-weight="600" fill="#f8fafc" opacity=".55">Projects / Launch clip</text>
   <text x="96" y="290" font-family="Arial,sans-serif" font-size="76" font-weight="700" fill="#f8fafc">Launch run</text>
   <rect x="96" y="400" width="888" height="300" rx="44" fill="#f8fafc" opacity=".10"/>
-  <rect x="152" y="464" width="420" height="34" rx="17" fill="#f8fafc" opacity=".72"/>
-  <rect x="152" y="530" width="300" height="26" rx="13" fill="${DEMO_PALETTE.phosphor}" opacity=".85"/>
+  <text x="152" y="496" font-family="Arial,sans-serif" font-size="44" font-weight="700" fill="#f8fafc">social-clip.tsx</text>
+  <text x="152" y="558" font-family="Arial,sans-serif" font-size="34" font-weight="600" fill="${DEMO_PALETTE.phosphor}">1080 x 1920 &#183; 30 fps &#183; h264</text>
   <rect x="152" y="596" width="640" height="52" rx="26" fill="#020617" opacity=".42"/>
+  <text x="184" y="633" font-family="Arial,sans-serif" font-size="30" font-weight="600" fill="#f8fafc" opacity=".8">All 5 scenes wired</text>
   <rect x="96" y="748" width="430" height="270" rx="40" fill="#f8fafc" opacity=".08"/>
   <rect x="554" y="748" width="430" height="270" rx="40" fill="#f8fafc" opacity=".08"/>
-  <rect x="152" y="828" width="180" height="30" rx="15" fill="#f8fafc" opacity=".55"/>
-  <rect x="610" y="828" width="180" height="30" rx="15" fill="#f8fafc" opacity=".55"/>
+  <text x="152" y="852" font-family="Arial,sans-serif" font-size="32" font-weight="600" fill="#f8fafc" opacity=".55">Duration</text>
+  <text x="152" y="948" font-family="Arial,sans-serif" font-size="62" font-weight="700" fill="#f8fafc">12.0s</text>
+  <text x="610" y="852" font-family="Arial,sans-serif" font-size="32" font-weight="600" fill="#f8fafc" opacity=".55">Frames</text>
+  <text x="610" y="948" font-family="Arial,sans-serif" font-size="62" font-weight="700" fill="#f8fafc">360</text>
   <rect x="96" y="1080" width="888" height="120" rx="60" fill="${DEMO_PALETTE.amber}" opacity=".92"/>
-  <rect x="392" y="1124" width="296" height="32" rx="16" fill="#1a1510" opacity=".72"/>
-  <rect x="96" y="1268" width="888" height="220" rx="44" fill="#f8fafc" opacity=".06"/>
-  <rect x="152" y="1330" width="520" height="30" rx="15" fill="#f8fafc" opacity=".38"/>
-  <rect x="152" y="1394" width="380" height="30" rx="15" fill="#f8fafc" opacity=".24"/>
+  <text x="540" y="1158" text-anchor="middle" font-family="Arial,sans-serif" font-size="46" font-weight="700" fill="#1a1510">Render</text>
+  <rect x="96" y="1560" width="888" height="220" rx="44" fill="#f8fafc" opacity=".06"/>
+  <text x="152" y="1648" font-family="Arial,sans-serif" font-size="34" font-weight="600" fill="#f8fafc" opacity=".62">Last run 4.2s on the free tier</text>
+  <text x="152" y="1716" font-family="Arial,sans-serif" font-size="34" font-weight="600" fill="#f8fafc" opacity=".38">Queue empty</text>
 </svg>`);
 
 /** RemotionUI logo mark — matches apps/web/public/logo.svg */

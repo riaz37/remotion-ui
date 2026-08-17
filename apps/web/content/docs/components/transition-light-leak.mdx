@@ -5,16 +5,21 @@ description: A film flare that peaks on the cut and hides the seam under it.
 
 import { TransitionLightLeakPreview } from "@/components/previews/transition-previews";
 
-<ComponentPage name="transition-light-leak" preview={TransitionLightLeakPreview} durationInFrames={90}>
+<ComponentPage name="transition-light-leak" preview={TransitionLightLeakPreview}>
 
 An overlay rather than a presentation: drop it in a `TransitionSeries.Overlay`
 and the flare blooms over whatever cut is happening underneath. It takes its
 length from the overlay it sits in, so the envelope always finishes exactly when
 the overlay does.
 
-`peakAt` moves the brightest moment inside that window — put it on the cut
-itself so the flare covers the seam rather than arriving after it. `intensity`
-scales the whole envelope and `blendMode` decides how it composites.
+`peakAt` moves the brightest moment inside that window. `TransitionSeries.Overlay`
+centres the overlay on the cut, so the default `0.5` puts the flare on the seam;
+lower values peak before it. `intensity` scales the whole envelope and
+`blendMode` decides how it composites.
+
+An overlay does not shorten the series the way a transition does, so budget its
+scenes yourself: two 60-frame sequences fill a 120-frame composition and cut at
+frame 60, and a 24-frame overlay then spans frames 48–72.
 
 Rendering needs the ANGLE backend: pass `--gl=angle` to `remotion render`, or
 set `chromiumOptions: { gl: "angle" }` when using the SSR APIs.

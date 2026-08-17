@@ -30,6 +30,17 @@ const CHARSETS: Record<ScrambleCharset, string> = {
   blocks: "░▒▓█▚▞▙▟▛▜╱╲",
 };
 
+/**
+ * Noise gets its own opacity curve, not the glyph's.
+ *
+ * The split layer fades a unit in across the first 55% of its window, which is
+ * right for type arriving but wrong for the churn: the churn *is* the effect, so
+ * it has to be at strength on the unit's first frame rather than arriving with
+ * it. Multiplying the shared channel by this reaches full noise in the first
+ * ~18% of the window instead.
+ */
+const SCRAMBLE_OPACITY_GAIN = 3;
+
 function resolveCharset(charset: ScrambleCharset | string): string {
   return CHARSETS[charset as ScrambleCharset] ?? charset;
 }
@@ -80,11 +91,8 @@ export const ScrambleText: React.FC<ScrambleTextProps> = ({
       ? pickGlyph(pool, unit.index, tick + unit.index, seed)
       : unit.text;
 
-    // Noise reaches full strength three times faster than the built-in fade:
-    // the glyph churn *is* the effect, so it has to be legible from the first
-    // frame of a unit's window rather than arriving with it.
     const opacity = scrambling
-      ? Math.min(1, unit.opacity * 3) * scrambleOpacity
+      ? Math.min(1, unit.opacity * SCRAMBLE_OPACITY_GAIN) * scrambleOpacity
       : unit.opacity;
 
     return (

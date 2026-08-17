@@ -5,8 +5,13 @@ description: 5-second branded intro composition.
 
 import { IntroPreview } from '@/components/previews/intro';
 
-<ComponentPage name="intro" preview={IntroPreview} durationInFrames={150}>
+<ComponentPage name="intro" preview={IntroPreview}>
 
 Registers a `<Composition>` in your `Root.tsx` automatically.
+
+The chapter marker and headline stand up first, then the `topics` rail staggers in
+along the bottom to say what the section covers. One `<Sequence>` wrapped in one
+`<FadeOut>` closes the last second — a second `<TitleCard>` mounted inside the fade
+would restart its own entrance from frame 0 and drop the subtitle.
 
 </ComponentPage>

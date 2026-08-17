@@ -6,6 +6,14 @@ export type DynamicGridProps = {
   lineColor?: string;
   sweepColor?: string;
   spacing?: number;
+  /**
+   * Thickness of a grid line in composition pixels.
+   *
+   * Worth raising whenever the output is smaller than the composition: a 1px
+   * line is half a device pixel at `--scale 0.5` and Chromium drops the gradient
+   * stop entirely, so the grid renders as an empty plate.
+   */
+  lineWidth?: number;
   speed?: number;
   sweepDurationInFrames?: number;
 };
@@ -15,6 +23,7 @@ export const DynamicGrid: React.FC<DynamicGridProps> = ({
   lineColor = "rgba(255,255,255,0.1)",
   sweepColor = "rgba(232,184,109,0.55)",
   spacing = 64,
+  lineWidth = 1,
   speed = 0.4,
   sweepDurationInFrames = 150,
 }) => {
@@ -37,7 +46,7 @@ export const DynamicGrid: React.FC<DynamicGridProps> = ({
     <AbsoluteFill style={{ background: backgroundColor, overflow: "hidden" }}>
       <AbsoluteFill
         style={{
-          backgroundImage: `linear-gradient(${lineColor} 1px, transparent 1px), linear-gradient(90deg, ${lineColor} 1px, transparent 1px)`,
+          backgroundImage: `linear-gradient(${lineColor} ${lineWidth}px, transparent ${lineWidth}px), linear-gradient(90deg, ${lineColor} ${lineWidth}px, transparent ${lineWidth}px)`,
           backgroundSize: `${spacing}px ${spacing}px`,
           backgroundPosition: `${driftPx}px ${driftPx}px`,
         }}
@@ -49,7 +58,8 @@ export const DynamicGrid: React.FC<DynamicGridProps> = ({
           left: -width * 0.2,
           width: 260,
           height: height * 2,
-          transform: `translateX(${sweepOffset}px) rotate(18deg)`,
+          translate: `${sweepOffset}px 0`,
+          rotate: "18deg",
           background: `linear-gradient(90deg, transparent, ${sweepColor}, transparent)`,
           filter: "blur(40px)",
           mixBlendMode: "screen",

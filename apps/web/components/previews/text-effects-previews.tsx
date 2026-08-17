@@ -1,5 +1,6 @@
 "use client";
 
+import { AbsoluteFill, Easing } from "remotion";
 import {
   BlurFocusIn,
   InfiniteMarquee,
@@ -114,21 +115,62 @@ export const TrackingInPreview = () => (
   </PreviewFrame>
 );
 
+/**
+ * A sweep is a travelling highlight, not an entrance, so the shine has to be on
+ * the glyphs at all three samples. Two things were parking it off-glyph:
+ *
+ * - `EASING.editorial` is an ease-in-out, which crushes the ends of the travel
+ *   into the first and last few frames. At 15% of the window the band had barely
+ *   moved and at 90% it had already left. A specular sweep travels at constant
+ *   speed anyway, so this one runs linear.
+ * - The gradient is 2.2× the line and travels from 120% to -20%, which puts the
+ *   *peak* of the shine on the glyphs only across the middle 60% of the sweep —
+ *   the outer fifth at each end is the band clearing the text. Widening the band
+ *   does not change that, so the window is not the fix: the preview runs the
+ *   sweep across frames -20→155 so that the audit's frames 18, 60 and 108 land
+ *   at 22%, 46% and 73% of the travel, all of them inside the on-glyph span.
+ * - `bandWidth={14}` then widens the streak to about three fifths of the line,
+ *   which is what makes the highlight read at a 308px tile.
+ *
+ * Result: the shine lights the left third at frame 18, the middle at 60 and the
+ * right third at 108. The base is lifted off the `#71717a` default as well —
+ * unlit grey type at that value on the `#050505` stage is barely there at a
+ * 308px tile.
+ */
 export const LightSweepTextPreview = () => (
   <PreviewFrame lane="atoms" padding={72}>
-    {/* A sweep is a travelling highlight, not an entrance: the 48-frame default
-        finished in the first sixth of the window and the tile held dead grey
-        type for the rest. The shine now crosses the whole line across the
-        whole window. */}
     <div style={center}>
-      <LightSweepText text={sample} delayInFrames={6} durationInFrames={100} />
+      <LightSweepText
+        text={sample}
+        delayInFrames={-20}
+        durationInFrames={175}
+        bandWidth={14}
+        easing={Easing.linear}
+        baseColor="#83838d"
+      />
     </div>
   </PreviewFrame>
 );
 
+/**
+ * The 40-frame default with no delay finished the roll at frame 40 of 120 and
+ * left 80 frames of a pixel-identical plate. The roll now spans frames 10-90
+ * with a 5-frame column stagger, so the reel settles left to right: frame 18
+ * catches the left columns spinning while the right ones still show the old
+ * number, frame 60 catches the tail of the roll, and frame 108 holds the landed
+ * value — which is the pose the component is *for*.
+ */
 export const SlotRollPreview = () => (
   <PreviewFrame lane="atoms" padding={72}>
-    <div style={center}><SlotRoll from="12840" to="50291" /></div>
+    <div style={center}>
+      <SlotRoll
+        from="12840"
+        to="50291"
+        delayInFrames={10}
+        durationInFrames={80}
+        staggerInFrames={5}
+      />
+    </div>
   </PreviewFrame>
 );
 
@@ -222,9 +264,64 @@ export const InfiniteMarqueePreview = () => (
   </PreviewFrame>
 );
 
+/**
+ * A floor marquee lives in the lower third — that is the geometry, not a bug —
+ * so the preview is a *scene* that uses it: the camera comes up (`floorTilt`
+ * 62 instead of 70) and a title block occupies the air above the horizon that
+ * was previously an empty black plate.
+ *
+ * `lineWidth={2}` is load-bearing. The horizon and the floor grid are 1px by
+ * default, which is half a device pixel at the audit's 0.5 scale and a third of
+ * one in a 308px tile — Chromium drops them outright, and the finding that "the
+ * horizon line is empty black" was exactly that.
+ */
 export const PerspectiveMarqueePreview = () => (
   <PreviewFrame lane="atoms" padding={0} justifyContent="stretch" alignItems="stretch">
-    <PerspectiveMarquee text={sample} />
+    <AbsoluteFill>
+      <PerspectiveMarquee
+        text={sample}
+        fontSize={44}
+        floorTilt={62}
+        lineWidth={2}
+        nearGlow
+      />
+    </AbsoluteFill>
+    <AbsoluteFill
+      style={{
+        alignItems: "center",
+        justifyContent: "flex-start",
+        // The horizon sits at 26% of the frame (140px of 540). The title block
+        // ends above it — a full-width rule through the middle of a headline
+        // reads as a clipping bug.
+        paddingTop: 22,
+        pointerEvents: "none",
+      }}
+    >
+      <div style={{ display: "grid", gap: 8, justifyItems: "center" }}>
+        <div
+          style={{
+            color: "rgba(244,244,245,0.58)",
+            fontSize: 24,
+            fontWeight: 500,
+            letterSpacing: "0.16em",
+            textTransform: "uppercase",
+          }}
+        >
+          {DEMO_COPY.productLaunch.subtitle}
+        </div>
+        <div
+          style={{
+            color: "#f4f4f5",
+            fontSize: 64,
+            lineHeight: 0.98,
+            fontWeight: 600,
+            textAlign: "center",
+          }}
+        >
+          {DEMO_COPY.productLaunch.title}
+        </div>
+      </div>
+    </AbsoluteFill>
   </PreviewFrame>
 );
 

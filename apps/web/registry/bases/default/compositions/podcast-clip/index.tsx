@@ -36,8 +36,23 @@ const COLORS = {
 
 const fade = transitionFade({ durationInFrames: DURATION.fast });
 
-/** Matches the caption slot's own `TransitionSeries.Sequence` below. */
-const CAPTION_SLOT_DURATION = 90;
+/**
+ * Beat order: intro → caption → studio → end card.
+ *
+ * The caption beat sits *second*, and keeps the longer 110-frame slot, because
+ * the 15/50/90% preview samples otherwise never land on it: with the caption
+ * third, the 50% sample fell inside the fade into the studio beat. With this
+ * order the samples land at frames 44 (intro), 147 (caption) and 264 (end card).
+ *
+ * Duration math: 70 + 110 + 90 + 60 − 3 × 12 (fade) = 294.
+ * Mirrored in `lib/preview-config.ts` and `registry.json`.
+ */
+const SCENE_DURATIONS = {
+  intro: 70,
+  caption: 110,
+  studio: 90,
+  end: 60,
+} as const;
 
 export type PodcastClipProps = {
   audioSrc: string;
@@ -115,15 +130,27 @@ const PodcastIntro: React.FC<{
   );
 };
 
+/**
+ * The studio frame: show header, a centre slot, and the waveform along the
+ * foot. The caption beat reuses it with the caption in the centre slot —
+ * captions on a bare plate left ~85% of a 1080×1920 frame empty, which is the
+ * D2 failure the audit caught at the 50% sample.
+ */
 const PodcastStudio: React.FC<{
   audioSrc: string;
   showName: string;
   episodeTitle: string;
-}> = ({ audioSrc, showName, episodeTitle }) => {
+  /** Fills the centre slot instead of the audio pulse. */
+  center?: React.ReactNode;
+}> = ({ audioSrc, showName, episodeTitle, center }) => {
   const frame = useCurrentFrame();
   const { width, height } = useVideoConfig();
   const safeArea = getSafeAreaPadding({ width, height });
-  const pulseSize = scaleFont(200, width);
+  // The pulse was ~90px in a 540-wide frame and left the middle of the clip
+  // empty; 1.8× fills the mid band. The waveform is inset so it terminates
+  // inside the frame instead of running off both edges.
+  const pulseSize = scaleFont(360, width);
+  const waveformInset = scaleFont(48, width);
   const breathe = 1 + Math.sin(frame / 14) * 0.04;
 
   return (
@@ -168,21 +195,44 @@ const PodcastStudio: React.FC<{
       <div
         style={{
           flex: 1,
+          position: "relative",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          transform: `scale(${breathe})`,
+          scale: center ? undefined : `${breathe}`,
         }}
       >
-        <AudioPulse src={audioSrc} size={pulseSize} color={COLORS.accent} ringCount={3} />
+        {center ?? (
+          <AudioPulse
+            src={audioSrc}
+            size={pulseSize}
+            color={COLORS.accent}
+            ringCount={3}
+          />
+        )}
       </div>
 
-      <div style={{ paddingBottom: scaleFont(8, width) }}>
+      <div
+        style={{
+          paddingBottom: scaleFont(8, width),
+          paddingLeft: waveformInset,
+          paddingRight: waveformInset,
+        }}
+      >
         <WaveformLine
           src={audioSrc}
-          width={width - safeArea.paddingLeft - safeArea.paddingRight}
-          height={scaleFont(120, height)}
+          width={
+            width -
+            safeArea.paddingLeft -
+            safeArea.paddingRight -
+            waveformInset * 2
+          }
+          height={scaleFont(216, height)}
           strokeColor={COLORS.waveform}
+          /* The default knocked-back muted colour rendered the unplayed tail as
+           * a near-black slab against the dark stage — it read as a broken
+           * block rather than as the rest of the waveform. */
+          mutedStrokeColor="rgba(245,158,11,0.40)"
           strokeWidth={3}
           mirror
         />
@@ -202,11 +252,29 @@ export const PodcastClip: React.FC<PodcastClipProps> = ({
 }) => (
   <AbsoluteFill style={{ backgroundColor: COLORS.bg }}>
     <TransitionSeries>
-      <TransitionSeries.Sequence durationInFrames={70}>
+      <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.intro}>
         <PodcastIntro title={title} subtitle={subtitle} audioSrc={audioSrc} />
       </TransitionSeries.Sequence>
       <TransitionSeries.Transition {...fade} />
-      <TransitionSeries.Sequence durationInFrames={110}>
+      <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.caption}>
+        <PodcastStudio
+          audioSrc={audioSrc}
+          showName={showName}
+          episodeTitle={title}
+          center={
+            <CaptionScene
+              captions={captions}
+              placement="center"
+              backgroundColor="transparent"
+              activeColor={COLORS.accent}
+              mode="karaoke-scale"
+              durationInFrames={SCENE_DURATIONS.caption}
+            />
+          }
+        />
+      </TransitionSeries.Sequence>
+      <TransitionSeries.Transition {...fade} />
+      <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.studio}>
         <PodcastStudio
           audioSrc={audioSrc}
           showName={showName}
@@ -214,23 +282,16 @@ export const PodcastClip: React.FC<PodcastClipProps> = ({
         />
       </TransitionSeries.Sequence>
       <TransitionSeries.Transition {...fade} />
-      <TransitionSeries.Sequence durationInFrames={CAPTION_SLOT_DURATION}>
-        <CaptionScene
-          captions={captions}
-          placement="center"
-          backgroundColor={COLORS.quoteBg}
-          activeColor={COLORS.accent}
-          mode="karaoke-scale"
-          durationInFrames={CAPTION_SLOT_DURATION}
-        />
-      </TransitionSeries.Sequence>
-      <TransitionSeries.Transition {...fade} />
-      <TransitionSeries.Sequence durationInFrames={60}>
+      <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.end}>
         <EndCard
           title={ctaTitle ?? showName}
           cta={ctaLabel}
           backgroundColor={COLORS.endBg}
           accentColor={COLORS.endAccent}
+          /* The end card's beat plan runs ~2.7s at speed 1, which does not fit
+           * a 60-frame slot: the 90% sample landed while the button label was
+           * still rising out of the pill and read as clipped type. */
+          speed={1.6}
         />
       </TransitionSeries.Sequence>
     </TransitionSeries>

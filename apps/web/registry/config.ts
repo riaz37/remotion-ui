@@ -1,5 +1,5 @@
 export const REGISTRY_NAME = "remotionui";
-export const REGISTRY_HOMEPAGE = "https://remotionui.dev";
+export const REGISTRY_HOMEPAGE = "https://remotionui.com";
 export const DEFAULT_PRESET = "default";
 
 export const REGISTRY_CATEGORIES = {

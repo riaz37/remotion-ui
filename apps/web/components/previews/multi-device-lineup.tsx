@@ -46,17 +46,24 @@ const ResponsiveScreen: React.FC = () => (
 );
 
 /**
- * Devices land 9 frames apart from frame 4, so frame 18 catches the tablet and
- * laptop still rising; the exit at frame 92 covers frame 108. See
- * docs-internal/preview-audit-rubric.md.
+ * Devices land 6 frames apart from frame 4, so the last of them starts at 16
+ * and the 15% sample (frame 18) already has all three on screen at three
+ * different heights. A wider stagger left the frame holding one phone beside
+ * two device-shaped holes — flex reserves the width of an `opacity: 0` child,
+ * so the lineup reads as broken rather than as arriving.
+ *
+ * The exit runs 96–112. `EASING.exit` is `Easing.in(Easing.cubic)`, so the 90%
+ * sample wants `0.9·window − 0.79·exitFor` = 108 − 12.6 ≈ 96; the 92 it had
+ * finished the lift at 108 and emptied that frame.
+ * See docs-internal/preview-audit-rubric.md.
  */
 export const MultiDeviceLineupPreview: React.FC = () => (
   <PreviewFrame lane="spatial">
     <MultiDeviceLineup
       scale={0.72}
       delayInFrames={4}
-      staggerInFrames={14}
-      exitAtInFrames={92}
+      staggerInFrames={6}
+      exitAtInFrames={96}
       phone={{ label: "Phone" }}
       tablet={{ label: "Tablet" }}
       laptop={{ label: "Laptop" }}

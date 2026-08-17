@@ -1,12 +1,19 @@
 ---
 title: Bento Pan
-description: Bento Pan for Remotion.
+description: A camera pan across a bento grid of metric cards.
 ---
 
 import { BentoPanPreview } from '@/components/previews/wave-batch-previews';
 
-<ComponentPage name="bento-pan" preview={BentoPanPreview} durationInFrames={90}>
+<ComponentPage name="bento-pan" preview={BentoPanPreview}>
 
-Bento Pan.
+A 3x3 bento of metric cards under a slow camera move: each card springs in on a
+stagger, the grid drifts across the frame for the whole hold, and the beat closes
+by settling in and dimming rather than cutting to black.
+
+Pass `tiles` to change the grid. Each tile carries a `label`, the `value` that has
+to read at small sizes, an optional `note`, and an optional `trend` of bar heights
+between 0 and 1. Nine tiles is the sweet spot — more than that and the figures
+stop being legible.
 
 </ComponentPage>

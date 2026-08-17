@@ -592,7 +592,7 @@
     {
       "name": "intro",
       "type": "registry:block",
-      "description": "5-second branded intro composition",
+      "description": "5-second branded intro: chapter marker, headline, topic rail",
       "dependencies": [
         "remotion"
       ],
@@ -1836,7 +1836,7 @@
       "composition": {
         "id": "PodcastClip",
         "component": "PodcastClip",
-        "durationInFrames": 366,
+        "durationInFrames": 294,
         "fps": 30,
         "width": 1080,
         "height": 1920,
@@ -2174,6 +2174,9 @@
       "registryDependencies": [
         "title-card",
         "device-mockup-zoom",
+        "multi-device-lineup",
+        "transition-fade",
+        "layout",
         "motion-tokens"
       ],
       "composition": {
@@ -2223,11 +2226,13 @@
     {
       "name": "bento-pan",
       "type": "registry:block",
-      "description": "Diagonal bento grid pan",
+      "description": "Camera pan across a bento grid of metric cards",
       "dependencies": [
         "remotion"
       ],
-      "registryDependencies": [],
+      "registryDependencies": [
+        "timing"
+      ],
       "composition": {
         "id": "BentoPan",
         "component": "BentoPan",
@@ -2249,17 +2254,19 @@
       "type": "registry:block",
       "description": "URL to browser preview flow",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/transitions"
       ],
       "registryDependencies": [
         "title-card",
         "chat-to-preview",
+        "transition-fade",
         "motion-tokens"
       ],
       "composition": {
         "id": "BrowserFlow",
         "component": "BrowserFlow",
-        "durationInFrames": 180,
+        "durationInFrames": 168,
         "fps": 30,
         "width": 1920,
         "height": 1080,
@@ -2336,21 +2343,19 @@
     {
       "name": "live-code-split",
       "type": "registry:block",
-      "description": "Code editor with live preview",
+      "description": "Editor on the left, its rendered output live on the right",
       "dependencies": [
-        "remotion",
-        "@remotion/transitions"
+        "remotion"
       ],
       "registryDependencies": [
         "code-reveal",
-        "device-mockup-zoom",
-        "motion-tokens",
-        "transition-fade"
+        "title-card",
+        "motion-tokens"
       ],
       "composition": {
         "id": "LiveCodeSplit",
         "component": "LiveCodeSplit",
-        "durationInFrames": 180,
+        "durationInFrames": 168,
         "fps": 30,
         "width": 1920,
         "height": 1080,
@@ -2368,17 +2373,20 @@
       "type": "registry:block",
       "description": "Terminal deploy to browser",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/transitions"
       ],
       "registryDependencies": [
         "terminal-simulator",
         "device-mockup-zoom",
-        "motion-tokens"
+        "transition-fade",
+        "motion-tokens",
+        "layout"
       ],
       "composition": {
         "id": "DeployReveal",
         "component": "DeployReveal",
-        "durationInFrames": 180,
+        "durationInFrames": 168,
         "fps": 30,
         "width": 1920,
         "height": 1080,
@@ -2402,13 +2410,14 @@
       "registryDependencies": [
         "metric-ticker",
         "animated-bar-chart",
+        "chart-utils",
         "motion-tokens",
-        "transition-fade"
+        "directional-wipe"
       ],
       "composition": {
         "id": "DashboardPopulate",
         "component": "DashboardPopulate",
-        "durationInFrames": 180,
+        "durationInFrames": 168,
         "fps": 30,
         "width": 1920,
         "height": 1080,
@@ -2508,7 +2517,7 @@
     {
       "name": "image-expand",
       "type": "registry:block",
-      "description": "Thumbnail expands fullscreen",
+      "description": "A still opens from a card to full frame, then takes its caption",
       "dependencies": [
         "remotion"
       ],

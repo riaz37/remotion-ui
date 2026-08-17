@@ -5,8 +5,10 @@ description: Slot Roll text animation for Remotion.
 
 import { SlotRollPreview } from '@/components/previews/text-effects-previews';
 
-<ComponentPage name="slot-roll" preview={SlotRollPreview} durationInFrames={60}>
+<ComponentPage name="slot-roll" preview={SlotRollPreview}>
 
-Slot Roll text animation primitive.
+An odometer, not a scramble. Each column owns its own window inside `durationInFrames` — `staggerInFrames` frames apart — so the reel settles left to right, and each one walks the glyph pool forwards from its old character to its new one so it decelerates *into* the answer.
+
+The pool is digits when both `from` and `to` are numeric and alphanumeric otherwise: an odometer that rolls through letters is not an odometer. Columns are padded to a common width and rendered monospace so the line cannot shift while it rolls.
 
 </ComponentPage>

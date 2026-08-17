@@ -1,4 +1,4 @@
-import { interpolate, useCurrentFrame } from "remotion";
+import { interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { EASING } from "@/remotion/lib/motion-tokens";
 
 export type ConnectorAnchor = {
@@ -50,6 +50,9 @@ const clamp = {
   extrapolateRight: "clamp",
 } as const;
 
+/** Dash plus gap, as a fraction of `pathLength={1}`. */
+const DASH = 0.02;
+
 const DEFAULT_ANCHORS: ConnectorAnchor[] = [
   { id: "source", x: 0.12, y: 0.5 },
   { id: "parse", x: 0.44, y: 0.18 },
@@ -76,6 +79,11 @@ const DEFAULT_EDGES: ConnectorEdge[] = [
  * Edges draw in order with a stagger, each on its own `pathLength={1}`, so a
  * long curve and a short hop take the same time and the diagram assembles at an
  * even pace.
+ *
+ * A dashed edge cannot reveal itself with its own dash array — the array is
+ * already spoken for — so it is revealed through a mask carrying the solid
+ * stroke's draw-on, and its dashes march forward as it goes. `dashed` therefore
+ * animates exactly like `solid`, rather than fading in as a finished line.
  */
 export const ConnectorLines: React.FC<ConnectorLinesProps> = ({
   anchors = DEFAULT_ANCHORS,
@@ -92,6 +100,8 @@ export const ConnectorLines: React.FC<ConnectorLinesProps> = ({
   exitInFrames = 16,
 }) => {
   const frame = useCurrentFrame();
+  // Mask ids are document-global, so two diagrams on one frame would share one.
+  const { id: compositionId } = useVideoConfig();
 
   const find = (id: string) => anchors.find((anchor) => anchor.id === id);
 
@@ -151,9 +161,26 @@ export const ConnectorLines: React.FC<ConnectorLinesProps> = ({
         });
         if (draw <= 0) return null;
         const color = edge.color ?? stroke;
+        const maskId = `connector-lines-${compositionId}-${index}`;
 
         return (
           <g key={`${edge.from}-${edge.to}-${index}`}>
+            {dashed ? (
+              <mask id={maskId} maskUnits="userSpaceOnUse">
+                {/* The solid stroke's own draw-on, used as the reveal. Wider
+                    than the edge so round caps never clip the dashes. */}
+                <path
+                  d={geometry.d}
+                  fill="none"
+                  stroke="#fff"
+                  strokeWidth={strokeWidth * 2.5}
+                  strokeLinecap="butt"
+                  pathLength={1}
+                  strokeDasharray={1}
+                  strokeDashoffset={1 - draw}
+                />
+              </mask>
+            ) : null}
             <path
               d={geometry.d}
               fill="none"
@@ -163,11 +190,12 @@ export const ConnectorLines: React.FC<ConnectorLinesProps> = ({
               strokeLinejoin="round"
               opacity={0.85}
               pathLength={1}
-              strokeDasharray={dashed ? "0.02 0.02" : 1}
-              strokeDashoffset={dashed ? 0 : 1 - draw}
-              // A dashed edge cannot use the dash array to reveal itself, so it
-              // fades in over the same frames the solid one would draw.
-              style={dashed ? { opacity: draw * 0.85 } : undefined}
+              strokeDasharray={dashed ? `${DASH} ${DASH}` : 1}
+              // Marching dashes: the pattern travels a few periods over the
+              // draw, so the revealed line reads as flow rather than as a
+              // static dashed rule being uncovered.
+              strokeDashoffset={dashed ? -draw * DASH * 6 : 1 - draw}
+              mask={dashed ? `url(#${maskId})` : undefined}
             />
             {edge.dot ? (
               <circle

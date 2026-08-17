@@ -16,8 +16,17 @@ export type ProgressBarProps = {
   delayInFrames?: number;
   /** Drive the fill with a spring instead of the ease-out curve. */
   spring?: MotionSpring;
+  /**
+   * Curve the fill rides. The default is an expo-out, which is ~90% resolved a
+   * third of the way in — right for a short bar landing on a value, wrong for a
+   * long one, where it parks for the back half. Pass a linear or ease-in-out
+   * curve when the fill has to stay visibly in motion for its whole duration.
+   */
+  easing?: (input: number) => number;
   /** Loop a shuttle across the track — work with no known end. */
   indeterminate?: boolean;
+  /** Seconds for one pass of the indeterminate shuttle. */
+  shuttleSeconds?: number;
   label?: string;
   /** Percentage readout on the right of the label row. */
   showValue?: boolean;
@@ -30,6 +39,8 @@ export type ProgressBarProps = {
   labelColor?: string;
   /** Bar thickness. Scales with the frame by default. */
   height?: number;
+  /** Label and readout type size. Scales with the frame by default. */
+  labelSize?: number;
   /** Corner radius. Defaults to a full round cap. */
   radius?: number;
   /** Soft light carried by the leading edge of the fill. */
@@ -39,7 +50,7 @@ export type ProgressBarProps = {
   style?: React.CSSProperties;
 };
 
-/** Seconds for one pass of the indeterminate shuttle. */
+/** Seconds for one pass of the indeterminate shuttle, when none is given. */
 const SHUTTLE_SECONDS = 1.6;
 const SHUTTLE_WIDTH = 0.34;
 
@@ -64,7 +75,9 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   durationInFrames = 60,
   delayInFrames = 0,
   spring: springProp,
+  easing = EASING_ENTER,
   indeterminate = false,
+  shuttleSeconds = SHUTTLE_SECONDS,
   label,
   showValue = false,
   formatValue,
@@ -73,6 +86,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   trackColor = "rgba(255, 255, 255, 0.08)",
   labelColor = "rgba(248, 250, 252, 0.55)",
   height: heightProp,
+  labelSize: labelSizeProp,
   radius,
   glow = true,
   width: widthProp = "100%",
@@ -83,13 +97,15 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
 
   const height = heightProp ?? Math.max(6, scaleFont(12, frameWidth));
   const corner = radius ?? height;
-  const labelSize = scaleFont(32, frameWidth);
+  const labelSize = labelSizeProp ?? scaleFont(32, frameWidth);
 
   const eased = springProp
     ? spring({
         frame,
         fps,
-        config: resolveSpringConfig(springProp),
+        // Clamped: an overshoot past 1 would drive the fill wider than the
+        // track and print a readout over 100%.
+        config: { ...resolveSpringConfig(springProp), overshootClamping: true },
         delay: delayInFrames,
         durationInFrames,
       })
@@ -97,14 +113,15 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
         frame,
         [delayInFrames, delayInFrames + durationInFrames],
         [0, 1],
-        { easing: EASING_ENTER, ...clamp },
+        { easing, ...clamp },
       );
 
   const value = interpolate(eased, [0, 1], [from, progress], clamp);
 
   /* The shuttle eases at both ends of its pass, so it reads as a sweep rather
    * than a block sliding at constant speed. */
-  const cycle = (frame % (SHUTTLE_SECONDS * fps)) / (SHUTTLE_SECONDS * fps);
+  const shuttlePeriod = Math.max(1, shuttleSeconds * fps);
+  const cycle = (frame % shuttlePeriod) / shuttlePeriod;
   const shuttleLeft =
     interpolate(cycle, [0, 1], [-SHUTTLE_WIDTH, 1], {
       easing: EASING.editorial,

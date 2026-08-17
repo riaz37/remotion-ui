@@ -13,6 +13,12 @@ const { fontFamily } = loadFont("normal", {
 export type MetricTickerItem = {
   label: string;
   value: number;
+  /**
+   * Value the counter starts from. Defaults to 0. Set it above `value` for a
+   * metric that improves by falling — a latency figure that ticks *up* to its
+   * final number while claiming a saving reads backwards.
+   */
+  from?: number;
   /** Unit appended to the counted value, e.g. `"min"`. */
   suffix?: string;
   /** Symbol placed before the value, e.g. `"$"`. */
@@ -243,7 +249,10 @@ export const MetricTicker: React.FC<MetricTickerProps> = ({
                   }}
                 >
                   {metric.prefix ?? ""}
-                  {valueFormatter(metric.value * enter)}
+                  {valueFormatter(
+                    (metric.from ?? 0) +
+                      (metric.value - (metric.from ?? 0)) * enter,
+                  )}
                   {metric.suffix ?? ""}
                 </span>
                 {delta.text ? (

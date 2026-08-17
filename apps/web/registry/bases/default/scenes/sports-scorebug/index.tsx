@@ -49,6 +49,12 @@ export type SportsScorebugProps = {
   theme?: "dark" | "light";
   /** Seconds the bug holds before it retreats. Omit to leave it up. */
   holdSeconds?: number;
+  /**
+   * Size multiplier for the bug itself. Broadcast furniture is deliberately
+   * small against a live feed; a preview tile or a wide frame needs it larger
+   * without every caller having to restate the type scale.
+   */
+  scale?: number;
   /** Animation speed multiplier. */
   speed?: number;
 };
@@ -60,8 +66,13 @@ const T = {
   teams: 0.2,
   teamStagger: 0.08,
   clock: 0.38,
-  /** How long a scoring side stays lit after its points land. */
-  flashFor: 0.9,
+  /**
+   * How long a scoring side stays lit after its points land. Long enough that
+   * a still sampled a few frames either side of the basket still catches the
+   * flash — a 0.9s window decayed to zero between samples and the signature
+   * beat never appeared in a frame.
+   */
+  flashFor: 1.3,
   exitFor: 0.4,
 } as const;
 
@@ -91,6 +102,7 @@ export const SportsScorebug: React.FC<SportsScorebugProps> = ({
   accentColor = "#E8B86D",
   theme = "dark",
   holdSeconds,
+  scale = 1,
   speed = 1,
 }) => {
   const frame = useCurrentFrame();
@@ -103,9 +115,10 @@ export const SportsScorebug: React.FC<SportsScorebugProps> = ({
     interpolate(frame, [at(from), at(to)], [0, 1], { easing, ...clamp });
 
   const portrait = height > width;
-  const u = portrait
-    ? Math.min(width / 620, height / 1120)
-    : Math.min(width / 1280, height / 720);
+  const u =
+    (portrait
+      ? Math.min(width / 620, height / 1120)
+      : Math.min(width / 1280, height / 720)) * scale;
 
   const seconds = (frame / fps) * speed;
   const bug = spring({
@@ -213,7 +226,7 @@ export const SportsScorebug: React.FC<SportsScorebugProps> = ({
             minWidth: 48 * u,
             textAlign: "right",
             // The bump is the point landing, not a loop — it settles at 1.
-            transform: `scale(${1 + state.flash * 0.12 * state.bump})`,
+            scale: 1 + state.flash * 0.12 * state.bump,
             textShadow: state.flash > 0 ? `0 0 ${20 * u}px ${color}80` : undefined,
           }}
         >

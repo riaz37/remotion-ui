@@ -21,8 +21,14 @@ export type ChatToPreviewProps = {
   previewTitle?: string;
   /** Supporting line under the preview title. */
   previewCaption?: string;
-  /** Name of the preview surface, shown in its header. */
+  /** Name of the preview surface, shown in its header — or its tab title. */
   previewLabel?: string;
+  /**
+   * Address the preview is loading. Pass it to render the surface as a real
+   * browser — tab strip, URL bar and a load bar tied to the build — instead of
+   * a bare titled panel.
+   */
+  previewUrl?: string;
   /** Placeholder in the composer before anything is typed. */
   placeholder?: string;
   accentColor?: string;
@@ -124,6 +130,52 @@ const SendGlyph: React.FC<{ size: number; color: string }> = ({
   </svg>
 );
 
+/** Back / forward chevrons for the URL bar. */
+const NavArrow: React.FC<{ size: number; color: string; flip?: boolean }> = ({
+  size,
+  color,
+  flip,
+}) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    style={{ scale: flip ? "-1 1" : undefined }}
+  >
+    <path
+      d="M14 6l-6 6 6 6"
+      stroke={color}
+      strokeWidth={2.2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const LockGlyph: React.FC<{ size: number; color: string }> = ({
+  size,
+  color,
+}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <rect
+      x={5}
+      y={10.5}
+      width={14}
+      height={9.5}
+      rx={2.4}
+      stroke={color}
+      strokeWidth={1.9}
+    />
+    <path
+      d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"
+      stroke={color}
+      strokeWidth={1.9}
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
 /** Rotating arc — a spinner that renders identically on every platform. */
 const Spinner: React.FC<{ size: number; color: string; turn: number }> = ({
   size,
@@ -160,6 +212,7 @@ export const ChatToPreview: React.FC<ChatToPreviewProps> = ({
   previewTitle = "Ship the scene",
   previewCaption = "Centred title, phosphor rim light",
   previewLabel = "Preview",
+  previewUrl,
   placeholder = "Describe the scene…",
   accentColor = "#E8B86D",
   backgroundColor,
@@ -194,11 +247,21 @@ export const ChatToPreview: React.FC<ChatToPreviewProps> = ({
     : { x: chat.w + gap, y: 0, w: stage.w - chat.w - gap, h: stage.h };
 
   const turns = schedule(messages);
-  const answer = turns
-    .filter((turn) => turn.message.role === "assistant")
-    .at(-1);
+  // The *first* answer, not the last: in a multi-turn exchange the surface
+  // starts building as soon as the assistant begins replying, and waiting for
+  // the closing turn would leave the panel idle through the whole conversation.
+  const answer = turns.find((turn) => turn.message.role === "assistant");
+  /** In browser mode the address is submitted, so the page starts loading on
+   * the first user turn rather than waiting for the assistant to speak. */
+  const navigation = previewUrl
+    ? turns.find((turn) => turn.message.role === "user")
+    : undefined;
   /** The preview starts assembling the moment the answer starts coming back. */
-  const buildFrom = answer ? answer.streamFrom : T.start;
+  const buildFrom = navigation
+    ? navigation.landAt
+    : answer
+      ? answer.streamFrom
+      : T.start;
   const build = ease(buildFrom, buildFrom + T.build, EASING.editorial);
   const resolve = ease(
     buildFrom + T.build - 0.1,
@@ -433,52 +496,209 @@ export const ChatToPreview: React.FC<ChatToPreviewProps> = ({
             opacity: panelIn,
             transform: `translateY(${(1 - panelIn) * 18 * u}px)`,
             display: "grid",
-            gridTemplateRows: `${58 * u}px 1fr`,
+            gridTemplateRows: previewUrl
+              ? `${44 * u}px ${50 * u}px 1fr`
+              : `${58 * u}px 1fr`,
             overflow: "hidden",
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10 * u,
-              padding: `0 ${18 * u}px`,
-              borderBottom: `1px solid ${palette.border}`,
-              color: palette.dim,
-              fontSize: 18 * u,
-              fontWeight: 600,
-            }}
-          >
-            <span>{previewLabel}</span>
-            <span
+          {previewUrl ? (
+            <>
+              {/* Tab strip */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "flex-end",
+                  gap: 12 * u,
+                  padding: `0 ${16 * u}px`,
+                  background: palette.band,
+                  borderBottom: `1px solid ${palette.border}`,
+                }}
+              >
+                <span
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 7 * u,
+                    paddingBottom: 13 * u,
+                  }}
+                >
+                  {["#F87171", "#FBBF24", "#34D399"].map((light) => (
+                    <span
+                      key={light}
+                      style={{
+                        width: 10 * u,
+                        height: 10 * u,
+                        borderRadius: "50%",
+                        background: light,
+                      }}
+                    />
+                  ))}
+                </span>
+                <span
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 9 * u,
+                    maxWidth: "62%",
+                    padding: `${9 * u}px ${16 * u}px`,
+                    borderRadius: `${10 * u}px ${10 * u}px 0 0`,
+                    background: palette.window,
+                    borderTop: `1px solid ${palette.border}`,
+                    borderLeft: `1px solid ${palette.border}`,
+                    borderRight: `1px solid ${palette.border}`,
+                    color: palette.fg,
+                    fontSize: 17 * u,
+                    fontWeight: 600,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                  }}
+                >
+                  <span
+                    style={{
+                      width: 13 * u,
+                      height: 13 * u,
+                      borderRadius: 4 * u,
+                      background: accentColor,
+                      flexShrink: 0,
+                      opacity: build > 0 ? 1 : 0.4,
+                    }}
+                  />
+                  {previewLabel}
+                </span>
+              </div>
+
+              {/* URL bar */}
+              <div
+                style={{
+                  position: "relative",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10 * u,
+                  padding: `0 ${16 * u}px`,
+                  borderBottom: `1px solid ${palette.border}`,
+                }}
+              >
+                <NavArrow size={19 * u} color={palette.dim} />
+                <NavArrow size={19 * u} color={palette.faint} flip />
+                <span
+                  style={{
+                    flex: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8 * u,
+                    minWidth: 0,
+                    height: 32 * u,
+                    padding: `0 ${14 * u}px`,
+                    borderRadius: 999,
+                    background: palette.band,
+                    border: `1px solid ${palette.border}`,
+                    color: build > 0 ? palette.fg : palette.faint,
+                    fontSize: 19 * u,
+                    fontWeight: 500,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                  }}
+                >
+                  <LockGlyph
+                    size={16 * u}
+                    color={build > 0 ? accentColor : palette.faint}
+                  />
+                  {previewUrl}
+                </span>
+                <span
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 7 * u,
+                    flexShrink: 0,
+                    color: ready > 0 ? accentColor : palette.faint,
+                    fontSize: 18 * u,
+                    fontWeight: 500,
+                  }}
+                >
+                  {ready > 0 ? (
+                    <>
+                      <CheckGlyph
+                        size={19 * u}
+                        color={accentColor}
+                        progress={ready}
+                      />
+                      Ready
+                    </>
+                  ) : build > 0 ? (
+                    <>
+                      <Spinner
+                        size={19 * u}
+                        color={accentColor}
+                        turn={now * 1.1}
+                      />
+                      Loading
+                    </>
+                  ) : null}
+                </span>
+                {/* Load bar tied to the build, gone once the page resolves */}
+                <span
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    bottom: 0,
+                    height: 3 * u,
+                    width: `${build * 100}%`,
+                    background: accentColor,
+                    opacity: 1 - resolve,
+                  }}
+                />
+              </div>
+            </>
+          ) : (
+            <div
               style={{
-                marginLeft: "auto",
                 display: "flex",
                 alignItems: "center",
-                gap: 8 * u,
-                color: ready > 0 ? accentColor : palette.faint,
-                fontWeight: 500,
+                gap: 10 * u,
+                padding: `0 ${18 * u}px`,
+                borderBottom: `1px solid ${palette.border}`,
+                color: palette.dim,
+                fontSize: 18 * u,
+                fontWeight: 600,
               }}
             >
-              {ready > 0 ? (
-                <>
-                  <CheckGlyph
-                    size={20 * u}
-                    color={accentColor}
-                    progress={ready}
-                  />
-                  Ready
-                </>
-              ) : build > 0 ? (
-                <>
-                  <Spinner size={20 * u} color={accentColor} turn={now * 1.1} />
-                  Rendering
-                </>
-              ) : (
-                "Idle"
-              )}
-            </span>
-          </div>
+              <span>{previewLabel}</span>
+              <span
+                style={{
+                  marginLeft: "auto",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8 * u,
+                  color: ready > 0 ? accentColor : palette.faint,
+                  fontWeight: 500,
+                }}
+              >
+                {ready > 0 ? (
+                  <>
+                    <CheckGlyph
+                      size={20 * u}
+                      color={accentColor}
+                      progress={ready}
+                    />
+                    Ready
+                  </>
+                ) : build > 0 ? (
+                  <>
+                    <Spinner
+                      size={20 * u}
+                      color={accentColor}
+                      turn={now * 1.1}
+                    />
+                    Rendering
+                  </>
+                ) : (
+                  "Idle"
+                )}
+              </span>
+            </div>
+          )}
 
           <div style={{ position: "relative", overflow: "hidden" }}>
             {/* Wireframe the scene is assembled from */}

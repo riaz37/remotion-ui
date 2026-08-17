@@ -15,7 +15,7 @@ import {
   PricingFocus,
   ToolMenuSlide,
 } from "../registry-exports";
-import { DEMO_MEDIA_PLAIN_SRC } from "@/lib/demo-assets";
+import { DEMO_PHOTO_SRC } from "@/lib/demo-assets";
 import { PreviewFrame } from "./preview-frame";
 
 export const HeroDeviceAssemblePreview = () => (
@@ -56,6 +56,11 @@ export const ToolMenuSlidePreview = () => (
 );
 export const ImageExpandPreview = () => (
   <PreviewFrame lane="reels" padding={0}>
-    <ImageExpand src={DEMO_MEDIA_PLAIN_SRC} />
+    <ImageExpand
+      src={DEMO_PHOTO_SRC}
+      eyebrow="Chapter three"
+      title="Golden hour"
+      subtitle="Shot on the ridge road, 40 minutes before dark"
+    />
   </PreviewFrame>
 );

@@ -12,7 +12,7 @@ export const PodcastClipPreview: React.FC = () => (
       title={DEMO_COPY.podcast.title}
       subtitle={DEMO_COPY.podcast.subtitle}
       ctaTitle={DEMO_COPY.productLaunch.title}
-      ctaLabel={DEMO_COPY.productLaunch.subtitle}
+      ctaLabel={DEMO_COPY.endCard.ctaLabel}
     />
   </Sequence>
 );
