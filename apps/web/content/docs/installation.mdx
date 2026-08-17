@@ -46,6 +46,18 @@ Verify the setup at any time:
 
 <CommandRail label="Doctor" command="npx remotion-ui@latest doctor" />
 
+## With the shadcn CLI
+
+Every RemotionUI component is also published to the shadcn registry under the `@remotionui` namespace, so you can install without the RemotionUI CLI:
+
+<CommandRail label="shadcn" command="npx shadcn@latest add @remotionui/fade-in" />
+
+The shadcn CLI resolves registry dependencies recursively and writes files using the aliases in your `components.json`. Where a component declares a `target` path, your own alias configuration takes priority.
+
+<Callout type="warn">
+  The shadcn path does not register compositions in `Root.tsx` — that is a `remotion-ui add` feature. Add the `<Composition />` entry yourself when installing a full composition this way.
+</Callout>
+
 ## What `add` does for you
 
 - Installs the component source plus every registry dependency it pulls in, recursively.

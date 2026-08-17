@@ -26,6 +26,12 @@ npx remotion-ui@latest add social-clip
 
 Already have a Remotion project? `npx remotion-ui@latest init --existing`.
 
+Or install straight from the shadcn CLI — every component is published under the `@remotionui` namespace:
+
+```bash
+npx shadcn@latest add @remotionui/social-clip
+```
+
 ## Why
 
 - **You own the source.** Components land in your repo as plain `.tsx`. No black-box npm package to fight — edit any frame, any easing, any color.
