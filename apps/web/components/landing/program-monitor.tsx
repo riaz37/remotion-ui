@@ -133,7 +133,13 @@ export function ProgramMonitor({ children }: ProgramMonitorProps) {
               alt=""
               fill
               priority
-              sizes="100vw"
+              /*
+                The poster is only on screen before the Player goes live, i.e.
+                with the shell at rest. Below `lg` rest is the full-width block;
+                at `lg` rest is --rest-scale, half the stage. Claiming 100vw at
+                `lg` fetched a source twice the size ever painted.
+              */
+              sizes="(min-width: 1024px) 50vw, 100vw"
               className={`object-cover transition-opacity duration-500 ${
                 live ? "opacity-0" : "opacity-100"
               }`}

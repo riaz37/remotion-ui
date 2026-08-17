@@ -9,6 +9,8 @@ import { MarkerHighlightPreview } from '@/components/previews/marker-highlight';
 
 Strikes emphasis across `phrase`, one word at a time. Word by word matters: one band appearing behind the whole phrase reads as a background, while a stroke crossing each word in turn reads as a hand moving.
 
-The ink flips under the leading edge of the stroke rather than at a threshold, so covered text is never briefly unreadable. `variant` switches between a translucent marker, a solid knockout, an underline and a box.
+The stroke is built the way ink lands rather than as a filled rectangle — feathered top and bottom edges, fibre striations along the fill, and a soft leading edge held off vertical by `tilt`. The band itself is never rotated: rotating each word's box is what turns a joined phrase into a staircase of offset rectangles. Everything that varies is anchored to the band's own top edge, so the stroke runs through a word join without a seam and a wrapped phrase carries one band height on every line.
+
+The ink flips under the leading edge of the stroke rather than at a threshold, and it turns at the back of that edge, where the band is already at full strength — a half-tone letter on a half-laid band is the one place a covered word is hard to read. `variant` switches between a translucent marker, a solid knockout, an underline and a box.
 
 </ComponentPage>

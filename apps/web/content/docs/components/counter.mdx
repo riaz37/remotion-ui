@@ -9,6 +9,8 @@ import { CounterPreview } from '@/components/previews/counter';
 
 Ramps from `from` to `to` on an ease-out, so the number decelerates into its landing instead of arriving at constant speed.
 
-The width is reserved from the longest value the ramp can produce, so a centred number never reflows the line around it. `roll` turns each digit like an odometer: the ones column spins continuously and every column above it waits for a carry.
+The width is reserved from the longest value the ramp can produce, so a centred number never reflows the line around it. `roll` turns each digit like an odometer: the lowest column turns continuously and every column above it holds its face until the ones below are nearly wrapped, then flips through on the carry. With `decimals`, the freely turning column is the last decimal place, not the units.
+
+Every slot — a rolling digit, a group separator, the decimal point, a prefix or suffix — is a box exactly one digit tall with the glyph placed by half-leading, so all of them resolve to the same baseline at the same size, and each wheel is clipped to that one row. Nothing in the roll scales, fades or blurs, and turning `roll` on or off does not move the number or change the space it takes.
 
 </ComponentPage>

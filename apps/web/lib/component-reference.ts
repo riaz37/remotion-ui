@@ -502,7 +502,7 @@ export const componentReference: Record<string, ComponentReference> = {
         type: "boolean",
         default: "false",
         description:
-          "Roll each digit like an odometer. Lower digits spin continuously; higher ones turn over on the carry.",
+          "Roll each digit like an odometer. The lowest column turns continuously and every column above it turns over on the carry. With decimals, the free column is the last decimal place.",
       },
       {
         name: "spring",
@@ -543,7 +543,7 @@ export const componentReference: Record<string, ComponentReference> = {
         description: "Styles merged onto the number.",
       },
     ],
-    note: "The width is reserved from the longest value the ramp can produce, so a centred number never reflows the line around it.",
+    note: "The width is reserved from the longest value the ramp can produce, so a centred number never reflows the line around it. Every rolling column shares one baseline and one size with the separators and is clipped to a single digit row, so nothing bleeds out of the number's line box.",
     related: ["stat-card", "progress-bar"],
   },
   "blur-in": {
@@ -709,14 +709,29 @@ import { SlideLeft } from "@/remotion/primitives/slide-left";
       {
         name: "tilt",
         type: "number",
-        default: "-0.7",
-        description: "Tilt of the stroke in degrees — a hand does not draw level.",
+        default: "-4",
+        description:
+          "Angle of the nib in degrees off vertical. Slopes the leading edge only — the band is never rotated, so a joined phrase does not step at every word.",
+      },
+      {
+        name: "inkSoftness",
+        type: "number",
+        default: "0.16",
+        description:
+          "Softness of the leading edge, as a share of the word. 0 is a hard cut.",
       },
       {
         name: "markerColor",
         type: "string",
         default: '"#fbbf24"',
         description: "Colour of the stroke.",
+      },
+      {
+        name: "markerOpacity",
+        type: "number",
+        default: "per variant",
+        description:
+          "Alpha of the ink. Defaults to 0.62 for marker, 0.95 for underline, 1 for knockout and box.",
       },
       {
         name: "invertOnHighlight",
@@ -766,7 +781,7 @@ import { SlideLeft } from "@/remotion/primitives/slide-left";
         description: "Styles merged onto the wrapper.",
       },
     ],
-    note: "The stroke crosses each marked word in turn, so it reads as a hand moving rather than a background appearing.",
+    note: "The stroke crosses each marked word in turn, so it reads as a hand moving rather than a background appearing. Band geometry is stated as top plus height in em against each word's own line box, so a phrase that wraps carries the same band on every line.",
     related: ["quote-card", "typewriter"],
   },
   "progress-bar": {
@@ -2228,8 +2243,15 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     usage: `import { InfiniteMarquee } from "@/remotion/primitives/infinite-marquee";
 
 <InfiniteMarquee text="Scrolling band" speed={2} />`,
-    props: [{ name: "text", type: "string", required: true, description: "Marquee copy." }],
+    props: [
+      { name: "text", type: "string", required: true, description: "Marquee copy." },
+      { name: "speed", type: "number", default: "2", description: "Pixels travelled per frame." },
+      { name: "direction", type: '"left" | "right"', default: '"left"', description: "Which way the text travels." },
+      { name: "fade", type: "number", default: "0.06", description: "Width of the fade at each edge as a fraction of the track. 0 gives a hard edge." },
+      { name: "gap", type: "number", default: "48", description: "Space between one copy of the text and the next, in px." },
+    ],
     related: ["perspective-marquee"],
+    note: "The loop is one copy of the text wide and seamless by construction — the shift is a percentage of the track, so a mismeasured font changes the speed but can never make the wrap jump.",
   },
   "perspective-marquee": {
     category: "primitive",

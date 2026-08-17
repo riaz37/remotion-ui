@@ -7,6 +7,10 @@ import { InfiniteMarqueePreview } from '@/components/previews/text-effects-previ
 
 <ComponentPage name="infinite-marquee" preview={InfiniteMarqueePreview} durationInFrames={1800} previewLoop={false}>
 
-Infinite Marquee text animation primitive.
+Text that scrolls forever, in either `direction`, at `speed` pixels per frame.
+
+The whole job is the wrap. The track holds identical copies of the text, each carrying its own trailing `gap`, so every copy occupies exactly one tile; shifting the track by one tile lands each copy where its neighbour stood, which is the same picture. That shift is written as a percentage of the track rather than a measured pixel count, so a font that measures differently than it renders changes the speed slightly and can never make the wrap jump.
+
+`fade` softens both edges of the track, so the text reads as passing through the frame rather than being clipped by it. Set it to `0` for a hard edge.
 
 </ComponentPage>

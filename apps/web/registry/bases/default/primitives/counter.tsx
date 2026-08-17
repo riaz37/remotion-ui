@@ -25,8 +25,8 @@ export type CounterProps = {
   prefix?: string;
   suffix?: string;
   /**
-   * Roll each digit like an odometer instead of swapping it. Lower digits spin
-   * continuously; higher ones only turn over as the ones below them wrap.
+   * Roll each digit like an odometer instead of swapping it. The lowest column
+   * turns continuously; every column above it waits for the carry from below.
    */
   roll?: boolean;
   /** Drive the ramp with a spring instead of the ease-out curve. */
@@ -45,6 +45,17 @@ const SETTLE_FRAMES = 9;
 const SETTLE_SCALE = 1.03;
 /** A digit only turns over once the digits below it are nearly wrapped. */
 const CARRY_START = 0.88;
+/**
+ * Height of one digit row as a share of the font size, and the line height of
+ * the whole number with it.
+ *
+ * This is the single measurement the odometer stands on. Every slot — rolling
+ * digit, separator, prefix — is a box of exactly this height with the glyph
+ * placed by half-leading, so all of them resolve to the same baseline, and the
+ * rolling columns are clipped to it. Slightly over 1em leaves room for the tail
+ * of a comma without letting a neighbouring face show at rest.
+ */
+const ROW_RATIO = 1.1;
 
 function buildFormatter({
   decimals,
@@ -100,6 +111,7 @@ export const Counter: React.FC<CounterProps> = ({
   const frame = useCurrentFrame();
   const { width, fps } = useVideoConfig();
   const fontSize = fontSizeProp ?? scaleFont(96, width);
+  const rowHeight = Math.round(fontSize * ROW_RATIO);
 
   const formatValue = useMemo(
     () => buildFormatter({ decimals, grouping, locale, format }),
@@ -149,14 +161,16 @@ export const Counter: React.FC<CounterProps> = ({
       )
     : 1;
 
+  /* The line height is the digit row, in both modes: turning `roll` on or off
+   * must not move the number or change the space it takes in the layout. */
   const numberStyle: React.CSSProperties = {
     fontSize,
     fontWeight,
     fontVariantNumeric: "tabular-nums",
-    lineHeight: 1,
+    lineHeight: `${rowHeight}px`,
     display: "inline-block",
     scale: pop,
-    transformOrigin: "center bottom",
+    transformOrigin: "center center",
     ...(color !== undefined ? { color } : {}),
     ...(fontFamily !== undefined ? { fontFamily } : {}),
     ...style,
@@ -168,17 +182,14 @@ export const Counter: React.FC<CounterProps> = ({
   return (
     <span style={numberStyle}>
       {roll ? (
-        <>
-          {prefix}
-          <RollingNumber
-            template={widest}
-            value={value}
-            raw={raw}
-            formatValue={formatValue}
-            fontSize={fontSize}
-          />
-          {suffix}
-        </>
+        <RollingNumber
+          template={widest}
+          raw={raw}
+          decimals={decimals}
+          rowHeight={rowHeight}
+          prefix={prefix}
+          suffix={suffix}
+        />
       ) : (
         <ReservedNumber
           template={`${prefix}${widest}${suffix}`}
@@ -203,68 +214,125 @@ const ReservedNumber: React.FC<{ template: string; text: string }> = ({
   </span>
 );
 
-/** Decimal place of each digit slot in a formatted template, e.g. 2 for a hundreds column. */
-function placesOf(template: string, decimals: number): number[] {
+type Slot =
+  /** A wheel. `place` is its decimal place: 2 for a hundreds column, -1 for a tenth. */
+  | { kind: "digit"; place: number }
+  /**
+   * A fixed character. `belongsAt` is the smallest magnitude at which it is
+   * part of the value; `null` means it is always shown.
+   */
+  | { kind: "literal"; char: string; belongsAt: number | null };
+
+/**
+ * Splits a formatted template into wheels and fixed characters.
+ *
+ * A group separator is part of the value only once the value has reached the
+ * column on its left — "999" carries no comma. Reading the place off the
+ * left-hand neighbour gets that right for every grouping size, which counting
+ * characters from the end of the string does not.
+ */
+function slotsOf(template: string, decimals: number): Slot[] {
   const digitCount = template.replace(/\D/g, "").length;
   const integerDigits = digitCount - decimals;
   let seen = 0;
+  let lastPlace: number | null = null;
 
   return Array.from(template, (char) => {
-    if (!/\d/.test(char)) return Number.NaN;
+    if (!/\d/.test(char)) {
+      return { kind: "literal", char, belongsAt: lastPlace } as const;
+    }
+
     const place = integerDigits - 1 - seen;
     seen += 1;
-    return place;
+    lastPlace = place;
+    return { kind: "digit", place } as const;
   });
 }
 
+const FACES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+
+/**
+ * One slot of the number: a box exactly one digit tall with the glyph placed
+ * by half-leading. Every slot in the row is built from this, so a separator, a
+ * currency mark and a digit face all land on the same baseline at the same
+ * size — the only thing that ever differs between them is what the box holds.
+ */
+const cellStyle = (rowHeight: number): React.CSSProperties => ({
+  height: rowHeight,
+  lineHeight: `${rowHeight}px`,
+  textAlign: "center",
+  /* A flex item collapses its own leading and trailing space, which would eat
+   * the gap in a suffix written as " M". */
+  whiteSpace: "pre",
+});
+
+/**
+ * The odometer.
+ *
+ * Every column shows the true digit of the current value, so the number reads
+ * correctly on any frame you stop on. Only the lowest column turns freely;
+ * each column above it holds its face until the ones below are nearly wrapped
+ * and then flips through in the last stretch of their turn, which is the carry
+ * a mechanical counter makes.
+ *
+ * The wheel is a strip of eleven faces — 0 through 9 and 0 again, so the wrap
+ * from nine is a turn forwards rather than a jump back — translated inside a
+ * window one face tall. Nothing here scales, fades or blurs: a column that
+ * changed size or weight as it moved would read as a different number sitting
+ * at a different depth, which is exactly the failure this replaces.
+ */
 const RollingNumber: React.FC<{
   template: string;
-  value: number;
   raw: number;
-  formatValue: (value: number) => string;
-  fontSize: number;
-}> = ({ template, value, raw, formatValue, fontSize }) => {
-  const decimals = (formatValue(0).split(/[.,]/)[1] ?? "").length;
-  const places = useMemo(() => placesOf(template, decimals), [template, decimals]);
-  const rowHeight = Math.round(fontSize * 1.16);
-  const magnitude = Math.abs(value) < 1 ? 0 : Math.floor(Math.log10(Math.abs(value)));
-  const current = formatValue(value);
+  decimals: number;
+  /** Height of one digit face, and of the whole row. */
+  rowHeight: number;
+  prefix: string;
+  suffix: string;
+}> = ({ template, raw, decimals, rowHeight, prefix, suffix }) => {
+  const slots = useMemo(() => slotsOf(template, decimals), [template, decimals]);
+  const magnitude =
+    Math.abs(raw) < 1 ? 0 : Math.floor(Math.log10(Math.abs(raw)));
+  const cell = cellStyle(rowHeight);
 
   return (
     <span
       style={{
         display: "inline-flex",
-        alignItems: "flex-end",
+        alignItems: "flex-start",
         height: rowHeight,
       }}
     >
-      {Array.from(template, (char, index) => {
-        const place = places[index];
+      {prefix ? <span style={cell}>{prefix}</span> : null}
 
-        if (Number.isNaN(place)) {
+      {slots.map((slot, index) => {
+        if (slot.kind === "literal") {
           /* Separators travel with the number, so they follow its own width. */
+          const shown =
+            slot.belongsAt === null
+              ? slot.char !== "-" || raw < 0
+              : magnitude >= slot.belongsAt;
+
           return (
             <span
-              key={`sep-${index}`}
-              style={{
-                height: rowHeight,
-                display: "grid",
-                placeItems: "center",
-                opacity: current.length >= template.length - index ? 1 : 0,
-              }}
+              key={`literal-${index}`}
+              style={{ ...cell, opacity: shown ? 1 : 0 }}
             >
-              {char}
+              {slot.char}
             </span>
           );
         }
 
-        const scaled = Math.abs(raw) / 10 ** place;
+        const scaled = Math.abs(raw) / 10 ** slot.place;
         const digit = scaled % 10;
         const whole = Math.floor(digit);
         const frac = digit - whole;
-        /* The ones column spins freely; every column above it waits for a carry. */
+        /* Only the lowest column shown turns freely; every column above it
+         * waits for a carry. Gating on place 0 instead would leave the units
+         * wheel of a decimal counter parked halfway through a face at rest,
+         * because the digits it carries from are still on screen below it. */
         const shaped =
-          place <= 0
+          slot.place <= -decimals
             ? frac
             : interpolate(frac, [CARRY_START, 1], [0, 1], {
                 extrapolateLeft: "clamp",
@@ -272,7 +340,7 @@ const RollingNumber: React.FC<{
               });
         const offset = (whole + shaped) * rowHeight;
         /* Leading zeros stay blank until the value actually reaches them. */
-        const lit = place <= magnitude || place <= 0;
+        const lit = slot.place <= magnitude || slot.place <= 0;
 
         return (
           <span
@@ -280,7 +348,7 @@ const RollingNumber: React.FC<{
             style={{
               height: rowHeight,
               overflow: "hidden",
-              display: "inline-block",
+              display: "block",
               opacity: lit ? 1 : 0,
             }}
           >
@@ -291,22 +359,17 @@ const RollingNumber: React.FC<{
                 willChange: "transform",
               }}
             >
-              {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((digitFace, row) => (
-                <span
-                  key={`face-${row}`}
-                  style={{
-                    display: "grid",
-                    placeItems: "center",
-                    height: rowHeight,
-                  }}
-                >
-                  {digitFace}
+              {FACES.map((face, row) => (
+                <span key={`face-${row}`} style={{ ...cell, display: "block" }}>
+                  {face}
                 </span>
               ))}
             </span>
           </span>
         );
       })}
+
+      {suffix ? <span style={cell}>{suffix}</span> : null}
     </span>
   );
 };

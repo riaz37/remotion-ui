@@ -14,7 +14,7 @@ import {
   TrackingIn,
 } from "../registry-exports";
 import { DEMO_COPY } from "@/lib/demo-assets";
-import { PreviewFrame, PreviewGhostStack } from "./preview-frame";
+import { PreviewFrame, PreviewGhostStack, PreviewKicker } from "./preview-frame";
 
 const sample = DEMO_COPY.productLaunch.featureTitle;
 const sub = DEMO_COPY.tutorial.calloutSubtitle;
@@ -156,9 +156,70 @@ export const RgbGlitchTextPreview = () => (
   </PreviewFrame>
 );
 
+/**
+ * One marquee on an empty stage reads as an unstyled div, and a single row can
+ * only ever show one `direction` and one `fade`. Three rows at different sizes
+ * and speeds fill the frame, run both ways, and put the hard-edged row directly
+ * under a faded one — which is the only way the fade is legible in a still.
+ *
+ * The rows run edge to edge with no frame padding on purpose: a padded marquee
+ * fades out short of the frame, so the effect it is meant to demonstrate lands
+ * in the middle of the stage instead of at the boundary.
+ */
+const marqueeRows = [
+  {
+    label: 'direction "left" · fade 0.08',
+    text: sample,
+    direction: "left" as const,
+    speed: 2.6,
+    fontSize: 60,
+    color: "#f4f4f5",
+  },
+  {
+    label: 'direction "right" · fade 0.08',
+    text: DEMO_COPY.productLaunch.subtitle,
+    direction: "right" as const,
+    speed: 1.7,
+    fontSize: 44,
+    color: "rgba(244,244,245,0.62)",
+  },
+  {
+    label: "fade 0 · hard edge",
+    text: sub,
+    direction: "left" as const,
+    speed: 3.4,
+    fontSize: 44,
+    fade: 0,
+    color: "#f4f4f5",
+  },
+];
+
 export const InfiniteMarqueePreview = () => (
-  <PreviewFrame lane="atoms" padding={48}>
-    <InfiniteMarquee text={sample} />
+  <PreviewFrame lane="atoms" padding={0}>
+    <div
+      style={{
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        gap: 44,
+      }}
+    >
+      {marqueeRows.map((row) => (
+        <div key={row.label} style={{ display: "grid", gap: 10 }}>
+          <div style={{ paddingInline: 48 }}>
+            <PreviewKicker lane="atoms">{row.label}</PreviewKicker>
+          </div>
+          <InfiniteMarquee
+            text={row.text}
+            direction={row.direction}
+            speed={row.speed}
+            fontSize={row.fontSize}
+            color={row.color}
+            fade={row.fade}
+          />
+        </div>
+      ))}
+    </div>
   </PreviewFrame>
 );
 
