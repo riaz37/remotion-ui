@@ -24,6 +24,47 @@ const LANE_ORDER = [
 
 const LIBRARY_SLUGS = new Set(["timing", "springs", "layout", "use-stagger"]);
 
+/**
+ * The same item JSON is served to two CLIs: ours, and shadcn's — the registry is
+ * listed in shadcn's directory as `@remotionui`. shadcn resolves a bare
+ * registry dependency against its own registry, so ours have to carry the
+ * namespace, and it has no remotion-ui.json to read aliases from, so every file
+ * has to carry an explicit target.
+ */
+const SHADCN_ITEM_SCHEMA = "https://ui.shadcn.com/schema/registry-item.json";
+const REGISTRY_NAMESPACE = "@remotionui";
+
+/**
+ * Mirrors the default aliases in remotion-ui.json, so a shadcn install lands
+ * where the `@/remotion/...` imports in the sources expect it. Our own CLI
+ * still resolves the user's configured aliases first and only falls back here.
+ */
+const TARGET_DIRS: Array<{ segment: string; dir: string }> = [
+  { segment: "/primitives/", dir: "src/remotion/primitives" },
+  { segment: "/scenes/", dir: "src/remotion/scenes" },
+  { segment: "/compositions/", dir: "src/compositions" },
+  { segment: "/lib/", dir: "src/remotion/lib" },
+  { segment: "/hooks/", dir: "src/remotion/hooks" },
+];
+
+function namespaceDependency(dep: string): string {
+  if (dep.startsWith("@") || dep.startsWith("http")) return dep;
+  return `${REGISTRY_NAMESPACE}/${dep}`;
+}
+
+function resolveFileTarget(file: RegistryFile): string | undefined {
+  if (file.target) return file.target;
+
+  for (const { segment, dir } of TARGET_DIRS) {
+    const index = file.path.indexOf(segment);
+    if (index !== -1) {
+      return `${dir}/${file.path.slice(index + segment.length)}`;
+    }
+  }
+
+  return undefined;
+}
+
 type DerivedCategory = "primitive" | "scene" | "composition" | "utility";
 
 function deriveCategory(item: RegistryItem): DerivedCategory | undefined {
@@ -565,14 +606,23 @@ async function buildRegistry(): Promise<void> {
 
     for (const file of item.files) {
       const content = await readFileContent(file.path);
+      const target = resolveFileTarget(file);
       filesWithContent.push({
         ...file,
+        ...(target ? { target } : {}),
         ...(content !== null ? { content } : {}),
       });
     }
 
     const output = {
+      $schema: SHADCN_ITEM_SCHEMA,
       ...item,
+      ...(item.registryDependencies?.length
+        ? {
+            registryDependencies:
+              item.registryDependencies.map(namespaceDependency),
+          }
+        : {}),
       ...(atlas ? { atlas } : {}),
       files: filesWithContent,
     };
