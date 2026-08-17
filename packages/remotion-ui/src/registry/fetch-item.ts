@@ -11,10 +11,25 @@ export type FetchRegistryOptions = {
   preset?: string;
 };
 
+/**
+ * Registry items are also published to shadcn's directory, where a dependency
+ * has to name its registry (`@remotionui/timing`) or shadcn resolves it against
+ * its own. Our registry is flat, so the namespace is stripped on the way in —
+ * from item names the user types as well as from registry dependencies.
+ */
+const REGISTRY_NAMESPACE_PREFIX = "@remotionui/";
+
+export function stripRegistryNamespace(name: string): string {
+  return name.startsWith(REGISTRY_NAMESPACE_PREFIX)
+    ? name.slice(REGISTRY_NAMESPACE_PREFIX.length)
+    : name;
+}
+
 export async function fetchRegistryItem(
-  name: string,
+  rawName: string,
   options: FetchRegistryOptions = {},
 ): Promise<RegistryItemJson> {
+  const name = stripRegistryNamespace(rawName);
   const registryUrl =
     options.registryUrl ??
     process.env.REMOTION_UI_REGISTRY_URL ??
@@ -63,7 +78,15 @@ function parseRegistryItem(value: unknown, name: string): RegistryItemJson {
         .join(", ")}`,
     );
   }
-  return result.data;
+  const item = result.data;
+  if (!item.registryDependencies?.length) {
+    return item;
+  }
+
+  return {
+    ...item,
+    registryDependencies: item.registryDependencies.map(stripRegistryNamespace),
+  };
 }
 
 function isLocalRegistry(registryUrl: string): boolean {

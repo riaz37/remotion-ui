@@ -99,11 +99,31 @@ describe("resolveInstallPath", () => {
     ).toBe(path.join(cwd, "src/remotion/lib/timing.ts"));
   });
 
-  it("rejects explicit targets outside the project", () => {
-    expect(() =>
+  it("prefers configured aliases over the shadcn target", () => {
+    expect(
       resolveInstallPath(cwd, config, {
         path: "registry/bases/default/lib/timing.ts",
         type: "registry:lib",
+        target: "src/lib/timing.ts",
+      }),
+    ).toBe(path.join(cwd, "src/remotion/lib/timing.ts"));
+  });
+
+  it("falls back to the target when no alias resolves", () => {
+    expect(
+      resolveInstallPath(cwd, config, {
+        path: "registry/bases/default/media/sample.ts",
+        type: "registry:file",
+        target: "src/remotion/media/sample.ts",
+      }),
+    ).toBe(path.join(cwd, "src/remotion/media/sample.ts"));
+  });
+
+  it("rejects fallback targets outside the project", () => {
+    expect(() =>
+      resolveInstallPath(cwd, config, {
+        path: "registry/bases/default/media/sample.ts",
+        type: "registry:file",
         target: "../outside.ts",
       }),
     ).toThrow("outside the project");

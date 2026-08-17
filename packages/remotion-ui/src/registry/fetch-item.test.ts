@@ -34,4 +34,33 @@ describe("fetchRegistryItem", () => {
       fetchRegistryItem("broken", { registryUrl: registryDir }),
     ).rejects.toThrow("Invalid registry item");
   });
+
+  it("reads namespaced names and strips the namespace off dependencies", async () => {
+    const registryDir = path.join(tempDir, "registry");
+    await fs.ensureDir(path.join(registryDir, "presets", "default"));
+    await fs.writeJson(
+      path.join(registryDir, "presets", "default", "fade-in.json"),
+      {
+        $schema: "https://ui.shadcn.com/schema/registry-item.json",
+        name: "fade-in",
+        type: "registry:ui",
+        registryDependencies: ["@remotionui/timing"],
+        files: [
+          {
+            path: "registry/bases/default/primitives/fade-in.tsx",
+            type: "registry:ui",
+            target: "src/remotion/primitives/fade-in.tsx",
+            content: "export const FadeIn = () => null;",
+          },
+        ],
+      },
+    );
+
+    const item = await fetchRegistryItem("@remotionui/fade-in", {
+      registryUrl: registryDir,
+    });
+
+    expect(item.name).toBe("fade-in");
+    expect(item.registryDependencies).toEqual(["timing"]);
+  });
 });

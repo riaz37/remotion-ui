@@ -108,12 +108,9 @@ export function resolveInstallPath(
   config: RemotionUiConfig,
   file: { path: string; type: string; target?: string },
 ): string {
-  if (file.target) {
-    const targetPath = path.resolve(cwd, file.target);
-    assertInsideDirectory(cwd, targetPath, "project");
-    return targetPath;
-  }
-
+  // `target` exists for shadcn's CLI, which has no remotion-ui.json to read.
+  // Here it is only a fallback: a user who configured their own aliases must
+  // keep getting them.
   const category = getCategoryFromPath(file.path);
   if (category) {
     const baseDir = resolveAliasPath(cwd, config.aliases[category.key]);
@@ -125,6 +122,12 @@ export function resolveInstallPath(
 
   const alias = getAliasForType(config, file.type, file.path);
   if (!alias) {
+    if (file.target) {
+      const targetPath = path.resolve(cwd, file.target);
+      assertInsideDirectory(cwd, targetPath, "project");
+      return targetPath;
+    }
+
     throw new RemotionUiError(
       "CONFIG_INVALID",
       `No alias configured for registry type "${file.type}"`,

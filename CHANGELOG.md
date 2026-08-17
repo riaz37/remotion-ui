@@ -2,9 +2,13 @@
 
 ## 0.9.0
 
-**200 components.** The registry grew from 108 to 200 — 92 new components across every lane. Nothing about the install flow changed: the CLI is byte-identical to 0.8.0, and every new component is already served from `https://remotionui.com/r`. If you have `remotion-ui` installed, `add` reaches all 200 today with no upgrade.
+**200 components, and the registry is now installable with shadcn's CLI.** The registry grew from 108 to 200 — 92 new components across every lane — and RemotionUI is listed in shadcn's registry directory as `@remotionui`.
+
+**Upgrade before the registry redeploys.** Registry items now name their registry on each dependency (`@remotionui/timing` rather than `timing`), which 0.8.0 cannot resolve. 0.9.0 reads both forms, so it works against the current registry and the new one.
 
 ### Added
+
+- **shadcn CLI support.** `npx shadcn@latest add @remotionui/<name>` installs any component, resolving its full dependency tree. Items ship a `$schema`, namespaced `registryDependencies`, and a per-file `target` matching the `@/remotion/...` import paths, so files land where the sources expect them.
 
 - **Data & media — 28 components.** A full chart set (`bar-chart-race`, `donut-chart`, `pie-slice-reveal`, `scatter-plot-pop`, `bubble-chart-pack`, `gauge-dial`, `sparkline-row`, `heatmap-grid`, `comparison-bars`, `funnel-chart`, `radar-chart`, `treemap-blocks`, `waterfall-chart`, `stacked-area-chart`, `candlestick-chart`, `gantt-timeline`), caption treatments (`word-pop-captions`, `caption-emoji-beat`, `speaker-label-captions`, `transcript-scroll`, `subtitle-translate`, `srt-caption-track`), and audio surfaces (`waveform-bars-radial`, `vu-meter`, `voice-note-bubble`, `beat-pulse-grid`, `audio-scrubber`, `audio-reactive-scale`).
 - **Primitives — 24 components.** Text effects (`split-text-chars`, `scramble-text`, `text-mask-video`, `handwriting-text`, `stroke-to-fill-text`, `variable-font-morph`, `liquid-text-morph`, `wave-text`, `neon-flicker-text`), backgrounds (`aurora-bg`, `particle-field`, `topographic-lines-bg`, `caustics-bg`, `animated-noise-grain`, `light-rays`, `parallax-layers`, `scanline-crt`), and motion (`skew-in`, `shake-emphasis`, `glow-pulse`, `motion-trail`, `squash-stretch`, `orbit-motion`, `depth-of-field-blur`).
@@ -27,7 +31,9 @@
 
 ### Notes for maintainers
 
-- The CLI is unchanged from 0.8.0. This release is the registry plus docs — the published npm version may stay at `0.8.0`.
+- Registry dependencies are namespaced for shadcn. The CLI strips `@remotionui/` from item names and dependencies on the way in, so both forms resolve.
+- `target` is now a fallback, not an override: a project's configured aliases in `remotion-ui.json` still win. It exists for shadcn's CLI, which has no such config to read.
+- **Publish 0.9.0 before deploying the namespaced registry.** 0.9.0 handles both registry shapes; 0.8.0 only handles the old one.
 - Deploy the docs site (`pnpm registry:build && pnpm --filter web build`) **before** tagging so `https://remotionui.com/r` serves the new registry JSON.
 
 ## 0.8.0
