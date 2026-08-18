@@ -125,9 +125,15 @@ export const TeamGrid: React.FC<TeamGridProps> = ({
     interpolate(frame, [at(from), at(to)], [0, 1], { easing, ...clamp });
 
   const portrait = height > width;
+  // D1. Authored against a 1280x720 reference, u resolves to 0.75 on the 960
+  // docs stage, so a 15-unit label landed at 11px — 3.6px once the contact
+  // sheet reduces the stage 3.1x. The reference is the whole design's scale, so
+  // shrinking it grows the layout into the margin it was leaving empty and
+  // lifts every tier of type with it, instead of hand-tuning font sizes against
+  // a layout that stays too small.
   const u = portrait
-    ? Math.min(width / 620, height / 1120)
-    : Math.min(width / 1280, height / 720);
+    ? Math.min(width / 496, height / 896)
+    : Math.min(width / 1024, height / 576);
 
   const headIn = ease(T.head, T.head + T.headFor);
 
@@ -264,7 +270,7 @@ export const TeamGrid: React.FC<TeamGridProps> = ({
                   style={{
                     marginTop: 3 * u,
                     color: index === 0 ? accentColor : palette.dim,
-                    fontSize: 13.5 * u,
+                    fontSize: 14.5 * u,
                     fontWeight: 500,
                     opacity: textIn,
                   }}

@@ -120,9 +120,15 @@ export const PricingCard: React.FC<PricingCardProps> = ({
     interpolate(frame, [at(from), at(to)], [0, 1], { easing, ...clamp });
 
   const portrait = height > width;
+  // D1. Authored against a 1280x720 reference, u resolves to 0.75 on the 960
+  // docs stage, so a 15-unit label landed at 11px — 3.6px once the contact
+  // sheet reduces the stage 3.1x. The reference is the whole design's scale, so
+  // shrinking it grows the layout into the margin it was leaving empty and
+  // lifts every tier of type with it, instead of hand-tuning font sizes against
+  // a layout that stays too small.
   const u = portrait
-    ? Math.min(width / 620, height / 1120)
-    : Math.min(width / 1280, height / 720);
+    ? Math.min(width / 496, height / 896)
+    : Math.min(width / 1024, height / 576);
 
   const cardIn = spring({
     frame: frame - at(T.card),
@@ -220,7 +226,7 @@ export const PricingCard: React.FC<PricingCardProps> = ({
                   background: `${accentColor}22`,
                   border: `1px solid ${accentColor}66`,
                   color: accentColor,
-                  fontSize: 12 * u,
+                  fontSize: 14.5 * u,
                   fontWeight: 600,
                 }}
               >
@@ -299,7 +305,7 @@ export const PricingCard: React.FC<PricingCardProps> = ({
               style={{
                 marginTop: 6 * u,
                 color: palette.dim,
-                fontSize: 14 * u,
+                fontSize: 14.5 * u,
                 fontWeight: 500,
                 opacity: interpolate(roll, [0.6, 1], [0, 1], clamp),
               }}

@@ -211,9 +211,15 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
     interpolate(frame, [at(from), at(to)], [0, 1], { easing, ...clamp });
 
   const portrait = height > width;
+  // D1. The card was authored against a 1280x720 reference, which resolves to
+  // u = 0.75 on the 960 docs stage — so a 15-unit label landed at 11px, and at
+  // the contact sheet's 3.1x reduction that is 3.6px of mush. The reference is
+  // the whole design's scale, so shrinking it grows the card into the margin it
+  // was leaving empty *and* lifts every tier of type with it, rather than
+  // hand-tuning eight font sizes against a layout that stays too small.
   const u = portrait
-    ? Math.min(width / 620, height / 1120)
-    : Math.min(width / 1280, height / 720);
+    ? Math.min(width / 496, height / 896)
+    : Math.min(width / 1024, height / 576);
 
   const cardIn = spring({
     frame: frame - at(T.card),
@@ -397,7 +403,7 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
                   <span
                     style={{
                       color: palette.dim,
-                      fontSize: 15 * u,
+                      fontSize: 17 * u,
                       fontWeight: 600,
                       letterSpacing: "0.04em",
                       textTransform: "uppercase",
@@ -428,7 +434,7 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
                   <span
                     style={{
                       color: palette.faint,
-                      fontSize: 15 * u,
+                      fontSize: 17 * u,
                       fontWeight: 600,
                       fontVariantNumeric: "tabular-nums",
                     }}

@@ -184,7 +184,10 @@ export const DragDropFlow: React.FC<DragDropFlowProps> = ({
   };
   const portrait = height > width;
   /** One typographic unit, so text and radii follow the smaller edge. */
-  const u = Math.min(stage.w / 1120, stage.h / 620);
+  // D1. See the note in `weather-card`: a 1120x620 reference resolves to
+  // u = 0.71 on the 818x440 docs stage, so the design was drawn at 71% of the
+  // room it had and every secondary tier fell under the legibility floor.
+  const u = Math.min(stage.w / 900, stage.h / 500);
 
   const trayPad = 26 * u;
   const rowH = 74 * u;

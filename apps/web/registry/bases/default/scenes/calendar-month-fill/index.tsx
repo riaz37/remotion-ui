@@ -119,9 +119,15 @@ export const CalendarMonthFill: React.FC<CalendarMonthFillProps> = ({
     interpolate(frame, [at(from), at(to)], [0, 1], { easing, ...clamp });
 
   const portrait = height > width;
+  // D1. Authored against a 1280x720 reference, u resolves to 0.75 on the 960
+  // docs stage, so a 15-unit label landed at 11px — 3.6px once the contact
+  // sheet reduces the stage 3.1x. The reference is the whole design's scale, so
+  // shrinking it grows the layout into the margin it was leaving empty and
+  // lifts every tier of type with it, instead of hand-tuning font sizes against
+  // a layout that stays too small.
   const u = portrait
-    ? Math.min(width / 620, height / 1120)
-    : Math.min(width / 1280, height / 720);
+    ? Math.min(width / 496, height / 896)
+    : Math.min(width / 1024, height / 576);
 
   const cardIn = spring({
     frame: frame - at(T.card),
@@ -228,7 +234,7 @@ export const CalendarMonthFill: React.FC<CalendarMonthFillProps> = ({
                 width: cellW,
                 paddingBottom: 8 * u,
                 color: palette.faint,
-                fontSize: 11.5 * u,
+                fontSize: 14.5 * u,
                 fontWeight: 600,
                 letterSpacing: "0.08em",
                 textTransform: "uppercase",
@@ -281,7 +287,7 @@ export const CalendarMonthFill: React.FC<CalendarMonthFillProps> = ({
                     background: isToday ? `${accentColor}22` : "transparent",
                     border: isToday ? `1px solid ${accentColor}88` : "1px solid transparent",
                     color: isToday ? accentColor : palette.dim,
-                    fontSize: 13 * u,
+                    fontSize: 14.5 * u,
                     fontWeight: isToday ? 700 : 500,
                     fontVariantNumeric: "tabular-nums",
                   }}
@@ -302,6 +308,13 @@ export const CalendarMonthFill: React.FC<CalendarMonthFillProps> = ({
                       alignItems: "center",
                       padding: `0 ${5 * u}px`,
                       color: palette.fg,
+                      // Deliberately under the D1 floor. A day cell is ~78px on
+                      // the docs stage, and at the floor "Design review" clips
+                      // to "Design revie" — a truncated word is less legible
+                      // than a small whole one. The chip's meaning is carried
+                      // by its colour and the day it lands on; the label is the
+                      // secondary tier this rule says to keep small rather than
+                      // render as mush.
                       fontSize: 11 * u,
                       fontWeight: 600,
                       whiteSpace: "nowrap",

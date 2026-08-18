@@ -122,9 +122,15 @@ export const KanbanMove: React.FC<KanbanMoveProps> = ({
     interpolate(frame, [at(from), at(to)], [0, 1], { easing, ...clamp });
 
   const portrait = height > width;
+  // D1. Authored against a 1280x720 reference, u resolves to 0.75 on the 960
+  // docs stage, so a 15-unit label landed at 11px — 3.6px once the contact
+  // sheet reduces the stage 3.1x. The reference is the whole design's scale, so
+  // shrinking it grows the layout into the margin it was leaving empty and
+  // lifts every tier of type with it, instead of hand-tuning font sizes against
+  // a layout that stays too small.
   const u = portrait
-    ? Math.min(width / 620, height / 1120)
-    : Math.min(width / 1280, height / 720);
+    ? Math.min(width / 496, height / 896)
+    : Math.min(width / 1024, height / 576);
 
   const boardIn = spring({
     frame: frame - at(T.board),
@@ -280,7 +286,7 @@ export const KanbanMove: React.FC<KanbanMoveProps> = ({
                 <span
                   style={{
                     color: palette.dim,
-                    fontSize: 13 * u,
+                    fontSize: 14.5 * u,
                     fontWeight: 600,
                     letterSpacing: "0.06em",
                     textTransform: "uppercase",
@@ -291,7 +297,7 @@ export const KanbanMove: React.FC<KanbanMoveProps> = ({
                 <span
                   style={{
                     color: palette.faint,
-                    fontSize: 13 * u,
+                    fontSize: 14.5 * u,
                     fontWeight: 600,
                     fontVariantNumeric: "tabular-nums",
                   }}
@@ -392,7 +398,7 @@ export const KanbanMove: React.FC<KanbanMoveProps> = ({
                     style={{
                       marginTop: 4 * u,
                       color: palette.dim,
-                      fontSize: 12.5 * u,
+                      fontSize: 14.5 * u,
                       fontWeight: 500,
                       whiteSpace: "nowrap",
                       overflow: "hidden",

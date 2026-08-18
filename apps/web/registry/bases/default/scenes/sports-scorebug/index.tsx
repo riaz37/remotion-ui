@@ -293,7 +293,7 @@ export const SportsScorebug: React.FC<SportsScorebugProps> = ({
             <span
               style={{
                 color: accentColor,
-                fontSize: 15 * u,
+                fontSize: 18 * u,
                 fontWeight: 600,
                 letterSpacing: "0.12em",
                 textTransform: "uppercase",

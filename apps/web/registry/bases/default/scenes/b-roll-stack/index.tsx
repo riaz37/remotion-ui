@@ -105,9 +105,12 @@ export const BRollStack: React.FC<BRollStackProps> = ({
   const portrait = height > width;
   // The reference stage turns with the composition — sizing a 9:16 frame off a
   // landscape reference leaves the headline tiny.
+  // D1. See the note in `weather-card`: a 1120x620 reference resolves to
+  // u = 0.71 on the 818x440 docs stage, so the design was drawn at 71% of the
+  // room it had and every secondary tier fell under the legibility floor.
   const u = portrait
-    ? Math.min(stage.w / 620, stage.h / 1120)
-    : Math.min(stage.w / 1120, stage.h / 620);
+    ? Math.min(stage.w / 500, stage.h / 900)
+    : Math.min(stage.w / 900, stage.h / 500);
   const count = items.length;
 
   const headerIn = ease(T.header, T.header + 0.5);
