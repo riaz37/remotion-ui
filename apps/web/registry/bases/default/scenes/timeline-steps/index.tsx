@@ -24,6 +24,12 @@ export type TimelineStepsProps = {
   backgroundColor?: string;
   accentColor?: string;
   theme?: "dark" | "light";
+  /**
+   * Seconds the walked timeline holds before it retreats. Omit to leave it up
+   * for the rest of the scene — a scene inside a `TransitionSeries` wants the
+   * transition to cover its tail rather than fading under it.
+   */
+  holdSeconds?: number;
   /** Animation speed multiplier. */
   speed?: number;
 };
@@ -37,6 +43,8 @@ const T = {
   dwell: 0.78,
   /** Time the head takes to travel to the next step. */
   travel: 0.42,
+  /** Length of the retreat once `holdSeconds` is up. */
+  exitFor: 0.42,
 } as const;
 
 const clamp = {
@@ -75,6 +83,7 @@ export const TimelineSteps: React.FC<TimelineStepsProps> = ({
   backgroundColor,
   accentColor = "#E8B86D",
   theme = "dark",
+  holdSeconds,
   speed = 1,
 }) => {
   const frame = useCurrentFrame();
@@ -150,6 +159,16 @@ export const TimelineSteps: React.FC<TimelineStepsProps> = ({
 
   const titleIn = ease(T.title, T.title + 0.55);
 
+  const exit =
+    holdSeconds === undefined
+      ? 0
+      : interpolate(
+          frame,
+          [at(holdSeconds), at(holdSeconds + T.exitFor)],
+          [0, 1],
+          { easing: EASING.exit, ...clamp },
+        );
+
   return (
     <div
       style={{
@@ -178,6 +197,8 @@ export const TimelineSteps: React.FC<TimelineStepsProps> = ({
           top: stage.y,
           width: stage.w,
           height: stage.h,
+          opacity: 1 - exit,
+          translate: `0 ${exit * 30 * u}px`,
         }}
       >
         {eyebrow ? (

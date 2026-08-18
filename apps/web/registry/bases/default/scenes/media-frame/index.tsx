@@ -34,6 +34,12 @@ export type MediaFrameProps = {
   backgroundColor?: string;
   accentColor?: string;
   theme?: "dark" | "light";
+  /**
+   * Seconds the presented media holds before it retreats. Omit to leave it up
+   * for the rest of the scene — inside a `TransitionSeries` the transition
+   * should cover the tail rather than the frame fading under it.
+   */
+  holdSeconds?: number;
   /** Animation speed multiplier. */
   speed?: number;
 };
@@ -48,6 +54,8 @@ const T = {
   caption: 0.58,
   /** The slow push runs the whole scene. */
   push: 6,
+  /** Length of the retreat once `holdSeconds` is up. */
+  exitFor: 0.42,
 } as const;
 
 const clamp = {
@@ -72,6 +80,7 @@ export const MediaFrame: React.FC<MediaFrameProps> = ({
   backgroundColor,
   accentColor = "#E8B86D",
   theme = "dark",
+  holdSeconds,
   speed = 1,
 }) => {
   const frame = useCurrentFrame();
@@ -95,6 +104,17 @@ export const MediaFrame: React.FC<MediaFrameProps> = ({
   const captionIn = caption ? ease(T.caption, T.caption + 0.45) : 0;
   /** Slow push under the frame — the reason the shot feels alive on a hold. */
   const push = ease(0, T.push, EASING.editorial);
+
+  // Exits accelerate away; entrances decelerate in. Never ease-out an exit.
+  const exit =
+    holdSeconds === undefined
+      ? 0
+      : interpolate(
+          frame,
+          [at(holdSeconds), at(holdSeconds + T.exitFor)],
+          [0, 1],
+          { easing: EASING.exit, ...clamp },
+        );
 
   // Reserve only what is shown: with no title and no caption the frame owns
   // the whole safe area rather than sitting above an empty band.
@@ -139,6 +159,8 @@ export const MediaFrame: React.FC<MediaFrameProps> = ({
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
+          opacity: 1 - exit,
+          translate: `0 ${exit * -26 * u}px`,
         }}
       >
         {eyebrow ? (

@@ -29,6 +29,9 @@ const GLYPH_COLUMN = 30;
 /** Characters per second the command is typed at. */
 const TYPING_CPS = 26;
 
+/** Length of the retreat once `holdSeconds` is up, in seconds. */
+const EXIT_FOR = 0.42;
+
 export type TerminalStepTone = "info" | "success" | "warn" | "error";
 
 export type TerminalStep = {
@@ -59,6 +62,12 @@ export type TerminalSimulatorProps = {
   /** Overrides the page background behind the window. */
   backgroundColor?: string;
   theme?: "dark" | "light";
+  /**
+   * Seconds the finished build holds before the window retreats. Omit to leave
+   * it up for the rest of the scene — inside a `TransitionSeries` the
+   * transition should cover the tail rather than the window fading under it.
+   */
+  holdSeconds?: number;
   /** Animation speed multiplier. */
   speed?: number;
   /**
@@ -283,6 +292,7 @@ export const TerminalSimulator: React.FC<TerminalSimulatorProps> = ({
   accentColor = "#E8B86D",
   backgroundColor,
   theme = "dark",
+  holdSeconds,
   speed = 1,
   zoom = 1,
 }) => {
@@ -328,6 +338,17 @@ export const TerminalSimulator: React.FC<TerminalSimulatorProps> = ({
     [0, 1],
     { easing: EASING.enter, ...clamp },
   );
+
+  // Exits accelerate away; entrances decelerate in. Never ease-out an exit.
+  const exit =
+    holdSeconds === undefined
+      ? 0
+      : interpolate(
+          frame,
+          [seconds(holdSeconds), seconds(holdSeconds + EXIT_FOR)],
+          [0, 1],
+          { easing: EASING.exit, ...clamp },
+        );
 
   // The room warms as the build lands.
   const bloom = interpolate(
@@ -417,8 +438,10 @@ export const TerminalSimulator: React.FC<TerminalSimulatorProps> = ({
       <div
         style={{
           width: WINDOW_WIDTH,
-          transform: `scale(${scale * interpolate(enter, [0, 1], [0.965, 1])}) translateY(${interpolate(enter, [0, 1], [26, 0])}px)`,
-          opacity: enter,
+          // Compound and order-dependent, so it stays a transform string:
+          // scaling after the translate would scale the travel too.
+          transform: `scale(${scale * interpolate(enter, [0, 1], [0.965, 1])}) translateY(${interpolate(enter, [0, 1], [26, 0]) - exit * 26}px)`,
+          opacity: enter * (1 - exit),
           borderRadius: 16,
           background: palette.window,
           border: `1px solid ${palette.border}`,

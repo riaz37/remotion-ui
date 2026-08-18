@@ -24,6 +24,12 @@ export type LogoRevealProps = {
   /** Fill flooded into the mark once the stroke closes. */
   fill?: string;
   backgroundColor?: string;
+  /**
+   * Seconds the finished lockup holds before it retreats. Omit to leave it up
+   * for the rest of the scene — inside a `TransitionSeries` the transition
+   * should cover the tail rather than the mark fading under it.
+   */
+  holdSeconds?: number;
 };
 
 const COLORS = {
@@ -41,6 +47,9 @@ const BEATS = {
   tagline: DELAY.short + DURATION.slow + STAGGER.relaxed,
 } as const;
 
+/** Length of the retreat once `holdSeconds` is up, in seconds. */
+const EXIT_FOR = 0.42;
+
 export const LogoReveal: React.FC<LogoRevealProps> = ({
   pathD,
   viewBox,
@@ -51,6 +60,7 @@ export const LogoReveal: React.FC<LogoRevealProps> = ({
   strokeWidth,
   fill,
   backgroundColor = COLORS.bg,
+  holdSeconds,
 }) => {
   const frame = useCurrentFrame();
   const { width, height, fps } = useVideoConfig();
@@ -90,6 +100,27 @@ export const LogoReveal: React.FC<LogoRevealProps> = ({
     },
   );
 
+  // Exits accelerate away; entrances decelerate in. Never ease-out an exit.
+  const exit =
+    holdSeconds === undefined
+      ? 0
+      : interpolate(
+          frame,
+          [holdSeconds * fps, (holdSeconds + EXIT_FOR) * fps],
+          [0, 1],
+          {
+            easing: EASING.exit,
+            extrapolateLeft: "clamp",
+            extrapolateRight: "clamp",
+          },
+        );
+  // The plate keeps its background and the lockup leaves over it, so a scene
+  // stacked under this one is not revealed by the exit.
+  const leaving = {
+    opacity: 1 - exit,
+    translate: `0 ${exit * -scaleFont(26, width)}px`,
+  };
+
   return (
     <div
       style={{
@@ -116,6 +147,7 @@ export const LogoReveal: React.FC<LogoRevealProps> = ({
           alignItems: "center",
           justifyContent: "center",
           scale: 0.92 + bloom * 0.08,
+          ...leaving,
         }}
       >
         <div
@@ -154,8 +186,11 @@ export const LogoReveal: React.FC<LogoRevealProps> = ({
             lineHeight: 1,
             letterSpacing: -0.5,
             textAlign: "center",
-            opacity: wordmarkLift,
-            translate: `0 ${(1 - wordmarkLift) * scaleFont(28, width)}px`,
+            opacity: wordmarkLift * (1 - exit),
+            translate: `0 ${
+              (1 - wordmarkLift) * scaleFont(28, width) -
+              exit * scaleFont(26, width)
+            }px`,
           }}
         >
           {wordmark}
@@ -171,8 +206,11 @@ export const LogoReveal: React.FC<LogoRevealProps> = ({
             lineHeight: 1.2,
             textAlign: "center",
             maxWidth: width * 0.7,
-            opacity: taglineIn,
-            translate: `0 ${(1 - taglineIn) * scaleFont(16, width)}px`,
+            opacity: taglineIn * (1 - exit),
+            translate: `0 ${
+              (1 - taglineIn) * scaleFont(16, width) -
+              exit * scaleFont(26, width)
+            }px`,
           }}
         >
           {tagline}

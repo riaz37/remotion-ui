@@ -30,6 +30,12 @@ export type DragDropFlowProps = {
   accentColor?: string;
   backgroundColor?: string;
   theme?: "dark" | "light";
+  /**
+   * Seconds the finished upload holds before it retreats. Omit to leave it up
+   * for the rest of the scene — inside a `TransitionSeries` the transition
+   * should cover the tail rather than the flow fading under it.
+   */
+  holdSeconds?: number;
   /** Animation speed multiplier. */
   speed?: number;
 };
@@ -52,6 +58,8 @@ const T = {
   uploadStart: 2.42,
   uploadEnd: 3.68,
   doneEnd: 4.05,
+  /** Length of the retreat once `holdSeconds` is up. */
+  exitFor: 0.42,
 } as const;
 
 const clamp = {
@@ -155,6 +163,7 @@ export const DragDropFlow: React.FC<DragDropFlowProps> = ({
   accentColor = "#E8B86D",
   backgroundColor,
   theme = "dark",
+  holdSeconds,
   speed = 1,
 }) => {
   const frame = useCurrentFrame();
@@ -296,6 +305,17 @@ export const DragDropFlow: React.FC<DragDropFlowProps> = ({
       ? { x: cursorPoint.x - grip.x, y: cursorPoint.y - grip.y }
       : homeCenter;
 
+  // Exits accelerate away; entrances decelerate in. Never ease-out an exit.
+  const exit =
+    holdSeconds === undefined
+      ? 0
+      : interpolate(
+          frame,
+          [at(holdSeconds), at(holdSeconds + T.exitFor)],
+          [0, 1],
+          { easing: EASING.exit, ...clamp },
+        );
+
   const zoneArmed = armed > 0 || released;
   const zoneLabel = released
     ? upload < 1
@@ -335,6 +355,8 @@ export const DragDropFlow: React.FC<DragDropFlowProps> = ({
           top: stage.y,
           width: stage.w,
           height: stage.h,
+          opacity: 1 - exit,
+          translate: `0 ${exit * -26 * u}px`,
         }}
       >
         {/* Source list */}

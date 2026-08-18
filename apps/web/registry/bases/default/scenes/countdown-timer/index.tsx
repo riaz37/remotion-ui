@@ -30,9 +30,18 @@ export type CountdownTimerProps = {
   urgentColor?: string;
   urgentUnder?: number;
   theme?: "dark" | "light";
+  /**
+   * Seconds the finished clock holds before it retreats. Omit to leave it up
+   * for the rest of the scene — inside a `TransitionSeries` the transition
+   * should cover the tail rather than the clock fading under it.
+   */
+  holdSeconds?: number;
   /** Animation speed multiplier. */
   speed?: number;
 };
+
+/** Length of the retreat once `holdSeconds` is up, in seconds. */
+const EXIT_FOR = 0.42;
 
 const clamp = {
   extrapolateLeft: "clamp",
@@ -55,6 +64,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
   urgentColor = "#F97362",
   urgentUnder = 3,
   theme = "dark",
+  holdSeconds,
   speed = 1,
 }) => {
   const frame = useCurrentFrame();
@@ -95,6 +105,17 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
         config: { damping: 12, stiffness: 180, mass: 0.7 },
       })
     : 0;
+
+  // Exits accelerate away; entrances decelerate in. Never ease-out an exit.
+  const exit =
+    holdSeconds === undefined
+      ? 0
+      : interpolate(
+          frame,
+          [at(holdSeconds), at(holdSeconds + EXIT_FOR)],
+          [0, 1],
+          { easing: EASING.exit, ...clamp },
+        );
 
   const digitScale = 1 + tick * 0.12 + zero * 0.1;
   const ringSize = 300 * u;
@@ -177,8 +198,8 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
           flexDirection: "column",
           alignItems: "center",
           gap: 22 * u,
-          translate: `0 ${(1 - intro) * 20 * u}px`,
-          opacity: intro,
+          translate: `0 ${(1 - intro) * 20 * u + exit * -26 * u}px`,
+          opacity: intro * (1 - exit),
         }}
       >
         {label ? (

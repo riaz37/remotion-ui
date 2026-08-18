@@ -5,7 +5,7 @@ import {
   resolveSpringConfig,
   type MotionSpring,
 } from "@/remotion/lib/motion-primitive";
-import { EASING_ENTER } from "@/remotion/lib/timing";
+import { EASING_ENTER, EASING_EXIT } from "@/remotion/lib/timing";
 
 export type CounterProps = {
   /** Value the count starts from. */
@@ -33,6 +33,14 @@ export type CounterProps = {
   spring?: MotionSpring;
   /** Small scale pop on the frame the number lands. */
   settle?: boolean;
+  /**
+   * Frame the number starts leaving on. Omit to hold the landed value for the
+   * rest of the composition — inside a `TransitionSeries` the transition should
+   * cover the tail rather than the number fading under it.
+   */
+  exitAtInFrames?: number;
+  /** Frames the exit takes. */
+  exitInFrames?: number;
   fontSize?: number;
   fontWeight?: number;
   color?: string;
@@ -42,6 +50,8 @@ export type CounterProps = {
 
 /** Frames the landing pop takes. */
 const SETTLE_FRAMES = 9;
+/** Frames the exit takes when `exitAtInFrames` is set but `exitInFrames` is not. */
+const DEFAULT_EXIT_FRAMES = 14;
 const SETTLE_SCALE = 1.03;
 /** A digit only turns over once the digits below it are nearly wrapped. */
 const CARRY_START = 0.88;
@@ -102,6 +112,8 @@ export const Counter: React.FC<CounterProps> = ({
   roll = false,
   spring: springProp,
   settle = true,
+  exitAtInFrames,
+  exitInFrames = DEFAULT_EXIT_FRAMES,
   fontSize: fontSizeProp,
   fontWeight = 700,
   color,
@@ -163,6 +175,21 @@ export const Counter: React.FC<CounterProps> = ({
 
   /* The line height is the digit row, in both modes: turning `roll` on or off
    * must not move the number or change the space it takes in the layout. */
+  // Exits accelerate away; entrances decelerate in. Never ease-out an exit.
+  const exit =
+    exitAtInFrames === undefined
+      ? 0
+      : interpolate(
+          frame,
+          [exitAtInFrames, exitAtInFrames + Math.max(1, exitInFrames)],
+          [0, 1],
+          {
+            easing: EASING_EXIT,
+            extrapolateLeft: "clamp",
+            extrapolateRight: "clamp",
+          },
+        );
+
   const numberStyle: React.CSSProperties = {
     fontSize,
     fontWeight,
@@ -170,6 +197,8 @@ export const Counter: React.FC<CounterProps> = ({
     lineHeight: `${rowHeight}px`,
     display: "inline-block",
     scale: pop,
+    opacity: 1 - exit,
+    translate: `0 ${exit * -fontSize * 0.22}px`,
     transformOrigin: "center center",
     ...(color !== undefined ? { color } : {}),
     ...(fontFamily !== undefined ? { fontFamily } : {}),

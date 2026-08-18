@@ -33,6 +33,12 @@ export type AnimatedBarChartProps = {
   barColor?: string;
   accentColor?: string;
   backgroundColor?: string;
+  /**
+   * Seconds the finished chart holds before it retreats. Omit to leave it up
+   * for the rest of the scene — inside a `TransitionSeries` the transition
+   * should cover the tail rather than the chart fading under it.
+   */
+  holdSeconds?: number;
 };
 
 const COLORS = {
@@ -47,6 +53,9 @@ const COLORS = {
   up: "#2dd4bf",
   down: "#f87171",
 } as const;
+
+/** Length of the retreat once `holdSeconds` is up, in seconds. */
+const EXIT_FOR = 0.42;
 
 /**
  * Ranked bar chart scene.
@@ -68,6 +77,7 @@ export const AnimatedBarChart: React.FC<AnimatedBarChartProps> = ({
   barColor = COLORS.bar,
   accentColor = COLORS.accent,
   backgroundColor = COLORS.bg,
+  holdSeconds,
 }) => {
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
@@ -102,6 +112,27 @@ export const AnimatedBarChart: React.FC<AnimatedBarChartProps> = ({
       (height * (isPortrait ? 0.44 : 0.52)) / Math.max(1, bars.length),
     ),
   );
+
+  // Exits accelerate away; entrances decelerate in. Never ease-out an exit.
+  const exit =
+    holdSeconds === undefined
+      ? 0
+      : interpolate(
+          frame,
+          [holdSeconds * fps, (holdSeconds + EXIT_FOR) * fps],
+          [0, 1],
+          {
+            easing: EASING.exit,
+            extrapolateLeft: "clamp",
+            extrapolateRight: "clamp",
+          },
+        );
+  // The plate keeps its background and the content leaves over it, so a scene
+  // stacked under this one is not revealed by the exit.
+  const leaving = {
+    opacity: 1 - exit,
+    translate: `0 ${exit * -scaleFont(26, width)}px`,
+  };
 
   const headerProgress = interpolate(frame, [0, DURATION.normal], [0, 1], {
     extrapolateLeft: "clamp",
@@ -150,7 +181,9 @@ export const AnimatedBarChart: React.FC<AnimatedBarChartProps> = ({
       }}
     >
       {title ? (
-        <header style={{ display: "grid", gap: scaleFont(12, width) }}>
+        <header
+          style={{ display: "grid", gap: scaleFont(12, width), ...leaving }}
+        >
           <h2
             style={{
               margin: 0,
@@ -188,6 +221,7 @@ export const AnimatedBarChart: React.FC<AnimatedBarChartProps> = ({
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
+          ...leaving,
         }}
       >
         {/* Gridlines are scoped to the rows so they never run on through the
