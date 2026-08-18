@@ -48,6 +48,9 @@ export type WaterfallChartProps = {
 
 const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
 
+/** How far a bar rises as it fades out, in px. */
+const EXIT_LIFT = 12;
+
 /**
  * A bridge chart: floating bars carrying a running total from one figure to
  * another.
@@ -133,8 +136,7 @@ export const WaterfallChart: React.FC<WaterfallChartProps> = ({
                 x2={plot.right}
                 y2={y(tick)}
                 stroke={gridColor}
-                strokeWidth={1}
-                opacity={tick === 0 ? 2 : 1}
+                strokeWidth={tick === 0 ? 2 : 1}
               />
               <text
                 x={plot.left - labelSize * 0.6}
@@ -160,9 +162,12 @@ export const WaterfallChart: React.FC<WaterfallChartProps> = ({
           [0, 1],
           { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASING.enter },
         );
+        // The exit is a staggered fade + lift, never a geometry change: a bar
+        // that shrinks while its value label still reads the old number looks
+        // like wrong data rather than like leaving.
         const drain = clamp01((exit - index * 0.04) / 0.7);
-        const shown = clamp01(progress) * (1 - drain);
-        if (shown <= 0) return null;
+        const shown = clamp01(progress);
+        if (shown <= 0 || drain >= 1) return null;
 
         const centre = plot.left + pitch * (index + 0.5);
         const base = y(step.from);
@@ -179,7 +184,11 @@ export const WaterfallChart: React.FC<WaterfallChartProps> = ({
         const nextCentre = plot.left + pitch * (index + 1.5);
 
         return (
-          <g key={step.label}>
+          <g
+            key={step.label}
+            opacity={1 - drain}
+            transform={`translate(0 ${-EXIT_LIFT * drain})`}
+          >
             <rect
               x={centre - barWidth / 2}
               y={top}
@@ -217,7 +226,7 @@ export const WaterfallChart: React.FC<WaterfallChartProps> = ({
                 fontWeight={700}
                 textAnchor="middle"
                 dominantBaseline="central"
-                opacity={clamp01((progress - 0.7) / 0.3) * (1 - drain)}
+                opacity={clamp01((progress - 0.7) / 0.3)}
                 style={{ fontVariantNumeric: "tabular-nums" }}
               >
                 {step.isTotal
@@ -234,7 +243,7 @@ export const WaterfallChart: React.FC<WaterfallChartProps> = ({
               fontWeight={600}
               textAnchor="middle"
               dominantBaseline="central"
-              opacity={clamp01(progress * 1.5) * (1 - drain)}
+              opacity={clamp01(progress * 1.5)}
             >
               {step.label}
             </text>

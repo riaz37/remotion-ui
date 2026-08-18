@@ -154,8 +154,12 @@ export const TabSwitchPanel: React.FC<TabSwitchPanelProps> = ({
   // The scene walks forward from `startIndex` to the last tab and stops; it
   // does not wrap, so a continuous position can stand in for both the pill and
   // the panel carousel without ever having to jump back across the bar.
-  const moves = Math.max(0, tabs.length - 1 - startIndex);
-  let position = startIndex;
+  // startIndex === tabs.length - 1 is a legal prop combination that leaves
+  // nothing to walk to, so the scene would open and then sit still. Clamp it
+  // back one tab so there is always at least one switch to watch.
+  const firstTab = Math.min(Math.max(0, startIndex), Math.max(0, tabs.length - 2));
+  const moves = Math.max(0, tabs.length - 1 - firstTab);
+  let position = firstTab;
   for (let move = 0; move < moves; move += 1) {
     const from = firstSwitchAtSeconds + switchEverySeconds * move;
     position += ease(from, from + transitionSeconds, EASING.editorial);

@@ -187,7 +187,13 @@ export const RoadmapLanes: React.FC<RoadmapLanesProps> = ({
           const laneAt = startAtSeconds + laneIndex * laneStaggerSeconds;
           const laneIn = ease(laneAt - 0.16, laneAt + 0.24);
           const color = lane.color ?? accentColor;
-          const itemW = (boardW - labelW - gap * lane.items.length) / lane.items.length;
+          // n items have n-1 gaps between them. Subtracting n inverted the
+          // lane at 8+ items; the floor keeps a legible card at any count.
+          const itemW = Math.max(
+            60 * u,
+            (boardW - labelW - gap * Math.max(0, lane.items.length - 1)) /
+              Math.max(1, lane.items.length),
+          );
 
           return (
             <div

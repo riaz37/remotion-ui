@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { type ReactNode, useId } from "react";
 import {
   AbsoluteFill,
   interpolate,
@@ -62,9 +62,10 @@ export const SvgMaskReveal: React.FC<SvgMaskRevealProps> = ({
   backgroundColor,
 }) => {
   const frame = useCurrentFrame();
-  const { fps, width, height, id } = useVideoConfig();
-  // Mask ids are document-global; two reveals on one frame would share one.
-  const maskId = `svg-mask-reveal-${id}`;
+  const { fps, width, height } = useVideoConfig();
+  // Mask ids are document-global, and the composition id is shared by every
+  // instance on the frame — useId is the only per-instance handle.
+  const maskId = `svg-mask-reveal-${useId().replace(/:/g, "")}`;
 
   const d = shape in MORPH_SHAPES ? MORPH_SHAPES[shape as MorphShapeName] : shape;
 

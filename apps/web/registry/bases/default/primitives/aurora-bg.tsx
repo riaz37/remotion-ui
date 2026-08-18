@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
 
 export type AuroraBgProps = {
@@ -176,6 +177,10 @@ export const AuroraBg: React.FC<AuroraBgProps> = ({
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+  // Gradient ids are document-global. `seed` only varies the curtain shapes, so
+  // two AuroraBgs sharing a seed would also share ids and paint each other's
+  // gradient. useId is per-instance and stable across frames.
+  const uid = useId().replace(/:/g, "");
   const time = (frame / fps) * speed;
 
   const palette = colors.length > 0 ? colors : ["#4cd6a6"];
@@ -220,7 +225,7 @@ export const AuroraBg: React.FC<AuroraBgProps> = ({
         >
           <defs>
             {ribbons.map((ribbon, index) => (
-              <linearGradient key={index} id={`aurora-${seed}-${index}`} x1="0" y1="0" x2="0" y2="1">
+              <linearGradient key={index} id={`aurora-${uid}-${index}`} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor={ribbon.color} stopOpacity="0" />
                 <stop offset="55%" stopColor={ribbon.color} stopOpacity="0.55" />
                 <stop offset="100%" stopColor={ribbon.color} stopOpacity="1" />
@@ -231,7 +236,7 @@ export const AuroraBg: React.FC<AuroraBgProps> = ({
             <path
               key={index}
               d={ribbonPath(ribbon, time, amplitude, thickness, centerY, spread)}
-              fill={`url(#aurora-${seed}-${index})`}
+              fill={`url(#aurora-${uid}-${index})`}
               opacity={ribbon.alpha * 0.72 * intensity}
               style={{ mixBlendMode: "screen" }}
             />
