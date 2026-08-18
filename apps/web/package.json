@@ -17,6 +17,7 @@
     "audit:stills": "tsx scripts/audit-stills.mts",
     "audit:montage": "tsx scripts/audit-montage.mts",
     "audit:frames": "tsx scripts/audit-frames.mts",
+    "audit:tail": "tsx scripts/tailscan.mts",
     "scan:clamps": "tsx scripts/scan-clamps.mts",
     "gen:component": "tsx scripts/gen-component.mts"
   },

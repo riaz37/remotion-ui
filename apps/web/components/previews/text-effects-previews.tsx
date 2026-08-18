@@ -62,14 +62,20 @@ const maskedSlideGhostStyle = {
  */
 const ENTER_SAMPLE_FRAME = 18;
 
+/**
+ * Enter-only, and `EASING_ENTER` is an expo-out: the blur is 90% resolved a
+ * third of the way through its duration, so the visible motion is ~28 frames
+ * however long the duration is set. On the 120-frame default that left the back
+ * two thirds of the loop settled. The window is 48 frames (in `preview-config`)
+ * and the entrance starts on frame 4, which puts the motion across roughly
+ * 8-70% of the loop and the rest at the end, where remocn's pattern 5 puts it.
+ * This one deliberately does not use `ENTER_SAMPLE_FRAME` — that constant is
+ * calibrated against the 120-frame default window.
+ */
 export const BlurFocusInPreview = () => (
   <PreviewFrame lane="atoms" padding={72}>
     <div style={center}>
-      <BlurFocusIn
-        text={sample}
-        delayInFrames={ENTER_SAMPLE_FRAME - 2}
-        durationInFrames={54}
-      />
+      <BlurFocusIn text={sample} delayInFrames={4} durationInFrames={54} />
     </div>
   </PreviewFrame>
 );

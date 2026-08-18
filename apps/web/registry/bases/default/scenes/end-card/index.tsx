@@ -26,6 +26,12 @@ export type EndCardProps = {
   backgroundColor?: string;
   accentColor?: string;
   theme?: "dark" | "light";
+  /**
+   * Seconds to hold the finished card before it leaves. Left out, the card
+   * holds to the last frame — which is what a scene inside a
+   * `TransitionSeries` wants, since the transition covers the tail.
+   */
+  holdSeconds?: number;
   /** Animation speed multiplier. */
   speed?: number;
 };
@@ -49,6 +55,8 @@ const T = {
   handles: 1.6,
   /** Attention pulse once everything is standing. */
   pulse: 2.05,
+  /** Length of the exit, once `holdSeconds` has run out. */
+  exitFor: 0.42,
 } as const;
 
 /** Characters per second the address types at. */
@@ -77,6 +85,7 @@ export const EndCard: React.FC<EndCardProps> = ({
   backgroundColor,
   accentColor = "#E8B86D",
   theme = "dark",
+  holdSeconds,
   speed = 1,
 }) => {
   const frame = useCurrentFrame();
@@ -119,6 +128,17 @@ export const EndCard: React.FC<EndCardProps> = ({
     ? interpolate(frame, [at(T.pulse), at(T.pulse + 0.7)], [0, 1], clamp)
     : 0;
 
+  // Exits accelerate away; entrances decelerate in. Never ease-out an exit.
+  const exit =
+    holdSeconds === undefined
+      ? 0
+      : interpolate(
+          frame,
+          [at(holdSeconds), at(holdSeconds + T.exitFor)],
+          [0, 1],
+          { easing: EASING.exit, ...clamp },
+        );
+
   return (
     <div
       style={{
@@ -149,6 +169,8 @@ export const EndCard: React.FC<EndCardProps> = ({
           alignItems: "center",
           gap: 16 * u,
           textAlign: "center",
+          opacity: 1 - exit,
+          translate: `0 ${exit * -26 * u}px`,
         }}
       >
         {logoSrc ? (

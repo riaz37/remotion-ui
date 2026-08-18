@@ -99,10 +99,11 @@ export const LowerThirdPreview: React.FC = () => (
       title="Mina Patel"
       subtitle="Founder, Northstar Studio"
       badge="Live"
-      // Leaves across the 90% sample (frame 135 of 150 = 4.5s). At 3.2 the
-      // exit was over by frame 109 and the tile held an empty plate for the
-      // last quarter of every loop.
-      holdSeconds={4.17}
+      // Leaves across the 90% sample (frame 86 of 96 = 2.88s):
+      // 0.9 x 96/30 - 0.79 x 0.42 = 2.55. The window came down from 150 so the
+      // 15% sample catches the plate still wiping open rather than one that is
+      // already standing.
+      holdSeconds={2.55}
     />
   </ScenePreviewPlate>
 );

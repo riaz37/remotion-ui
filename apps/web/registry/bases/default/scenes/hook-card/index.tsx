@@ -37,9 +37,18 @@ export type HookCardProps = {
   /** Overrides the page background. */
   backgroundColor?: string;
   theme?: "dark" | "light";
+  /**
+   * Seconds to hold the finished hook before it leaves. Left out, the card
+   * holds to the last frame — which is what a scene inside a
+   * `TransitionSeries` wants, since the transition covers the tail.
+   */
+  holdSeconds?: number;
   /** Animation speed multiplier. */
   speed?: number;
 };
+
+/** Length of the exit, once `holdSeconds` has run out. */
+const EXIT_FOR = 0.42;
 
 /**
  * Breaks a hook into balanced lines at roughly `target` characters, never
@@ -93,6 +102,7 @@ export const HookCard: React.FC<HookCardProps> = ({
   accentColor = "#E8B86D",
   backgroundColor,
   theme = "dark",
+  holdSeconds,
   speed = 1,
 }) => {
   const rawFrame = useCurrentFrame();
@@ -160,6 +170,17 @@ export const HookCard: React.FC<HookCardProps> = ({
     ...clamp,
   });
 
+  // Exits accelerate away; entrances decelerate in. Never ease-out an exit.
+  const exit =
+    holdSeconds === undefined
+      ? 0
+      : interpolate(
+          frame,
+          [seconds(holdSeconds), seconds(holdSeconds + EXIT_FOR)],
+          [0, 1],
+          { easing: EASING.exit, ...clamp },
+        );
+
   return (
     <div
       style={{
@@ -208,6 +229,8 @@ export const HookCard: React.FC<HookCardProps> = ({
           alignItems: align === "center" ? "center" : "flex-start",
           textAlign: align,
           gap: scaleFont(26, width),
+          opacity: 1 - exit,
+          translate: `0 ${exit * scaleFont(-30, width)}px`,
         }}
       >
         {kicker ? (

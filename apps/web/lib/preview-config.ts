@@ -44,6 +44,19 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   counter: { durationInFrames: 110 },
   typewriter: { durationInFrames: 165 },
   "marker-highlight": { durationInFrames: 110 },
+  /* These three carried their window on the `ComponentPage` prop in MDX rather
+   * than here, so the docs player ran one length and the atlas tile and the
+   * still audit ran the 120-frame default — which put both of their late
+   * samples past the end of the motion and read as a frozen tail. The number
+   * lives here now; the MDX override is gone. Each lands its last beat at
+   * 0.80 x window. */
+  "blur-focus-in": { durationInFrames: 48 },
+  "staggered-fade-up": { durationInFrames: 60 },
+  /* Paired with the explicit 110-frame draw in the wrapper: `EASING.enter` is an
+   * expo-out, so a draw is ~90% done a third of the way through its duration.
+   * On the stock 70-frame draw the line was finished by frame 30 whatever the
+   * window was, and every sample after the first showed the same chart. */
+  "line-chart-draw": { durationInFrames: 60 },
   /* Enter-only, and `springSmooth` is 90% closed halfway through its own
    * duration — over the 120-frame default the 50% and 90% samples were the same
    * settled line. 72 frames puts the samples at 10 / 36 / 64 against a 76-frame
@@ -60,7 +73,11 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "split-text-chars": { durationInFrames: 120 },
   "audiogram-bars": { durationInFrames: 120 },
   "audiogram-scene": { durationInFrames: 150 },
-  "caption-scene": { durationInFrames: 150 },
+  /* 120, not 150. The preview loops the caption track every 63 frames, and on a
+   * 150-frame window the 50% and 90% samples are 60 frames apart — very nearly
+   * one whole loop — so the two cells came back at the same phase of the same
+   * sentence (39 dB) while the preview was in fact moving the whole time. */
+  "caption-scene": { durationInFrames: 120 },
   "auto-fit-title": { durationInFrames: 130 },
   "b-roll-stack": { durationInFrames: 165 },
   /* Scenes that now take a `holdSeconds` exit. The window is sized so the exit
@@ -79,7 +96,10 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "creator-reel": { durationInFrames: 390, ...VERTICAL },
   "data-flow-pipes": { durationInFrames: 165 },
   "feature-list": { durationInFrames: 120 },
-  "lower-third": { durationInFrames: 150 },
+  /* 120, not 150: the plate is fully standing by frame 30, so on a 150-frame
+   * window the 15% sample (frame 22) already showed a settled plate. At 96 it
+   * lands on frame 14, while the plate is still wiping open. */
+  "lower-third": { durationInFrames: 96 },
   "media-frame": { durationInFrames: 130 },
   "quote-card": { durationInFrames: 113 },
   "split-screen": { durationInFrames: 120 },
