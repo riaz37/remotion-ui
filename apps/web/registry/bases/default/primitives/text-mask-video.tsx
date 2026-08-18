@@ -184,6 +184,9 @@ export const TextMaskVideo: React.FC<TextMaskVideoProps> = ({
                 src={src}
                 startFrom={startFrom}
                 muted
+                // Holds the Player on a slow source rather than showing the
+                // previous frame through the letterforms.
+                pauseWhenBuffering
                 style={{
                   width: "100%",
                   height: "100%",

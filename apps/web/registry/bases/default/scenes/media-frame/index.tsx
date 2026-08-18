@@ -225,10 +225,15 @@ export const MediaFrame: React.FC<MediaFrameProps> = ({
           }}
         >
           {isVideoSource(src) ? (
+            // `pauseWhenBuffering` holds the Player on a slow source instead
+            // of showing a stale frame inside the shutter. On `@remotion/media`
+            // it lives on the fallback props, since that is the path that can
+            // stall.
             <Video
               src={src}
               muted
               loop
+              fallbackOffthreadVideoProps={{ pauseWhenBuffering: true }}
               style={{
                 ...getMediaObjectFitStyle(fit),
                 scale: `${interpolate(push, [0, 1], [1.06, 1])}`,

@@ -125,7 +125,16 @@ export const ZoomPanFrame: React.FC<ZoomPanFrameProps> = ({
       }}
     >
       {isVideoSource(src) ? (
-        <Video src={src} muted loop style={mediaStyle} />
+        // `pauseWhenBuffering` holds the Player on a slow source instead of
+        // showing a stale frame under the push. On `@remotion/media` it lives
+        // on the fallback props, since that is the path that can stall.
+        <Video
+          src={src}
+          muted
+          loop
+          fallbackOffthreadVideoProps={{ pauseWhenBuffering: true }}
+          style={mediaStyle}
+        />
       ) : (
         <Img src={src} style={mediaStyle} />
       )}

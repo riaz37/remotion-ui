@@ -276,10 +276,15 @@ export const BRollStack: React.FC<BRollStackProps> = ({
               }}
             >
               {isVideoSource(item.src) ? (
+                // `pauseWhenBuffering` holds the Player on a slow source
+                // instead of showing a stale frame in the deck. On
+                // `@remotion/media` it lives on the fallback props, since that
+                // is the path that can stall.
                 <Video
                   src={item.src}
                   muted
                   loop
+                  fallbackOffthreadVideoProps={{ pauseWhenBuffering: true }}
                   style={getMediaObjectFitStyle(item.fit ?? "cover")}
                 />
               ) : (
