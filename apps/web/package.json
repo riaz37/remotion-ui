@@ -20,7 +20,8 @@
     "audit:tail": "tsx scripts/tailscan.mts",
     "scan:clamps": "tsx scripts/scan-clamps.mts",
     "scan:legibility": "tsx scripts/scan-legibility.mts",
-    "gen:component": "tsx scripts/gen-component.mts"
+    "gen:component": "tsx scripts/gen-component.mts",
+    "gen:prop-schemas": "tsx scripts/gen-prop-schemas.mts"
   },
   "dependencies": {
     "@remotion/captions": "^4.0.505",
