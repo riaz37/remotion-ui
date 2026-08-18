@@ -1,4 +1,8 @@
-import { useCurrentFrame, useVideoConfig } from "remotion";
+import {
+  random,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 
 export type AudioScrubberProps = {
   /** Total length of the clip. The playhead crosses the track over exactly this. */
@@ -46,7 +50,11 @@ function generateWaveform(count: number, seed: number): number[] {
     const position = index / Math.max(1, count - 1);
     const syllable = Math.abs(Math.sin(index * 0.7 + seed * 2.1));
     const phrase = 0.5 + 0.5 * Math.sin(position * Math.PI * 3.1 + seed);
-    const hash = Math.abs(Math.sin(index * 12.9898 + seed * 78.233) * 43758.5453) % 1;
+    // Remotion's seeded generator (doc rule 2). The `Math.sin(x) * 43758.5453`
+    // idiom this replaces is a GLSL trick that drifts across JS float paths.
+    // The two sines above stay — they are the syllable and phrase envelopes,
+    // bounded signal shaping rather than a hash.
+    const hash = random(`${seed}-${index}`);
     return clamp01(0.2 + syllable * phrase * 0.66 + hash * 0.2);
   });
 }

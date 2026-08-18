@@ -1,4 +1,8 @@
-import { useCurrentFrame, useVideoConfig } from "remotion";
+import {
+  random,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 
 export type VoiceNoteBubbleProps = {
   /** Length of the note. The playhead crosses the bar over exactly this. */
@@ -59,7 +63,11 @@ function generateWaveform(count: number, seed: number): number[] {
     const position = index / Math.max(1, count - 1);
     const syllable = Math.abs(Math.sin(index * 0.9 + seed));
     const phrase = 0.55 + 0.45 * Math.sin(position * Math.PI * 2.3 + seed * 1.7);
-    const hash = Math.abs(Math.sin(index * 12.9898 + seed * 78.233) * 43758.5453) % 1;
+    // Remotion's seeded generator (doc rule 2). The `Math.sin(x) * 43758.5453`
+    // idiom this replaces is a GLSL trick that drifts across JS float paths.
+    // The two sines above stay — they are the syllable and phrase envelopes,
+    // bounded signal shaping rather than a hash.
+    const hash = random(`${seed}-${index}`);
     return clamp01(0.18 + syllable * phrase * 0.7 + hash * 0.18);
   });
 }

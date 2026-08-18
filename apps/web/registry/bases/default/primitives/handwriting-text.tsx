@@ -1,3 +1,4 @@
+import { random } from "remotion";
 import {
   SplitTextChars,
   type SplitTextCharsProps,
@@ -16,12 +17,21 @@ export type HandwritingTextProps = Omit<
   inkSoftness?: number;
   /** Per-character tilt and baseline drift, in degrees. 0 is machine-even. */
   wobble?: number;
+  /**
+   * Varies the hand. Two of these on one frame with the same seed wobble
+   * identically, which is what gives away that they are the same component.
+   */
+  seed?: string | number;
 };
 
-/** Deterministic ±1. A random tilt would resample on every render pass. */
-function jitter(index: number, salt: number): number {
-  const noise = Math.sin(index * 57.31 + salt * 19.77) * 43758.5453;
-  return (noise - Math.floor(noise)) * 2 - 1;
+/**
+ * Deterministic ±1 from Remotion's seeded generator (doc rule 2). `Math.random`
+ * would resample on every render pass, and the `Math.sin(x) * 43758.5453` idiom
+ * this replaces is a GLSL trick that drifts across JS float paths and cannot be
+ * re-seeded per instance.
+ */
+function jitter(seed: string | number, index: number, salt: number): number {
+  return random(`${seed}-${index}-${salt}`) * 2 - 1;
 }
 
 /**
@@ -46,6 +56,7 @@ export const HandwritingText: React.FC<HandwritingTextProps> = ({
   penColor,
   inkSoftness = 0.18,
   wobble = 1.6,
+  seed = "handwriting",
   color = "#f4f4f5",
   fontFamily = '"Segoe Script", "Bradley Hand", "Snell Roundhand", cursive',
   staggerInFrames = 3,
@@ -61,8 +72,8 @@ export const HandwritingText: React.FC<HandwritingTextProps> = ({
     const ink = `linear-gradient(to right, #000 ${stop.toFixed(2)}%, rgba(0,0,0,0) ${Math.min(100, stop + softness).toFixed(2)}%)`;
     // A hand does not sit on the baseline. The tilt is fixed per character so
     // the word does not wriggle after it is written.
-    const tilt = jitter(unit.index, 1) * wobble;
-    const drift = jitter(unit.index, 2) * wobble * 0.012;
+    const tilt = jitter(seed, unit.index, 1) * wobble;
+    const drift = jitter(seed, unit.index, 2) * wobble * 0.012;
     const writing = written > 0.02 && written < 0.98;
 
     return (

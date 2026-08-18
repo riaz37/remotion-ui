@@ -1,4 +1,4 @@
-import { interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import { interpolate, random, useCurrentFrame, useVideoConfig } from "remotion";
 import { scaleFont } from "@/remotion/lib/layout";
 
 export type MatrixDecodeProps = {
@@ -19,6 +19,12 @@ export type MatrixDecodeProps = {
    * while it is still scrambled.
    */
   glyphs?: string;
+  /**
+   * Varies which characters lock in early or late. Two of these on one frame
+   * with the same seed resolve in the same order, which is what gives away that
+   * they are the same component.
+   */
+  seed?: string | number;
   fontWeight?: number;
   fontFamily?: string;
 };
@@ -29,19 +35,16 @@ const GLYPHS = "0123456789ABCDEFGHJKLMNPQRSTUVXYZ#$%&*+=<>/\\";
 const RESOLVE_JITTER = 2;
 /** Frames between scramble glyph swaps — lower churns faster. */
 const SCRAMBLE_CHURN = 40;
-/** Deterministic hash constants for the per-character jitter. */
-const JITTER_SEED_A = 12.9898;
-const JITTER_SEED_B = 43758.5453;
-
 /**
- * Deterministic pseudo-random offset in [-RESOLVE_JITTER, RESOLVE_JITTER].
- * No `Math.random` — the same index always yields the same offset so renders
- * are reproducible frame to frame and machine to machine.
+ * Deterministic offset in [-RESOLVE_JITTER, RESOLVE_JITTER] from Remotion's
+ * seeded generator (doc rule 2). The same seed and index always yield the same
+ * offset, so renders are reproducible frame to frame and machine to machine —
+ * and two instances with different seeds resolve in different orders. The
+ * `Math.sin(x) * 43758.5453` idiom this replaces is a GLSL trick that drifts
+ * across JS float paths and cannot be re-seeded.
  */
-function resolveJitter(index: number): number {
-  const hash = Math.sin((index + 1) * JITTER_SEED_A) * JITTER_SEED_B;
-  const unit = hash - Math.floor(hash);
-  return Math.round((unit * 2 - 1) * RESOLVE_JITTER);
+function resolveJitter(seed: string | number, index: number): number {
+  return Math.round((random(`${seed}-${index}`) * 2 - 1) * RESOLVE_JITTER);
 }
 
 function scrambleGlyph(index: number, progress: number, pool: string): string {
@@ -58,6 +61,7 @@ export const MatrixDecode: React.FC<MatrixDecodeProps> = ({
   color = "#2dd4bf",
   hotColor = "#5eead4",
   glyphs = GLYPHS,
+  seed = "matrix-decode",
   fontWeight = 600,
   fontFamily,
 }) => {
@@ -83,7 +87,7 @@ export const MatrixDecode: React.FC<MatrixDecodeProps> = ({
   const resolved = chars.map((char, index) => {
     if (char === " ") return true;
     if (progress >= 1) return true;
-    return index + resolveJitter(index) < front;
+    return index + resolveJitter(seed, index) < front;
   });
   const hotIndex = resolved.findIndex((isResolved) => !isResolved);
 

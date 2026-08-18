@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import { interpolate, random, useCurrentFrame, useVideoConfig } from "remotion";
 import { scaleFont } from "@/remotion/lib/layout";
 import { EASING_ENTER } from "@/remotion/lib/timing";
 
@@ -29,6 +29,12 @@ export type TypewriterProps = {
   style?: React.CSSProperties;
   /** Uneven key rhythm — the difference between typing and a progress bar. */
   humanize?: boolean;
+  /**
+   * Varies the `humanize` rhythm. Two typewriters on one frame with the same
+   * seed hit the same keys at the same moments, which is what gives away that
+   * they are the same component.
+   */
+  seed?: string | number;
   /** Rest on sentence punctuation. */
   respectPunctuation?: boolean;
   punctuationPauseSeconds?: number;
@@ -95,6 +101,7 @@ function buildTimeline(
     pauseAfter,
     pauseAfterFrames,
     humanize,
+    seed,
     respectPunctuation,
     punctuationPauseFrames,
     loopPauseFrames,
@@ -105,6 +112,7 @@ function buildTimeline(
     pauseAfter?: string;
     pauseAfterFrames: number;
     humanize: boolean;
+    seed: string | number;
     respectPunctuation: boolean;
     punctuationPauseFrames: number;
     loopPauseFrames: number;
@@ -127,8 +135,10 @@ function buildTimeline(
   for (let i = 0; i < displayText.length; i++) {
     appearFrames.push(currentFrame);
 
-    /* Deterministic jitter: same string, same rhythm, every render. */
-    const jitter = humanize ? 0.7 + ((Math.sin(i * 7.3 + 1) + 1) / 2) * 0.6 : 1;
+    /* Deterministic jitter from Remotion's seeded generator (doc rule 2): same
+     * string and seed, same rhythm, every render — and a different seed types
+     * to a different rhythm, so two of these side by side do not sync. */
+    const jitter = humanize ? 0.7 + random(`${seed}-${i}`) * 0.6 : 1;
     currentFrame += baseCharFrames * jitter;
 
     for (const pause of pauses) {
@@ -288,6 +298,7 @@ export const Typewriter: React.FC<TypewriterProps> = ({
   fontFamily,
   style,
   humanize = false,
+  seed = "typewriter",
   respectPunctuation = false,
   punctuationPauseSeconds = 0.25,
   loop = false,
@@ -310,6 +321,7 @@ export const Typewriter: React.FC<TypewriterProps> = ({
       pauseAfter,
       pauseAfterFrames: pauseAfter ? Math.round(fps * pauseSeconds) : 0,
       humanize,
+      seed,
       respectPunctuation,
       punctuationPauseFrames: Math.round(fps * punctuationPauseSeconds),
       loopPauseFrames: loop ? Math.round(fps * loopPauseSeconds) : 0,
@@ -324,6 +336,7 @@ export const Typewriter: React.FC<TypewriterProps> = ({
     pauseAfter,
     pauseSeconds,
     humanize,
+    seed,
     respectPunctuation,
     punctuationPauseSeconds,
     loop,
