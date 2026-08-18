@@ -5,7 +5,7 @@ description: A camera move on a still, driven by focal points rather than pixel 
 
 import { ZoomPanFramePreview } from '@/components/previews/zoom-pan-frame';
 
-<ComponentPage name="zoom-pan-frame" preview={ZoomPanFramePreview} durationInFrames={140}>
+<ComponentPage name="zoom-pan-frame" preview={ZoomPanFramePreview}>
 
 `from` and `to` are focal points — `{ x, y, scale }` with `x`/`y` in 0–1 across
 the frame — so the framing lands on the subject at whatever size the composition

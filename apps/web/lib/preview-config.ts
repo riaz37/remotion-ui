@@ -243,6 +243,21 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "map-heat-overlay": { durationInFrames: 120 },
   "globe-arc": { durationInFrames: 120 },
   "multi-device-lineup": { durationInFrames: 120 },
+  /* The two marquees scroll continuously and never loop back to their start
+   * inside a short window, so their docs players run unlooped for a full track
+   * period instead of cutting mid-scroll. The number lived on the `ComponentPage`
+   * prop in MDX, which the atlas tile and the still audit do not read — they ran
+   * the 120-frame default while the docs player ran 60s. It lives here now. */
+  "infinite-marquee": { durationInFrames: 1800 },
+  "perspective-marquee": { durationInFrames: 1800 },
+  /* The remaining four transitions, pinned for the same reason as the seven
+   * above: `TransitionSeriesPreview` sizes its two scenes from
+   * `PREVIEW_DEFAULTS`, so a window shorter than 120 truncates the second scene.
+   * Each of these carried a stale `durationInFrames={90}` in MDX. */
+  "transition-fade": { durationInFrames: 120 },
+  "transition-slide": { durationInFrames: 120 },
+  "transition-wipe": { durationInFrames: 120 },
+  "transition-clock-wipe": { durationInFrames: 120 },
 };
 
 export function previewMeta(slug: string): Required<PreviewMeta> {
