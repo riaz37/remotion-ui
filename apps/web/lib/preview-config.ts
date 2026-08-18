@@ -44,6 +44,11 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   counter: { durationInFrames: 110 },
   typewriter: { durationInFrames: 165 },
   "marker-highlight": { durationInFrames: 110 },
+  /* Enter-only, and `springSmooth` is 90% closed halfway through its own
+   * duration — over the 120-frame default the 50% and 90% samples were the same
+   * settled line. 72 frames puts the samples at 10 / 36 / 64 against a 76-frame
+   * entrance, so all three catch it moving. */
+  "tracking-in": { durationInFrames: 72 },
   "progress-bar": { durationInFrames: 110 },
   "audio-pulse": { durationInFrames: 120 },
   "audio-reactive-scale": { durationInFrames: 120 },
@@ -79,7 +84,7 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "quote-card": { durationInFrames: 113 },
   "split-screen": { durationInFrames: 120 },
   "stat-card": { durationInFrames: 123 },
-  "title-card": { durationInFrames: 140 },
+  "title-card": { durationInFrames: 90 },
   "media-sequence": { durationInFrames: 210 },
   "zoom-pan-frame": { durationInFrames: 140 },
   "data-story": { durationInFrames: 420 },
@@ -177,7 +182,11 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "transcript-scroll": { durationInFrames: 120 },
   "subtitle-translate": { durationInFrames: 120 },
   "waveform-bars-radial": { durationInFrames: 120 },
-  "vu-meter": { durationInFrames: 120 },
+  /* 100, not 120: over a 120-frame window the 15% and 90% samples sit exactly
+   * 90 frames apart, which is the demo loop's own repeat — the two stills came
+   * back byte-identical. 100 samples frames 15 / 50 / 90, so no pair lands on
+   * the same phase of the track. */
+  "vu-meter": { durationInFrames: 100 },
   "voice-note-bubble": { durationInFrames: 120 },
   "beat-pulse-grid": { durationInFrames: 120 },
   "audio-scrubber": { durationInFrames: 120 },

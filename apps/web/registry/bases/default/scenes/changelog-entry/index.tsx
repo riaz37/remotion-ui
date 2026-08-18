@@ -164,7 +164,7 @@ export const ChangelogEntry: React.FC<ChangelogEntryProps> = ({
           overflow: "hidden",
           clipPath: `inset(0 0 ${(1 - open) * 100}% 0 round ${20 * u}px)`,
           opacity: 1 - exit,
-          transform: `translateY(${(1 - cardIn) * 22 * u + exit * 30 * u}px)`,
+          translate: `0 ${(1 - cardIn) * 22 * u + exit * 30 * u}px`,
         }}
       >
         <div
@@ -173,7 +173,7 @@ export const ChangelogEntry: React.FC<ChangelogEntryProps> = ({
             alignItems: "baseline",
             gap: 12 * u,
             opacity: versionIn,
-            transform: `translateY(${(1 - versionIn) * 12 * u}px)`,
+            translate: `0 ${(1 - versionIn) * 12 * u}px`,
           }}
         >
           <span
@@ -259,7 +259,7 @@ export const ChangelogEntry: React.FC<ChangelogEntryProps> = ({
                     fontWeight: 700,
                     letterSpacing: "0.08em",
                     textTransform: "uppercase",
-                    transform: `scale(${0.9 + rowIn * 0.1})`,
+                    scale: `${0.9 + rowIn * 0.1}`,
                   }}
                 >
                   {change.kind}
@@ -270,7 +270,7 @@ export const ChangelogEntry: React.FC<ChangelogEntryProps> = ({
                     fontSize: 17 * u,
                     fontWeight: 500,
                     opacity: textIn,
-                    transform: `translateX(${(1 - textIn) * 10 * u}px)`,
+                    translate: `${(1 - textIn) * 10 * u}px`,
                   }}
                 >
                   {change.text}

@@ -111,7 +111,7 @@ const WeatherGlyph: React.FC<{
         <g
           style={{
             transformOrigin: "24px 24px",
-            transform: `rotate(${seconds * 22}deg)`,
+            rotate: `${seconds * 22}deg`,
           }}
         >
           {Array.from({ length: 8 }, (_, index) => {
@@ -193,8 +193,8 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
   forecast = DEFAULT_FORECAST,
   temperatureAtSeconds = 0.4,
   countSeconds = 1,
-  forecastAtSeconds = 1.15,
-  staggerSeconds = 0.2,
+  forecastAtSeconds = 1.4,
+  staggerSeconds = 0.34,
   holdSeconds,
   accentColor = "#E8B86D",
   backgroundColor,
@@ -238,8 +238,8 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
           ...clamp,
         });
 
-  const cardW = Math.min(width - safe.paddingLeft - safe.paddingRight, 520 * u);
-  const pad = 28 * u;
+  const cardW = Math.min(width - safe.paddingLeft - safe.paddingRight, 660 * u);
+  const pad = 34 * u;
   const glyphColor = CONDITION_COLORS[condition];
 
   return (
@@ -256,7 +256,7 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
       <div
         style={{
           width: cardW,
-          borderRadius: 24 * u,
+          borderRadius: 28 * u,
           background: palette.window,
           border: `1px solid ${palette.border}`,
           boxShadow: `inset 0 1px 0 ${palette.highlight}, 0 ${26 * u}px ${
@@ -265,9 +265,9 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
           padding: pad,
           position: "relative",
           overflow: "hidden",
-          clipPath: `inset(0 0 ${(1 - open) * 100}% 0 round ${24 * u}px)`,
+          clipPath: `inset(0 0 ${(1 - open) * 100}% 0 round ${28 * u}px)`,
           opacity: 1 - exit,
-          transform: `translateY(${(1 - cardIn) * 22 * u + exit * 30 * u}px)`,
+          translate: `0 ${(1 - cardIn) * 22 * u + exit * 30 * u}px`,
         }}
       >
         <div
@@ -285,14 +285,14 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
               alignItems: "flex-start",
               justifyContent: "space-between",
               opacity: headIn,
-              transform: `translateY(${(1 - headIn) * 10 * u}px)`,
+              translate: `0 ${(1 - headIn) * 10 * u}px`,
             }}
           >
             <div>
               <div
                 style={{
                   color: palette.fg,
-                  fontSize: 22 * u,
+                  fontSize: 27 * u,
                   fontWeight: 700,
                   letterSpacing: "-0.01em",
                 }}
@@ -304,7 +304,7 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
                   style={{
                     marginTop: 3 * u,
                     color: palette.dim,
-                    fontSize: 14 * u,
+                    fontSize: 17.5 * u,
                     fontWeight: 500,
                   }}
                 >
@@ -314,7 +314,7 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
             </div>
             <WeatherGlyph
               condition={condition}
-              size={62 * u}
+              size={76 * u}
               frame={frame}
               fps={fps}
               color={glyphColor}
@@ -332,12 +332,12 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
             <span
               style={{
                 color: palette.fg,
-                fontSize: 78 * u,
+                fontSize: 96 * u,
                 fontWeight: 800,
                 letterSpacing: "-0.05em",
                 lineHeight: 1,
                 fontVariantNumeric: "tabular-nums",
-                transform: `translateY(${(1 - count) * 10 * u}px)`,
+                translate: `0 ${(1 - count) * 10 * u}px`,
               }}
             >
               {shown}
@@ -348,7 +348,7 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
                 // Brand accent, not the weather colour: the degree symbol
                 // should not change hue when the conditions do.
                 color: accentColor,
-                fontSize: 34 * u,
+                fontSize: 42 * u,
                 fontWeight: 700,
               }}
             >
@@ -361,7 +361,7 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
               style={{
                 marginTop: 2 * u,
                 color: palette.dim,
-                fontSize: 15.5 * u,
+                fontSize: 19 * u,
                 fontWeight: 500,
                 opacity: interpolate(count, [0.5, 1], [0, 1], clamp),
               }}
@@ -372,8 +372,8 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
 
           <div
             style={{
-              marginTop: 20 * u,
-              paddingTop: 16 * u,
+              marginTop: 24 * u,
+              paddingTop: 20 * u,
               borderTop: `1px solid ${palette.border}`,
               display: "flex",
             }}
@@ -391,13 +391,13 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
                     alignItems: "center",
                     gap: 6 * u,
                     opacity: dayIn,
-                    transform: `translateY(${(1 - dayIn) * 12 * u}px)`,
+                    translate: `0 ${(1 - dayIn) * 12 * u}px`,
                   }}
                 >
                   <span
                     style={{
                       color: palette.dim,
-                      fontSize: 12.5 * u,
+                      fontSize: 15 * u,
                       fontWeight: 600,
                       letterSpacing: "0.04em",
                       textTransform: "uppercase",
@@ -407,7 +407,7 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
                   </span>
                   <WeatherGlyph
                     condition={day.condition}
-                    size={28 * u}
+                    size={38 * u}
                     // Each column runs its own clock so the row is never five
                     // glyphs moving in lockstep.
                     frame={frame + index * 9}
@@ -417,7 +417,7 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
                   <span
                     style={{
                       color: palette.fg,
-                      fontSize: 14 * u,
+                      fontSize: 17 * u,
                       fontWeight: 700,
                       fontVariantNumeric: "tabular-nums",
                     }}
@@ -428,7 +428,7 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
                   <span
                     style={{
                       color: palette.faint,
-                      fontSize: 12.5 * u,
+                      fontSize: 15 * u,
                       fontWeight: 600,
                       fontVariantNumeric: "tabular-nums",
                     }}

@@ -196,7 +196,7 @@ export const SearchResultsPopulate: React.FC<SearchResultsPopulateProps> = ({
           padding: `${22 * u}px ${24 * u}px ${24 * u}px`,
           clipPath: `inset(0 0 ${(1 - open) * 100}% 0 round ${20 * u}px)`,
           opacity: 1 - exit,
-          transform: `translateY(${(1 - card) * 24 * u + exit * 32 * u}px)`,
+          translate: `0 ${(1 - card) * 24 * u + exit * 32 * u}px`,
         }}
       >
         <div
@@ -212,7 +212,7 @@ export const SearchResultsPopulate: React.FC<SearchResultsPopulateProps> = ({
             border: `1px solid ${typed > 0 ? `${accentColor}8A` : palette.border}`,
             overflow: "hidden",
             opacity: fieldIn,
-            transform: `translateY(${(1 - fieldIn) * 10 * u}px)`,
+            translate: `0 ${(1 - fieldIn) * 10 * u}px`,
           }}
         >
           <SearchGlyph size={20 * u} color={typed > 0 ? accentColor : palette.faint} />
@@ -252,13 +252,13 @@ export const SearchResultsPopulate: React.FC<SearchResultsPopulateProps> = ({
                 width: "38%",
                 height: "100%",
                 background: accentColor,
-                transform: `translateX(${
+                translate: `${
                   interpolate(
                     (frame / (fps * 0.62)) % 1,
                     [0, 1],
                     [-100, 264],
                   )
-                }%)`,
+                }%`,
               }}
             />
           </div>
@@ -336,7 +336,7 @@ export const SearchResultsPopulate: React.FC<SearchResultsPopulateProps> = ({
                     isTop && lit > 0.5 ? `${accentColor}7A` : palette.border
                   }`,
                   opacity: rowIn,
-                  transform: `translateX(${(1 - rowIn) * 26 * u}px)`,
+                  translate: `${(1 - rowIn) * 26 * u}px`,
                 }}
               >
                 <div style={{ minWidth: 0, flex: 1 }}>
@@ -383,7 +383,7 @@ export const SearchResultsPopulate: React.FC<SearchResultsPopulateProps> = ({
                       letterSpacing: "0.08em",
                       textTransform: "uppercase",
                       opacity: lit,
-                      transform: `scale(${interpolate(lit, [0, 1], [0.85, 1])})`,
+                      scale: `${interpolate(lit, [0, 1], [0.85, 1])}`,
                     }}
                   >
                     {topLabel}

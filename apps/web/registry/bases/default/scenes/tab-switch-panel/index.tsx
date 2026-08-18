@@ -208,7 +208,7 @@ export const TabSwitchPanel: React.FC<TabSwitchPanelProps> = ({
           overflow: "hidden",
           clipPath: `inset(0 0 ${(1 - open) * 100}% 0 round ${20 * u}px)`,
           opacity: 1 - exit,
-          transform: `translateY(${(1 - windowIn) * 24 * u + exit * 32 * u}px)`,
+          translate: `0 ${(1 - windowIn) * 24 * u + exit * 32 * u}px`,
         }}
       >
         {windowTitle ? (
@@ -329,12 +329,12 @@ export const TabSwitchPanel: React.FC<TabSwitchPanelProps> = ({
                     inset: 0,
                     opacity: visible,
                     // Depth carries the swap that the short travel cannot.
-                    transform: `scale(${1 - Math.abs(distance) * 0.035})`,
+                    scale: `${1 - Math.abs(distance) * 0.035}`,
                   }}
                 >
                   <div
                     style={{
-                      transform: `translateX(${-distance * 18 * u}px)`,
+                      translate: `${-distance * 18 * u}px`,
                     }}
                   >
                     <div
@@ -383,9 +383,9 @@ export const TabSwitchPanel: React.FC<TabSwitchPanelProps> = ({
                           // The deepest row is the travel budget: 26u × the
                           // 0.74 distance at which a panel fades out is still
                           // inside the card's own 22u of bleed.
-                          transform: `translateX(${
+                          translate: `${
                             -distance * (18 + rowIndex * 4) * u
-                          }px)`,
+                          }px`,
                         }}
                       >
                         <span

@@ -164,7 +164,7 @@ export const RoadmapLanes: React.FC<RoadmapLanesProps> = ({
         style={{
           width: boardW,
           opacity: 1 - exit,
-          transform: `translateY(${exit * 26 * u}px)`,
+          translate: `0 ${exit * 26 * u}px`,
         }}
       >
         {title ? (
@@ -176,7 +176,7 @@ export const RoadmapLanes: React.FC<RoadmapLanesProps> = ({
               fontWeight: 700,
               letterSpacing: "-0.02em",
               opacity: headIn,
-              transform: `translateY(${(1 - headIn) * 12 * u}px)`,
+              translate: `0 ${(1 - headIn) * 12 * u}px`,
             }}
           >
             {title}
@@ -206,7 +206,7 @@ export const RoadmapLanes: React.FC<RoadmapLanesProps> = ({
                   alignItems: "center",
                   gap: 9 * u,
                   opacity: laneIn,
-                  transform: `translateX(${(1 - laneIn) * -12 * u}px)`,
+                  translate: `${(1 - laneIn) * -12 * u}px`,
                 }}
               >
                 <span
@@ -263,7 +263,7 @@ export const RoadmapLanes: React.FC<RoadmapLanesProps> = ({
                         gap: 8 * u,
                         padding: `0 ${11 * u}px`,
                         opacity: fade * (lane.dashed ? 0.72 : 1),
-                        transform: `translateX(${(1 - arrive) * 16 * u}px)`,
+                        translate: `${(1 - arrive) * 16 * u}px`,
                       }}
                     >
                       {lane.showProgress ? (

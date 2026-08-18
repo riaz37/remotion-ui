@@ -6,6 +6,8 @@ import {
   fadeUpAt,
   introBounceIn,
   morphProgressAt,
+  replyDotOpacity,
+  sendBeatAt,
   stageScale,
   useTypewriter,
 } from "@/remotion/lib/ai-composer-utils";
@@ -180,7 +182,7 @@ function IconButton({
 
 export const ClaudeChat: React.FC<ClaudeChatProps> = ({
   placeholder = "Try: draft an email · summarize a doc · plan your week",
-  prompt = "Draft a launch tweet for our new release",
+  prompt = "Draft a launch tweet",
   modelName = "Opus 4.8",
   modelTier = "Max",
   accentColor = "#D97757",
@@ -191,24 +193,36 @@ export const ClaudeChat: React.FC<ClaudeChatProps> = ({
   const { width, height, fps } = useVideoConfig();
   const t = THEMES[theme];
 
-  const refW = 1280;
-  const scale = stageScale(width, height);
+  // Reference box is cropped to the composer itself. A full 16:9 page left the
+  // card as a thin bar on an empty field once the frame was scaled to a tile.
+  const refW = 980;
+  const refH = 560;
+  const scale = stageScale(width, height, refW, refH);
+  const fs = frame * speed;
 
   const tw = useTypewriter(prompt, {
     cps: TYPING_CPS,
     speed,
     startFrame: AI_TYPING_START,
   });
-  const showText = tw.count > 0;
   const morph = morphProgressAt(frame, { fps, speed });
+  const send = sendBeatAt(fs, {
+    promptLength: prompt.length,
+    fps,
+    cps: TYPING_CPS,
+    startFrame: AI_TYPING_START,
+  });
+  // Once it is sent the composer is empty again and the prompt is in the thread.
+  const showText = tw.count > 0 && !send.sent;
 
-  const intro = introBounceIn(frame * speed, fps);
-  const cardFade = fadeUpAt(frame * speed, [6, 22]);
+  const intro = introBounceIn(fs, fps);
+  const cardFade = fadeUpAt(fs, [6, 22]);
 
-  const cardWidth = 860;
+  const cardWidth = 900;
   const cardLeft = (refW - cardWidth) / 2;
-  const iconBtnSize = 36;
-  const morphSize = 40;
+  const cardTop = 200;
+  const iconBtnSize = 44;
+  const morphSize = 48;
 
   return (
     <AbsoluteFill style={{ background: t.page, fontFamily }}>
@@ -218,30 +232,86 @@ export const ClaudeChat: React.FC<ClaudeChatProps> = ({
           left: "50%",
           top: "50%",
           width: refW,
-          height: 720,
-          transform: `translate(-50%, -50%) scale(${scale})`,
+          height: refH,
+          translate: "-50% -50%",
+          scale: `${scale}`,
         }}
       >
+        {send.bubble > 0 ? (
+          <div
+            style={{
+              position: "absolute",
+              left: cardLeft,
+              top: 62,
+              width: cardWidth,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-end",
+              gap: 18,
+              opacity: send.bubble,
+              translate: `0 ${(1 - send.bubble) * 22}px`,
+            }}
+          >
+            <div
+              style={{
+                maxWidth: cardWidth * 0.72,
+                padding: "18px 26px",
+                borderRadius: 22,
+                background: t.cardBg,
+                border: `1px solid ${t.cardBorder}`,
+                color: t.fg,
+                fontSize: 25,
+                lineHeight: 1.35,
+              }}
+            >
+              {prompt}
+            </div>
+            <div
+              style={{
+                alignSelf: "flex-start",
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                opacity: send.reply,
+              }}
+            >
+              {[0, 1, 2].map((dot) => (
+                <span
+                  key={dot}
+                  style={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: "100%",
+                    background: accentColor,
+                    opacity: replyDotOpacity(fs, dot, fps),
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        ) : null}
+
         <div
           style={{
             position: "absolute",
             left: cardLeft,
-            top: 300,
+            top: cardTop,
             width: cardWidth,
             background: t.cardBg,
             border: `1px solid ${t.cardBorder}`,
-            borderRadius: 24,
+            borderRadius: 26,
             boxShadow: "0 8px 30px -12px rgba(31,30,29,0.12)",
             opacity: cardFade.opacity,
-            transform: `translateY(${cardFade.translateY + intro.translateY}px) scale(${intro.scale})`,
+            translate: `0 ${cardFade.translateY + intro.translateY}px`,
+            scale: `${intro.scale * (1 - 0.02 * send.press)}`,
             transformOrigin: "center top",
           }}
         >
           <div
             style={{
-              padding: "26px 28px",
-              minHeight: 58,
-              fontSize: 21,
+              padding: "34px 32px",
+              minHeight: 96,
+              fontSize: 26,
               lineHeight: 1.3,
               display: "flex",
               alignItems: "center",
@@ -254,7 +324,7 @@ export const ClaudeChat: React.FC<ClaudeChatProps> = ({
                   color={t.fg}
                   blink={!tw.typing}
                   speed={speed}
-                  height={24}
+                  height={30}
                   radius={0}
                   marginLeft={1}
                   style={{
@@ -275,7 +345,7 @@ export const ClaudeChat: React.FC<ClaudeChatProps> = ({
                   color={t.fg}
                   blink={!tw.typing}
                   speed={speed}
-                  height={24}
+                  height={30}
                   radius={0}
                   marginLeft={1}
                   style={{
@@ -290,33 +360,33 @@ export const ClaudeChat: React.FC<ClaudeChatProps> = ({
 
           <div
             style={{
-              padding: "14px 18px",
+              padding: "16px 22px",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
             }}
           >
             <IconButton size={iconBtnSize} border={t.iconBtnBorder}>
-              <PlusIcon size={20} color={t.fg} />
+              <PlusIcon size={24} color={t.fg} />
             </IconButton>
 
-            <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span
-                  style={{ fontSize: 18, fontWeight: 500, color: t.fg }}
+                  style={{ fontSize: 22, fontWeight: 500, color: t.fg }}
                 >
                   {modelName}
                 </span>
                 <span
-                  style={{ fontSize: 18, fontWeight: 400, color: t.fgMuted }}
+                  style={{ fontSize: 22, fontWeight: 400, color: t.fgMuted }}
                 >
                   {modelTier}
                 </span>
-                <ChevronDown size={16} color={t.fgMuted} />
+                <ChevronDown size={19} color={t.fgMuted} />
               </div>
 
               <IconButton size={iconBtnSize} border={t.iconBtnBorder}>
-                <MicIcon size={20} color={t.fg} />
+                <MicIcon size={24} color={t.fg} />
               </IconButton>
 
               <div
@@ -337,10 +407,10 @@ export const ClaudeChat: React.FC<ClaudeChatProps> = ({
                     borderRadius: "100%",
                     border: `1px solid ${t.iconBtnBorder}`,
                     opacity: 1 - morph,
-                    transform: `scale(${1 - 0.1 * morph})`,
+                    scale: `${1 - 0.1 * morph}`,
                   }}
                 >
-                  <WaveformIcon size={22} color={t.fg} />
+                  <WaveformIcon size={26} color={t.fg} />
                 </div>
                 <div
                   style={{
@@ -349,13 +419,13 @@ export const ClaudeChat: React.FC<ClaudeChatProps> = ({
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    borderRadius: 10,
+                    borderRadius: 12,
                     background: accentColor,
                     opacity: morph,
-                    transform: `scale(${0.8 + 0.2 * morph})`,
+                    scale: `${(0.8 + 0.2 * morph) * (1 - 0.16 * send.press)}`,
                   }}
                 >
-                  <SendIcon size={22} />
+                  <SendIcon size={26} />
                 </div>
               </div>
             </div>

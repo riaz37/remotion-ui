@@ -179,7 +179,7 @@ export const PricingCard: React.FC<PricingCardProps> = ({
           overflow: "hidden",
           clipPath: `inset(0 0 ${(1 - open) * 100}% 0 round ${24 * u}px)`,
           opacity: 1 - exit,
-          transform: `translateY(${(1 - cardIn) * 24 * u + exit * 32 * u}px)`,
+          translate: `0 ${(1 - cardIn) * 24 * u + exit * 32 * u}px`,
         }}
       >
         {/* A single warm wash off the top-left corner. It sits under everything
@@ -199,7 +199,7 @@ export const PricingCard: React.FC<PricingCardProps> = ({
               alignItems: "center",
               gap: 10 * u,
               opacity: headIn,
-              transform: `translateY(${(1 - headIn) * 10 * u}px)`,
+              translate: `0 ${(1 - headIn) * 10 * u}px`,
             }}
           >
             <span
@@ -258,7 +258,7 @@ export const PricingCard: React.FC<PricingCardProps> = ({
                 fontVariantNumeric: "tabular-nums",
                 // The number lifts as it counts, so the roll has motion even on
                 // a tier whose price is a single digit.
-                transform: `translateY(${(1 - roll) * 10 * u}px)`,
+                translate: `0 ${(1 - roll) * 10 * u}px`,
                 opacity: roll > 0 ? 1 : 0,
               }}
             >
@@ -329,7 +329,7 @@ export const PricingCard: React.FC<PricingCardProps> = ({
                     alignItems: "center",
                     gap: 11 * u,
                     opacity: featureIn,
-                    transform: `translateX(${(1 - featureIn) * -10 * u}px)`,
+                    translate: `${(1 - featureIn) * -10 * u}px`,
                   }}
                 >
                   <svg width={18 * u} height={18 * u} viewBox="0 0 24 24" fill="none">
@@ -374,7 +374,7 @@ export const PricingCard: React.FC<PricingCardProps> = ({
                 fontWeight: 700,
                 letterSpacing: "0.01em",
                 opacity: Math.min(1, ctaIn * 1.4),
-                transform: `scale(${0.94 + ctaIn * 0.06})`,
+                scale: `${0.94 + ctaIn * 0.06}`,
                 boxShadow: `0 ${10 * u}px ${26 * u}px ${accentColor}33`,
               }}
             >

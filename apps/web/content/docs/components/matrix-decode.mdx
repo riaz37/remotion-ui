@@ -5,8 +5,21 @@ description: Matrix Decode text animation for Remotion.
 
 import { MatrixDecodePreview } from '@/components/previews/text-effects-previews';
 
-<ComponentPage name="matrix-decode" preview={MatrixDecodePreview} durationInFrames={60}>
+<ComponentPage name="matrix-decode" preview={MatrixDecodePreview} durationInFrames={120}>
 
-Matrix Decode text animation primitive.
+A resolve front sweeps the string left to right at a constant rate: everything
+behind it is the target text, everything ahead of it is a scrambled glyph, and
+the one character sitting on the front is tinted `hotColor`. A deterministic
+±2 character jitter — hashed off the character index, never `Math.random` —
+keeps the front from landing as a perfectly straight edge.
+
+`glyphs` is the pool the unresolved characters are drawn from. It has to be
+monospace-width in whatever `fontFamily` you pass: the classic full-width
+katakana are twice a latin advance, so a line rendered in them is twice as wide
+while it is still scrambled as it is once it has resolved, and it runs off the
+frame.
+
+The window matches the preview at 120 frames so the docs `<Player>` shows the
+same sweep the tile does.
 
 </ComponentPage>

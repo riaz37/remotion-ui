@@ -191,7 +191,7 @@ export const OrgChartBuild: React.FC<OrgChartBuildProps> = ({
         style={{
           width: chartW,
           opacity: 1 - exit,
-          transform: `translateY(${exit * 26 * u}px)`,
+          translate: `0 ${exit * 26 * u}px`,
         }}
       >
         {title ? (
@@ -203,7 +203,7 @@ export const OrgChartBuild: React.FC<OrgChartBuildProps> = ({
               fontWeight: 700,
               letterSpacing: "-0.02em",
               opacity: headIn,
-              transform: `translateY(${(1 - headIn) * 12 * u}px)`,
+              translate: `0 ${(1 - headIn) * 12 * u}px`,
             }}
           >
             {title}
@@ -286,7 +286,7 @@ export const OrgChartBuild: React.FC<OrgChartBuildProps> = ({
                   justifyContent: "center",
                   padding: `0 ${12 * u}px`,
                   opacity: fade,
-                  transform: `scale(${0.9 + pop * 0.1})`,
+                  scale: `${0.9 + pop * 0.1}`,
                 }}
               >
                 <div

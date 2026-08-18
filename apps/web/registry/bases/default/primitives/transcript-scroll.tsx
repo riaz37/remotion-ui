@@ -129,7 +129,7 @@ export const TranscriptScroll: React.FC<TranscriptScrollProps> = ({
             : undefined,
       }}
     >
-      <div style={{ transform: `translateY(${-scroll}px)` }}>
+      <div style={{ translate: `0 ${-scroll}px` }}>
         {blocks.map((block, index) => {
           const isActive = index === activeIndex;
           const isRead = index < activeIndex;

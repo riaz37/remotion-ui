@@ -260,7 +260,9 @@ describe("displacement core", () => {
     const rest = displacementFrame(0, 1920, { scale: 120, blur: 20 });
     expect(rest.scale).toBe(0);
     expect(rest.blur).toBe(0);
-    expect(rest.overscan).toBeCloseTo(1 + 4 / 1920, 6);
+    // At rest there is no drag to hide, so the layer is not scaled at all —
+    // "exactly untouched" includes the overscan.
+    expect(rest.overscan).toBe(1);
   });
 
   it("peaks in the middle of the cut", () => {

@@ -56,21 +56,33 @@ type TransitionConfig = {
   timing: unknown;
 };
 
+/**
+ * `firstScene` / `secondScene` exist for presentations whose *midpoint* is the
+ * one frame with nothing to show — a card flip is edge-on exactly halfway
+ * through, so centring the cut on frame 60 parks the audit's 50% sample on a
+ * bare backdrop. Moving the cut earlier keeps the pair filling the window
+ * (`first + second - TRANSITION_FRAMES` must equal the composition length)
+ * while putting a turned, shaded face under the sample.
+ */
 function TransitionSeriesPreview({
   transition,
+  firstScene = SCENE_DURATION,
+  secondScene = SCENE_DURATION,
 }: {
   transition: TransitionConfig;
+  firstScene?: number;
+  secondScene?: number;
 }) {
   return (
     <AbsoluteFill>
       <TransitionSeries>
-        <TransitionSeries.Sequence durationInFrames={SCENE_DURATION}>
+        <TransitionSeries.Sequence durationInFrames={firstScene}>
           <BeforeScene />
         </TransitionSeries.Sequence>
         <TransitionSeries.Transition
           {...(transition as ComponentProps<typeof TransitionSeries.Transition>)}
         />
-        <TransitionSeries.Sequence durationInFrames={SCENE_DURATION}>
+        <TransitionSeries.Sequence durationInFrames={secondScene}>
           <AfterScene />
         </TransitionSeries.Sequence>
       </TransitionSeries>

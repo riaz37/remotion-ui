@@ -7,6 +7,13 @@ import { V0ComposerPreview } from '@/components/previews/ai-composer-previews';
 
 <ComponentPage name="v0" preview={V0ComposerPreview} durationInFrames={120}>
 
-Animated v0 builder with model selectors and mic-to-send morph.
+Animated v0 builder with model selectors and a mic-to-send morph. The prompt is
+typed, the send button presses, and the prompt rises into the thread with the
+reply dots pulsing under it — the beat is scheduled off the prompt length by
+`sendBeatAt`, so a longer prompt pushes the submit later instead of running past
+the end of the clip.
+
+The reference box is cropped to the greeting-plus-composer band rather than a
+full 1280x720 page, so the composer fills the frame at tile size.
 
 </ComponentPage>

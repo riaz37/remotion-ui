@@ -134,10 +134,10 @@ export const LowerThird: React.FC<LowerThirdProps> = ({
               isRight ? (1 - open) * 100 : 0
             }% round ${16 * u}px)`,
             opacity: 1 - exit,
-            transform: `translateX(${
+            translate: `${
               (1 - plate) * (isRight ? 40 : -40) * u +
               exit * (isRight ? 60 : -60) * u
-            }px)`,
+            }px`,
             display: "flex",
             alignItems: "center",
             gap: 16 * u,
@@ -157,7 +157,7 @@ export const LowerThird: React.FC<LowerThirdProps> = ({
                   whiteSpace: "nowrap",
                   textOverflow: "ellipsis",
                   overflow: "hidden",
-                  transform: `translateY(${(1 - titleIn) * 100}%)`,
+                  translate: `0 ${(1 - titleIn) * 100}%`,
                 }}
               >
                 {title}
@@ -174,7 +174,7 @@ export const LowerThird: React.FC<LowerThirdProps> = ({
                   textOverflow: "ellipsis",
                   overflow: "hidden",
                   opacity: subtitleIn,
-                  transform: `translateY(${(1 - subtitleIn) * 8 * u}px)`,
+                  translate: `0 ${(1 - subtitleIn) * 8 * u}px`,
                 }}
               >
                 {subtitle}
@@ -196,7 +196,7 @@ export const LowerThird: React.FC<LowerThirdProps> = ({
                 letterSpacing: "0.1em",
                 textTransform: "uppercase",
                 opacity: badgeIn,
-                transform: `scale(${interpolate(badgeIn, [0, 1], [0.86, 1])})`,
+                scale: `${interpolate(badgeIn, [0, 1], [0.86, 1])}`,
               }}
             >
               {badge}

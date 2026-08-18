@@ -46,6 +46,17 @@ export type SrtCaptionTrackProps = {
   combineTokensWithinMilliseconds?: number;
   /** Shift the whole track. Positive delays it. */
   offsetInFrames?: number;
+  /**
+   * Hold each page on screen until the next one starts.
+   *
+   * A subtitle cue is routinely longer than one page, so the pager splits it and
+   * `getPageSequenceTiming` caps each page at `combineTokensWithinMilliseconds`.
+   * On a continuous transcript that leaves a hole between the end of one page
+   * and the start of the next — blank frames in the middle of somebody talking.
+   * A subtitle file has no such holes, so the default closes them. Set `false`
+   * to let a page clear when its own tokens run out.
+   */
+  holdPages?: boolean;
   /** Draws one page. Defaults to `<CaptionHighlight />`. */
   renderPage?: (page: TikTokPage, index: number) => ReactNode;
   /** Passed to the default renderer. Ignored when `renderPage` is given. */
@@ -64,6 +75,7 @@ export const SrtCaptionTrack: React.FC<SrtCaptionTrackProps> = ({
   wordTiming = "distribute",
   combineTokensWithinMilliseconds = DEFAULT_CAPTION_PAGE_MS,
   offsetInFrames = 0,
+  holdPages = true,
   renderPage,
   activeColor = "#ff6b00",
   inactiveColor = "#ffffff",
@@ -127,12 +139,19 @@ export const SrtCaptionTrack: React.FC<SrtCaptionTrackProps> = ({
   return (
     <div className={className} style={style}>
       {pages.map((page, index) => {
-        const { startFrame, durationInFrames } = getPageSequenceTiming(
-          pages,
-          index,
-          fps,
-          combineTokensWithinMilliseconds,
-        );
+        const { startFrame, durationInFrames: pagedFrames } =
+          getPageSequenceTiming(
+            pages,
+            index,
+            fps,
+            combineTokensWithinMilliseconds,
+          );
+
+        const nextPage = pages[index + 1];
+        const durationInFrames =
+          holdPages && nextPage
+            ? (nextPage.startMs / 1000) * fps - startFrame
+            : pagedFrames;
 
         if (durationInFrames <= 0) {
           return null;

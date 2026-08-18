@@ -208,7 +208,7 @@ export const FormFillSequence: React.FC<FormFillSequenceProps> = ({
           // The card wipes open from its own top edge, then drops away.
           clipPath: `inset(0 0 ${(1 - open) * 100}% 0 round ${22 * u}px)`,
           opacity: 1 - exit,
-          transform: `translateY(${(1 - card) * 26 * u + exit * 34 * u}px)`,
+          translate: `0 ${(1 - card) * 26 * u + exit * 34 * u}px`,
         }}
       >
         {title ? (
@@ -220,7 +220,7 @@ export const FormFillSequence: React.FC<FormFillSequenceProps> = ({
                 fontWeight: 700,
                 lineHeight: 1.15,
                 letterSpacing: "-0.02em",
-                transform: `translateY(${(1 - titleIn) * 100}%)`,
+                translate: `0 ${(1 - titleIn) * 100}%`,
               }}
             >
               {title}
@@ -271,7 +271,7 @@ export const FormFillSequence: React.FC<FormFillSequenceProps> = ({
                 key={field.label}
                 style={{
                   opacity: rowIn,
-                  transform: `translateY(${(1 - rowIn) * 10 * u}px)`,
+                  translate: `0 ${(1 - rowIn) * 10 * u}px`,
                 }}
               >
                 <div
@@ -337,7 +337,7 @@ export const FormFillSequence: React.FC<FormFillSequenceProps> = ({
                     style={{
                       display: "flex",
                       opacity: check,
-                      transform: `scale(${interpolate(check, [0, 1], [0.7, 1])})`,
+                      scale: `${interpolate(check, [0, 1], [0.7, 1])}`,
                     }}
                   >
                     <CheckGlyph size={20 * u} color={validColor} progress={check} />
@@ -364,11 +364,11 @@ export const FormFillSequence: React.FC<FormFillSequenceProps> = ({
             color: armed > 0.5 ? "#0B0C11" : palette.dim,
             fontSize: 19 * u,
             fontWeight: 600,
-            transform: `scale(${interpolate(
+            scale: `${interpolate(
               success,
               [0, 0.5, 1],
               [1, 1.03, 1],
-            )})`,
+            )}`,
           }}
         >
           {success > 0.5 ? (

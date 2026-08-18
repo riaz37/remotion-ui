@@ -109,7 +109,7 @@ export const ZoomPanFrame: React.FC<ZoomPanFrameProps> = ({
 
   const mediaStyle = {
     ...getMediaObjectFitStyle(fit),
-    transform: `scale(${scale})`,
+    scale: `${scale}`,
     transformOrigin: `${originX}% ${originY}%`,
   };
 
@@ -157,7 +157,7 @@ export const ZoomPanFrame: React.FC<ZoomPanFrameProps> = ({
             fontSize: 22 * u,
             fontWeight: 500,
             opacity: labelIn,
-            transform: `translateY(${(1 - labelIn) * 14 * u}px)`,
+            translate: `0 ${(1 - labelIn) * 14 * u}px`,
           }}
         >
           <span

@@ -122,7 +122,7 @@ export const NewsTickerBar: React.FC<NewsTickerBarProps> = ({
           borderTop: `${2 * u}px solid ${accentColor}`,
           boxShadow: `0 ${-14 * u}px ${40 * u}px ${palette.shadow}`,
           // Rises from the frame edge, then drops back through it.
-          transform: `translateY(${(1 - bar) * barHeight + exit * barHeight}px)`,
+          translate: `0 ${(1 - bar) * barHeight + exit * barHeight}px`,
           opacity: open,
           overflow: "hidden",
         }}
@@ -172,7 +172,7 @@ export const NewsTickerBar: React.FC<NewsTickerBarProps> = ({
                 display: "flex",
                 alignItems: "center",
                 whiteSpace: "nowrap",
-                transform: `translateX(${offset}px)`,
+                translate: `${offset}px`,
               }}
             >
               {[0, 1].map((copy) => (
@@ -244,7 +244,7 @@ export const NewsTickerBar: React.FC<NewsTickerBarProps> = ({
               textOverflow: "ellipsis",
               overflow: "hidden",
               opacity: straplineIn,
-              transform: `translateY(${(1 - straplineIn) * 6 * u}px)`,
+              translate: `0 ${(1 - straplineIn) * 6 * u}px`,
             }}
           >
             {strapline}

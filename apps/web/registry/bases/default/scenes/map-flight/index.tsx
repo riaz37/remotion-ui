@@ -219,7 +219,7 @@ const EndpointLabel: React.FC<{
   <div
     style={{
       opacity: reveal,
-      transform: `translateY(${(1 - reveal) * 12}px)`,
+      translate: `0 ${(1 - reveal) * 12}px`,
       padding: `${scaleFont(10, width)}px ${scaleFont(18, width)}px`,
       borderRadius: 12,
       background: "rgba(8, 8, 16, 0.82)",

@@ -131,7 +131,7 @@ export const DonutChart: React.FC<DonutChartProps> = ({
         // The exit dismisses the whole chart rather than unwinding the sweep:
         // a ring that retracts reads as data being withdrawn.
         opacity: 1 - clamp01(exit / 0.7),
-        transform: `scale(${1 - exit * 0.06})`,
+        scale: `${1 - exit * 0.06}`,
       }}
     >
       <div style={{ position: "relative", width: size, height: size }}>
@@ -220,7 +220,7 @@ export const DonutChart: React.FC<DonutChartProps> = ({
                 // Each row arrives with its own slice, so the legend reads as
                 // a running commentary instead of a caption bolted on at the end.
                 opacity: clamp01(segment.progress * 1.6),
-                transform: `translateX(${(1 - segment.progress) * size * 0.05}px)`,
+                translate: `${(1 - segment.progress) * size * 0.05}px`,
               }}
             >
               <span

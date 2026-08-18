@@ -13,7 +13,7 @@ export const CalloutSpotlightPreview: React.FC = () => (
       subtitle="Use coordinates to highlight a product region."
       backgroundSrc={DEMO_MEDIA_PLAIN_SRC}
       target={{ x: 84, y: 88, width: 300, height: 210 }}
-      holdSeconds={3.4}
+      holdSeconds={3.28}
     />
   </ScenePreviewPlate>
 );

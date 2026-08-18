@@ -92,7 +92,7 @@ export const DepthOfFieldBlur: React.FC<DepthOfFieldBlurProps> = ({
             style={{
               filter: blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : undefined,
               opacity: 1 - dim * distance,
-              transform: `scale(${(1 + breathe * distance).toFixed(4)})`,
+              scale: `${(1 + breathe * distance).toFixed(4)}`,
               willChange: "filter",
               ...layer.style,
             }}

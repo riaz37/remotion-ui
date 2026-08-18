@@ -24,6 +24,11 @@ export type DataFlowPipesProps = {
   unit?: string;
   /** How many payloads are pushed through the pipeline. */
   packets?: number;
+  /**
+   * Seconds the drained pipeline holds before it retreats. Omit to leave it on
+   * screen for the rest of the scene.
+   */
+  holdSeconds?: number;
   backgroundColor?: string;
   accentColor?: string;
   theme?: "dark" | "light";
@@ -51,6 +56,7 @@ const T = {
   hop: 0.52,
   /** How long a node stays lit after a payload lands on it. */
   pulse: 0.5,
+  exitFor: 0.42,
 } as const;
 
 const clamp = {
@@ -86,6 +92,7 @@ export const DataFlowPipes: React.FC<DataFlowPipesProps> = ({
   stages = DEFAULT_STAGES,
   unit = "clips",
   packets = 9,
+  holdSeconds,
   backgroundColor,
   accentColor = "#2DD4BF",
   theme = "dark",
@@ -109,47 +116,65 @@ export const DataFlowPipes: React.FC<DataFlowPipesProps> = ({
     h: height - safe.paddingTop - safe.paddingBottom,
   };
   const portrait = height > width;
-  const u = Math.min(stage.w / 1120, stage.h / 620);
   const list = stages.slice(0, 5);
   const count = list.length;
   const hops = Math.max(count - 1, 1);
 
-  const nodeW = portrait
-    ? Math.min(420 * u, stage.w * 0.72)
-    : Math.min(232 * u, stage.w / count - 26 * u);
-  const nodeH = 134 * u;
+  // Landscape wraps four or five stages onto two rows. A single band across the
+  // middle left the top third and bottom third of the frame empty and forced
+  // the node labels down to a few pixels at tile size.
+  const columns = portrait ? 1 : count <= 3 ? count : Math.ceil(count / 2);
+  const rowCount = Math.ceil(count / columns);
+  const cellW = stage.w / columns;
+  const cellH = stage.h / rowCount;
 
-  // Alternating cross-axis offsets give the run its shape, so the pipes read
-  // as plumbing rather than as one straight rule through the middle.
-  const swing = portrait ? stage.w * 0.08 : stage.h * 0.085;
+  const u = portrait
+    ? Math.min(stage.w / 560, stage.h / 900)
+    : Math.min(stage.w / 780, stage.h / 420);
+  const nodeW = Math.min((portrait ? 440 : 340) * u, cellW - 40 * u);
+  const nodeH = Math.min(170 * u, cellH - 46 * u);
+
+  /** Serpentine placement: each row runs back the way the last one came, so the
+      flow never jumps across the frame between rows. */
   const center = (index: number) => {
-    const along = ((index + 0.5) / count) * (portrait ? stage.h : stage.w);
-    const across =
-      (portrait ? stage.w : stage.h) / 2 +
-      (index % 2 === 0 ? -swing : swing) * (count > 2 ? 1 : 0);
-    return portrait ? { x: across, y: along } : { x: along, y: across };
+    const row = Math.floor(index / columns);
+    const slot = index % columns;
+    const column = row % 2 === 0 ? slot : columns - 1 - slot;
+    // With a single row the stages alternate above and below the mid line, which
+    // is what gives the run its plumbing shape.
+    const swing = rowCount === 1 && count > 2 ? stage.h * 0.085 : 0;
+    return {
+      x: (column + 0.5) * cellW,
+      y: (row + 0.5) * cellH + (index % 2 === 0 ? -swing : swing),
+    };
   };
 
-  /** Pipe between two stages, leaving and entering along the flow axis so the
-      run reads as plumbing rather than as a diagonal rule. */
+  /** Pipe between two stages, leaving and entering along whichever axis
+      dominates the gap so the run reads as plumbing rather than a diagonal. */
   const pipePath = (index: number) => {
     const from = center(index);
     const to = center(index + 1);
-    const exit = portrait
-      ? { x: from.x, y: from.y + nodeH / 2 }
-      : { x: from.x + nodeW / 2, y: from.y };
-    const entry = portrait
-      ? { x: to.x, y: to.y - nodeH / 2 }
-      : { x: to.x - nodeW / 2, y: to.y };
-    const bend = portrait
-      ? Math.abs(entry.y - exit.y) * 0.55
-      : Math.abs(entry.x - exit.x) * 0.55;
-    const c1 = portrait
-      ? { x: exit.x, y: exit.y + bend }
-      : { x: exit.x + bend, y: exit.y };
-    const c2 = portrait
-      ? { x: entry.x, y: entry.y - bend }
-      : { x: entry.x - bend, y: entry.y };
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    const horizontal = Math.abs(dx) >= Math.abs(dy);
+    const sx = dx < 0 ? -1 : 1;
+    const sy = dy < 0 ? -1 : 1;
+    const exit = horizontal
+      ? { x: from.x + (sx * nodeW) / 2, y: from.y }
+      : { x: from.x, y: from.y + (sy * nodeH) / 2 };
+    const entry = horizontal
+      ? { x: to.x - (sx * nodeW) / 2, y: to.y }
+      : { x: to.x, y: to.y - (sy * nodeH) / 2 };
+    const bend =
+      (horizontal
+        ? Math.abs(entry.x - exit.x)
+        : Math.abs(entry.y - exit.y)) * 0.55;
+    const c1 = horizontal
+      ? { x: exit.x + sx * bend, y: exit.y }
+      : { x: exit.x, y: exit.y + sy * bend };
+    const c2 = horizontal
+      ? { x: entry.x - sx * bend, y: entry.y }
+      : { x: entry.x, y: entry.y - sy * bend };
     return `M ${exit.x} ${exit.y} C ${c1.x} ${c1.y} ${c2.x} ${c2.y} ${entry.x} ${entry.y}`;
   };
 
@@ -199,6 +224,17 @@ export const DataFlowPipes: React.FC<DataFlowPipesProps> = ({
   const drained = ease(lastArrival, lastArrival + 0.45);
   const strokeW = 3.2 * u;
 
+  // Exits accelerate away; entrances decelerate in. Never ease-out an exit.
+  const exit =
+    holdSeconds === undefined
+      ? 0
+      : interpolate(
+          frame,
+          [at(holdSeconds), at(holdSeconds + T.exitFor)],
+          [0, 1],
+          { easing: EASING.exit, ...clamp },
+        );
+
   return (
     <div
       style={{
@@ -215,13 +251,20 @@ export const DataFlowPipes: React.FC<DataFlowPipesProps> = ({
           position: "absolute",
           inset: 0,
           background: `radial-gradient(ellipse 70% 60% at 50% 50%, ${accentColor}14, transparent 72%)`,
+          opacity: 1 - exit,
         }}
       />
 
       <svg
         width={width}
         height={height}
-        style={{ position: "absolute", left: 0, top: 0 }}
+        style={{
+          position: "absolute",
+          left: 0,
+          top: 0,
+          opacity: 1 - exit,
+          translate: `0 ${exit * 26 * u}px`,
+        }}
       >
         <g transform={`translate(${stage.x} ${stage.y})`}>
           {pipes.map((d, index) => {
@@ -288,6 +331,8 @@ export const DataFlowPipes: React.FC<DataFlowPipesProps> = ({
           top: stage.y,
           width: stage.w,
           height: stage.h,
+          opacity: 1 - exit,
+          translate: `0 ${exit * 26 * u}px`,
         }}
       >
         {list.map((node, index) => {
@@ -321,9 +366,13 @@ export const DataFlowPipes: React.FC<DataFlowPipesProps> = ({
                   38 * u * heat
                 }px ${accentColor}44`,
                 opacity: enter,
-                transform: `scale(${
-                  interpolate(enter, [0, 1], [0.9, 1]) + heat * 0.02
-                })`,
+                scale: `${
+                  interpolate(enter, [0, 1], [0.9, 1], {
+                    output: "perceptual-scale",
+                    ...clamp,
+                  }) +
+                  heat * 0.02
+                }`,
                 padding: `${16 * u}px ${18 * u}px`,
                 display: "flex",
                 flexDirection: "column",

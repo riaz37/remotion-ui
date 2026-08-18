@@ -22,6 +22,12 @@ export type TitleCardProps = {
   backgroundColor?: string;
   accentColor?: string;
   theme?: "dark" | "light";
+  /**
+   * Seconds after which the scene leaves. Omit to hold — correct inside a
+   * `TransitionSeries`, where the transition covers the tail, and wrong on
+   * its own, where the card stands still for the rest of the clip.
+   */
+  holdSeconds?: number;
   /** Animation speed multiplier. */
   speed?: number;
 };
@@ -34,9 +40,15 @@ const T = {
   lineStagger: 0.09,
   subtitle: 0.72,
   meta: 0.9,
-  /** Sweep across the headline once it is standing. */
+  /**
+   * Sweep across the headline once it is standing. It has to finish inside the
+   * shortest window a host gives this scene — `browser-flow` runs it as a
+   * 48-frame bumper at `speed={1.4}`, i.e. 2.24s of scene time — so the end of
+   * the sweep is what caps `sweepFor`, not the preview.
+   */
   sweep: 0.95,
-  sweepFor: 0.85,
+  sweepFor: 1.25,
+  exitFor: 0.4,
 } as const;
 
 const clamp = {
@@ -79,6 +91,7 @@ export const TitleCard: React.FC<TitleCardProps> = ({
   backgroundColor,
   accentColor = "#E8B86D",
   theme = "dark",
+  holdSeconds,
   speed = 1,
 }) => {
   const frame = useCurrentFrame();
@@ -89,6 +102,16 @@ export const TitleCard: React.FC<TitleCardProps> = ({
   const at = (seconds: number) => (seconds * fps) / speed;
   const ease = (from: number, to: number, easing = EASING.enter) =>
     interpolate(frame, [at(from), at(to)], [0, 1], { easing, ...clamp });
+  // Exits accelerate away; entrances decelerate in. Never ease-out an exit.
+  const exit =
+    holdSeconds === undefined
+      ? 0
+      : interpolate(
+          frame,
+          [at(holdSeconds), at(holdSeconds + T.exitFor)],
+          [0, 1],
+          { easing: EASING.exit, ...clamp },
+        );
 
   const stage = {
     w: width - safe.paddingLeft - safe.paddingRight,
@@ -108,6 +131,8 @@ export const TitleCard: React.FC<TitleCardProps> = ({
   const subtitleIn = subtitle ? ease(T.subtitle, T.subtitle + 0.5) : 0;
   const metaIn = meta ? ease(T.meta, T.meta + 0.5) : 0;
   const sweep = ease(T.sweep, T.sweep + T.sweepFor, EASING.editorial);
+  /** Ramp the glow on and off. A boolean gate cuts it in and out. */
+  const sweepOpacity = interpolate(sweep, [0, 0.08, 0.92, 1], [0, 1, 1, 0], clamp);
   /** Slow push under the whole card, so a long hold never sits dead still. */
   const push = ease(0, 7, EASING.editorial);
 
@@ -129,7 +154,9 @@ export const TitleCard: React.FC<TitleCardProps> = ({
           position: "absolute",
           inset: 0,
           background: `radial-gradient(ellipse 62% 48% at 50% 46%, ${accentColor}1F, transparent 72%)`,
-          transform: `scale(${interpolate(push, [0, 1], [1, 1.12])})`,
+          scale: interpolate(push, [0, 1], [1, 1.12], {
+            output: "perceptual-scale",
+          }),
         }}
       />
       <div
@@ -152,7 +179,11 @@ export const TitleCard: React.FC<TitleCardProps> = ({
           alignItems: "center",
           gap: 18 * u,
           textAlign: "center",
-          transform: `scale(${interpolate(push, [0, 1], [1, 1.02])})`,
+          scale: interpolate(push, [0, 1], [1, 1.02], {
+            output: "perceptual-scale",
+          }),
+          opacity: 1 - exit,
+          translate: `0 ${exit * -26 * u}px`,
         }}
       >
         {eyebrow ? (
@@ -168,7 +199,7 @@ export const TitleCard: React.FC<TitleCardProps> = ({
               letterSpacing: "0.12em",
               textTransform: "uppercase",
               opacity: eyebrowIn,
-              transform: `translateY(${(1 - eyebrowIn) * 12 * u}px)`,
+              translate: `0 ${(1 - eyebrowIn) * 12 * u}px`,
             }}
           >
             {eyebrow}
@@ -204,7 +235,7 @@ export const TitleCard: React.FC<TitleCardProps> = ({
                 <span
                   style={{
                     display: "block",
-                    transform: `translateY(${(1 - lineIn) * 100}%)`,
+                    translate: `0 ${(1 - lineIn) * 100}%`,
                   }}
                 >
                   {line}
@@ -227,7 +258,7 @@ export const TitleCard: React.FC<TitleCardProps> = ({
               bottom: "-45%",
               overflow: "hidden",
               pointerEvents: "none",
-              opacity: sweep > 0 && sweep < 1 ? 1 : 0,
+              opacity: sweepOpacity,
             }}
           >
             <span
@@ -242,7 +273,7 @@ export const TitleCard: React.FC<TitleCardProps> = ({
                 background: `radial-gradient(ellipse 50% 42% at 50% 50%, ${accentColor}66, transparent 72%)`,
                 filter: `blur(${10 * u}px)`,
                 mixBlendMode: "plus-lighter",
-                transform: `translateX(${interpolate(sweep, [0, 1], [-110, 340])}%)`,
+                translate: `${interpolate(sweep, [0, 1], [-110, 340])}% 0`,
               }}
             />
           </span>
@@ -258,7 +289,7 @@ export const TitleCard: React.FC<TitleCardProps> = ({
               fontWeight: 500,
               lineHeight: 1.35,
               opacity: subtitleIn,
-              transform: `translateY(${(1 - subtitleIn) * 14 * u}px)`,
+              translate: `0 ${(1 - subtitleIn) * 14 * u}px`,
             }}
           >
             {subtitle}

@@ -7,6 +7,8 @@ import {
   fadeUpAt,
   introBounceIn,
   morphProgressAt,
+  replyDotOpacity,
+  sendBeatAt,
   stageScale,
   useTypewriter,
 } from "@/remotion/lib/ai-composer-utils";
@@ -157,7 +159,7 @@ function ArrowUpIcon({ size, color }: { size: number; color: string }) {
 export const V0Composer: React.FC<V0ComposerProps> = ({
   greeting = "What do you want to create?",
   placeholder = "Ask v0 to build…",
-  prompt = "a landing page for my SaaS with pricing and testimonials",
+  prompt = "a landing page with pricing",
   modelName = "v0 Max",
   projectName = "Project",
   theme = "dark",
@@ -167,26 +169,42 @@ export const V0Composer: React.FC<V0ComposerProps> = ({
   const { width, height, fps } = useVideoConfig();
   const t = THEMES[theme];
 
-  const refW = 1280;
-  const scale = stageScale(width, height);
+  // Reference box is cropped to the greeting-plus-composer band, the way
+  // `claude-chat` crops to its card. On the full 1280x720 page the composer was
+  // 14% of the frame area and the bottom 45% was empty page colour, which reads
+  // as a thin bar once the frame is scaled to a 308px tile.
+  const refW = 1000;
+  const refH = 560;
+  const scale = stageScale(width, height, refW, refH);
+  const fs = frame * speed;
 
   const tw = useTypewriter(prompt, {
     cps: AI_TYPING_CPS,
     speed,
     startFrame: AI_TYPING_START,
   });
-  const showText = tw.count > 0;
   const morph = morphProgressAt(frame, { fps, speed });
+  // The prompt has to land somewhere. Typing alone runs to the end of the
+  // window and the clip loops mid-word; the send beat is scheduled off the
+  // prompt length so it always follows the last character.
+  const send = sendBeatAt(fs, {
+    promptLength: prompt.length,
+    fps,
+    cps: AI_TYPING_CPS,
+    startFrame: AI_TYPING_START,
+  });
+  // Once it is sent the composer is empty again and the prompt is in the thread.
+  const showText = tw.count > 0 && !send.sent;
 
-  const intro = introBounceIn(frame * speed, fps);
-  const headingFade = fadeUpAt(frame * speed, [4, 20]);
-  const boxFade = fadeUpAt(frame * speed, [10, 26]);
+  const intro = introBounceIn(fs, fps);
+  const headingFade = fadeUpAt(fs, [4, 20]);
+  const boxFade = fadeUpAt(fs, [10, 26]);
 
-  const boxWidth = 880;
+  const boxWidth = 900;
   const boxLeft = (refW - boxWidth) / 2;
-  const boxTop = 270;
-  const boxHeight = 150;
-  const btnSize = 40;
+  const boxTop = 300;
+  const boxHeight = 170;
+  const btnSize = 48;
 
   return (
     <AbsoluteFill style={{ background: t.page, fontFamily }}>
@@ -196,22 +214,79 @@ export const V0Composer: React.FC<V0ComposerProps> = ({
           left: "50%",
           top: "50%",
           width: refW,
-          height: 720,
-          transform: `translate(-50%, -50%) scale(${scale})`,
+          height: refH,
+          translate: "-50% -50%",
+          scale: `${scale}`,
         }}
       >
+        {send.bubble > 0 ? (
+          <div
+            style={{
+              position: "absolute",
+              left: boxLeft,
+              top: 96,
+              width: boxWidth,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-end",
+              gap: 20,
+              opacity: send.bubble,
+              translate: `0 ${((1 - send.bubble) * 24).toFixed(2)}px`,
+            }}
+          >
+            <div
+              style={{
+                maxWidth: boxWidth * 0.74,
+                padding: "18px 26px",
+                borderRadius: 18,
+                background: t.boxBg,
+                border: `1px solid ${t.boxBorder}`,
+                color: t.fg,
+                fontSize: 26,
+                lineHeight: 1.35,
+              }}
+            >
+              {prompt}
+            </div>
+            <div
+              style={{
+                alignSelf: "flex-start",
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                opacity: send.reply,
+              }}
+            >
+              {[0, 1, 2].map((dot) => (
+                <span
+                  key={dot}
+                  style={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: "100%",
+                    background: t.fg,
+                    opacity: replyDotOpacity(fs, dot, fps),
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        ) : null}
+
         <div
           style={{
             position: "absolute",
             left: 0,
-            top: 150,
+            top: 168,
             width: refW,
             textAlign: "center",
-            fontSize: 44,
+            fontSize: 52,
             fontWeight: 700,
             color: t.fg,
-            opacity: headingFade.opacity,
-            transform: `translateY(${headingFade.translateY + intro.translateY * 0.4}px)`,
+            // The greeting is the empty state. It clears as the prompt leaves
+            // the composer, so the thread row above is never talking over it.
+            opacity: headingFade.opacity * (1 - send.bubble),
+            translate: `0 ${(headingFade.translateY + intro.translateY * 0.4).toFixed(2)}px`,
           }}
         >
           {greeting}
@@ -229,7 +304,10 @@ export const V0Composer: React.FC<V0ComposerProps> = ({
             borderRadius: 16,
             boxShadow: "0 8px 40px -16px rgba(0,0,0,0.8)",
             opacity: boxFade.opacity,
-            transform: `translateY(${boxFade.translateY + intro.translateY * 0.6}px) scale(${intro.scale})`,
+            translate: `0 ${(boxFade.translateY + intro.translateY * 0.6).toFixed(2)}px`,
+            // Dips on the send press, so the button reads as pressed rather
+            // than as the prompt simply vanishing.
+            scale: `${(intro.scale - 0.012 * send.press).toFixed(4)}`,
             transformOrigin: "center top",
             display: "flex",
             flexDirection: "column",
@@ -239,8 +317,8 @@ export const V0Composer: React.FC<V0ComposerProps> = ({
           <div
             style={{
               flex: 1,
-              padding: "18px 20px",
-              fontSize: 18,
+              padding: "22px 24px",
+              fontSize: 26,
               color: t.fg,
               display: "flex",
               alignItems: "flex-start",
@@ -254,8 +332,8 @@ export const V0Composer: React.FC<V0ComposerProps> = ({
                   color={t.fg}
                   blink={!tw.typing}
                   speed={speed}
-                  height={20}
-                  marginLeft={2}
+                  height={28}
+                  marginLeft={3}
                 />
               </span>
             ) : (
@@ -270,42 +348,42 @@ export const V0Composer: React.FC<V0ComposerProps> = ({
                   color={t.fg}
                   blink={!tw.typing}
                   speed={speed}
-                  height={20}
+                  height={28}
                 />
-                <span style={{ marginLeft: 6 }}>{placeholder}</span>
+                <span style={{ marginLeft: 8 }}>{placeholder}</span>
               </span>
             )}
           </div>
 
           <div
             style={{
-              padding: "12px 16px",
+              padding: "14px 18px",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <PlusIcon size={20} color={t.iconColor} />
+              <PlusIcon size={24} color={t.iconColor} />
               <div
                 style={{ display: "inline-flex", alignItems: "center", gap: 7 }}
               >
-                <V0LogoIcon size={18} color={t.fg} />
-                <span style={{ fontSize: 15, fontWeight: 500, color: t.fg }}>
+                <V0LogoIcon size={22} color={t.fg} />
+                <span style={{ fontSize: 19, fontWeight: 500, color: t.fg }}>
                   {modelName}
                 </span>
-                <ChevronDownIcon size={14} color={t.fgMuted} />
+                <ChevronDownIcon size={17} color={t.fgMuted} />
               </div>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
               <div
                 style={{ display: "inline-flex", alignItems: "center", gap: 4 }}
               >
-                <span style={{ fontSize: 15, color: t.fgMuted }}>
+                <span style={{ fontSize: 19, color: t.fgMuted }}>
                   {projectName}
                 </span>
-                <ChevronDownIcon size={14} color={t.fgMuted} />
+                <ChevronDownIcon size={17} color={t.fgMuted} />
               </div>
 
               <div
@@ -313,9 +391,11 @@ export const V0Composer: React.FC<V0ComposerProps> = ({
                   position: "relative",
                   width: btnSize,
                   height: btnSize,
-                  borderRadius: 10,
+                  borderRadius: 12,
                   background: t.btnBg,
                   flexShrink: 0,
+                  // Visible press on the send beat.
+                  scale: `${(1 - 0.12 * send.press).toFixed(4)}`,
                 }}
               >
                 <div
@@ -326,10 +406,10 @@ export const V0Composer: React.FC<V0ComposerProps> = ({
                     alignItems: "center",
                     justifyContent: "center",
                     opacity: 1 - morph,
-                    transform: `scale(${1 - 0.08 * morph})`,
+                    scale: `${(1 - 0.08 * morph).toFixed(4)}`,
                   }}
                 >
-                  <MicIcon size={20} color={t.btnFg} />
+                  <MicIcon size={24} color={t.btnFg} />
                 </div>
                 <div
                   style={{
@@ -339,10 +419,10 @@ export const V0Composer: React.FC<V0ComposerProps> = ({
                     alignItems: "center",
                     justifyContent: "center",
                     opacity: morph,
-                    transform: `scale(${0.85 + 0.15 * morph})`,
+                    scale: `${(0.85 + 0.15 * morph).toFixed(4)}`,
                   }}
                 >
-                  <ArrowUpIcon size={20} color={t.btnFg} />
+                  <ArrowUpIcon size={24} color={t.btnFg} />
                 </div>
               </div>
             </div>

@@ -119,7 +119,7 @@ export const AutoFitTitle: React.FC<AutoFitTitleProps> = ({
           position: "absolute",
           inset: 0,
           background: `radial-gradient(ellipse 64% 50% at 50% 46%, ${accentColor}1A, transparent 72%)`,
-          transform: `scale(${interpolate(push, [0, 1], [1, 1.1])})`,
+          scale: `${interpolate(push, [0, 1], [1, 1.1])}`,
         }}
       />
 
@@ -147,7 +147,7 @@ export const AutoFitTitle: React.FC<AutoFitTitleProps> = ({
               height: logoSize ?? 70 * u,
               objectFit: "contain",
               opacity: logoIn,
-              transform: `translateY(${(1 - logoIn) * 12 * u}px)`,
+              translate: `0 ${(1 - logoIn) * 12 * u}px`,
             }}
           />
         ) : null}
@@ -181,7 +181,7 @@ export const AutoFitTitle: React.FC<AutoFitTitleProps> = ({
                 <span
                   style={{
                     display: "block",
-                    transform: `translateY(${(1 - wordIn) * 100}%)`,
+                    translate: `0 ${(1 - wordIn) * 100}%`,
                   }}
                 >
                   {word}
@@ -201,7 +201,7 @@ export const AutoFitTitle: React.FC<AutoFitTitleProps> = ({
               fontWeight: 500,
               lineHeight: 1.35,
               opacity: subtitleIn,
-              transform: `translateY(${(1 - subtitleIn) * 12 * u}px)`,
+              translate: `0 ${(1 - subtitleIn) * 12 * u}px`,
             }}
           >
             {subtitle}

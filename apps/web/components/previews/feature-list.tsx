@@ -9,7 +9,7 @@ export const FeatureListPreview: React.FC = () => (
     <FeatureList
       title={DEMO_COPY.productLaunch.featureTitle}
       items={[...DEMO_COPY.productLaunch.featureItems]}
-      holdSeconds={3.4}
+      holdSeconds={3.28}
     />
   </ScenePreviewPlate>
 );

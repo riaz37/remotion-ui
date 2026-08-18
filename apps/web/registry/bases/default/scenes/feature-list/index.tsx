@@ -150,7 +150,7 @@ export const FeatureList: React.FC<FeatureListProps> = ({
           justifyContent: "center",
           gap: 30 * u,
           opacity: 1 - exit,
-          transform: `translateY(${exit * -26 * u}px)`,
+          translate: `0 ${exit * -26 * u}px`,
         }}
       >
         {eyebrow || title ? (
@@ -164,7 +164,7 @@ export const FeatureList: React.FC<FeatureListProps> = ({
                   letterSpacing: "0.12em",
                   textTransform: "uppercase",
                   opacity: eyebrowIn,
-                  transform: `translateY(${(1 - eyebrowIn) * 10 * u}px)`,
+                  translate: `0 ${(1 - eyebrowIn) * 10 * u}px`,
                 }}
               >
                 {eyebrow}
@@ -180,7 +180,7 @@ export const FeatureList: React.FC<FeatureListProps> = ({
                     fontWeight: 700,
                     lineHeight: 1.06,
                     letterSpacing: "-0.02em",
-                    transform: `translateY(${(1 - titleIn) * 100}%)`,
+                    translate: `0 ${(1 - titleIn) * 100}%`,
                   }}
                 >
                   {title}
@@ -208,7 +208,7 @@ export const FeatureList: React.FC<FeatureListProps> = ({
                     height: 1,
                     background: palette.border,
                     transformOrigin: "left center",
-                    transform: `scaleX(${rule})`,
+                    scale: `${rule} 1`,
                   }}
                 />
                 <div
@@ -218,7 +218,7 @@ export const FeatureList: React.FC<FeatureListProps> = ({
                     gap: 18 * u,
                     padding: `${17 * u}px 0`,
                     opacity: rowIn,
-                    transform: `translateX(${(1 - rowIn) * -18 * u}px)`,
+                    translate: `${(1 - rowIn) * -18 * u}px`,
                   }}
                 >
                   <div
@@ -276,11 +276,11 @@ export const FeatureList: React.FC<FeatureListProps> = ({
               height: 1,
               background: palette.border,
               transformOrigin: "left center",
-              transform: `scaleX(${ease(
+              scale: `${ease(
                 T.rows + rows.length * T.rowStagger,
                 T.rows + rows.length * T.rowStagger + 0.45,
                 EASING.editorial,
-              )})`,
+              )} 1`,
             }}
           />
         </div>

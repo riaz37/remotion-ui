@@ -90,7 +90,7 @@ export const AnimatedNoiseGrain: React.FC<AnimatedNoiseGrainProps> = ({
           backgroundImage: tile,
           backgroundSize: `${size}px ${size}px`,
           backgroundPosition: `${offsetX.toFixed(1)}px ${offsetY.toFixed(1)}px`,
-          transform: `scale(${flipX}, ${flipY})`,
+          scale: `${flipX} ${flipY}`,
           mixBlendMode: blendMode,
           opacity,
           pointerEvents: "none",
@@ -102,7 +102,7 @@ export const AnimatedNoiseGrain: React.FC<AnimatedNoiseGrainProps> = ({
             backgroundImage: tile,
             backgroundSize: `${size}px ${size}px`,
             backgroundPosition: `${(offsetY * 0.7).toFixed(1)}px ${(offsetX * 0.7).toFixed(1)}px`,
-            transform: `scale(${-flipX}, ${flipY})`,
+            scale: `${-flipX} ${flipY}`,
             // The second pass is masked to the edges, which is where film grain
             // actually lives — an even field of grain reads as a digital filter.
             maskImage: "radial-gradient(circle at 50% 50%, transparent 35%, black 100%)",

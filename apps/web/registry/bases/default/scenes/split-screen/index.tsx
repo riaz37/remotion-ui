@@ -170,7 +170,7 @@ export const SplitScreen: React.FC<SplitScreenProps> = ({
             style={{
               width: "100%",
               height: "100%",
-              transform: `translateX(${(1 - panelsIn) * 12}%)`,
+              translate: `${(1 - panelsIn) * 12}%`,
             }}
           >
             <Panel panel={right} />
@@ -188,7 +188,7 @@ export const SplitScreen: React.FC<SplitScreenProps> = ({
             style={{
               width: "100%",
               height: "100%",
-              transform: `translateX(${(1 - panelsIn) * -12}%)`,
+              translate: `${(1 - panelsIn) * -12}%`,
             }}
           >
             <Panel panel={left} />
@@ -262,7 +262,7 @@ export const SplitScreen: React.FC<SplitScreenProps> = ({
               fontWeight: 700,
               letterSpacing: "-0.02em",
               opacity: titleIn,
-              transform: `translateY(${(1 - titleIn) * 12 * u}px)`,
+              translate: `0 ${(1 - titleIn) * 12 * u}px`,
             }}
           >
             {title}
@@ -298,7 +298,7 @@ export const SplitScreen: React.FC<SplitScreenProps> = ({
                   // The left label leaves with the panel it names; the right one
                   // survives, because the surviving panel is the one it names.
                   opacity: index === 0 ? 1 - wipe : 1,
-                  transform: `translateY(${(1 - labelsIn) * 12 * u}px)`,
+                  translate: `0 ${(1 - labelsIn) * 12 * u}px`,
                 }}
               >
                 {panel.label}

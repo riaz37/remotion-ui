@@ -19,8 +19,16 @@ import {
  */
 
 export type LiquidWarpProps = {
-  /** Peak displacement in px at the middle of the cut. */
-  scale?: number;
+  /**
+   * Peak displacement at the middle of the cut, as a fraction of the frame's
+   * short axis.
+   *
+   * Frame-relative on purpose. This used to be an absolute `scale` of 140px,
+   * which is 26% of a 540px stage and 7% of a 1080px one — the same config
+   * read as a different effect at every composition size, and the large end
+   * pulled more transparent edge in than the overscan could hide.
+   */
+  scaleRatio?: number;
   /**
    * Turbulence base frequency. Below ~0.004 the field is so large it reads as
    * a lens rather than a liquid; above ~0.02 it reads as noise.
@@ -38,7 +46,7 @@ export type LiquidWarpProps = {
 };
 
 export const LIQUID_WARP_DEFAULTS = {
-  scale: 140,
+  scaleRatio: 0.12,
   frequency: 0.006,
   octaves: 2,
   churn: 6,
@@ -53,7 +61,7 @@ function liquidProps(props: LiquidWarpProps): DisplacementPresentationProps {
   // `undefined * n` is NaN — which SVG silently drops, so the filter would just
   // stop working with no error anywhere.
   return {
-    scale: props.scale ?? LIQUID_WARP_DEFAULTS.scale,
+    scaleRatio: props.scaleRatio ?? LIQUID_WARP_DEFAULTS.scaleRatio,
     frequency: props.frequency ?? LIQUID_WARP_DEFAULTS.frequency,
     octaves: props.octaves ?? LIQUID_WARP_DEFAULTS.octaves,
     churn: props.churn ?? LIQUID_WARP_DEFAULTS.churn,

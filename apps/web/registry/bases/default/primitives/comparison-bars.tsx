@@ -165,7 +165,7 @@ export const ComparisonBars: React.FC<ComparisonBarsProps> = ({
               alignItems: "center",
               gap: 0,
               opacity: 1 - drain,
-              transform: `translateY(${drain * rowHeight * 0.25}px)`,
+              translate: `0 ${drain * rowHeight * 0.25}px`,
             }}
           >
             <span
@@ -231,7 +231,7 @@ export const ComparisonBars: React.FC<ComparisonBarsProps> = ({
                       // The callout is the conclusion of the pair, so it lands
                       // only once the second bar has stopped moving.
                       opacity: clamp01((afterProgress - 0.86) / 0.14),
-                      transform: `translateX(${(1 - clamp01((afterProgress - 0.86) / 0.14)) * -12}px)`,
+                      translate: `${(1 - clamp01((afterProgress - 0.86) / 0.14)) * -12}px`,
                     }}
                   >
                     {delta}

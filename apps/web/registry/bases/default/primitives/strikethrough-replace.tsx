@@ -198,7 +198,7 @@ export const StrikethroughReplace: React.FC<StrikethroughReplaceProps> = ({
         style={{
           gridArea: "1 / 1",
           opacity: departOpacity,
-          transform: `translateY(${-depart * travel}em)`,
+          translate: `0 ${-depart * travel}em`,
         }}
       >
         <span
@@ -220,7 +220,7 @@ export const StrikethroughReplace: React.FC<StrikethroughReplaceProps> = ({
             style={{
               position: "absolute",
               inset: 0,
-              transform: `rotate(${tilt}deg)`,
+              rotate: `${tilt}deg`,
               transformOrigin: "center center",
             }}
           >
@@ -234,7 +234,7 @@ export const StrikethroughReplace: React.FC<StrikethroughReplaceProps> = ({
                 height: `${strikeWeight}em`,
                 borderRadius: `${strikeWeight / 2}em`,
                 background: strikeColor,
-                transform: `scaleX(${sweep})`,
+                scale: `${sweep} 1`,
                 transformOrigin: "left center",
               }}
             />
@@ -246,7 +246,7 @@ export const StrikethroughReplace: React.FC<StrikethroughReplaceProps> = ({
           gridArea: "1 / 1",
           color: replaceColor ?? color,
           opacity: arriveOpacity,
-          transform: `translateY(${(1 - arrive) * travel}em)`,
+          translate: `0 ${(1 - arrive) * travel}em`,
           whiteSpace: "nowrap",
         }}
       >

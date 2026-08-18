@@ -139,10 +139,10 @@ export const MetricTicker: React.FC<MetricTickerProps> = ({
             display: "grid",
             gap: scaleFont(10, width),
             opacity: headerProgress * (1 - exit),
-            transform: `translateY(${
+            translate: `0 ${
               (1 - headerProgress) * scaleFont(16, width) +
               exit * scaleFont(-26, width)
-            }px)`,
+            }px`,
           }}
         >
           {eyebrow ? (
@@ -180,7 +180,7 @@ export const MetricTicker: React.FC<MetricTickerProps> = ({
           gridTemplateColumns: `repeat(${columns}, 1fr)`,
           gap,
           opacity: 1 - exit,
-          transform: `translateY(${exit * scaleFont(-26, width)}px)`,
+          translate: `0 ${exit * scaleFont(-26, width)}px`,
         }}
       >
         {cards.map((metric, index) => {
@@ -216,7 +216,7 @@ export const MetricTicker: React.FC<MetricTickerProps> = ({
                 background: COLORS.card,
                 border: `1px solid ${COLORS.border}`,
                 opacity: Math.min(1, enter * 1.6),
-                transform: `translateY(${(1 - enter) * scaleFont(22, width)}px)`,
+                translate: `0 ${(1 - enter) * scaleFont(22, width)}px`,
               }}
             >
               <div

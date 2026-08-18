@@ -22,6 +22,9 @@ const SPEAK_SHARE = 0.84;
 /** Seconds a caption line is held before the next one takes the zone. */
 const LINE_SECONDS = 1.55;
 
+/** How long the layout takes to leave once `holdSeconds` is reached. */
+const EXIT_SECONDS = 0.4;
+
 type TalkingHeadLayoutProps = {
   /** Speaker media — image or video. Falls back to a framed placeholder. */
   mediaSrc?: string;
@@ -44,6 +47,12 @@ type TalkingHeadLayoutProps = {
   /** Overrides the page background behind the frame. */
   backgroundColor?: string;
   theme?: "dark" | "light";
+  /**
+   * Seconds after which the whole layout leaves. Omit to hold — correct inside
+   * a `TransitionSeries`, where the transition covers the tail, and wrong on
+   * its own, where the scene stands still for the rest of the clip.
+   */
+  holdSeconds?: number;
   /** Animation speed multiplier. */
   speed?: number;
 };
@@ -98,17 +107,19 @@ export const TalkingHeadLayout: React.FC<TalkingHeadLayoutProps> = ({
   accentColor = "#2DD4BF",
   backgroundColor,
   theme = "dark",
+  holdSeconds,
   speed = 1,
 }) => {
-  const rawFrame = useCurrentFrame();
+  const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
   const palette = CODE_THEMES[theme];
   const page = backgroundColor ?? palette.page;
   const safeArea = getSafeAreaPadding({ width, height });
   const isPortrait = height > width;
-  const frame = rawFrame * speed;
 
-  const seconds = (value: number) => value * fps;
+  // `speed` divides inside the beat clock, matching every sibling scene's
+  // `at(s) = s * fps / speed` idiom rather than scaling the frame itself.
+  const seconds = (value: number) => (value * fps) / speed;
   const clamp = {
     extrapolateLeft: "clamp" as const,
     extrapolateRight: "clamp" as const,
@@ -168,7 +179,7 @@ export const TalkingHeadLayout: React.FC<TalkingHeadLayoutProps> = ({
 
   // The push keeps running under everything, so the frame never sits still.
   const push = interpolate(frame, [0, seconds(9)], [0, 0.05], clamp);
-  const drift = frame / fps;
+  const drift = (frame * speed) / fps;
 
   // --- Speech -------------------------------------------------------------
   const lineIndex = hasCaptions
@@ -209,6 +220,23 @@ export const TalkingHeadLayout: React.FC<TalkingHeadLayoutProps> = ({
 
   const plateWidthLimit = isPortrait ? "88%" : "62%";
 
+  // Exits accelerate away; entrances decelerate in. Never ease-out an exit.
+  const exit =
+    holdSeconds === undefined
+      ? 0
+      : interpolate(
+          frame,
+          [seconds(holdSeconds), seconds(holdSeconds + EXIT_SECONDS)],
+          [0, 1],
+          { easing: EASING.exit, ...clamp },
+        );
+  // Applied to the contents, never to the root: fading the root would fade the
+  // page background with it and leave the composition transparent.
+  const leaving = {
+    opacity: 1 - exit,
+    translate: `0 ${exit * scaleFont(34, width)}px`,
+  };
+
   return (
     <div
       style={{
@@ -234,7 +262,7 @@ export const TalkingHeadLayout: React.FC<TalkingHeadLayoutProps> = ({
           position: "absolute",
           inset: `-${scaleFont(80, width)}px`,
           background: `radial-gradient(ellipse 60% 46% at ${28 + Math.sin(drift * 0.42) * 5}% ${24 + Math.cos(drift * 0.36) * 5}%, ${accentColor}24, transparent 68%)`,
-          opacity: 0.4 + open * 0.6,
+          opacity: (0.4 + open * 0.6) * (1 - exit),
         }}
       />
 
@@ -250,22 +278,29 @@ export const TalkingHeadLayout: React.FC<TalkingHeadLayoutProps> = ({
           border: `1px solid ${palette.border}`,
           boxShadow: `0 ${scaleFont(30, width)}px ${scaleFont(80, width)}px ${palette.shadow}`,
           clipPath: `inset(${(1 - open) * 50}% 0% ${(1 - open) * 50}% 0% round ${radius}px)`,
+          ...leaving,
         }}
       >
         <div
           style={{
             position: "absolute",
             inset: 0,
-            transform: `scale(${1.07 - open * 0.07 + push})`,
+            scale: `${1.07 - open * 0.07 + push}`,
             transformOrigin: "center 42%",
           }}
         >
           {mediaSrc ? (
             isVideoSource(mediaSrc) ? (
+              // `pauseWhenBuffering` holds on a slow source instead of
+              // showing a stale frame. On `@remotion/media` it lives on the
+              // fallback props, since that is the path that can stall — the
+              // wrapping Sequence carries `premountFor` to have the stream
+              // ready before the scene runs.
               <Video
                 src={mediaSrc}
                 muted
                 loop
+                fallbackOffthreadVideoProps={{ pauseWhenBuffering: true }}
                 style={getMediaObjectFitStyle(fit)}
               />
             ) : (
@@ -317,7 +352,7 @@ export const TalkingHeadLayout: React.FC<TalkingHeadLayoutProps> = ({
               display: "flex",
               flexDirection: "column",
               gap: scaleFont(8, width),
-              transform: `translateX(${interpolate(plateShift, [0, 1], [-108, 0])}%)`,
+              translate: `${interpolate(plateShift, [0, 1], [-108, 0])}%`,
             }}
           >
             {eyebrow ? (
@@ -383,6 +418,7 @@ export const TalkingHeadLayout: React.FC<TalkingHeadLayoutProps> = ({
             alignItems: "center",
             gap: zoneGap,
             paddingTop: zoneGap,
+            ...leaving,
           }}
         >
           {hasCaptions ? (
@@ -427,7 +463,7 @@ export const TalkingHeadLayout: React.FC<TalkingHeadLayoutProps> = ({
                         display: "inline-block",
                         marginRight: "0.28em",
                         opacity: alive,
-                        transform: `translateY(${(1 - inWord) * scaleFont(12, width)}px)`,
+                        translate: `0 ${(1 - inWord) * scaleFont(12, width)}px`,
                       }}
                     >
                       {word}
@@ -444,7 +480,7 @@ export const TalkingHeadLayout: React.FC<TalkingHeadLayoutProps> = ({
                 width: frameWidth,
                 height: waveHeight,
                 opacity: waveIn * (0.5 + speaking * 0.5),
-                transform: `scaleY(${0.42 + speaking * 0.58})`,
+                scale: `1 ${0.42 + speaking * 0.58}`,
                 transformOrigin: "center center",
               }}
             >

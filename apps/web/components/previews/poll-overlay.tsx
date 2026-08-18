@@ -17,7 +17,7 @@ const StreamBackdrop: React.FC = () => (
 /**
  * The audit samples at 15% / 50% / 90% of the window — frames 18, 60 and 108 on
  * the 120-frame default. The card is still opening at 18, the bars are still
- * travelling at 60, and `holdSeconds={3.4}` puts frame 108 mid-exit rather than
+ * travelling at 60, and `holdSeconds={3.27}` puts frame 108 mid-exit rather than
  * on a settled card. See docs-internal/preview-audit-rubric.md.
  */
 export const PollOverlayPreview: React.FC = () => (
@@ -33,7 +33,7 @@ export const PollOverlayPreview: React.FC = () => (
       ]}
       totalLabel="823 votes · closes in 2m"
       align="center"
-      holdSeconds={3.4}
+      holdSeconds={3.27}
     />
   </PreviewFrame>
 );

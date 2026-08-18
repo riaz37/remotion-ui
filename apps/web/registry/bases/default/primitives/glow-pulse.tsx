@@ -112,7 +112,7 @@ export const GlowPulse: React.FC<GlowPulseProps> = ({
       <div
         style={{
           position: "relative",
-          transform: `scale(${(1 + scale * level).toFixed(4)})`,
+          scale: `${(1 + scale * level).toFixed(4)}`,
           filter: `drop-shadow(0 0 ${glow.toFixed(1)}px ${color}) drop-shadow(0 0 ${(glow * 2.2).toFixed(1)}px ${color})`,
           willChange: "filter, transform",
         }}

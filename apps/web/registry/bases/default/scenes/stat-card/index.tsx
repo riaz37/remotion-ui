@@ -49,11 +49,13 @@ const T = {
   ring: 0.1,
   ringFor: 1.5,
   count: 0.16,
-  countFor: 1.4,
+  /** Long enough that the roll is caught mid-count by a sampled still, not
+   *  only at its final value. */
+  countFor: 2.2,
   label: 0.6,
   caption: 0.78,
-  /** Delta lands after the number has settled. */
-  delta: 1.72,
+  /** Delta lands after the number has settled, and settles before the exit. */
+  delta: 2.7,
   exitFor: 0.4,
 } as const;
 
@@ -174,14 +176,14 @@ export const StatCard: React.FC<StatCardProps> = ({
           alignItems: "center",
           gap: 18 * u,
           opacity: 1 - exit,
-          transform: `translateY(${exit * -26 * u}px)`,
+          translate: `0 ${exit * -26 * u}px`,
         }}
       >
         <div style={{ position: "relative", width: size, height: size }}>
           <svg
             width={size}
             height={size}
-            style={{ transform: "rotate(-90deg)" }}
+            style={{ rotate: "-90deg" }}
           >
             <circle
               cx={size / 2}
@@ -219,7 +221,10 @@ export const StatCard: React.FC<StatCardProps> = ({
               fontWeight: 700,
               letterSpacing: "-0.03em",
               fontVariantNumeric: "tabular-nums",
-              transform: `scale(${1 + land * 0.03})`,
+              scale: interpolate(land, [0, 1], [1, 1.03], {
+                output: "perceptual-scale",
+                ...clamp,
+              }),
             }}
           >
             {prefix ? (
@@ -244,7 +249,7 @@ export const StatCard: React.FC<StatCardProps> = ({
               fontWeight: 600,
               letterSpacing: "-0.01em",
               opacity: labelIn,
-              transform: `translateY(${(1 - labelIn) * 12 * u}px)`,
+              translate: `0 ${(1 - labelIn) * 12 * u}px`,
             }}
           >
             {label}
@@ -279,11 +284,9 @@ export const StatCard: React.FC<StatCardProps> = ({
               fontWeight: 600,
               fontVariantNumeric: "tabular-nums",
               opacity: Math.min(deltaIn, 1),
-              transform: `scale(${interpolate(
-                Math.min(deltaIn, 1),
-                [0, 1],
-                [0.86, 1],
-              )})`,
+              scale: interpolate(Math.min(deltaIn, 1), [0, 1], [0.86, 1], {
+                output: "perceptual-scale",
+              }),
             }}
           >
             <svg width={16 * u} height={16 * u} viewBox="0 0 16 16" fill="none">

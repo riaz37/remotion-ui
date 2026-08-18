@@ -21,8 +21,17 @@ import { prepareMorph, MORPH_SHAPES, type MorphPair, type MorphShapeName } from 
 export type DisplacementProfile = "peak" | "ramp-in" | "ramp-out";
 
 export type DisplacementCoreConfig = {
-  /** Peak displacement in pixels. */
+  /** Peak displacement in pixels. Ignored when `scaleRatio` is set. */
   scale?: number;
+  /**
+   * Peak displacement as a fraction of the frame's **short** axis.
+   *
+   * Preferred over `scale`. An absolute pixel displacement is 26% of a 540px
+   * stage and 7% of a 1080px one, so the same config reads as a different
+   * effect at every composition size. A ratio is resolved against the frame
+   * inside `displacementFrame`, so the warp looks identical at any size.
+   */
+  scaleRatio?: number;
   /**
    * Turbulence base frequency. Low values (0.004-0.01) give large, liquid
    * lobes; high values (0.05+) give sand, which reads as noise rather than as
@@ -53,7 +62,9 @@ export const DISPLACEMENT_DEFAULTS = {
   churn: 6,
   blur: 0,
   profile: "peak",
-} as const satisfies Required<DisplacementCoreConfig>;
+  // `scaleRatio` has no default: it is the opt-in frame-relative form, and a
+  // default here would silently override every caller's absolute `scale`.
+} as const satisfies Omit<Required<DisplacementCoreConfig>, "scaleRatio">;
 
 const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
 
@@ -115,7 +126,10 @@ export function displacementFrame(
   // Defaulted field by field. Spreading the config would let an explicitly
   // undefined property overwrite a default with undefined, and `undefined * n`
   // is NaN — which SVG silently drops, so the filter would just stop working.
-  const peakScale = config.scale ?? DISPLACEMENT_DEFAULTS.scale;
+  const peakScale =
+    config.scaleRatio !== undefined
+      ? config.scaleRatio * frameSize
+      : (config.scale ?? DISPLACEMENT_DEFAULTS.scale);
   const peakBlur = config.blur ?? DISPLACEMENT_DEFAULTS.blur;
   const seedBase = config.seed ?? DISPLACEMENT_DEFAULTS.seed;
   const churn = config.churn ?? DISPLACEMENT_DEFAULTS.churn;
@@ -123,21 +137,53 @@ export function displacementFrame(
 
   const intensity = displacementIntensity(displace, profile);
   const scale = peakScale * intensity;
+  const blur = peakBlur * intensity;
 
   return {
     scale,
-    blur: peakBlur * intensity,
+    blur,
     // Driven by `displace`, not by the frame number: the same point in the cut
     // must produce the same field whether it is reached by playback, by a seek
     // in the Player, or by a distributed render of a single frame.
     seed: Math.round(seedBase + clamp01(displace) * churn),
     intensity,
-    /* `feDisplacementMap` shifts by up to `scale / 2` in each direction, so
-     * covering both edges of an axis needs the content to grow by `scale`,
-     * plus a few pixels of slack for the blur. */
-    overscan: frameSize > 0 ? 1 + (scale + 4) / frameSize : 1,
+    overscan: overscanFor(scale, blur, frameSize),
   };
 }
+
+/**
+ * How far the filtered layer must be scaled up to keep its own transparent
+ * border off screen.
+ *
+ * `feDisplacementMap` samples up to `scale / 2` away in each direction and the
+ * blur spreads about `3σ`, so the outer `drag` pixels of every edge are
+ * contaminated with transparency dragged in from outside the layer. The clean
+ * middle is therefore `frameSize - 2·drag` tall, and the scale-up has to make
+ * *that* band cover the whole stage — not merely add `drag` pixels of height.
+ *
+ * The old form (`1 + (scale + 4) / frameSize`) missed the factor: at the
+ * default 140px peak on a 540px stage it returned 1.27 where 1.41 is needed,
+ * which is exactly the mid-cut bite of page background the audit found. The
+ * closed form is `frameSize / (frameSize - 2·drag)`.
+ */
+export function overscanFor(
+  scale: number,
+  blur: number,
+  frameSize: number,
+): number {
+  const drag = scale / 2 + blur * 3;
+  if (drag <= 0 || frameSize <= 0) return 1;
+  // Two extra pixels per edge absorb rounding at the composite boundary.
+  const clean = frameSize - 2 * (drag + 2);
+  // Past a 3x zoom the cut is a zoom rather than a warp, and a displacement
+  // wide enough to need more than that cannot be hidden by scaling at all —
+  // the config wants a smaller `scaleRatio`, not a bigger overscan.
+  if (clean <= 0) return MAX_OVERSCAN;
+  return Math.min(MAX_OVERSCAN, frameSize / clean);
+}
+
+/** Ceiling on the overscan zoom. See `overscanFor`. */
+const MAX_OVERSCAN = 3;
 
 /** Below this the three extra composites cost more than the effect is worth. */
 export const DISPLACEMENT_EPSILON = 0.5;

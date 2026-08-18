@@ -131,7 +131,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           height,
           position: "absolute",
           opacity: reveal,
-          transform: `scale(${1.045 - reveal * 0.045})`,
+          scale: `${1.045 - reveal * 0.045}`,
         }}
       />
       {showVignette ? (

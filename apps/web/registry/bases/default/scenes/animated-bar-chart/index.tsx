@@ -159,7 +159,7 @@ export const AnimatedBarChart: React.FC<AnimatedBarChartProps> = ({
               lineHeight: 1.02,
               letterSpacing: "-0.025em",
               opacity: headerProgress,
-              transform: `translateY(${(1 - headerProgress) * scaleFont(18, width)}px)`,
+              translate: `0 ${(1 - headerProgress) * scaleFont(18, width)}px`,
             }}
           >
             {title}
@@ -173,7 +173,7 @@ export const AnimatedBarChart: React.FC<AnimatedBarChartProps> = ({
                 fontWeight: 500,
                 lineHeight: 1.25,
                 opacity: subtitleProgress,
-                transform: `translateY(${(1 - subtitleProgress) * scaleFont(12, width)}px)`,
+                translate: `0 ${(1 - subtitleProgress) * scaleFont(12, width)}px`,
               }}
             >
               {subtitle}
@@ -250,7 +250,7 @@ export const AnimatedBarChart: React.FC<AnimatedBarChartProps> = ({
                   gap,
                   alignItems: "center",
                   opacity: Math.min(1, enter * 1.6),
-                  transform: `translateY(${(1 - enter) * scaleFont(14, width)}px)`,
+                  translate: `0 ${(1 - enter) * scaleFont(14, width)}px`,
                 }}
               >
                 <div

@@ -102,7 +102,7 @@ export const LowerThirdPreview: React.FC = () => (
       // Leaves across the 90% sample (frame 135 of 150 = 4.5s). At 3.2 the
       // exit was over by frame 109 and the tile held an empty plate for the
       // last quarter of every loop.
-      holdSeconds={4.3}
+      holdSeconds={4.17}
     />
   </ScenePreviewPlate>
 );

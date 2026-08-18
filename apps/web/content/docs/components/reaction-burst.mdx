@@ -15,8 +15,13 @@ here the stream keeps running for as long as the scene does. `stopAfterSeconds`
 closes the tap while letting everything already in flight finish its arc.
 
 Every reaction's jitter — sway phase, lane offset, scale, tilt — is a pure
-function of its spawn index. Remotion renders frames out of order and in
-parallel, so `Math.random()` would give the same glyph a different arc on every
-frame.
+function of `seed` and its spawn index, through Remotion's `random()` helper.
+Remotion renders frames out of order and in parallel, so `Math.random()` would
+give the same glyph a different arc on every frame. Two streams in one
+composition need different `seed`s, or they trace identical arcs.
+
+`reactions` takes strings, drawn in Noto Color Emoji so a render worker without
+a system emoji font does not produce tofu, or elements if you would rather ship
+your own marks.
 
 </ComponentPage>

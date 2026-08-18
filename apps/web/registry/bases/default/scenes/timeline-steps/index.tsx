@@ -192,7 +192,7 @@ export const TimelineSteps: React.FC<TimelineStepsProps> = ({
               letterSpacing: "0.12em",
               textTransform: "uppercase",
               opacity: titleIn,
-              transform: `translateY(${(1 - titleIn) * 10 * u}px)`,
+              translate: `0 ${(1 - titleIn) * 10 * u}px`,
             }}
           >
             {eyebrow}
@@ -211,7 +211,7 @@ export const TimelineSteps: React.FC<TimelineStepsProps> = ({
               lineHeight: 1.05,
               letterSpacing: "-0.02em",
               opacity: titleIn,
-              transform: `translateY(${(1 - titleIn) * 16 * u}px)`,
+              translate: `0 ${(1 - titleIn) * 16 * u}px`,
             }}
           >
             {title}
@@ -297,9 +297,9 @@ export const TimelineSteps: React.FC<TimelineStepsProps> = ({
                   boxShadow: `0 0 ${34 * u * active}px ${accentColor}66`,
                   display: "grid",
                   placeItems: "center",
-                  transform: `scale(${
+                  scale: `${
                     interpolate(railDrawn, [0, 1], [0.75, 1]) + pop * 0.06
-                  })`,
+                  }`,
                   color: check > 0.4 ? accentColor : landed > 0.1 ? palette.page : palette.dim,
                   fontSize: 26 * u,
                   fontWeight: 700,
@@ -356,7 +356,7 @@ export const TimelineSteps: React.FC<TimelineStepsProps> = ({
                     ? stage.w - railAcross - node * 0.85
                     : stage.w / count - 20 * u,
                   opacity: copyIn,
-                  transform: `translateY(${(1 - copyIn) * 14 * u}px)`,
+                  translate: `0 ${(1 - copyIn) * 14 * u}px`,
                 }}
               >
                 <div

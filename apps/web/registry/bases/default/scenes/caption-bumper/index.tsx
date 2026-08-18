@@ -153,7 +153,7 @@ export const CaptionBumper: React.FC<CaptionBumperProps> = ({
           gap: 16 * u,
           textAlign: "center",
           opacity: 1 - exit,
-          transform: `translateY(${exit * -22 * u}px)`,
+          translate: `0 ${exit * -22 * u}px`,
         }}
       >
         {eyebrow ? (
@@ -165,7 +165,7 @@ export const CaptionBumper: React.FC<CaptionBumperProps> = ({
               letterSpacing: "0.16em",
               textTransform: "uppercase",
               opacity: eyebrowIn,
-              transform: `translateY(${(1 - eyebrowIn) * 10 * u}px)`,
+              translate: `0 ${(1 - eyebrowIn) * 10 * u}px`,
             }}
           >
             {eyebrow}
@@ -200,7 +200,7 @@ export const CaptionBumper: React.FC<CaptionBumperProps> = ({
                 <span
                   style={{
                     display: "block",
-                    transform: `translateY(${(1 - wordIn) * 100}%)`,
+                    translate: `0 ${(1 - wordIn) * 100}%`,
                   }}
                 >
                   {word}
@@ -218,7 +218,7 @@ export const CaptionBumper: React.FC<CaptionBumperProps> = ({
             background: accentColor,
             boxShadow: `0 0 ${16 * u}px ${accentColor}88`,
             transformOrigin: "center",
-            transform: `scaleX(${rule})`,
+            scale: `${rule} 1`,
           }}
         />
       </div>

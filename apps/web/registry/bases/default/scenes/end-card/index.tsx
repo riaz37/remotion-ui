@@ -159,7 +159,7 @@ export const EndCard: React.FC<EndCardProps> = ({
               height: logoSize ?? 76 * u,
               objectFit: "contain",
               opacity: logoIn,
-              transform: `translateY(${(1 - logoIn) * 12 * u}px)`,
+              translate: `0 ${(1 - logoIn) * 12 * u}px`,
             }}
           />
         ) : null}
@@ -173,7 +173,7 @@ export const EndCard: React.FC<EndCardProps> = ({
               letterSpacing: "0.14em",
               textTransform: "uppercase",
               opacity: eyebrowIn,
-              transform: `translateY(${(1 - eyebrowIn) * 10 * u}px)`,
+              translate: `0 ${(1 - eyebrowIn) * 10 * u}px`,
             }}
           >
             {eyebrow}
@@ -190,7 +190,7 @@ export const EndCard: React.FC<EndCardProps> = ({
               fontWeight: 700,
               lineHeight: 1.06,
               letterSpacing: "-0.03em",
-              transform: `translateY(${(1 - titleIn) * 100}%)`,
+              translate: `0 ${(1 - titleIn) * 100}%`,
             }}
           >
             {title}
@@ -206,7 +206,7 @@ export const EndCard: React.FC<EndCardProps> = ({
               fontSize: 28 * u,
               lineHeight: 1.35,
               opacity: subtitleIn,
-              transform: `translateY(${(1 - subtitleIn) * 12 * u}px)`,
+              translate: `0 ${(1 - subtitleIn) * 12 * u}px`,
             }}
           >
             {subtitle}
@@ -223,7 +223,7 @@ export const EndCard: React.FC<EndCardProps> = ({
                 borderRadius: 999,
                 border: `${2 * u}px solid ${accentColor}`,
                 opacity: pulse > 0 && pulse < 1 ? (1 - pulse) * 0.8 : 0,
-                transform: `scale(${interpolate(pulse, [0, 1], [1, 1.28])})`,
+                scale: `${interpolate(pulse, [0, 1], [1, 1.28])}`,
               }}
             />
             <div
@@ -248,11 +248,11 @@ export const EndCard: React.FC<EndCardProps> = ({
                 maxWidth: stage.w,
                 whiteSpace: "nowrap",
                 opacity: Math.min(button, 1),
-                transform: `scale(${interpolate(
+                scale: `${interpolate(
                   Math.min(button, 1),
                   [0, 1],
                   [0.9, 1],
-                )})`,
+                )}`,
                 overflow: "hidden",
               }}
             >
@@ -328,7 +328,7 @@ export const EndCard: React.FC<EndCardProps> = ({
               color: palette.faint,
               fontSize: 21 * u,
               opacity: handlesIn,
-              transform: `translateY(${(1 - handlesIn) * 10 * u}px)`,
+              translate: `0 ${(1 - handlesIn) * 10 * u}px`,
             }}
           >
             {handles.map((handle) => (

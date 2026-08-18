@@ -161,7 +161,7 @@ export const BarChartRace: React.FC<BarChartRaceProps> = ({
               display: "flex",
               alignItems: "center",
               gap: gap,
-              transform: `translateY(${rank * pitch}px)`,
+              translate: `0 ${rank * pitch}px`,
               opacity: visibility,
             }}
           >

@@ -1,5 +1,10 @@
 import { loadFont } from "@remotion/google-fonts/Inter";
-import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
+import {
+  AbsoluteFill,
+  interpolate,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 import {
   AI_TYPING_CPS,
   AI_TYPING_START,
@@ -7,6 +12,8 @@ import {
   fadeUpAt,
   introBounceIn,
   morphProgressAt,
+  replyDotOpacity,
+  sendBeatAt,
   stageScale,
   useTypewriter,
 } from "@/remotion/lib/ai-composer-utils";
@@ -222,12 +229,12 @@ function SuggestionChip({
       style={{
         display: "inline-flex",
         alignItems: "center",
-        gap: 8,
-        padding: "10px 16px",
-        borderRadius: 20,
+        gap: 9,
+        padding: "12px 20px",
+        borderRadius: 22,
         border: `1px solid ${border}`,
         color,
-        fontSize: 15,
+        fontSize: 18,
       }}
     >
       {icon}
@@ -239,7 +246,7 @@ function SuggestionChip({
 export const ChatGpt: React.FC<ChatGptProps> = ({
   greeting = "What's on your mind today?",
   placeholder = "Ask anything",
-  prompt = "Make a sunset over a calm ocean",
+  prompt = "Make a sunset over the ocean",
   accentColor = "#2F6FED",
   theme = "light",
   speed = 1,
@@ -248,30 +255,51 @@ export const ChatGpt: React.FC<ChatGptProps> = ({
   const { width, height, fps } = useVideoConfig();
   const t = THEMES[theme];
 
-  const refW = 1280;
-  const scale = stageScale(width, height);
+  // Reference box is cropped to the composer cluster rather than a full 16:9
+  // browser window: at a 308px tile the surrounding empty page read as a bug.
+  const refW = 1000;
+  const refH = 560;
+  const scale = stageScale(width, height, refW, refH);
+  const fs = frame * speed;
 
   const tw = useTypewriter(prompt, {
     cps: AI_TYPING_CPS,
     speed,
     startFrame: AI_TYPING_START,
   });
-  const showText = tw.count > 0;
   const morph = morphProgressAt(frame, { fps, speed });
+  const send = sendBeatAt(fs, {
+    promptLength: prompt.length,
+    fps,
+    cps: AI_TYPING_CPS,
+    startFrame: AI_TYPING_START,
+  });
+  // Once it is sent the composer is empty again and the prompt lives in the thread.
+  const showText = tw.count > 0 && !send.sent;
 
-  const intro = introBounceIn(frame * speed, fps);
-  const headingFade = fadeUpAt(frame * speed, [4, 20]);
-  const pillFade = fadeUpAt(frame * speed, [10, 26]);
-  const chipsFade = fadeUpAt(frame * speed, [16, 32]);
+  const clampBoth = {
+    extrapolateLeft: "clamp" as const,
+    extrapolateRight: "clamp" as const,
+  };
+  const intro = introBounceIn(fs, fps);
+  const headingFade = fadeUpAt(fs, [4, 20]);
+  const pillFade = fadeUpAt(fs, [10, 26]);
+  const chipsFade = fadeUpAt(fs, [16, 32]);
+  const clearOut = interpolate(
+    fs,
+    [send.frame - 4, send.frame + 8],
+    [0, 1],
+    clampBoth,
+  );
 
-  const pillWidth = 820;
+  const pillWidth = 900;
   const pillLeft = (refW - pillWidth) / 2;
-  const pillTop = 300;
-  const pillHeight = 64;
-  const morphSize = 44;
+  const pillTop = 250;
+  const pillHeight = 74;
+  const morphSize = 48;
 
-  const chipsOpacity = chipsFade.opacity * (1 - morph);
-  const chipsShift = chipsFade.translateY + 8 * morph;
+  const chipsOpacity = chipsFade.opacity * (1 - clearOut);
+  const chipsShift = chipsFade.translateY + 10 * clearOut;
 
   return (
     <AbsoluteFill style={{ background: t.page, fontFamily }}>
@@ -281,26 +309,81 @@ export const ChatGpt: React.FC<ChatGptProps> = ({
           left: "50%",
           top: "50%",
           width: refW,
-          height: 720,
-          transform: `translate(-50%, -50%) scale(${scale})`,
+          height: refH,
+          translate: "-50% -50%",
+          scale: `${scale}`,
         }}
       >
         <div
           style={{
             position: "absolute",
             left: 0,
-            top: 196,
+            top: 118,
             width: refW,
             textAlign: "center",
-            fontSize: 40,
+            fontSize: 46,
             fontWeight: 700,
             color: t.fg,
-            opacity: headingFade.opacity,
-            transform: `translateY(${headingFade.translateY + intro.translateY * 0.4}px)`,
+            opacity: headingFade.opacity * (1 - clearOut),
+            translate: `0 ${headingFade.translateY + intro.translateY * 0.4}px`,
           }}
         >
           {greeting}
         </div>
+
+        {send.bubble > 0 ? (
+          <div
+            style={{
+              position: "absolute",
+              left: pillLeft,
+              top: 112,
+              width: pillWidth,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-end",
+              gap: 18,
+              opacity: send.bubble,
+              translate: `0 ${(1 - send.bubble) * 22}px`,
+            }}
+          >
+            <div
+              style={{
+                maxWidth: pillWidth * 0.74,
+                padding: "16px 24px",
+                borderRadius: 24,
+                background: t.inputBg,
+                border: `1px solid ${t.inputBorder}`,
+                color: t.fg,
+                fontSize: 22,
+                lineHeight: 1.35,
+              }}
+            >
+              {prompt}
+            </div>
+            <div
+              style={{
+                alignSelf: "flex-start",
+                display: "flex",
+                alignItems: "center",
+                gap: 9,
+                opacity: send.reply,
+              }}
+            >
+              {[0, 1, 2].map((dot) => (
+                <span
+                  key={dot}
+                  style={{
+                    width: 11,
+                    height: 11,
+                    borderRadius: "100%",
+                    background: t.fgMuted,
+                    opacity: replyDotOpacity(fs, dot, fps),
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        ) : null}
 
         <div
           style={{
@@ -314,24 +397,25 @@ export const ChatGpt: React.FC<ChatGptProps> = ({
             borderRadius: 32,
             boxShadow: "0 8px 30px -14px rgba(13,13,13,0.14)",
             opacity: pillFade.opacity,
-            transform: `translateY(${pillFade.translateY + intro.translateY * 0.6}px) scale(${intro.scale})`,
+            translate: `0 ${pillFade.translateY + intro.translateY * 0.6}px`,
+            scale: `${intro.scale * (1 - 0.02 * send.press)}`,
             transformOrigin: "center top",
             display: "flex",
             alignItems: "center",
-            paddingLeft: 20,
-            paddingRight: 12,
+            paddingLeft: 24,
+            paddingRight: 14,
             boxSizing: "border-box",
           }}
         >
-          <PlusIcon size={24} color={t.fg} />
+          <PlusIcon size={26} color={t.fg} />
 
           <div
             style={{
               flex: 1,
               display: "flex",
               alignItems: "center",
-              marginLeft: 14,
-              fontSize: 19,
+              marginLeft: 16,
+              fontSize: 22,
               overflow: "hidden",
               whiteSpace: "nowrap",
             }}
@@ -349,7 +433,7 @@ export const ChatGpt: React.FC<ChatGptProps> = ({
                   color={t.fg}
                   blink={!tw.typing}
                   speed={speed}
-                  height={22}
+                  height={26}
                   marginLeft={2}
                 />
               </span>
@@ -365,9 +449,9 @@ export const ChatGpt: React.FC<ChatGptProps> = ({
                   color={t.fg}
                   blink={!tw.typing}
                   speed={speed}
-                  height={22}
+                  height={26}
                 />
-                <span style={{ marginLeft: 6 }}>{placeholder}</span>
+                <span style={{ marginLeft: 8 }}>{placeholder}</span>
               </span>
             )}
           </div>
@@ -389,7 +473,7 @@ export const ChatGpt: React.FC<ChatGptProps> = ({
                 justifyContent: "center",
               }}
             >
-              <MicIcon size={22} color={t.iconColor} />
+              <MicIcon size={24} color={t.iconColor} />
             </div>
 
             <div
@@ -410,10 +494,10 @@ export const ChatGpt: React.FC<ChatGptProps> = ({
                   borderRadius: "100%",
                   background: accentColor,
                   opacity: 1 - morph,
-                  transform: `scale(${1 - 0.1 * morph})`,
+                  scale: `${1 - 0.1 * morph}`,
                 }}
               >
-                <WaveformIcon size={22} color="#FFFFFF" />
+                <WaveformIcon size={24} color="#FFFFFF" />
               </div>
               <div
                 style={{
@@ -425,10 +509,10 @@ export const ChatGpt: React.FC<ChatGptProps> = ({
                   borderRadius: "100%",
                   background: t.sendBg,
                   opacity: morph,
-                  transform: `scale(${0.8 + 0.2 * morph})`,
+                  scale: `${(0.8 + 0.2 * morph) * (1 - 0.16 * send.press)}`,
                 }}
               >
-                <ArrowUpIcon size={22} color={t.sendArrow} />
+                <ArrowUpIcon size={24} color={t.sendArrow} />
               </div>
             </div>
           </div>
@@ -438,32 +522,32 @@ export const ChatGpt: React.FC<ChatGptProps> = ({
           style={{
             position: "absolute",
             left: 0,
-            top: pillTop + pillHeight + 24,
+            top: pillTop + pillHeight + 26,
             width: refW,
             display: "flex",
             justifyContent: "center",
-            gap: 12,
+            gap: 14,
             opacity: chipsOpacity,
-            transform: `translateY(${chipsShift}px)`,
+            translate: `0 ${chipsShift}px`,
           }}
         >
           <SuggestionChip
             label="Create an image"
             border={t.chipBorder}
             color={t.chipFg}
-            icon={<ImageIcon size={18} color={t.chipFg} />}
+            icon={<ImageIcon size={20} color={t.chipFg} />}
           />
           <SuggestionChip
             label="Write or edit"
             border={t.chipBorder}
             color={t.chipFg}
-            icon={<PencilIcon size={18} color={t.chipFg} />}
+            icon={<PencilIcon size={20} color={t.chipFg} />}
           />
           <SuggestionChip
             label="Look something up"
             border={t.chipBorder}
             color={t.chipFg}
-            icon={<GlobeIcon size={18} color={t.chipFg} />}
+            icon={<GlobeIcon size={20} color={t.chipFg} />}
           />
         </div>
       </div>

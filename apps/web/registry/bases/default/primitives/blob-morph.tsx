@@ -137,7 +137,7 @@ export const BlobMorph: React.FC<BlobMorphProps> = ({
           // Driven by the raw frame, not the wrapping cycle: a rotation that
           // wrapped would snap back to zero on the frame the morph is at its
           // most seamless.
-          transform: `rotate(${(frame / periodInFrames) * rotation}deg)`,
+          rotate: `${(frame / periodInFrames) * rotation}deg`,
         }}
       >
         <path

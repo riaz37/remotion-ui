@@ -173,7 +173,7 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
                             [0, 1],
                             [emptyColor, color],
                           ),
-                    transform: `scale(${0.55 + 0.45 * shown + intensity * shown * 0.06})`,
+                    scale: `${0.55 + 0.45 * shown + intensity * shown * 0.06}`,
                     opacity: 0.25 + 0.75 * shown,
                   }}
                 />

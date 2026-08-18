@@ -41,11 +41,11 @@ export type QuoteCardProps = {
 const T = {
   mark: 0,
   quote: 0.3,
-  lineStagger: 0.11,
+  lineStagger: 0.34,
   /** Marker starts once the quote is standing. */
-  sweep: 0.34,
-  sweepStagger: 0.11,
-  attribution: 0.5,
+  sweep: 1.4,
+  sweepStagger: 0.3,
+  attribution: 2.4,
   exitFor: 0.4,
 } as const;
 
@@ -56,7 +56,16 @@ const clamp = {
 
 const WORD_GAP = "0.28em";
 
-/** Greedy wrap that keeps the last line from being a runt. */
+/** A last line shorter than this share of the target reads as a runt. */
+const RUNT_RATIO = 0.4;
+
+/**
+ * Greedy wrap plus a lookback pass that keeps the last line from being a runt.
+ *
+ * Greedy alone can strand a single short word on its own line. When that
+ * happens the pass pulls words back off the previous line — one at a time, and
+ * only while the last line still fits the target — until it reads as a line.
+ */
 function balanceLines(text: string, target: number): string[] {
   const words = text.split(/\s+/).filter(Boolean);
   const lines: string[] = [];
@@ -74,7 +83,29 @@ function balanceLines(text: string, target: number): string[] {
   if (line) {
     lines.push(line);
   }
-  return lines;
+
+  // Lookback: rebalance a runt last line against the one above it.
+  const runtLimit = target * RUNT_RATIO;
+  let balanced = lines;
+  while (balanced.length > 1) {
+    const last = balanced[balanced.length - 1];
+    const donor = balanced[balanced.length - 2];
+    const donorWords = donor.split(" ");
+    if (last.length >= runtLimit || donorWords.length < 2) {
+      break;
+    }
+    const moved = donorWords[donorWords.length - 1];
+    const nextLast = `${moved} ${last}`;
+    if (nextLast.length > target) {
+      break;
+    }
+    balanced = [
+      ...balanced.slice(0, -2),
+      donorWords.slice(0, -1).join(" "),
+      nextLast,
+    ];
+  }
+  return balanced;
 }
 
 /**
@@ -137,7 +168,7 @@ export const QuoteCard: React.FC<QuoteCardProps> = ({
           [0, 1],
           { easing: EASING.exit, ...clamp },
         );
-  const quoteSize = 52 * u;
+  const quoteSize = 62 * u;
   const badge =
     initials ??
     (author
@@ -173,12 +204,12 @@ export const QuoteCard: React.FC<QuoteCardProps> = ({
       <div
         style={{
           position: "relative",
-          width: Math.min(stage.w, 900 * u),
+          width: Math.min(stage.w, 980 * u),
           display: "flex",
           flexDirection: "column",
           gap: 22 * u,
           opacity: 1 - exit,
-          transform: `translateY(${exit * -26 * u}px)`,
+          translate: `0 ${exit * -26 * u}px`,
         }}
       >
         {/* Quote mark, drawn rather than typed */}
@@ -194,7 +225,7 @@ export const QuoteCard: React.FC<QuoteCardProps> = ({
             fill={accentColor}
             fillOpacity={0.9}
             style={{
-              transform: `translateY(${(1 - markDraw) * 14 * u}px)`,
+              translate: `0 ${(1 - markDraw) * 14 * u}px`,
             }}
           />
         </svg>
@@ -227,7 +258,7 @@ export const QuoteCard: React.FC<QuoteCardProps> = ({
                     display: "flex",
                     flexWrap: "wrap",
                     gap: `0 ${WORD_GAP}`,
-                    transform: `translateY(${(1 - lineIn) * 100}%)`,
+                    translate: `0 ${(1 - lineIn) * 100}%`,
                   }}
                 >
                   {line.map((word, wordIndex) => {
@@ -269,7 +300,7 @@ export const QuoteCard: React.FC<QuoteCardProps> = ({
                             borderBottomRightRadius:
                               edges.borderBottomRightRadius,
                             transformOrigin: "left center",
-                            transform: `scaleX(${sweep})`,
+                            scale: `${sweep} 1`,
                           }}
                         />
                         <span style={{ position: "relative" }}>
@@ -291,21 +322,21 @@ export const QuoteCard: React.FC<QuoteCardProps> = ({
               alignItems: "center",
               gap: 14 * u,
               opacity: attributionIn,
-              transform: `translateX(${(1 - attributionIn) * -16 * u}px)`,
+              translate: `${(1 - attributionIn) * -16 * u}px 0`,
             }}
           >
             {badge ? (
               <div
                 style={{
-                  width: 52 * u,
-                  height: 52 * u,
+                  width: 62 * u,
+                  height: 62 * u,
                   borderRadius: "50%",
                   display: "grid",
                   placeItems: "center",
                   background: `${accentColor}22`,
                   border: `1px solid ${accentColor}55`,
                   color: accentColor,
-                  fontSize: 20 * u,
+                  fontSize: 24 * u,
                   fontWeight: 700,
                 }}
               >
@@ -316,7 +347,7 @@ export const QuoteCard: React.FC<QuoteCardProps> = ({
               <div
                 style={{
                   color: palette.fg,
-                  fontSize: 25 * u,
+                  fontSize: 30 * u,
                   fontWeight: 600,
                 }}
               >
@@ -327,7 +358,7 @@ export const QuoteCard: React.FC<QuoteCardProps> = ({
                   style={{
                     marginTop: 2 * u,
                     color: palette.faint,
-                    fontSize: 20 * u,
+                    fontSize: 23 * u,
                   }}
                 >
                   {role}

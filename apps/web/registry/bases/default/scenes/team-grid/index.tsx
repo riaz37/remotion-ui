@@ -159,7 +159,7 @@ export const TeamGrid: React.FC<TeamGridProps> = ({
         style={{
           width: gridW,
           opacity: 1 - exit,
-          transform: `translateY(${exit * 26 * u}px)`,
+          translate: `0 ${exit * 26 * u}px`,
         }}
       >
         {title ? (
@@ -171,7 +171,7 @@ export const TeamGrid: React.FC<TeamGridProps> = ({
               fontWeight: 700,
               letterSpacing: "-0.02em",
               opacity: headIn,
-              transform: `translateY(${(1 - headIn) * 12 * u}px)`,
+              translate: `0 ${(1 - headIn) * 12 * u}px`,
             }}
           >
             {title}
@@ -221,7 +221,7 @@ export const TeamGrid: React.FC<TeamGridProps> = ({
                   alignItems: "center",
                   textAlign: "center",
                   opacity: fade,
-                  transform: `translateY(${(1 - rise) * 20 * u}px)`,
+                  translate: `0 ${(1 - rise) * 20 * u}px`,
                 }}
               >
                 <div
@@ -242,7 +242,7 @@ export const TeamGrid: React.FC<TeamGridProps> = ({
                     fontSize: avatar * 0.34,
                     fontWeight: 700,
                     letterSpacing: "0.02em",
-                    transform: `scale(${0.86 + rise * 0.14})`,
+                    scale: `${0.86 + rise * 0.14}`,
                   }}
                 >
                   {member.initials ?? initialsOf(member.name)}
@@ -255,7 +255,7 @@ export const TeamGrid: React.FC<TeamGridProps> = ({
                     fontWeight: 600,
                     letterSpacing: "-0.01em",
                     opacity: textIn,
-                    transform: `translateY(${(1 - textIn) * 6 * u}px)`,
+                    translate: `0 ${(1 - textIn) * 6 * u}px`,
                   }}
                 >
                   {member.name}

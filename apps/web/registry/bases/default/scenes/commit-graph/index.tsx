@@ -199,7 +199,7 @@ export const CommitGraph: React.FC<CommitGraphProps> = ({
           overflow: "hidden",
           clipPath: `inset(0 0 ${(1 - open) * 100}% 0 round ${18 * u}px)`,
           opacity: 1 - exit,
-          transform: `translateY(${(1 - windowIn) * 22 * u + exit * 30 * u}px)`,
+          translate: `0 ${(1 - windowIn) * 22 * u + exit * 30 * u}px`,
         }}
       >
         {windowTitle ? (
@@ -314,7 +314,7 @@ export const CommitGraph: React.FC<CommitGraphProps> = ({
                   alignItems: "center",
                   gap: 12 * u,
                   opacity: textIn,
-                  transform: `translateX(${(1 - textIn) * 14 * u}px)`,
+                  translate: `${(1 - textIn) * 14 * u}px`,
                 }}
               >
                 <span

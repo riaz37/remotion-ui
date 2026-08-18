@@ -45,6 +45,11 @@ export const TrackingIn: React.FC<TrackingInProps> = ({
         color,
         lineHeight: 1.15,
         letterSpacing,
+        // The widest state of a tracking entrance is its *first* frame, so a
+        // wrappable line rewraps as the tracking closes — words drop up a line
+        // mid-animation, which is the one thing this effect must not do. The
+        // caller reserves the width; the span never reflows.
+        whiteSpace: "nowrap",
         opacity,
         filter: blur > 0.1 ? `blur(${blur}px)` : undefined,
         ...(fontFamily ? { fontFamily } : {}),

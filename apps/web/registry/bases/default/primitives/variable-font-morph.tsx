@@ -26,6 +26,15 @@ export type VariableFontMorphProps = Omit<
   periodInFrames?: number;
   /** Characters offset per unit along the wave, in radians. */
   phaseStep?: number;
+  /**
+   * Reserve each glyph's widest advance so the line cannot breathe.
+   *
+   * `wght` and `wdth` both change advance widths, so a centred line re-centres
+   * itself every frame and the whole string jitters horizontally. Each unit is
+   * laid out in an `inline-grid` cell sized by a hidden copy at the heaviest,
+   * widest setting; the animated glyph is centred inside that fixed cell.
+   */
+  reserveSpace?: boolean;
 };
 
 const lerp = (range: FontAxisRange, t: number) =>
@@ -53,10 +62,19 @@ export const VariableFontMorph: React.FC<VariableFontMorphProps> = ({
   oscillate = false,
   periodInFrames = 60,
   phaseStep = 0.55,
+  reserveSpace = true,
   ...splitProps
 }) => {
   const frame = useCurrentFrame();
   const period = Math.max(1, periodInFrames);
+
+  // The widest the type can ever be. Sized from the axis maxima rather than
+  // from `position = 1`, so a descending range like `[900, 200]` still
+  // reserves the heavy end.
+  const heaviest = Math.max(weight[0], weight[1]);
+  const widest = width ? Math.max(width[0], width[1]) : undefined;
+  const reserveSettings = [`"wght" ${heaviest.toFixed(1)}`];
+  if (widest !== undefined) reserveSettings.push(`"wdth" ${widest.toFixed(1)}`);
 
   const renderUnit = (unit: SplitUnitState) => {
     // One position drives every axis. `enter` ramps it in, the oscillation
@@ -76,7 +94,7 @@ export const VariableFontMorph: React.FC<VariableFontMorphProps> = ({
       settings.push(`"${tag}" ${lerp(range, position).toFixed(2)}`);
     }
 
-    return (
+    const glyph = (
       <span
         style={{
           display: "inline-block",
@@ -90,6 +108,30 @@ export const VariableFontMorph: React.FC<VariableFontMorphProps> = ({
         }}
       >
         {unit.text}
+      </span>
+    );
+
+    if (!reserveSpace) return glyph;
+
+    return (
+      <span style={{ display: "inline-grid", whiteSpace: "pre" }}>
+        <span
+          aria-hidden
+          style={{
+            gridArea: "1 / 1",
+            visibility: "hidden",
+            fontVariationSettings: reserveSettings.join(", "),
+            fontWeight: Math.round(heaviest),
+            ...(widest !== undefined
+              ? { fontStretch: `${widest.toFixed(1)}%` }
+              : null),
+          }}
+        >
+          {unit.text}
+        </span>
+        <span style={{ gridArea: "1 / 1", justifySelf: "center" }}>
+          {glyph}
+        </span>
       </span>
     );
   };

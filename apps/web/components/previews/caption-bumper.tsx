@@ -11,7 +11,7 @@ export const CaptionBumperPreview: React.FC = () => (
         which would leave the tile empty instead of leaving. */}
     <CaptionBumper
       text="This is the moment viewers remember."
-      holdSeconds={4}
+      holdSeconds={3.92}
     />
   </ScenePreviewPlate>
 );

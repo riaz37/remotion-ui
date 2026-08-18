@@ -185,7 +185,7 @@ export const CalendarMonthFill: React.FC<CalendarMonthFillProps> = ({
           overflow: "hidden",
           clipPath: `inset(0 0 ${(1 - open) * 100}% 0 round ${20 * u}px)`,
           opacity: 1 - exit,
-          transform: `translateY(${(1 - cardIn) * 22 * u + exit * 30 * u}px)`,
+          translate: `0 ${(1 - cardIn) * 22 * u + exit * 30 * u}px`,
         }}
       >
         <div
@@ -195,7 +195,7 @@ export const CalendarMonthFill: React.FC<CalendarMonthFillProps> = ({
             gap: 10 * u,
             marginBottom: 14 * u,
             opacity: headIn,
-            transform: `translateY(${(1 - headIn) * 10 * u}px)`,
+            translate: `0 ${(1 - headIn) * 10 * u}px`,
           }}
         >
           <span
@@ -310,7 +310,7 @@ export const CalendarMonthFill: React.FC<CalendarMonthFillProps> = ({
                       opacity: marked.fade,
                       // Chips drop onto the day rather than fading in place, so
                       // a filling month reads as things being scheduled.
-                      transform: `translateY(${(1 - marked.drop) * -10 * u}px)`,
+                      translate: `0 ${(1 - marked.drop) * -10 * u}px`,
                     }}
                   >
                     {marked.event.label}

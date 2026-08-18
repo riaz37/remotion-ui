@@ -149,7 +149,7 @@ export const SpeakerLabelCaptions: React.FC<SpeakerLabelCaptionsProps> = ({
               // The previous line stays legible but clearly secondary — it is
               // context, and competing with the live line would defeat it.
               opacity: (isCurrent ? 1 : 0.38) * clamp01(enter * 1.4),
-              transform: `translateY(${(1 - clamp01(enter)) * fontSize * 0.5}px)`,
+              translate: `0 ${(1 - clamp01(enter)) * fontSize * 0.5}px`,
             }}
           >
             <div

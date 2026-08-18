@@ -153,7 +153,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
           lineHeight: 1,
           letterSpacing: "-0.04em",
           fontVariantNumeric: "tabular-nums",
-          transform: `scale(${digitScale})`,
+          scale: `${digitScale}`,
           textShadow: urgent || done ? `0 0 ${34 * u}px ${tint}59` : undefined,
         }}
       >
@@ -177,7 +177,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
           flexDirection: "column",
           alignItems: "center",
           gap: 22 * u,
-          transform: `translateY(${(1 - intro) * 20 * u}px)`,
+          translate: `0 ${(1 - intro) * 20 * u}px`,
           opacity: intro,
         }}
       >

@@ -183,7 +183,7 @@ export const FaqAccordion: React.FC<FaqAccordionProps> = ({
         style={{
           width: listW,
           opacity: 1 - exit,
-          transform: `translateY(${(1 - listIn) * 22 * u + exit * 28 * u}px)`,
+          translate: `0 ${(1 - listIn) * 22 * u + exit * 28 * u}px`,
         }}
       >
         {title ? (
@@ -195,7 +195,7 @@ export const FaqAccordion: React.FC<FaqAccordionProps> = ({
               fontWeight: 700,
               letterSpacing: "-0.02em",
               opacity: headIn,
-              transform: `translateY(${(1 - headIn) * 10 * u}px)`,
+              translate: `0 ${(1 - headIn) * 10 * u}px`,
             }}
           >
             {title}
@@ -248,7 +248,7 @@ export const FaqAccordion: React.FC<FaqAccordionProps> = ({
                       placeItems: "center",
                       // A half turn, not a quarter: the chevron ends pointing at
                       // the panel it just opened.
-                      transform: `rotate(${openness * 180}deg)`,
+                      rotate: `${openness * 180}deg`,
                     }}
                   >
                     <svg width={16 * u} height={16 * u} viewBox="0 0 24 24" fill="none">
@@ -267,7 +267,7 @@ export const FaqAccordion: React.FC<FaqAccordionProps> = ({
                       fontSize: 17.5 * u,
                       fontWeight: openness > 0.4 ? 600 : 500,
                       letterSpacing: "-0.01em",
-                      transform: `translateX(${(1 - rowIn) * -10 * u}px)`,
+                      translate: `${(1 - rowIn) * -10 * u}px`,
                     }}
                   >
                     {item.question}
@@ -285,7 +285,7 @@ export const FaqAccordion: React.FC<FaqAccordionProps> = ({
                       // The copy trails the edge that reveals it, so the panel
                       // reads as opening rather than as text stretching.
                       opacity: interpolate(openness, [0.35, 0.9], [0, 1], clamp),
-                      transform: `translateY(${(1 - openness) * -8 * u}px)`,
+                      translate: `0 ${(1 - openness) * -8 * u}px`,
                     }}
                   >
                     {item.answer}

@@ -106,7 +106,7 @@ export const BeatPulseGrid: React.FC<BeatPulseGridProps> = ({
                     [0, 0.75, 1],
                     [idleColor, color, peakColor],
                   ),
-                  transform: `scale(${1 + pulseScale * level})`,
+                  scale: `${1 + pulseScale * level}`,
                   // The kick lifts the whole grid a little, which is what makes
                   // the pattern read as one instrument rather than many.
                   opacity: 0.55 + trace * 0.45 + kick * 0.08,

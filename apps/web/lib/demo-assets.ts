@@ -209,33 +209,84 @@ export const DEMO_MEDIA_ALT_PLAIN_SRC = svgData(`
 </svg>`);
 
 /**
- * Portrait speaker still. The other demo stills are 16:9 product cards with
- * their own headline baked in, which crop into nonsense inside a talking-head
- * frame — this one is framed like a camera actually frames a person.
+ * Portrait speaker still.
+ *
+ * The other demo stills are 16:9 product cards with their own headline baked
+ * in, which crop into nonsense inside a talking-head frame — this one is framed
+ * the way a camera actually frames a person.
+ *
+ * It is deliberately a *portrait*, not an avatar glyph. The previous version
+ * was a head-and-shoulders silhouette almost identical to the component's own
+ * `PlaceholderSpeaker`, so a reader could not tell whether `mediaSrc` was
+ * working at all — the one component whose subject is a person on camera looked
+ * like a missing image.
  */
 export const DEMO_SPEAKER_SRC = svgData(`
 <svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
   <defs>
     <linearGradient id="room" x1="0" x2="1" y1="0" y2="1">
-      <stop stop-color="#141a24"/>
-      <stop offset="1" stop-color="#0a0d13"/>
+      <stop stop-color="#1b2330"/>
+      <stop offset="1" stop-color="#070a10"/>
     </linearGradient>
-    <radialGradient id="key" cx="0.34" cy="0.3" r="0.62">
-      <stop stop-color="#2dd4bf" stop-opacity=".34"/>
+    <radialGradient id="key" cx="0.3" cy="0.24" r="0.72">
+      <stop stop-color="#2dd4bf" stop-opacity=".30"/>
       <stop offset="1" stop-color="#2dd4bf" stop-opacity="0"/>
     </radialGradient>
-    <linearGradient id="skin" x1="0" x2="1" y1="0" y2="1">
-      <stop stop-color="#3d4a5c"/>
-      <stop offset="1" stop-color="#243040"/>
+    <radialGradient id="rim" cx="0.86" cy="0.28" r="0.5">
+      <stop stop-color="#f59e0b" stop-opacity=".26"/>
+      <stop offset="1" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="skin" x1="0.15" x2="0.95" y1="0" y2="1">
+      <stop stop-color="#cf9670"/>
+      <stop offset="1" stop-color="#8d573a"/>
+    </linearGradient>
+    <linearGradient id="shirt" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#2c4a68"/>
+      <stop offset="1" stop-color="#14253a"/>
     </linearGradient>
   </defs>
+
   <rect width="1080" height="1350" fill="url(#room)"/>
   <rect width="1080" height="1350" fill="url(#key)"/>
-  <circle cx="196" cy="250" r="120" fill="#f59e0b" opacity=".12"/>
-  <ellipse cx="540" cy="700" rx="182" ry="176" fill="#111a24"/>
-  <path d="M188 1350c0-236 158-364 352-364s352 128 352 364Z" fill="url(#skin)"/>
-  <rect x="472" y="826" width="136" height="180" rx="60" fill="url(#skin)"/>
-  <ellipse cx="540" cy="742" rx="166" ry="196" fill="url(#skin)"/>
+  <rect width="1080" height="1350" fill="url(#rim)"/>
+
+  <!-- Out-of-focus practicals behind the subject: depth, not decoration. -->
+  <circle cx="146" cy="322" r="96" fill="#f59e0b" opacity=".10"/>
+  <circle cx="916" cy="212" r="128" fill="#2dd4bf" opacity=".10"/>
+  <circle cx="842" cy="452" r="58" fill="#f59e0b" opacity=".09"/>
+  <rect x="72" y="620" width="150" height="470" rx="20" fill="#2dd4bf" opacity=".05"/>
+
+  <!-- Shoulders -->
+  <path d="M156 1350c0-224 132-338 384-338s384 114 384 338Z" fill="url(#shirt)"/>
+  <path d="M466 1030l74 84 74-84" stroke="#0d1a27" stroke-width="18" stroke-linecap="round" fill="none"/>
+  <path d="M540 1114v236" stroke="#0d1a27" stroke-width="12" stroke-linecap="round" opacity=".7"/>
+
+  <!-- Neck -->
+  <rect x="466" y="806" width="148" height="240" rx="70" fill="url(#skin)"/>
+  <ellipse cx="540" cy="838" rx="120" ry="52" fill="#3d2517" opacity=".42"/>
+
+  <!-- Head -->
+  <ellipse cx="384" cy="700" rx="26" ry="42" fill="url(#skin)"/>
+  <ellipse cx="696" cy="700" rx="26" ry="42" fill="url(#skin)"/>
+  <ellipse cx="540" cy="686" rx="158" ry="192" fill="url(#skin)"/>
+
+  <!-- Hair -->
+  <path d="M540 448c-116 0-180 82-180 186 0 26 4 50 12 68 10-80 50-126 102-144 42-14 90-14 132 0 52 18 92 64 102 144 8-18 12-42 12-68 0-104-64-186-180-186Z" fill="#231a17"/>
+
+  <!-- Brows, eyes, nose, mouth -->
+  <path d="M446 646c20-16 52-16 70-6" stroke="#231a17" stroke-width="13" stroke-linecap="round" fill="none"/>
+  <path d="M564 640c18-10 50-10 70 6" stroke="#231a17" stroke-width="13" stroke-linecap="round" fill="none"/>
+  <ellipse cx="480" cy="694" rx="21" ry="12" fill="#111820"/>
+  <ellipse cx="600" cy="694" rx="21" ry="12" fill="#111820"/>
+  <circle cx="486" cy="690" r="5" fill="#f8fafc" opacity=".85"/>
+  <circle cx="606" cy="690" r="5" fill="#f8fafc" opacity=".85"/>
+  <path d="M540 706v44c0 10-8 16-19 18" stroke="#7d4b30" stroke-width="10" stroke-linecap="round" fill="none" opacity=".65"/>
+  <ellipse cx="540" cy="806" rx="38" ry="19" fill="#5c2f26"/>
+  <path d="M502 800c14-14 62-14 76 0" stroke="#6f3a2a" stroke-width="11" stroke-linecap="round" fill="none"/>
+
+  <!-- Rim light down the camera-right edge -->
+  <path d="M688 594c20 44 20 118-4 168" stroke="#f8fafc" stroke-width="11" opacity=".26" stroke-linecap="round" fill="none"/>
+  <path d="M842 1108c-42-58-108-96-176-116" stroke="#f8fafc" stroke-width="9" opacity=".14" stroke-linecap="round" fill="none"/>
 </svg>`);
 
 export const DEMO_MEDIA_THIRD_SRC = svgData(`

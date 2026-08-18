@@ -197,7 +197,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
           overflow: "hidden",
           clipPath: `inset(0 0 ${(1 - open) * 100}% 0 round ${20 * u}px)`,
           opacity: 1 - exit,
-          transform: `translateY(${(1 - cardIn) * 22 * u + exit * 30 * u}px)`,
+          translate: `0 ${(1 - cardIn) * 22 * u + exit * 30 * u}px`,
         }}
       >
         {/* The favoured column is a lit band behind the grid, not a per-cell
@@ -269,7 +269,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                   letterSpacing: "0.04em",
                   textTransform: "uppercase",
                   opacity: headIn,
-                  transform: `translateY(${(1 - headIn) * 8 * u}px)`,
+                  translate: `0 ${(1 - headIn) * 8 * u}px`,
                 }}
               >
                 {column}
@@ -297,7 +297,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                     color: palette.fg,
                     fontSize: 16.5 * u,
                     fontWeight: 500,
-                    transform: `translateX(${(1 - rowIn) * -12 * u}px)`,
+                    translate: `${(1 - rowIn) * -12 * u}px`,
                   }}
                 >
                   {row.label}
@@ -325,7 +325,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                             fontSize: 16 * u,
                             fontWeight: lit ? 700 : 600,
                             fontVariantNumeric: "tabular-nums",
-                            transform: `scale(${0.92 + cellIn * 0.08})`,
+                            scale: `${0.92 + cellIn * 0.08}`,
                           }}
                         >
                           {cell}

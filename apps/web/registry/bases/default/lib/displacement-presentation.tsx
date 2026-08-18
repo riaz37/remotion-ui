@@ -122,8 +122,13 @@ const DisplacementPresentationComponent: React.FC<
     >
       <svg width={0} height={0} style={{ position: "absolute" }}>
         <defs>
+          {/* The filter region has to clear the displacement radius plus the
+              blur on the *short* axis: at -10%/120% a 540px stage only had
+              54px of slack, so a peak displacement larger than that had its
+              output clipped before the overscan could hide the seam.
+              -30%/160% is 162px on the same stage. */}
           {wantsFilter ? (
-            <filter id={`${domId}-warp`} x="-10%" y="-10%" width="120%" height="120%">
+            <filter id={`${domId}-warp`} x="-30%" y="-30%" width="160%" height="160%">
               <feTurbulence
                 type={turbulenceType}
                 baseFrequency={frequency}
@@ -161,9 +166,9 @@ const DisplacementPresentationComponent: React.FC<
           wantsFilter
             ? {
                 filter: `url(#${domId}-warp)`,
-                // Displacing by N pixels drags N pixels of nothing in from
-                // outside the layer; scaling up by the same amount keeps the
-                // transparent border off screen.
+                // Displacing by N pixels drags transparency in from outside
+                // the layer along every edge. `overscanFor` sizes the scale-up
+                // so the *clean* middle band covers the whole stage.
                 scale: `${state.overscan}`,
               }
             : undefined

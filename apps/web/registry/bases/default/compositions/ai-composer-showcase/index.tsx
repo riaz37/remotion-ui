@@ -93,7 +93,7 @@ const TitleCard: React.FC = () => {
             justifyContent: "center",
             marginBottom: scaleFont(24, width),
             opacity: logoProgress,
-            transform: `scale(${logoProgress})`,
+            scale: `${logoProgress}`,
           }}
         >
           <Logo size={scaleFont(64, width)} />
@@ -105,7 +105,7 @@ const TitleCard: React.FC = () => {
             color: "#fff",
             letterSpacing: -1,
             opacity: titleProgress,
-            transform: `translateY(${interpolate(titleProgress, [0, 1], [16, 0])}px)`,
+            translate: `0 ${interpolate(titleProgress, [0, 1], [16, 0])}px`,
           }}
         >
           AI Composers
@@ -117,7 +117,7 @@ const TitleCard: React.FC = () => {
             color: "rgba(255,255,255,0.5)",
             fontWeight: 400,
             opacity: subProgress,
-            transform: `translateY(${interpolate(subProgress, [0, 1], [10, 0])}px)`,
+            translate: `0 ${interpolate(subProgress, [0, 1], [10, 0])}px`,
           }}
         >
           Five interfaces. Animated. Source you own.
@@ -171,7 +171,7 @@ const SceneLabel: React.FC<{ config: SceneConfig }> = ({ config }) => {
         <div
           style={{
             opacity: labelProgress,
-            transform: `translateX(${interpolate(labelProgress, [0, 1], [-12, 0])}px)`,
+            translate: `${interpolate(labelProgress, [0, 1], [-12, 0])}px`,
             flexShrink: 0,
           }}
         >
@@ -184,7 +184,7 @@ const SceneLabel: React.FC<{ config: SceneConfig }> = ({ config }) => {
             color: "#fff",
             letterSpacing: -0.3,
             opacity: labelProgress,
-            transform: `translateX(${interpolate(labelProgress, [0, 1], [-8, 0])}px)`,
+            translate: `${interpolate(labelProgress, [0, 1], [-8, 0])}px`,
             whiteSpace: "nowrap",
           }}
         >
@@ -197,7 +197,7 @@ const SceneLabel: React.FC<{ config: SceneConfig }> = ({ config }) => {
           fontWeight: 500,
           color: PHOSPHOR,
           opacity: featureProgress,
-          transform: `translateX(${interpolate(featureProgress, [0, 1], [12, 0])}px)`,
+          translate: `${interpolate(featureProgress, [0, 1], [12, 0])}px`,
           textAlign: "right",
         }}
       >
@@ -253,7 +253,7 @@ const EndCard: React.FC = () => {
             justifyContent: "center",
             marginBottom: scaleFont(20, width),
             opacity: logoProgress,
-            transform: `scale(${logoProgress})`,
+            scale: `${logoProgress}`,
           }}
         >
           <Logo size={scaleFont(56, width)} />
@@ -265,7 +265,7 @@ const EndCard: React.FC = () => {
             color: "#fff",
             letterSpacing: -0.5,
             opacity: titleProgress,
-            transform: `translateY(${interpolate(titleProgress, [0, 1], [12, 0])}px)`,
+            translate: `0 ${interpolate(titleProgress, [0, 1], [12, 0])}px`,
           }}
         >
           remotionui.com
@@ -277,7 +277,7 @@ const EndCard: React.FC = () => {
             color: PHOSPHOR,
             fontWeight: 500,
             opacity: tagProgress,
-            transform: `translateY(${interpolate(tagProgress, [0, 1], [8, 0])}px)`,
+            translate: `0 ${interpolate(tagProgress, [0, 1], [8, 0])}px`,
           }}
         >
           Source you own. Ship your story.

@@ -1,15 +1,33 @@
+import { loadFont } from "@remotion/google-fonts/NotoColorEmoji";
 import {
   AbsoluteFill,
   interpolate,
+  random,
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
 import { getSafeAreaPadding } from "@/remotion/lib/layout";
 import { EASING } from "@/remotion/lib/motion-tokens";
 
+/**
+ * The reactions are the whole subject, so they cannot be left to the system
+ * font stack: a render worker without a colour emoji font draws tofu, and this
+ * component has no copy of its own to fall back to.
+ */
+const { fontFamily: loadedEmojiFamily } = loadFont("normal", {
+  weights: ["400"],
+  subsets: ["emoji"],
+});
+
+/** Falls back to the platform emoji font if the webfont never arrives. */
+const EMOJI_FONT_STACK = `${loadedEmojiFamily}, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
+
 export type ReactionBurstProps = {
-  /** Glyphs cycled through as reactions spawn. */
-  reactions?: string[];
+  /**
+   * Glyphs cycled through as reactions spawn. Strings are drawn in Noto Color
+   * Emoji; pass elements instead to use your own marks.
+   */
+  reactions?: React.ReactNode[];
   /** Reactions spawned per second. */
   ratePerSecond?: number;
   /** Which edge the stream rises along. */
@@ -27,6 +45,11 @@ export type ReactionBurstProps = {
    * finish their arc. Omit to keep the stream running for the whole scene.
    */
   stopAfterSeconds?: number;
+  /**
+   * Seeds the per-reaction jitter. Two `ReactionBurst`s in one composition with
+   * the same seed trace identical arcs — give them different seeds.
+   */
+  seed?: string | number;
   /** Animation speed multiplier. */
   speed?: number;
 };
@@ -39,12 +62,13 @@ const clamp = {
 /**
  * Deterministic per-reaction jitter. Remotion renders frames out of order and
  * in parallel, so anything random has to be a pure function of the index —
- * `Math.random()` would give a different arc on every frame.
+ * `Math.random()` would give a different arc on every frame. `random()` is
+ * Remotion's seeded helper; folding the seed into the key is what lets two
+ * streams in one composition differ.
  */
-const noise = (index: number, salt: number) => {
-  const n = Math.sin(index * 12.9898 + salt * 78.233) * 43758.5453;
-  return n - Math.floor(n);
-};
+const noiseFor =
+  (seed: string | number) => (index: number, salt: number) =>
+    random(`${seed}-${index}-${salt}`);
 
 /**
  * The continuous side-channel stream: hearts and likes spawning on a steady
@@ -58,11 +82,13 @@ export const ReactionBurst: React.FC<ReactionBurstProps> = ({
   align = "right",
   lifeSeconds = 2.6,
   drift = 46,
-  size = 44,
+  size = 56,
   rise = 0.72,
   stopAfterSeconds,
+  seed = "reaction-burst",
   speed = 1,
 }) => {
+  const noise = noiseFor(seed);
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
   const safe = getSafeAreaPadding({ width, height });
@@ -89,7 +115,7 @@ export const ReactionBurst: React.FC<ReactionBurstProps> = ({
   }
 
   const isRight = align === "right";
-  const laneWidth = 150 * u;
+  const laneWidth = 260 * u;
   const travel = height * rise;
 
   return (
@@ -124,6 +150,7 @@ export const ReactionBurst: React.FC<ReactionBurstProps> = ({
 
           const pop = interpolate(t, [0, 0.14], [0.5, 1], {
             easing: EASING.pop,
+            output: "perceptual-scale",
             ...clamp,
           });
           const scale = pop * (0.82 + noise(index, 4) * 0.42);
@@ -139,6 +166,7 @@ export const ReactionBurst: React.FC<ReactionBurstProps> = ({
                 position: "absolute",
                 bottom: 0,
                 left: "50%",
+                fontFamily: EMOJI_FONT_STACK,
                 fontSize: size * u,
                 lineHeight: 1,
                 opacity,

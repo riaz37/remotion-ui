@@ -1,5 +1,11 @@
 import type { CSSProperties } from "react";
-import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
+import {
+  Easing,
+  interpolate,
+  spring,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 
 /** Frame the prompt starts typing in the chat-style composers. */
 export const AI_TYPING_START = 42;
@@ -75,6 +81,83 @@ export function morphProgressAt(
     config: { damping: 14, stiffness: 200, mass: 0.6 },
   });
   return Math.max(0, Math.min(value, 1));
+}
+
+export interface SendBeat {
+  /** Speed-adjusted frame the send happens on. */
+  frame: number;
+  /** True once the prompt has left the composer. */
+  sent: boolean;
+  /** 0 → 1 → 0 pulse across the button press. Map it onto a scale dip. */
+  press: number;
+  /** 0 → 1 as the sent message rises into the thread. */
+  bubble: number;
+  /** 0 → 1 as the assistant starts working on the reply. */
+  reply: number;
+}
+
+/**
+ * The beat after the typewriter stops: press, clear, and the prompt landing in
+ * the thread. Timed off the prompt length so it always follows the last
+ * character rather than sitting on a hand-picked frame that a longer prompt
+ * would overrun.
+ *
+ * `frame` must already be speed-adjusted (`frame * speed`), the same value the
+ * typewriter is driven with.
+ */
+export function sendBeatAt(
+  frame: number,
+  opts: {
+    promptLength: number;
+    fps: number;
+    cps?: number;
+    startFrame?: number;
+    /** Beat between the last character and the press. */
+    pauseSeconds?: number;
+  },
+): SendBeat {
+  const {
+    promptLength,
+    fps,
+    cps = AI_TYPING_CPS,
+    startFrame = AI_TYPING_START,
+    pauseSeconds = 0.34,
+  } = opts;
+  const clampBoth = {
+    extrapolateLeft: "clamp" as const,
+    extrapolateRight: "clamp" as const,
+  };
+  const at =
+    startFrame + (cps > 0 ? (promptLength / cps) * fps : 0) + pauseSeconds * fps;
+
+  return {
+    frame: at,
+    sent: frame >= at,
+    press: interpolate(frame, [at - 4, at, at + 8], [0, 1, 0], clampBoth),
+    bubble: interpolate(frame, [at + 1, at + 15], [0, 1], {
+      easing: Easing.out(Easing.cubic),
+      ...clampBoth,
+    }),
+    reply: interpolate(frame, [at + 10, at + 22], [0, 1], {
+      easing: Easing.out(Easing.cubic),
+      ...clampBoth,
+    }),
+  };
+}
+
+/**
+ * Three-dot "working on it" pulse. `index` is the dot, `frame` the
+ * speed-adjusted frame; the period is deliberately short so a preview sampled
+ * late in its window still has something moving in it.
+ */
+export function replyDotOpacity(
+  frame: number,
+  index: number,
+  fps: number,
+): number {
+  const period = fps * 0.9;
+  const phase = ((frame - index * (period / 3)) % period + period) % period;
+  return 0.28 + 0.72 * (0.5 - 0.5 * Math.cos((phase / period) * Math.PI * 2));
 }
 
 export function introBounceIn(

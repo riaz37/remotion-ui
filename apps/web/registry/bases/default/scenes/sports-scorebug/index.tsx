@@ -184,7 +184,7 @@ export const SportsScorebug: React.FC<SportsScorebugProps> = ({
           alignItems: "center",
           gap: 12 * u,
           opacity: rowIn,
-          transform: `translateY(${(1 - rowIn) * 10 * u}px)`,
+          translate: `0 ${(1 - rowIn) * 10 * u}px`,
         }}
       >
         <div
@@ -262,7 +262,7 @@ export const SportsScorebug: React.FC<SportsScorebugProps> = ({
             overflow: "hidden",
             clipPath: `inset(0 ${(1 - open) * 100}% 0 0 round ${14 * u}px)`,
             opacity: 1 - exit,
-            transform: `translateY(${(1 - bug) * -18 * u + exit * -24 * u}px)`,
+            translate: `0 ${(1 - bug) * -18 * u + exit * -24 * u}px`,
           }}
         >
           <div

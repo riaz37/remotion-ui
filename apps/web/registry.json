@@ -815,7 +815,9 @@
         "maplibre-gl"
       ],
       "registryDependencies": [
-        "map-utils"
+        "map-utils",
+        "motion-tokens",
+        "timing"
       ],
       "files": [
         {
@@ -2288,7 +2290,8 @@
         "@remotion/google-fonts"
       ],
       "registryDependencies": [
-        "layout"
+        "layout",
+        "motion-tokens"
       ],
       "composition": {
         "id": "AiGenerationCanvas",
@@ -3749,7 +3752,8 @@
       "type": "registry:block",
       "description": "Narrowed: hearts/likes rising continuously",
       "dependencies": [
-        "remotion"
+        "remotion",
+        "@remotion/google-fonts"
       ],
       "registryDependencies": [
         "layout",

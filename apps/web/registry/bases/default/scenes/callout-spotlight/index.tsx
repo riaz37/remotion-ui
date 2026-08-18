@@ -187,7 +187,7 @@ export const CalloutSpotlight: React.FC<CalloutSpotlightProps> = ({
             width: "100%",
             height: "100%",
             objectFit: "cover",
-            transform: `scale(${interpolate(backgroundIn, [0, 1], [1.04, 1])})`,
+            scale: `${interpolate(backgroundIn, [0, 1], [1.04, 1])}`,
           }}
         />
       ) : null}
@@ -221,7 +221,7 @@ export const CalloutSpotlight: React.FC<CalloutSpotlightProps> = ({
           borderRadius: 14 * u,
           border: `${2 * u}px solid ${accentColor}`,
           opacity: ping > 0 && ping < 1 ? (1 - ping) * 0.85 : 0,
-          transform: `scale(${interpolate(ping, [0, 1], [1, 1.12])})`,
+          scale: `${interpolate(ping, [0, 1], [1, 1.12])}`,
         }}
       />
 
@@ -235,7 +235,7 @@ export const CalloutSpotlight: React.FC<CalloutSpotlightProps> = ({
           height: gap,
           background: accentColor,
           transformOrigin: cardBelow ? "top center" : "bottom center",
-          transform: `scaleY(${connector})`,
+          scale: `1 ${connector}`,
           opacity: 0.85 * (1 - exit),
         }}
       />
@@ -268,11 +268,11 @@ export const CalloutSpotlight: React.FC<CalloutSpotlightProps> = ({
           }px ${56 * u}px ${palette.shadow}`,
           padding: `${20 * u}px ${24 * u}px`,
           opacity: Math.min(card, 1) * (1 - exit),
-          transform: `translateY(${
+          translate: `0 ${
             ((1 - Math.min(card, 1)) * (cardBelow ? 18 : -18) +
               exit * (cardBelow ? 18 : -18)) *
             u
-          }px)`,
+          }px`,
         }}
       >
         {kicker ? (
@@ -297,7 +297,7 @@ export const CalloutSpotlight: React.FC<CalloutSpotlightProps> = ({
               fontWeight: 700,
               lineHeight: 1.14,
               letterSpacing: "-0.02em",
-              transform: `translateY(${(1 - titleIn) * 100}%)`,
+              translate: `0 ${(1 - titleIn) * 100}%`,
             }}
           >
             {title}

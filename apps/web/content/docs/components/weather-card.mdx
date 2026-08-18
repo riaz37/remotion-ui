@@ -8,8 +8,10 @@ import { WeatherCardPreview } from '@/components/previews/weather-card';
 <ComponentPage name="weather-card" preview={WeatherCardPreview}>
 
 The temperature counts up, the forecast row arrives day by day, and the
-iconography runs continuously underneath all of it — which means the card is
-never a still image, and needs no exit to stay alive in a loop.
+iconography runs continuously underneath all of it. The motion is real but it is
+small: a forecast glyph is a few pixels tall, so the drift alone will not carry
+a tile. Pass `holdSeconds` when the card stands on its own and it leaves; omit
+it inside a `TransitionSeries`, where the transition covers the tail.
 
 Every moving part is a pure function of the frame: `frame * rate` wrapped into
 its own period, with each ray, drop or flake offset by its own index. Nothing

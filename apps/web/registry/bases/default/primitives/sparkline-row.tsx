@@ -150,7 +150,7 @@ export const SparklineRow: React.FC<SparklineRowProps> = ({
                   ? "none"
                   : "1px solid rgba(250,250,250,0.07)",
               opacity: clamp01(progress * 1.8) * (1 - rowExit),
-              transform: `translateY(${(1 - progress) * rowHeight * 0.22 + rowExit * rowHeight * 0.18}px)`,
+              translate: `0 ${(1 - progress) * rowHeight * 0.22 + rowExit * rowHeight * 0.18}px`,
             }}
           >
             <span

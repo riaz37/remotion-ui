@@ -148,7 +148,7 @@ export const LogoWall: React.FC<LogoWallProps> = ({
         style={{
           width: wallW,
           opacity: 1 - exit,
-          transform: `translateY(${exit * 26 * u}px)`,
+          translate: `0 ${exit * 26 * u}px`,
         }}
       >
         {eyebrow ? (
@@ -175,7 +175,7 @@ export const LogoWall: React.FC<LogoWallProps> = ({
               fontWeight: 700,
               letterSpacing: "-0.02em",
               opacity: headIn,
-              transform: `translateY(${(1 - headIn) * 12 * u}px)`,
+              translate: `0 ${(1 - headIn) * 12 * u}px`,
             }}
           >
             {title}
@@ -213,7 +213,7 @@ export const LogoWall: React.FC<LogoWallProps> = ({
                   justifyContent: "center",
                   gap: 10 * u,
                   opacity: arrive,
-                  transform: `scale(${0.94 + arrive * 0.06})`,
+                  scale: `${0.94 + arrive * 0.06}`,
                   // One filter on the tile, not per element: saturation and
                   // brightness have to move together or the grey stage looks
                   // muddy rather than monochrome.

@@ -80,6 +80,12 @@ const clamp = {
   extrapolateRight: "clamp",
 } as const;
 
+/** Panel metrics in `u`, shared by the fit calculation and the layout. */
+const HEADER_U = 42;
+const ROW_U = 31;
+/** Vertical padding above and below the rows. */
+const PAD_U = 24;
+
 type FlatRow = {
   name: string;
   path: string;
@@ -191,11 +197,19 @@ export const FileTreeReveal: React.FC<FileTreeRevealProps> = ({
     interpolate(frame, [at(from), at(to)], [0, 1], { easing, ...clamp });
 
   const portrait = height > width;
-  const u = portrait
-    ? Math.min(width / 620, height / 1120)
-    : Math.min(width / 1280, height / 720);
-
   const rows = flatten(nodes);
+
+  // Unit sizing is driven by the row count as well as the frame: a short tree
+  // grows to fill the frame (the whole point of the preview is that the
+  // filenames are readable), a long one shrinks so it still fits vertically.
+  const panelUnits = HEADER_U + PAD_U + rows.length * ROW_U;
+  const fitU = portrait
+    ? Math.min(width / 560, height / 1000)
+    : Math.min(width / 640, height / 360);
+  const u = Math.min(
+    fitU,
+    (height - safe.paddingTop - safe.paddingBottom) / panelUnits,
+  );
   const revealAt = (index: number) => T.rows + rowStagger * index;
   const lastRowEnd =
     rows.length > 0 ? revealAt(rows.length - 1) + T.rowFor : T.rows;
@@ -220,8 +234,12 @@ export const FileTreeReveal: React.FC<FileTreeRevealProps> = ({
         });
 
   const panelW = Math.min(width - safe.paddingLeft - safe.paddingRight, 480 * u);
-  const rowH = 31 * u;
+  const rowH = ROW_U * u;
   const indent = 19 * u;
+  // The rows column keeps its full height from the first frame, so the panel is
+  // already full size while the tree is still opening. Without it the 15%
+  // sample is a two-row sliver on an otherwise empty stage.
+  const rowsH = rows.length * rowH;
 
   return (
     <AbsoluteFill
@@ -246,13 +264,13 @@ export const FileTreeReveal: React.FC<FileTreeRevealProps> = ({
           overflow: "hidden",
           clipPath: `inset(0 0 ${(1 - open) * 100}% 0 round ${18 * u}px)`,
           opacity: 1 - exit,
-          transform: `translateY(${(1 - panel) * 22 * u + exit * 30 * u}px)`,
+          translate: `0 ${(1 - panel) * 22 * u + exit * 30 * u}px`,
         }}
       >
         {title ? (
           <div
             style={{
-              height: 42 * u,
+              height: HEADER_U * u,
               display: "flex",
               alignItems: "center",
               gap: 9 * u,
@@ -290,6 +308,7 @@ export const FileTreeReveal: React.FC<FileTreeRevealProps> = ({
         <div
           style={{
             padding: `${10 * u}px ${12 * u}px ${14 * u}px`,
+            minHeight: rowsH,
             display: "flex",
             flexDirection: "column",
           }}
@@ -337,7 +356,7 @@ export const FileTreeReveal: React.FC<FileTreeRevealProps> = ({
                       borderRadius: 999,
                       background: accentColor,
                       opacity: lit,
-                      transform: `scaleY(${interpolate(lit, [0, 1], [0.3, 1])})`,
+                      scale: `1 ${interpolate(lit, [0, 1], [0.3, 1])}`,
                     }}
                   />
                 ) : null}
@@ -348,7 +367,7 @@ export const FileTreeReveal: React.FC<FileTreeRevealProps> = ({
                     width: 13 * u,
                     justifyContent: "center",
                     opacity: row.isFolder ? 1 : 0,
-                    transform: `rotate(${turn * 90}deg)`,
+                    rotate: `${turn * 90}deg`,
                   }}
                 >
                   <ChevronGlyph size={13 * u} color={palette.faint} />
@@ -368,7 +387,7 @@ export const FileTreeReveal: React.FC<FileTreeRevealProps> = ({
                     whiteSpace: "nowrap",
                     // Rows slide in from the left of their own indent, which
                     // reads as coming out of the parent folder.
-                    transform: `translateX(${(1 - rowIn) * -14 * u}px)`,
+                    translate: `${(1 - rowIn) * -14 * u}px`,
                   }}
                 >
                   {row.name}

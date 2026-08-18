@@ -22,6 +22,15 @@ layers and the page background flashes through the middle of the cut.
 static field and reads as a lens; the default boils. `affect` chooses whether
 both scenes warp or only the arriving one.
 
+`scaleRatio` is the peak displacement as a fraction of the frame's **short**
+axis, not an absolute pixel count: the same absolute displacement is a quarter
+of a 540px stage and a fourteenth of a 1080p one, so a pixel value silently
+makes the effect a different strength at every composition size. The filtered
+layer is scaled up by `frameSize / (frameSize - 2 x drag)` so the transparent
+border the displacement drags in from outside the layer stays off screen —
+adding `drag` pixels of height is not enough, because the scale-up moves the
+contaminated band outward too.
+
 This is a configuration of the shared displacement presentation: the turbulence
 channel with no mask.
 

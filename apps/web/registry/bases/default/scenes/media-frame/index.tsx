@@ -152,7 +152,7 @@ export const MediaFrame: React.FC<MediaFrameProps> = ({
               textTransform: "uppercase",
               height: eyebrowBlock,
               opacity: eyebrowIn,
-              transform: `translateY(${(1 - eyebrowIn) * 8 * u}px)`,
+              translate: `0 ${(1 - eyebrowIn) * 8 * u}px`,
             }}
           >
             {eyebrow}
@@ -177,7 +177,7 @@ export const MediaFrame: React.FC<MediaFrameProps> = ({
                 fontWeight: 700,
                 lineHeight: 1.1,
                 letterSpacing: "-0.02em",
-                transform: `translateY(${(1 - titleIn) * titleSize}px)`,
+                translate: `0 ${(1 - titleIn) * titleSize}px`,
               }}
             >
               {title}
@@ -199,7 +199,7 @@ export const MediaFrame: React.FC<MediaFrameProps> = ({
             }px ${74 * u}px ${palette.shadow}`,
             // Shutter: the frame opens from its centre line outwards.
             clipPath: `inset(${(1 - open) * 50}% 0% ${(1 - open) * 50}% 0% round ${cornerRadius}px)`,
-            transform: `scale(${interpolate(open, [0, 1], [0.985, 1])})`,
+            scale: `${interpolate(open, [0, 1], [0.985, 1])}`,
           }}
         >
           {isVideoSource(src) ? (
@@ -209,7 +209,7 @@ export const MediaFrame: React.FC<MediaFrameProps> = ({
               loop
               style={{
                 ...getMediaObjectFitStyle(fit),
-                transform: `scale(${interpolate(push, [0, 1], [1.06, 1])})`,
+                scale: `${interpolate(push, [0, 1], [1.06, 1])}`,
               }}
             />
           ) : (
@@ -217,7 +217,7 @@ export const MediaFrame: React.FC<MediaFrameProps> = ({
               src={src}
               style={{
                 ...getMediaObjectFitStyle(fit),
-                transform: `scale(${interpolate(push, [0, 1], [1.06, 1])})`,
+                scale: `${interpolate(push, [0, 1], [1.06, 1])}`,
               }}
             />
           )}
@@ -243,7 +243,7 @@ export const MediaFrame: React.FC<MediaFrameProps> = ({
               fontSize: 24 * u,
               fontWeight: 500,
               opacity: captionIn,
-              transform: `translateY(${(1 - captionIn) * 10 * u}px)`,
+              translate: `0 ${(1 - captionIn) * 10 * u}px`,
             }}
           >
             {caption}

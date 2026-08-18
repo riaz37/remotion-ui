@@ -40,12 +40,35 @@ By default the axes ramp from `from` to `to` with the entrance and stay there.
 `oscillate` keeps them travelling between the two ends forever, offset per
 character by `phaseStep` so the wave moves along the line.
 
-## The static-font fallback
+## Reserved advance widths
+
+Weight and width both change a glyph's advance, so a centred line re-centres
+itself every frame and the whole string jitters horizontally as the wave passes
+through it. `reserveSpace` — on by default — lays each character out in an
+`inline-grid` cell sized by a hidden copy at the heaviest, widest setting, and
+centres the animated glyph inside that fixed cell. The line cannot move. Turn it
+off if you want the type to breathe.
+
+## Load a real variable face
 
 `font-variation-settings` does nothing on a face without those axes, so the
 `wght` and `wdth` values are also written to `font-weight` and `font-stretch`.
 A family shipping discrete weights therefore steps between them instead of
-gliding — visibly coarser, but never frozen. Pass a variable `fontFamily` to
-get the real thing.
+gliding — visibly coarser, but never frozen, and it is *not* what this component
+is for. Load a variable face at module scope and pass its family:
+
+```tsx
+import { loadFont } from "@remotion/google-fonts/Inter";
+
+const { fontFamily } = loadFont("normal", {
+  weights: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  subsets: ["latin"],
+});
+
+<VariableFontMorph text="Weight in motion" fontFamily={fontFamily} />
+```
+
+Google serves Inter as a single variable woff2 — every one of those nine weight
+URLs is the same file — so the `wght` axis has somewhere continuous to travel.
 
 </ComponentPage>

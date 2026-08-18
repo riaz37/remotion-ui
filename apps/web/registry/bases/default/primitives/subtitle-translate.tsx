@@ -130,7 +130,7 @@ export const SubtitleTranslate: React.FC<SubtitleTranslateProps> = ({
                 justifyContent: "center",
                 gap: fontSize * 0.35,
                 opacity: clamp01(progress * 1.5),
-                transform: `translateY(${(1 - clamp01(progress)) * fontSize * 0.3}px)`,
+                translate: `0 ${(1 - clamp01(progress)) * fontSize * 0.3}px`,
               }}
             >
               {line.label ? (

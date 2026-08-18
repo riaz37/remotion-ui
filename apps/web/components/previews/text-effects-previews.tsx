@@ -109,9 +109,32 @@ export const MaskedSlideRevealPreview = () => (
   </PreviewFrame>
 );
 
+/**
+ * The one preview in this file that does not run on the 120-frame window, so it
+ * does not use `ENTER_SAMPLE_FRAME`. `springSmooth` is already at 0.90 halfway
+ * through its own duration, so no delay inside a 120-frame window puts the 50%
+ * and 90% samples on different states — both caught settled type (a pixel-
+ * identical pair). `preview-config` gives this slug a 72-frame window instead,
+ * which samples frames 10 / 36 / 64; the entrance is stretched to 92 frames and
+ * started 10 frames before the window so those land at spring progress
+ * 0.50 / 0.90 / 0.99 — half-tracked and blurred, closing, settled.
+ *
+ * Short copy, not the 25-character `sample` the rest of the file uses. The span
+ * no longer wraps, and the widest state of a tracking entrance is its first
+ * frame: at any size that reads on a 308px tile, a 25-character line at full
+ * tracking is wider than the 816px content box. Fourteen characters at 68px
+ * leave room for the whole 0.28em to be on screen.
+ */
 export const TrackingInPreview = () => (
   <PreviewFrame lane="atoms" padding={72}>
-    <div style={center}><TrackingIn text={sample} /></div>
+    <div style={center}>
+      <TrackingIn
+        text={DEMO_COPY.productLaunch.title}
+        fontSize={68}
+        delayInFrames={-10}
+        durationInFrames={92}
+      />
+    </div>
   </PreviewFrame>
 );
 
@@ -174,9 +197,26 @@ export const SlotRollPreview = () => (
   </PreviewFrame>
 );
 
+/**
+ * The default 50-frame decode finishes at frame 50 of a 120-frame window, so
+ * the hold and exit samples were both fully resolved type (a 99 dB pair) and
+ * the sweep itself was never sampled. Stretching the resolve to frames 6→106
+ * puts the front roughly halfway through the string at frame 60 and lands the
+ * last character just before the exit sample at 108.
+ */
 export const MatrixDecodePreview = () => (
   <PreviewFrame lane="atoms" padding={72}>
-    <div style={center}><MatrixDecode text={sample.toUpperCase()} /></div>
+    <div style={center}>
+      {/* 48px, not the width-scaled 36: 25 monospace characters at 48px is
+          722px of the 816px content box, which is as wide as the line can go
+          before `whiteSpace: "pre"` pushes it off the frame. */}
+      <MatrixDecode
+        text={sample.toUpperCase()}
+        delayInFrames={6}
+        durationInFrames={100}
+        fontSize={48}
+      />
+    </div>
   </PreviewFrame>
 );
 

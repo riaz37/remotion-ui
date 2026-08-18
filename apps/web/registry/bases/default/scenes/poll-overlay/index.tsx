@@ -158,7 +158,7 @@ export const PollOverlay: React.FC<PollOverlayProps> = ({
             // The card wipes open from its own top edge, then drops away.
             clipPath: `inset(0 0 ${(1 - open) * 100}% 0 round ${20 * u}px)`,
             opacity: 1 - exit,
-            transform: `translateY(${(1 - card) * 26 * u + exit * 34 * u}px)`,
+            translate: `0 ${(1 - card) * 26 * u + exit * 34 * u}px`,
             overflow: "hidden",
           }}
         >
@@ -177,7 +177,7 @@ export const PollOverlay: React.FC<PollOverlayProps> = ({
                 letterSpacing: "0.1em",
                 textTransform: "uppercase",
                 opacity: badgeIn,
-                transform: `scale(${interpolate(badgeIn, [0, 1], [0.86, 1])})`,
+                scale: `${interpolate(badgeIn, [0, 1], [0.86, 1])}`,
               }}
             >
               {badge}
@@ -193,7 +193,7 @@ export const PollOverlay: React.FC<PollOverlayProps> = ({
                 fontWeight: 700,
                 lineHeight: 1.2,
                 letterSpacing: "-0.02em",
-                transform: `translateY(${(1 - questionIn) * 100}%)`,
+                translate: `0 ${(1 - questionIn) * 100}%`,
               }}
             >
               {question}
@@ -232,7 +232,7 @@ export const PollOverlay: React.FC<PollOverlayProps> = ({
                     }`,
                     overflow: "hidden",
                     opacity: rowIn,
-                    transform: `translateX(${(1 - rowIn) * -16 * u}px)`,
+                    translate: `${(1 - rowIn) * -16 * u}px`,
                   }}
                 >
                   {/* Bar travels out to the option's real share */}

@@ -89,7 +89,7 @@ export const MotionTrail: React.FC<MotionTrailProps> = ({
               style={{
                 ...stack,
                 opacity: fade,
-                transform: `scale(${(1 - (1 - scale) * age).toFixed(4)})`,
+                scale: `${(1 - (1 - scale) * age).toFixed(4)}`,
                 filter: `blur(${(blur * age).toFixed(2)}px)`,
                 mixBlendMode: blendMode,
                 pointerEvents: "none",
