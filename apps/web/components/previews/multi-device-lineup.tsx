@@ -1,7 +1,7 @@
 "use client";
 
 import { MultiDeviceLineup } from "../registry-exports";
-import { PreviewFrame } from "./preview-frame";
+import { PREVIEW_UI_FONT, PreviewFrame } from "./preview-frame";
 
 /** One responsive layout, laying itself out at whatever width it is given. */
 const ResponsiveScreen: React.FC = () => (
@@ -14,7 +14,7 @@ const ResponsiveScreen: React.FC = () => (
       padding: 12,
       background:
         "radial-gradient(120% 80% at 20% 0%, rgba(232,184,109,0.20), transparent 58%), #0B0C11",
-      fontFamily: "system-ui, sans-serif",
+      fontFamily: PREVIEW_UI_FONT,
     }}
   >
     <div style={{ color: "#D8DCE4", fontSize: 13, fontWeight: 700 }}>Northstar</div>

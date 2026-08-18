@@ -2,6 +2,7 @@
 
 import { AbsoluteFill } from "remotion";
 import { SvgMaskReveal } from "../registry-exports";
+import { PREVIEW_UI_FONT } from "./preview-frame";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /** Stand-in for whatever the mask is opening onto. */
@@ -13,7 +14,7 @@ const Revealed: React.FC = () => (
       alignItems: "center",
       justifyContent: "center",
       color: "#F3E7D2",
-      fontFamily: "system-ui, sans-serif",
+      fontFamily: PREVIEW_UI_FONT,
       fontSize: 64,
       fontWeight: 700,
       letterSpacing: "-0.03em",

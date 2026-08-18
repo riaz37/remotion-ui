@@ -1,7 +1,24 @@
 "use client";
 
+import { loadFont } from "@remotion/google-fonts/Caveat";
 import { HandwritingText } from "../registry-exports";
 import { PreviewFrame } from "./preview-frame";
+
+/**
+ * A real script face, not the generic `cursive` fallback.
+ *
+ * The component is deliberately font-agnostic — no primitive in the catalog
+ * loads a font, because doing so would force a `@remotion/google-fonts`
+ * dependency on everyone who copies one file. So its default family is a
+ * system script *stack*, and what that resolves to depends on the render
+ * machine: a signature on macOS, an ordinary sans on a Linux render farm.
+ * Loading Caveat here at module scope makes the demo deterministic and makes
+ * it actually look handwritten wherever it renders.
+ */
+const { fontFamily } = loadFont("normal", {
+  weights: ["400", "600"],
+  subsets: ["latin"],
+});
 
 /**
  * The audit samples at 15% / 50% / 90% of the window — frames 18, 60 and 108 on
@@ -22,6 +39,7 @@ export const HandwritingTextPreview: React.FC = () => (
     <div style={stage}>
       <HandwritingText
         text="Signed by hand"
+        fontFamily={fontFamily}
         delayInFrames={2}
         staggerInFrames={9}
         durationInFrames={14}

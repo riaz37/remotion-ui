@@ -1,6 +1,8 @@
 "use client";
 
-import { AbsoluteFill, Easing } from "remotion";
+import { useEffect, useState } from "react";
+import { AbsoluteFill, Easing, useDelayRender } from "remotion";
+import { loadFont as loadMarqueeFont } from "@remotion/google-fonts/Inter";
 import {
   BlurFocusIn,
   InfiniteMarquee,
@@ -18,6 +20,15 @@ import { PreviewFrame, PreviewGhostStack, PreviewKicker } from "./preview-frame"
 
 const sample = DEMO_COPY.productLaunch.featureTitle;
 const sub = DEMO_COPY.tutorial.calloutSubtitle;
+
+/**
+ * The marquee measures its own type to derive a loop period, so it needs a real
+ * font — see `PerspectiveMarqueePreview` below.
+ */
+const marqueeFont = loadMarqueeFont("normal", {
+  weights: ["600"],
+  subsets: ["latin"],
+});
 
 const center = {
   display: "grid",
@@ -315,16 +326,43 @@ export const InfiniteMarqueePreview = () => (
  * one in a 308px tile — Chromium drops them outright, and the finding that "the
  * horizon line is empty black" was exactly that.
  */
-export const PerspectiveMarqueePreview = () => (
+export const PerspectiveMarqueePreview = () => {
+  const { delayRender, continueRender } = useDelayRender();
+  // Rule 27. `PerspectiveMarquee` calls `measureText()` inside a `useMemo` and
+  // divides the resulting track length by `speed` to get its loop period. That
+  // memo runs once: if it runs while the family is still the fallback, the
+  // period is wrong for the whole clip and the scroll speed silently stops
+  // matching the stated `speed`. Hold the frame until the face is actually
+  // swapped in, and only mount the marquee after — so the memo's first (and
+  // only) run measures Inter, not system-ui.
+  const [handle] = useState(() => delayRender("Loading marquee font"));
+  const [fontReady, setFontReady] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    marqueeFont.waitUntilDone().then(() => {
+      if (cancelled) return;
+      setFontReady(true);
+      continueRender(handle);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [continueRender, handle]);
+
+  return (
   <PreviewFrame lane="atoms" padding={0} justifyContent="stretch" alignItems="stretch">
     <AbsoluteFill>
-      <PerspectiveMarquee
-        text={sample}
-        fontSize={44}
-        floorTilt={62}
-        lineWidth={2}
-        nearGlow
-      />
+      {fontReady ? (
+        <PerspectiveMarquee
+          text={sample}
+          fontSize={44}
+          fontFamily={marqueeFont.fontFamily}
+          floorTilt={62}
+          lineWidth={2}
+          nearGlow
+        />
+      ) : null}
     </AbsoluteFill>
     <AbsoluteFill
       style={{
@@ -363,7 +401,8 @@ export const PerspectiveMarqueePreview = () => (
       </div>
     </AbsoluteFill>
   </PreviewFrame>
-);
+  );
+};
 
 /* StrikethroughReplacePreview lives in ./strikethrough-replace — it needs a
  * composed stage rather than one centred line. */

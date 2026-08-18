@@ -1,6 +1,38 @@
 import type { CSSProperties, ReactNode } from "react";
+import { loadFont as loadInter } from "@remotion/google-fonts/Inter";
+import { loadFont as loadMono } from "@remotion/google-fonts/JetBrainsMono";
 import { AbsoluteFill } from "remotion";
 import { usePreviewStage } from "./preview-stage";
+
+/**
+ * Real faces for the whole preview stage.
+ *
+ * Every preview in the catalog renders inside `PreviewFrame`, and it used to
+ * hand them `system-ui, sans-serif` and a system monospace stack. That makes a
+ * still a function of the machine that rendered it: metrics, weights and
+ * available glyphs all differ between a macOS dev box and a Linux render
+ * worker, so line breaks and fitted type move between environments and the
+ * audit's PSNR comparisons compare two different typefaces.
+ *
+ * Loading here rather than inside each preview keeps the dependency on the
+ * docs surface — the registry primitives stay font-agnostic on purpose, so
+ * copying one file never drags `@remotion/google-fonts` along with it.
+ */
+const { fontFamily: uiFontFamily } = loadInter("normal", {
+  weights: ["400", "500", "600", "700", "800"],
+  subsets: ["latin"],
+});
+
+const { fontFamily: monoFontFamily } = loadMono("normal", {
+  weights: ["400", "500", "700"],
+  subsets: ["latin"],
+});
+
+/** Inter, with the old system stack kept as the fallback leg. */
+export const PREVIEW_UI_FONT = `${uiFontFamily}, system-ui, sans-serif`;
+
+/** JetBrains Mono, for terminals and code plates. */
+export const PREVIEW_MONO_FONT = `${monoFontFamily}, SFMono-Regular, Menlo, Consolas, monospace`;
 
 type PreviewLane =
   | "atoms"
@@ -14,7 +46,7 @@ type PreviewLane =
 export const previewTextStyle: CSSProperties = {
   color: "#ececec",
   fontSize: 52,
-  fontFamily: "system-ui, sans-serif",
+  fontFamily: PREVIEW_UI_FONT,
   textAlign: "center",
   lineHeight: 1,
   fontWeight: 600,
@@ -46,7 +78,7 @@ export const PreviewFrame: React.FC<{
         alignItems,
         padding,
         color: tokens.ink,
-        fontFamily: "system-ui, sans-serif",
+        fontFamily: PREVIEW_UI_FONT,
         overflow: "hidden",
       }}
     >
@@ -233,7 +265,7 @@ export const CodePanel: React.FC<{
         overflow: "hidden",
         background: tokens.panelFill,
         border: `1px solid ${tokens.panelBorder}`,
-        fontFamily: "SFMono-Regular, Menlo, Consolas, monospace",
+        fontFamily: PREVIEW_MONO_FONT,
       }}
     >
       <div
