@@ -779,9 +779,12 @@ export const DeviceMockupZoom: React.FC<DeviceMockupZoomProps> = ({
   const copyProgress = clampProgress(frame, [0, DURATION.normal], [0, 1]);
   const deviceProgress = clampProgress(frame, [STAGGER.normal, 64], [0, 1]);
   const accentProgress = clampProgress(frame, [20, 72], [0, 1]);
+  // Doc rule 20. Perceived size grows with the square of the factor, so a
+  // linear ramp reads front-loaded; `perceptual-scale` interpolates in area.
   const cameraScale = interpolate(camera, [0, 1], [1.18, 0.95], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
+    output: "perceptual-scale",
   });
   const cameraY = interpolate(camera, [0, 1], [scaleFont(20, width), 0], {
     extrapolateLeft: "clamp",

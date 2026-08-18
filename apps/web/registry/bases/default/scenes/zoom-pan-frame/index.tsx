@@ -98,7 +98,12 @@ export const ZoomPanFrame: React.FC<ZoomPanFrameProps> = ({
   });
   const originX = interpolate(progress, [0, 1], [start.x, end.x]) * 100;
   const originY = interpolate(progress, [0, 1], [start.y, end.y]) * 100;
-  const scale = interpolate(progress, [0, 1], [start.scale, end.scale]);
+  // Doc rule 20. Perceived size grows with the square of the factor, so a
+  // linear camera push reads front-loaded; `perceptual-scale` interpolates in
+  // area, which is what makes a long push read as one continuous move.
+  const scale = interpolate(progress, [0, 1], [start.scale, end.scale], {
+    output: "perceptual-scale",
+  });
 
   const labelIn = label
     ? interpolate(frame, [move * 0.72, move * 0.72 + fps * 0.45], [0, 1], {

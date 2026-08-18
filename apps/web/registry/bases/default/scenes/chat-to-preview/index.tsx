@@ -387,7 +387,7 @@ export const ChatToPreview: React.FC<ChatToPreviewProps> = ({
                   opacity: land,
                   transform: `translateY(${
                     (1 - land) * (isUser ? 46 * u : 12 * u)
-                  }px) scale(${interpolate(land, [0, 1], [0.96, 1])})`,
+                  }px) scale(${interpolate(land, [0, 1], [0.96, 1], { output: "perceptual-scale" })})`,
                 }}
               >
                 {thinking ? (
@@ -763,7 +763,7 @@ export const ChatToPreview: React.FC<ChatToPreviewProps> = ({
                 textAlign: "center",
                 background: `radial-gradient(ellipse 70% 60% at 50% 38%, ${accentColor}26, transparent 70%)`,
                 opacity: resolve,
-                transform: `scale(${interpolate(resolve, [0, 1], [1.03, 1])})`,
+                transform: `scale(${interpolate(resolve, [0, 1], [1.03, 1], { output: "perceptual-scale" })})`,
               }}
             >
               <div

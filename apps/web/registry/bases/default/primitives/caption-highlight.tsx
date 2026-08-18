@@ -89,6 +89,7 @@ export const CaptionHighlight: React.FC<CaptionHighlightProps> = ({
           extrapolateLeft: "clamp",
           extrapolateRight: "clamp",
           easing: EASING.pop,
+          output: "perceptual-scale",
         });
         const opacity = interpolate(emphasis, [0, 1], [0.78, 1], {
           extrapolateLeft: "clamp",

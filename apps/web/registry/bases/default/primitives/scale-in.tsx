@@ -31,7 +31,11 @@ export const ScaleIn: React.FC<ScaleInProps> = ({
   ...motionProps
 }) => {
   const { motion, opacity } = useEnterExit(motionProps);
-  const scale = interpolate(motion, [0, 1], [from, 1]);
+  // Doc rule 20. Perceived size grows with the square of the factor, so a
+  // linear ramp reads front-loaded; `perceptual-scale` interpolates in area.
+  const scale = interpolate(motion, [0, 1], [from, 1], {
+    output: "perceptual-scale",
+  });
 
   return (
     <MotionWrapper

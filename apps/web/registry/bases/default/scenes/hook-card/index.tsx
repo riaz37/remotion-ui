@@ -164,7 +164,10 @@ export const HookCard: React.FC<HookCardProps> = ({
   const drift = frame / fps;
   const bloomX = 24 + Math.sin(drift * 0.5) * 5;
   const bloomY = 32 + Math.cos(drift * 0.42) * 6;
-  const push = interpolate(frame, [0, seconds(6)], [1, 1.045], clamp);
+  const push = interpolate(frame, [0, seconds(6)], [1, 1.045], {
+    ...clamp,
+    output: "perceptual-scale",
+  });
   const glow = interpolate(frame, [lineStart, lineDown], [0.4, 1], {
     easing: EASING.enter,
     ...clamp,

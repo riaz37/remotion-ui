@@ -34,7 +34,9 @@ export const BlurIn: React.FC<BlurInProps> = ({
   const { motion, displace, opacity, exiting, exitProgress } =
     useEnterExit(motionProps);
 
-  const scale = interpolate(motion, [0, 1], [scaleFrom, 1]);
+  const scale = interpolate(motion, [0, 1], [scaleFrom, 1], {
+    output: "perceptual-scale",
+  });
   const defocus = exiting
     ? exitProgress
     : interpolate(displace, [FOCUS_AT, 1], [0, 1], {

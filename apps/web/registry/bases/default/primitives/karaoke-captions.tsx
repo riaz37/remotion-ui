@@ -112,6 +112,7 @@ export const KaraokeCaptions: React.FC<KaraokeCaptionsProps> = ({
           extrapolateLeft: "clamp",
           extrapolateRight: "clamp",
           easing: EASING.pop,
+          output: "perceptual-scale",
         });
 
         const { leading, word } = splitLeadingSpace(token.text);

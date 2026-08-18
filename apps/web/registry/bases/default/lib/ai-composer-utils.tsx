@@ -171,7 +171,7 @@ export function introBounceIn(
   });
   return {
     translateY: interpolate(s, [0, 1], [28, 0]),
-    scale: interpolate(s, [0, 1], [0.97, 1]),
+    scale: interpolate(s, [0, 1], [0.97, 1], { output: "perceptual-scale" }),
   };
 }
 

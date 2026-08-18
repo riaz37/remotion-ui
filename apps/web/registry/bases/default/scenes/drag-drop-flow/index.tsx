@@ -617,11 +617,14 @@ export const DragDropFlow: React.FC<DragDropFlowProps> = ({
                   clamp,
                 )
               : 0,
+            // Doc rule 20: perceived size grows with the square of the
+            // factor, so this 0.4 -> 1.5 ramp reads front-loaded on a linear
+            // interpolation.
             transform: `scale(${interpolate(
               frame,
               [at(T.release), at(T.release + 0.34)],
               [0.4, 1.5],
-              clamp,
+              { ...clamp, output: "perceptual-scale" },
             )})`,
           }}
         />

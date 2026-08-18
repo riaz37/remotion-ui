@@ -44,7 +44,9 @@ export const SpringIn: React.FC<SpringInProps> = ({
     spring: config,
   });
 
-  const scale = interpolate(motion, [0, 1], [from, 1]);
+  const scale = interpolate(motion, [0, 1], [from, 1], {
+    output: "perceptual-scale",
+  });
 
   return (
     <MotionWrapper

@@ -40,7 +40,9 @@ export const RotateIn: React.FC<RotateInProps> = ({
 }) => {
   const { motion, opacity } = useEnterExit(motionProps);
   const rotation = interpolate(motion, [0, 1], [degrees, 0]);
-  const scale = interpolate(motion, [0, 1], [scaleFrom, 1]);
+  const scale = interpolate(motion, [0, 1], [scaleFrom, 1], {
+    output: "perceptual-scale",
+  });
 
   return (
     <MotionWrapper
