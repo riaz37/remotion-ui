@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { interpolate, useCurrentFrame } from "remotion";
 import {
   formatCompactNumber,
@@ -146,31 +147,45 @@ export const BubbleChartPack: React.FC<BubbleChartPackProps> = ({
   const localFrame = useCurrentFrame();
   const frame = frameOverride ?? localFrame;
 
-  const maxValue = bubbles.reduce(
-    (highest, bubble) => Math.max(highest, bubble.value),
-    0,
-  ) || 1;
-  const radii = bubbles.map((bubble) => Math.sqrt(bubble.value / maxValue) * 100);
-  const packed = packCircles(radii, padding);
+  /* The pack is a pure function of the values and the padding — spiral
+   * placement plus 60 O(n^2) compaction passes — and none of it depends on the
+   * frame. Keyed on the values joined rather than on `bubbles` itself, because
+   * a caller passing an array literal hands this a new reference every frame
+   * and a reference-keyed memo would never hit. */
+  const signature = bubbles.map((bubble) => bubble.value).join(",");
+  const layout = useMemo(() => {
+    const maxValue =
+      bubbles.reduce((highest, bubble) => Math.max(highest, bubble.value), 0) || 1;
+    const radii = bubbles.map(
+      (bubble) => Math.sqrt(bubble.value / maxValue) * 100,
+    );
+    const circles = packCircles(radii, padding);
 
-  // The pack is laid out in its own units around the origin, then scaled once
-  // to fit the box — so the same data fills the frame at any size.
-  const extent = packed.reduce(
-    (bounds, circle) => ({
-      minX: Math.min(bounds.minX, circle.x - circle.radius),
-      maxX: Math.max(bounds.maxX, circle.x + circle.radius),
-      minY: Math.min(bounds.minY, circle.y - circle.radius),
-      maxY: Math.max(bounds.maxY, circle.y + circle.radius),
-    }),
-    { minX: 0, maxX: 0, minY: 0, maxY: 0 },
-  );
-  const spanX = Math.max(1, extent.maxX - extent.minX);
-  const spanY = Math.max(1, extent.maxY - extent.minY);
-  const scale = Math.min(width / spanX, height / spanY) * 0.96;
-  const centreX = (extent.minX + extent.maxX) / 2;
-  const centreY = (extent.minY + extent.maxY) / 2;
+    // Laid out in its own units around the origin, then scaled once to fit the
+    // box — so the same data fills the frame at any size.
+    const extent = circles.reduce(
+      (bounds, circle) => ({
+        minX: Math.min(bounds.minX, circle.x - circle.radius),
+        maxX: Math.max(bounds.maxX, circle.x + circle.radius),
+        minY: Math.min(bounds.minY, circle.y - circle.radius),
+        maxY: Math.max(bounds.maxY, circle.y + circle.radius),
+      }),
+      { minX: 0, maxX: 0, minY: 0, maxY: 0 },
+    );
+    const spanX = Math.max(1, extent.maxX - extent.minX);
+    const spanY = Math.max(1, extent.maxY - extent.minY);
 
-  const arrival = new Map(packed.map((circle, rank) => [circle.index, rank]));
+    return {
+      circles,
+      scale: Math.min(width / spanX, height / spanY) * 0.96,
+      centreX: (extent.minX + extent.maxX) / 2,
+      centreY: (extent.minY + extent.maxY) / 2,
+      arrival: new Map(circles.map((circle, rank) => [circle.index, rank])),
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signature, padding, width, height]);
+
+  const { circles: packed, scale, centreX, centreY, arrival } = layout;
 
   const exit =
     exitAtInFrames === undefined

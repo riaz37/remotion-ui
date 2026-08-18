@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
 
 export type ParticleFieldProps = {
@@ -99,7 +100,12 @@ export const ParticleField: React.FC<ParticleFieldProps> = ({
   const { fps } = useVideoConfig();
   const time = (frame / fps) * speed;
 
-  const particles = buildParticles(Math.max(1, Math.round(count)), seed);
+  // A pure function of count and seed — 8 hashes per particle, and the field
+  // has 70 of them by default.
+  const particles = useMemo(
+    () => buildParticles(Math.max(1, Math.round(count)), seed),
+    [count, seed],
+  );
   const radians = (angle * Math.PI) / 180;
   // 0deg travels up, so the direction vector is (sin, -cos) in screen space.
   const dirX = Math.sin(radians);

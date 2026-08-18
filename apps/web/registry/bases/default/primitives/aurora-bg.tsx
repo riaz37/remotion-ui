@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { useId, useMemo } from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
 
 export type AuroraBgProps = {
@@ -184,7 +184,16 @@ export const AuroraBg: React.FC<AuroraBgProps> = ({
   const time = (frame / fps) * speed;
 
   const palette = colors.length > 0 ? colors : ["#4cd6a6"];
-  const ribbons = buildRibbons(Math.max(1, Math.round(ribbonCount)), palette, seed);
+  /* Five ribbons is 8 seeded hashes and a path string each, and none of it
+   * moves with the frame — only the transform that carries them does. Keyed on
+   * the joined palette rather than on `colors`, since a caller passing an array
+   * literal hands this a new reference every frame. */
+  const paletteKey = palette.join(",");
+  const ribbons = useMemo(
+    () => buildRibbons(Math.max(1, Math.round(ribbonCount)), palette, seed),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [ribbonCount, paletteKey, seed],
+  );
 
   return (
     <AbsoluteFill style={{ background: backgroundColor, overflow: "hidden" }}>

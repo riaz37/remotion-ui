@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { interpolate, useCurrentFrame } from "remotion";
 import {
   formatAxisValue,
@@ -85,9 +86,22 @@ export const CandlestickChart: React.FC<CandlestickChartProps> = ({
   const unit = width / 960;
   const labelSize = Math.max(11, Math.round(21 * unit));
 
-  const domain = niceDomain(
-    candles.flatMap((candle) => [candle.high, candle.low]),
-    { includeZero: false, tickCount: 4 },
+  /* Domain and the moving average are functions of the series, not of the
+   * frame. Keyed on a signature of the series rather than on `candles`, because
+   * a caller passing an array literal hands this a new reference every frame
+   * and a reference-keyed memo would never hit. */
+  const signature = candles
+    .map((candle) => `${candle.open}/${candle.high}/${candle.low}/${candle.close}`)
+    .join(",");
+
+  const domain = useMemo(
+    () =>
+      niceDomain(candles.flatMap((candle) => [candle.high, candle.low]), {
+        includeZero: false,
+        tickCount: 4,
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [signature],
   );
 
   const plot = getPlotArea(width, height, {
@@ -124,20 +138,25 @@ export const CandlestickChart: React.FC<CandlestickChartProps> = ({
 
   // Simple moving average, plotted only where a full window exists — a partial
   // window would draw an average of fewer candles than the legend claims.
-  const averagePoints =
-    movingAverage > 1
-      ? candles
-          .map((_, index) => {
-            if (index < movingAverage - 1) return null;
-            const window = candles.slice(index - movingAverage + 1, index + 1);
-            const mean =
-              window.reduce((sum, candle) => sum + candle.close, 0) / window.length;
-            return { index, x: plot.left + pitch * (index + 0.5), y: y(mean) };
-          })
-          .filter((point): point is { index: number; x: number; y: number } =>
-            Boolean(point),
-          )
-      : [];
+  const averagePoints = useMemo(
+    () =>
+      movingAverage > 1
+        ? candles
+            .map((_, index) => {
+              if (index < movingAverage - 1) return null;
+              const window = candles.slice(index - movingAverage + 1, index + 1);
+              const mean =
+                window.reduce((sum, candle) => sum + candle.close, 0) /
+                window.length;
+              return { index, x: plot.left + pitch * (index + 0.5), y: y(mean) };
+            })
+            .filter((point): point is { index: number; x: number; y: number } =>
+              Boolean(point),
+            )
+        : [],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [signature, movingAverage, plot.left, plot.bottom, plot.height, pitch, domain],
+  );
 
   const lastCandle = candles[candles.length - 1];
   const lastVisible = growth(candles.length - 1);

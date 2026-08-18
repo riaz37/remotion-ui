@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useAudioBands } from "@/remotion/lib/audio-viz-utils";
 
 export type AudiogramBarsProps = {
@@ -164,6 +165,16 @@ export const AudiogramBars: React.FC<AudiogramBarsProps> = ({
   });
 
   const endColor = barColorEnd ?? barColor;
+  /* The levels change every frame; the ramp does not. Mixing two hex strings
+   * per bar per frame is 48 string parses a frame for a value that only ever
+   * depends on the two colours and the bar count. */
+  const ramp = useMemo(
+    () =>
+      Array.from({ length: bands.length }, (_, index) =>
+        mixHex(barColor, endColor, index / Math.max(1, bands.length - 1)),
+      ),
+    [barColor, endColor, bands.length],
+  );
 
   return (
     <div
@@ -181,7 +192,7 @@ export const AudiogramBars: React.FC<AudiogramBarsProps> = ({
           key={index}
           value={value}
           peak={peaks[index] ?? value}
-          color={mixHex(barColor, endColor, index / Math.max(1, bands.length - 1))}
+          color={ramp[index] ?? barColor}
           align={align}
           showPeaks={showPeaks}
           showReflection={showReflection}

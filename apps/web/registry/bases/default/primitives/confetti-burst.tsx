@@ -71,11 +71,16 @@ export const ConfettiBurst: React.FC<ConfettiBurstProps> = ({
 }) => {
   const frame = useCurrentFrame();
   const { width, height, fps } = useVideoConfig();
-  // The particle table is a pure function of these four props, so it must not be
-  // rebuilt per frame — 48 particles is 7 `random()` calls each, every frame.
+  /* The particle table is a pure function of these four props, so it must not
+   * be rebuilt per frame — 48 particles is 7 `random()` calls each. Keyed on
+   * the joined palette rather than on `colors`: a caller passing an array
+   * literal hands this a new reference every frame, and the memo would never
+   * hit. */
+  const paletteKey = colors.join(",");
   const particles = useMemo(
     () => createParticles(count, spread, colors, seed),
-    [count, spread, colors, seed],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [count, spread, paletteKey, seed],
   );
   const time = frame / fps;
   const fade = interpolate(frame, [durationInFrames * 0.55, durationInFrames], [1, 0], {

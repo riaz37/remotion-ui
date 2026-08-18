@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { loadFont } from "@remotion/google-fonts/Inter";
 import {
   AbsoluteFill,
@@ -129,49 +130,102 @@ export const OrgChartBuild: React.FC<OrgChartBuildProps> = ({
   const nodeH = 54 * u;
   const levelH = 92 * u;
 
-  const childrenOf = (index: number) =>
-    nodes.reduce<number[]>((list, node, nodeIndex) => {
-      if (node.parent === nodeIndex) return list;
-      return node.parent === index ? [...list, nodeIndex] : list;
-    }, []);
+  /* The whole layout is a function of the tree and the stage, not of the frame.
+   * It used to be four closures called from inside the render: `centerOf`
+   * recursed the subtree on every reference, `orderInLevel` re-sorted a whole
+   * level per node, and both ran again for the connector and for the card — so
+   * a 9-node chart re-walked itself dozens of times a frame. Keyed on a
+   * signature of the tree rather than on `nodes`, because a caller passing an
+   * array literal hands this a new reference every frame. */
+  const signature = nodes
+    .map((node) => `${node.name}:${node.parent ?? "-"}`)
+    .join("|");
 
-  const depthOf = (index: number): number => {
-    const parent = nodes[index].parent;
-    return parent === undefined ? 0 : depthOf(parent) + 1;
-  };
+  const layout = useMemo(() => {
+    const childIndices: number[][] = nodes.map(() => []);
+    nodes.forEach((node, index) => {
+      const parent = node.parent;
+      if (parent !== undefined && parent !== index && nodes[parent] !== undefined) {
+        childIndices[parent].push(index);
+      }
+    });
 
-  const depths = nodes.map((_, index) => depthOf(index));
-  const maxDepth = depths.reduce((max, depth) => Math.max(max, depth), 0);
-  const leaves = nodes.reduce<number[]>(
-    (list, _, index) => (childrenOf(index).length === 0 ? [...list, index] : list),
-    [],
-  );
-  const leafSpan = chartW / Math.max(1, leaves.length);
-  const nodeW = Math.min(190 * u, leafSpan - 16 * u);
+    /* Depth walks up the parent chain iteratively and remembers where it has
+     * been. `parent` is a public prop with no validation behind it, so a cycle
+     * — or a chain long enough to matter — would otherwise recurse until the
+     * stack ran out, in a render that runs once per frame. */
+    const depths = nodes.map((_, index) => {
+      const seen = new Set<number>([index]);
+      let depth = 0;
+      let cursor = nodes[index].parent;
+      while (cursor !== undefined && nodes[cursor] !== undefined && !seen.has(cursor)) {
+        seen.add(cursor);
+        depth += 1;
+        cursor = nodes[cursor].parent;
+      }
+      return depth;
+    });
 
-  /** Centre of a node: leaves sit on their own slot, parents over their span. */
-  const centerOf = (index: number): number => {
-    const children = childrenOf(index);
-    if (children.length === 0) {
-      return (leaves.indexOf(index) + 0.5) * leafSpan;
+    const maxDepth = depths.reduce((max, depth) => Math.max(max, depth), 0);
+    const leaves = nodes.reduce<number[]>(
+      (list, _, index) => (childIndices[index].length === 0 ? [...list, index] : list),
+      [],
+    );
+    const leafSpan = chartW / Math.max(1, leaves.length);
+
+    /* Centres resolve deepest-first rather than by recursion: a child always
+     * carries a greater depth than its parent, so one pass in that order has
+     * every child's centre already in hand — and it terminates whatever the
+     * caller passes. Leaves sit on their own slot, parents over their span. */
+    const centers = nodes.map(() => 0);
+    const deepestFirst = nodes
+      .map((_, index) => index)
+      .sort((a, b) => depths[b] - depths[a]);
+    for (const index of deepestFirst) {
+      const children = childIndices[index];
+      if (children.length === 0) {
+        centers[index] = (leaves.indexOf(index) + 0.5) * leafSpan;
+        continue;
+      }
+      const spans = children.map((child) => centers[child]);
+      centers[index] = (Math.min(...spans) + Math.max(...spans)) / 2;
     }
-    const spans = children.map(centerOf);
-    return (Math.min(...spans) + Math.max(...spans)) / 2;
-  };
 
-  /** Siblings inside a level are ordered by their own centres, left to right. */
-  const orderInLevel = (index: number) => {
-    const level = depths
-      .map((depth, nodeIndex) => ({ depth, nodeIndex }))
-      .filter((entry) => entry.depth === depths[index])
-      .sort((a, b) => centerOf(a.nodeIndex) - centerOf(b.nodeIndex));
-    return level.findIndex((entry) => entry.nodeIndex === index);
-  };
+    // Siblings inside a level are ordered by their own centres, left to right.
+    const orderInLevel = nodes.map(() => 0);
+    for (let depth = 0; depth <= maxDepth; depth += 1) {
+      nodes
+        .map((_, index) => index)
+        .filter((index) => depths[index] === depth)
+        .sort((a, b) => centers[a] - centers[b])
+        .forEach((index, position) => {
+          orderInLevel[index] = position;
+        });
+    }
 
-  const landingOf = (index: number) =>
-    startAtSeconds +
-    depths[index] * levelStaggerSeconds +
-    orderInLevel(index) * siblingStaggerSeconds;
+    return {
+      depths,
+      maxDepth,
+      centers,
+      nodeW: Math.min(190 * u, leafSpan - 16 * u),
+      landings: nodes.map(
+        (_, index) =>
+          startAtSeconds +
+          depths[index] * levelStaggerSeconds +
+          orderInLevel[index] * siblingStaggerSeconds,
+      ),
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    signature,
+    chartW,
+    u,
+    startAtSeconds,
+    levelStaggerSeconds,
+    siblingStaggerSeconds,
+  ]);
+
+  const { depths, maxDepth, centers, nodeW, landings } = layout;
 
   const chartH = (maxDepth + 1) * levelH;
   const rowY = (depth: number) => depth * levelH;
@@ -219,16 +273,16 @@ export const OrgChartBuild: React.FC<OrgChartBuildProps> = ({
           >
             {nodes.map((node, index) => {
               if (node.parent === undefined) return null;
-              const landing = landingOf(index);
+              const landing = landings[index];
               const draw = ease(
                 landing - T.connectorLead,
                 landing + 0.06,
                 EASING.editorial,
               );
               if (draw <= 0) return null;
-              const x1 = centerOf(node.parent);
+              const x1 = centers[node.parent];
               const y1 = rowY(depths[node.parent]) + nodeH;
-              const x2 = centerOf(index);
+              const x2 = centers[index];
               const y2 = rowY(depths[index]);
               const mid = (y1 + y2) / 2;
               const color =
@@ -256,7 +310,7 @@ export const OrgChartBuild: React.FC<OrgChartBuildProps> = ({
           </svg>
 
           {nodes.map((node, index) => {
-            const landing = landingOf(index);
+            const landing = landings[index];
             const pop = spring({
               frame: frame - at(landing),
               fps,
@@ -271,7 +325,7 @@ export const OrgChartBuild: React.FC<OrgChartBuildProps> = ({
                 key={node.name}
                 style={{
                   position: "absolute",
-                  left: centerOf(index) - nodeW / 2,
+                  left: centers[index] - nodeW / 2,
                   top: rowY(depths[index]),
                   width: nodeW,
                   height: nodeH,
