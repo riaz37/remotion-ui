@@ -1,6 +1,6 @@
-import { getGitHubStars } from "@/lib/github-stars";
+import { STARS_TTL_SECONDS, getGitHubStars } from "@/lib/github-stars";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export async function GET() {
   const stars = await getGitHubStars();
@@ -9,7 +9,7 @@ export async function GET() {
     { stars },
     {
       headers: {
-        "Cache-Control": "no-store",
+        "Cache-Control": `public, s-maxage=${STARS_TTL_SECONDS}, stale-while-revalidate=86400`,
       },
     },
   );

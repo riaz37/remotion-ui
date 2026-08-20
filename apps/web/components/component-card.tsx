@@ -30,6 +30,7 @@ export function ComponentCard({
     return (
       <Link
         href={url}
+        prefetch={false}
         className="motion-border block rounded-md border border-[var(--bay-border)] bg-[var(--bay-surface)] p-4 hover:border-[var(--bay-border-strong)]"
       >
         <p className="text-sm font-semibold capitalize">{name.replace(/-/g, " ")}</p>

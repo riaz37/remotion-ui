@@ -58,6 +58,7 @@ function Frame({ slug, index }: { slug: string; index: number }) {
     >
       <Link
         href={getComponentDocPath(slug)}
+        prefetch={false}
         className="group block h-full transition-colors hover:bg-[var(--bay-surface-raised)] focus-visible:bg-[var(--bay-surface-raised)] focus-visible:outline-none"
       >
         <div className="relative bg-[var(--bay-stage)]">

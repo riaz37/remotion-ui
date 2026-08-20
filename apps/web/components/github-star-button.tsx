@@ -31,27 +31,19 @@ function StarIcon({ className }: { className?: string }) {
   );
 }
 
-const REFRESH_MS = 60 * 1000;
-
 export function GitHubStarButton() {
   const [stars, setStars] = useState<number | null>(null);
 
   useEffect(() => {
     let active = true;
 
-    const load = async () => {
+    void (async () => {
       const count = await fetchGitHubStarsClient();
       if (active) setStars(count);
-    };
-
-    void load();
-    const interval = window.setInterval(() => {
-      void load();
-    }, REFRESH_MS);
+    })();
 
     return () => {
       active = false;
-      window.clearInterval(interval);
     };
   }, []);
 

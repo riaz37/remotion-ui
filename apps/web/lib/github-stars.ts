@@ -1,5 +1,7 @@
 import { siteConfig } from "@/lib/site-config";
 
+export const STARS_TTL_SECONDS = 3600;
+
 export const githubRepo = siteConfig.githubUrl.replace("https://github.com/", "");
 
 export function formatGitHubStars(count: number): string {
@@ -13,6 +15,7 @@ async function getGitHubStarsFromShields(): Promise<number | null> {
   try {
     const response = await fetch(
       `https://img.shields.io/github/stars/${githubRepo}.json`,
+      { next: { revalidate: STARS_TTL_SECONDS } },
     );
 
     if (!response.ok) return null;
@@ -34,6 +37,7 @@ async function getGitHubStarsFromApi(): Promise<number | null> {
           ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` }
           : {}),
       },
+      next: { revalidate: STARS_TTL_SECONDS },
     });
 
     if (!response.ok) return null;
@@ -53,21 +57,6 @@ export async function getGitHubStars(): Promise<number | null> {
 }
 
 export async function fetchGitHubStarsClient(): Promise<number | null> {
-  try {
-    const response = await fetch(`https://api.github.com/repos/${githubRepo}`, {
-      headers: { Accept: "application/vnd.github+json" },
-    });
-
-    if (response.ok) {
-      const data = (await response.json()) as { stargazers_count?: number };
-      if (typeof data.stargazers_count === "number") {
-        return data.stargazers_count;
-      }
-    }
-  } catch {
-    // Fall through to app API / shields fallback.
-  }
-
   try {
     const response = await fetch("/api/github-stars");
     if (response.ok) {

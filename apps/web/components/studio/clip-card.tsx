@@ -26,6 +26,7 @@ export function ClipCard({
   return (
     <Link
       href={url}
+      prefetch={false}
       className={`motion-border group flex min-w-[220px] flex-col overflow-hidden rounded-md border border-[var(--bay-border)] bg-[var(--bay-surface)] hover:border-[var(--bay-border-strong)] ${className}`}
     >
       <div className="min-h-0 flex-1">{thumbnail}</div>
