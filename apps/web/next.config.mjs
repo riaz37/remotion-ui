@@ -20,6 +20,11 @@ const config = {
   async redirects() {
     return [
       {
+        source: "/early-access",
+        destination: "/cutaway",
+        permanent: false,
+      },
+      {
         source: "/docs/ai/recipes/:slug*",
         destination: "/docs/components/browse",
         permanent: true,

@@ -15,7 +15,7 @@ type PromptState = "dismissed" | "subscribed";
 const ARM_DELAY_MS = 8_000;
 
 /** Routes where the ask would be redundant or unwelcome. */
-const SUPPRESSED_PREFIXES = ["/early-access"];
+const SUPPRESSED_PREFIXES = ["/cutaway"];
 
 export function ExitIntentPrompt() {
   const pathname = usePathname();

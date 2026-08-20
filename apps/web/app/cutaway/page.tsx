@@ -5,11 +5,12 @@ import { earlyAccessCopy } from "@/components/early-access/early-access-copy";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteLogo } from "@/components/site-logo";
 import { PerforationRule } from "@/components/studio/perforation-rule";
+import { cutawayNavLink } from "@/components/early-access/cutaway-nav-link";
 import { githubStarNavLink } from "@/lib/github-nav-link";
 import { navLinks, siteConfig } from "@/lib/site-config";
 
-const title = "Early access";
-const description = earlyAccessCopy.lead;
+const title = "Cutaway";
+const description = `${earlyAccessCopy.definition} ${earlyAccessCopy.lead}`;
 
 export const metadata: Metadata = {
   title,
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
     title: `${title} · ${siteConfig.name}`,
     description,
     type: "website",
-    url: `${siteConfig.url}/early-access`,
+    url: `${siteConfig.url}/cutaway`,
   },
   alternates: {
     canonical: `${siteConfig.url}/early-access`,
@@ -58,6 +59,7 @@ export default function EarlyAccessPage() {
           url: link.url,
           active: link.active,
         })),
+        cutawayNavLink,
         githubStarNavLink,
       ]}
       className="flex flex-1 flex-col"
@@ -69,6 +71,13 @@ export default function EarlyAccessPage() {
           </p>
           <h1 className="text-display-xl mt-4 max-w-[16ch]">{earlyAccessCopy.title}</h1>
           <p className="mt-5 max-w-[52ch] text-base leading-relaxed text-fd-muted-foreground">
+            <span className="text-fd-foreground">
+              {earlyAccessCopy.name}
+            </span>{" "}
+            {earlyAccessCopy.definition.replace(
+              `${earlyAccessCopy.name} `,
+              "",
+            )}{" "}
             {earlyAccessCopy.lead}
           </p>
 
@@ -85,7 +94,7 @@ export default function EarlyAccessPage() {
       <section className="relative border-b border-[var(--bay-border)] bg-[var(--bay-surface)]">
         <PerforationRule className="absolute inset-x-0 top-0" />
         <div className="mx-auto max-w-[1120px] px-6 py-[104px]">
-          <h2 className="text-display-lg">What the first round covers</h2>
+          <h2 className="text-display-lg">How Cutaway works</h2>
           <ol className="mt-12 grid gap-px overflow-hidden rounded-sm border border-[var(--bay-border)] bg-[var(--bay-border)] sm:grid-cols-2">
             {STAGES.map((stage) => (
               <li
@@ -142,7 +151,7 @@ const FAQ = [
       "Nothing during the first round. Pricing gets decided in the open before anything is charged, and nobody on the list is billed by surprise.",
   },
   {
-    question: "Do I need to know Remotion?",
+    question: "Do I need to know Remotion to use Cutaway?",
     answer:
       "No. The output is a normal Remotion project, so knowing it helps if you want to hand-edit a scene — but the default path is one command in, one MP4 out.",
   },

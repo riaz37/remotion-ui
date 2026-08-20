@@ -23,7 +23,10 @@ export function EarlyAccessSection() {
 
         <div className="md:col-span-6 md:col-start-7">
           <Reveal index={1}>
-            <p className="max-w-[46ch] text-[0.9375rem] leading-relaxed text-fd-muted-foreground">
+            <p className="max-w-[46ch] text-[0.9375rem] leading-relaxed text-fd-foreground">
+              {earlyAccessCopy.definition}
+            </p>
+            <p className="mt-3 max-w-[46ch] text-[0.9375rem] leading-relaxed text-fd-muted-foreground">
               {earlyAccessCopy.lead}
             </p>
           </Reveal>
