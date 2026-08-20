@@ -5,7 +5,8 @@
     "rootDir": "src",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "noEmit": true
+    "noEmit": true,
+    "ignoreDeprecations": "6.0"
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist", "test"]

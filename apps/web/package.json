@@ -25,7 +25,6 @@
   },
   "dependencies": {
     "@remotion/captions": "^4.0.505",
-    "@vercel/analytics": "^2.0.1",
     "@remotion/effects": "4.0.505",
     "@remotion/google-fonts": "^4.0.505",
     "@remotion/layout-utils": "^4.0.505",
@@ -37,6 +36,7 @@
     "@remotion/transitions": "^4.0.505",
     "@tailwindcss/postcss": "^4.3.0",
     "@turf/turf": "^7.2.0",
+    "@vercel/analytics": "^2.0.1",
     "fumadocs-core": "^16.9.3",
     "fumadocs-mdx": "^15.0.11",
     "fumadocs-ui": "^16.9.3",
@@ -55,13 +55,13 @@
     "@remotion/cli": "^4.0.505",
     "@remotion/renderer": "^4.0.505",
     "@remotionui/typescript-config": "workspace:*",
-    "@types/node": "^22.13.4",
+    "@types/node": "^25.9.5",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "ajv": "^8.17.1",
     "sharp": "^0.34.5",
     "tsx": "^4.19.3",
-    "typescript": "^5.7.3",
-    "vitest": "^3.0.5"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.11"
   }
 }

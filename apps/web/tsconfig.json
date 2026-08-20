@@ -1,7 +1,6 @@
 {
   "extends": "@remotionui/typescript-config/nextjs.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
       "@/remotion/primitives/*": ["./registry/bases/default/primitives/*"],

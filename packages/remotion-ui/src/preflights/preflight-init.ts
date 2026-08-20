@@ -111,11 +111,15 @@ async function ensureTsconfigPaths(
   };
 
   tsconfig.compilerOptions ??= {};
-  tsconfig.compilerOptions.baseUrl ??= ".";
   tsconfig.compilerOptions.paths ??= {};
 
   if (!tsconfig.compilerOptions.paths["@/*"]) {
-    tsconfig.compilerOptions.paths["@/*"] = ["src/*"];
+    // `baseUrl` is removed in TypeScript 7, so never add one. Without it a
+    // path pattern resolves relative to the tsconfig itself; with one the
+    // project already has, patterns stay relative to that baseUrl.
+    tsconfig.compilerOptions.paths["@/*"] = tsconfig.compilerOptions.baseUrl
+      ? ["src/*"]
+      : ["./src/*"];
     await fs.writeJson(tsconfigPath, tsconfig, { spaces: 2 });
     if (!options.json) {
       console.log('Added "@/*": ["src/*"] to tsconfig.json');

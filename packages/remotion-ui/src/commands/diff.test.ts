@@ -85,7 +85,7 @@ describe("diffCommand", () => {
       }),
     ).rejects.toThrow(/Registry item "does-not-exist" not found at/);
 
-    const stdout = consoleSpy.mock.calls.map((call) => call.join(" ")).join("\n");
+    const stdout = consoleSpy.mock.calls.map((call: unknown[]) => call.join(" ")).join("\n");
     const parsed = JSON.parse(stdout);
     expect(parsed.ok).toBe(false);
     expect(parsed.error.code).toBe("REGISTRY_ITEM_NOT_FOUND");

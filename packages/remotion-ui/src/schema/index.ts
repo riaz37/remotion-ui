@@ -10,7 +10,7 @@ export const remotionUiConfigSchema = z.object({
       config: z.string().default("remotion.config.ts"),
       root: z.string().default("src/Root.tsx"),
     })
-    .default({}),
+    .prefault({}),
   aliases: z
     .object({
       primitives: z.string().default("@/remotion/primitives"),
@@ -19,7 +19,7 @@ export const remotionUiConfigSchema = z.object({
       lib: z.string().default("@/remotion/lib"),
       hooks: z.string().default("@/remotion/hooks"),
     })
-    .default({}),
+    .prefault({}),
 });
 
 export type RemotionUiConfig = z.infer<typeof remotionUiConfigSchema>;

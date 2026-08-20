@@ -67,7 +67,7 @@ describe("initCommand", () => {
       initCommand("my-video", { cwd: tempDir, json: true }),
     ).rejects.toThrow(/Directory already exists/);
 
-    const stdout = consoleSpy.mock.calls.map((call) => call.join(" ")).join("\n");
+    const stdout = consoleSpy.mock.calls.map((call: unknown[]) => call.join(" ")).join("\n");
     const parsed = JSON.parse(stdout);
     expect(parsed.ok).toBe(false);
     expect(parsed.error.code).toBe("TARGET_EXISTS");

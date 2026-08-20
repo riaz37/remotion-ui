@@ -55,20 +55,20 @@
     "publish:npm": "npm publish --access public"
   },
   "dependencies": {
-    "commander": "^13.1.0",
+    "commander": "^15.0.0",
     "cosmiconfig": "^9.0.0",
     "fs-extra": "^11.3.0",
     "semver": "^7.6.3",
-    "zod": "^3.24.2"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@remotionui/typescript-config": "workspace:*",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^22.13.4",
+    "@types/node": "^25.9.5",
     "@types/semver": "^7.5.8",
     "tsup": "^8.3.6",
-    "typescript": "^5.7.3",
-    "vitest": "^3.0.5"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.11"
   },
   "publishConfig": {
     "access": "public"
