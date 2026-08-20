@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { IBM_Plex_Sans, JetBrains_Mono, Newsreader } from "next/font/google";
 import type { ReactNode } from "react";
 import { Analytics } from "@vercel/analytics/react";
+import { ExitIntentPrompt } from "@/components/early-access/exit-intent-prompt";
 import {
   siteMetadata,
   softwareApplicationJsonLd,
@@ -98,7 +99,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <RootProvider theme={{ defaultTheme: "dark" }}>{children}</RootProvider>
+        <RootProvider theme={{ defaultTheme: "dark" }}>
+          {children}
+          <ExitIntentPrompt />
+        </RootProvider>
         <Analytics />
       </body>
     </html>

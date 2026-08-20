@@ -2,6 +2,7 @@ import { HomeLayout } from "fumadocs-ui/layouts/home";
 import type { Metadata } from "next";
 import { InstallStrip } from "@/components/landing/install-strip";
 import { EndSlateCta } from "@/components/landing/end-slate-cta";
+import { EarlyAccessSection } from "@/components/early-access/early-access-section";
 import { ComponentContactSheet } from "@/components/landing/component-contact-sheet";
 import { StudioHero } from "@/components/landing/studio-hero";
 import { SiteFooter } from "@/components/site-footer";
@@ -46,6 +47,7 @@ export default function HomePage() {
       <StudioHero />
       <ComponentContactSheet />
       <InstallStrip />
+      <EarlyAccessSection />
       <EndSlateCta />
       <SiteFooter />
     </HomeLayout>
