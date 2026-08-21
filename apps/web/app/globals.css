@@ -449,12 +449,6 @@ h3 {
   text-transform: none;
 }
 
-#nd-sidebar a[data-active="true"] {
-  text-decoration: underline;
-  text-decoration-color: var(--bay-phosphor);
-  text-underline-offset: 3px;
-}
-
 #nd-toc .font-medium {
   font-family: var(--font-mono);
   font-size: 0.6875rem;
