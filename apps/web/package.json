@@ -55,7 +55,7 @@
     "@remotion/cli": "^4.0.505",
     "@remotion/renderer": "^4.0.505",
     "@remotionui/typescript-config": "workspace:*",
-    "@types/node": "^25.9.5",
+    "@types/node": "^26.2.0",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "ajv": "^8.17.1",
