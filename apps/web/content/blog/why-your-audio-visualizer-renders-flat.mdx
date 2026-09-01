@@ -1,0 +1,138 @@
+---
+title: Why your audio visualizer renders a flat line
+description: Three bugs that made an audio-reactive Remotion component look broken — a demo asset that was secretly silent, a postprocessing recipe that saturates on real material, and a spread operator that quietly turns config into NaN.
+date: 2026-09-01
+author: RemotionUI
+tags: ["remotion", "audio", "debugging"]
+---
+
+Four components in the RemotionUI registry are audio-reactive — bars, a pulsing
+circle, a waveform, a full audiogram scene. All four read frequency data with
+Remotion's `useWindowedAudioData` and `visualizeAudio()`. During a rebuild pass,
+every one of them rendered the same way: bars that barely moved, or moved but
+capped out at the same height on every beat. Three separate bugs produced that
+one symptom, stacked on top of each other.
+
+## 1. The demo asset was a steady tone
+
+The docs preview used a shared sample from `remotion.media`. It sounded fine
+scrubbed in the Studio — audio, playing, on beat. But `visualizeAudio()` returned
+a near-identical frequency spectrum on almost every frame. The bars weren't
+frozen because of a rendering bug; they were frozen because the input had
+nothing to react to.
+
+The fix was to stop trusting a shared demo asset and generate one with a known
+shape — an 8-second loop with real transients, checked into the repo:
+
+<CommandRail
+  label="Generate a demo asset with actual dynamics"
+  command="tsx apps/web/scripts/generate-demo-audio.mts"
+/>
+
+Two details mattered getting this wired back in. `useWindowedAudioData` only
+accepts `.wav`, so the loop stays uncompressed — 24 kHz mono keeps the file
+small enough anyway. And the reference has to go through `staticFile()`, not a
+bare path:
+
+<CodeSnippet
+  label="Wrong — a plain /media path 404s inside the Remotion bundle"
+  code={`const DEMO_AUDIO_SRC = "/media/demo-loop.wav";`}
+/>
+
+<CodeSnippet
+  label="Right"
+  code={`const DEMO_AUDIO_SRC = staticFile("media/demo-loop.wav");`}
+/>
+
+**If an audio-reactive preview looks dead, check the input before you touch the
+visualization code.** A silent or steady-state source produces a flat output from
+a correct pipeline.
+
+## 2. The postprocessing recipe saturates on real material
+
+With real audio flowing in, the bars moved — and immediately pinned at maximum
+on every transient. The documented gain-normalization window, `minDb: -100,
+maxDb: -30`, maps anything louder than roughly −30 dB to full scale. That range
+was tuned against something quieter than a musical loop with actual drum hits;
+against real material, everything above 0.032 magnitude clips to 1.0, and a bar
+chart made entirely of full-height and near-zero bars reads as a flat slab with
+occasional spikes, not a waveform.
+
+The fix was to stop using one fixed dB window for every input and instead
+measure it: log-spaced frequency bands, a 6 dB/octave tilt to compensate for how
+low frequencies dominate raw magnitude, and a floor/ceiling derived from the
+actual signal rather than assumed in advance. For the demo loop specifically —
+48 bands from a 128-bin FFT — transients measured around −6 dB and the quiet
+gaps between hits around −20 dB, which is where `floorDb: -20, ceilingDb: -5`
+came from. Those numbers are a property of that audio file, not a universal
+constant; the point of measuring first is that they don't have to be.
+
+## 3. The spread operator that turns config into NaN
+
+The last bug cost more time than the first two combined, because it didn't look
+like a bug — it looked like the component was ignoring configuration entirely.
+Changing `floorDb` in a story or a docs control had no visible effect on the
+render.
+
+The options-merging code looked ordinary:
+
+<CodeSnippet
+  label="Wrong — an explicit undefined survives the spread"
+  code={`const resolved = { ...DEFAULTS, ...options };`}
+/>
+
+If a caller passes `{ floorDb: undefined }` — which happens easily when a prop
+is optional and forwarded through a couple of layers without being filtered —
+object spread does not fall back to the default. `undefined` is a value like any
+other to `{...a, ...b}`; it overwrites `DEFAULTS.floorDb` with `undefined`, and
+every arithmetic step downstream of it — a subtraction, a division, a `Math.log`
+— produces `NaN`. `NaN` propagates silently through a full band-processing
+pipeline: no throw, no console warning, just bars that stop responding to
+anything.
+
+<CodeSnippet
+  label="Right — fall back per field instead of merging objects"
+  code={`const resolved = {
+  floorDb: options.floorDb ?? DEFAULTS.floorDb,
+  ceilingDb: options.ceilingDb ?? DEFAULTS.ceilingDb,
+  tiltDbPerOctave: options.tiltDbPerOctave ?? DEFAULTS.tiltDbPerOctave,
+};`}
+/>
+
+**A component that renders but ignores every config change you make is a strong
+signal to grep for `{ ...DEFAULTS, ...options }` before looking anywhere else.**
+The bug is invisible in TypeScript — `options: Partial<Config>` accepts an
+explicit `undefined` on every field by design — and invisible at runtime, because
+`NaN` doesn't crash anything, it just makes every downstream computation stop
+mattering.
+
+## Verifying the fix
+
+Headless screenshots of an audio-reactive component are close to useless — a
+single still tells you a bar chart exists, not whether it moves correctly across
+a beat. What worked was rendering an actual frame range and inspecting a
+contact sheet:
+
+<CommandRail
+  label="Render a 40-frame window and tile it"
+  command="npx remotion render --config=remotion.config.js showcase/export/src/index.ts audiogram-bars out.mp4 --frames=20-60"
+/>
+
+Across that range you can see bar heights actually tracking the transients in
+the source loop instead of sitting at one of two values. That's the only check
+that would have caught any of these three bugs — a single-frame screenshot looks
+identical whether the pipeline is measuring real dynamics or emitting `NaN` into
+a chart that clamps it to zero.
+
+## The short version
+
+A flat audio visualizer has three independent places to check, in the order
+they're cheapest to rule out: is the input actually dynamic, does the
+gain-normalization window match what the input actually measures, and is a
+config field arriving as `undefined` and overwriting a default through a naive
+object spread. None of the three throw an error. All three look, from a single
+screenshot, like a component that just doesn't animate.
+
+The four audio components ship in RemotionUI with all three fixed —
+`npx remotion-ui@latest add audiogram-bars`, or [browse the audio
+components](/docs/components) to see the others.
