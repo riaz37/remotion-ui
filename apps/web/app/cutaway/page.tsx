@@ -12,6 +12,14 @@ import { navLinks, siteConfig } from "@/lib/site-config";
 const title = "Cutaway";
 const description = `${earlyAccessCopy.definition} ${earlyAccessCopy.lead}`;
 
+/**
+ * Set once the first signed + notarized DMG is published by the CI release
+ * pipeline in the cutaway-desktop repo (see PLAN.md T10). Until then this
+ * stays "#" and the download CTA falls back to the waitlist below it.
+ */
+const DOWNLOAD_URL = process.env.NEXT_PUBLIC_CUTAWAY_DOWNLOAD_URL ?? "#";
+const DOWNLOAD_READY = DOWNLOAD_URL !== "#";
+
 export const metadata: Metadata = {
   title,
   description,
@@ -81,10 +89,34 @@ export default function EarlyAccessPage() {
             {earlyAccessCopy.lead}
           </p>
 
-          <EarlyAccessForm
-            source="early-access-page"
-            className="mt-9 max-w-lg"
-          />
+          {DOWNLOAD_READY ? (
+            <>
+              <a
+                href={DOWNLOAD_URL}
+                className="mt-9 inline-flex w-fit items-center rounded-sm bg-fd-foreground px-5 py-2.5 text-sm font-medium text-fd-background transition-opacity hover:opacity-90"
+              >
+                Download for macOS
+              </a>
+              <p className="mt-3 max-w-[52ch] text-xs leading-relaxed text-fd-muted-foreground">
+                Prefer email updates instead? Join the list below.
+              </p>
+              <EarlyAccessForm
+                source="early-access-page"
+                className="mt-4 max-w-lg"
+              />
+            </>
+          ) : (
+            <>
+              <p className="mt-9 max-w-[52ch] text-sm leading-relaxed text-fd-muted-foreground">
+                The macOS download isn&apos;t public yet — join the list and
+                we&apos;ll email you the moment it is.
+              </p>
+              <EarlyAccessForm
+                source="early-access-page"
+                className="mt-4 max-w-lg"
+              />
+            </>
+          )}
           <p className="mt-3 max-w-[52ch] text-xs leading-relaxed text-fd-muted-foreground">
             {earlyAccessCopy.assurance}
           </p>
