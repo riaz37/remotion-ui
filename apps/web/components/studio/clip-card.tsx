@@ -29,7 +29,7 @@ export function ClipCard({
       prefetch={false}
       className={`motion-border group flex min-w-[220px] flex-col overflow-hidden rounded-md border border-[var(--bay-border)] bg-[var(--bay-surface)] hover:border-[var(--bay-border-strong)] ${className}`}
     >
-      <div className="min-h-0 flex-1">{thumbnail}</div>
+      <div className="min-h-0">{thumbnail}</div>
       <div className="border-t border-[var(--bay-border)] px-3 py-2.5">
         <div className="flex items-baseline justify-between gap-2">
           <p className="truncate text-sm font-semibold capitalize text-fd-foreground">

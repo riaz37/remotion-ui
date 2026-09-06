@@ -178,7 +178,7 @@ export function FilmstripScroll({
         aria-label="Scrollable filmstrip"
         onScroll={updateScrollState}
         onKeyDown={handleKeyDown}
-        className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scroll-smooth focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bay-phosphor)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bay-bg)]"
+        className="flex items-start gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scroll-smooth focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bay-phosphor)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bay-bg)]"
         style={{
           paddingLeft: paddingX,
           paddingRight: paddingX,
