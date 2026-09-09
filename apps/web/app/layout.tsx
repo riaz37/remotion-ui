@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { IBM_Plex_Sans, JetBrains_Mono, Newsreader } from "next/font/google";
 import type { ReactNode } from "react";
 import { Analytics } from "@vercel/analytics/react";
-import { ExitIntentPrompt } from "@/components/early-access/exit-intent-prompt";
+import { KineCornerPromo } from "@/components/early-access/kine-corner-promo";
 import {
   siteMetadata,
   softwareApplicationJsonLd,
@@ -101,7 +101,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
         <RootProvider theme={{ defaultTheme: "dark" }}>
           {children}
-          <ExitIntentPrompt />
+          <KineCornerPromo />
         </RootProvider>
         <Analytics />
       </body>

@@ -9,6 +9,7 @@ export const EARLY_ACCESS_SOURCES = [
   "home-section",
   "early-access-page",
   "exit-intent",
+  "corner-promo",
 ] as const;
 
 export type EarlyAccessSource = (typeof EARLY_ACCESS_SOURCES)[number];
