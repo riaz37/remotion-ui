@@ -59,9 +59,16 @@ export async function fetchRegistryItem(
   const response = await fetch(url);
 
   if (!response.ok) {
+    if (response.status === 404) {
+      throw new RemotionUiError(
+        "REGISTRY_ITEM_NOT_FOUND",
+        `Component "${name}" not found. Run "npx remotion-ui search -q ${name}" to find similar components.`,
+      );
+    }
+
     throw new RemotionUiError(
       "REGISTRY_FETCH_FAILED",
-      `Failed to fetch registry item "${name}" from ${url}`,
+      `Failed to fetch registry item "${name}" from ${url} (${response.status})`,
     );
   }
 

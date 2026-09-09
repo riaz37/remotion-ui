@@ -69,6 +69,33 @@ describe("addCommand", () => {
     ).toBe(true);
   });
 
+  it("skips a file with local edits instead of overwriting it", async () => {
+    const target = path.join(tempDir, "src/remotion/primitives/fade-in.tsx");
+    const localEdit = "// my local edit\n" + (await fs.readFile(target, "utf-8"));
+    await fs.writeFile(target, localEdit);
+
+    await addCommand(["fade-in"], {
+      cwd: tempDir,
+      registryUrl: registryDir,
+    });
+
+    expect(await fs.readFile(target, "utf-8")).toBe(localEdit);
+  });
+
+  it("--yes overwrites a file with local edits", async () => {
+    const target = path.join(tempDir, "src/remotion/primitives/fade-in.tsx");
+    await fs.writeFile(target, "// my local edit\nexport const FadeIn = 1;\n");
+
+    await addCommand(["fade-in"], {
+      cwd: tempDir,
+      registryUrl: registryDir,
+      yes: true,
+    });
+
+    const content = await fs.readFile(target, "utf-8");
+    expect(content).not.toContain("my local edit");
+  });
+
   it("rejects registry dependency specs with shell metacharacters", async () => {
     const maliciousRegistry = path.join(tempDir, "malicious-registry");
     await fs.ensureDir(path.join(maliciousRegistry, "presets", "default"));
@@ -172,6 +199,7 @@ describe("addCommand", () => {
       ok: true,
       installed: ["fade-in"],
       dependencies: ["remotion"],
+      skipped: ["src/remotion/primitives/fade-in.tsx"],
     });
 
     logSpy.mockRestore();

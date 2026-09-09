@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
 import path from "node:path";
+import fs from "fs-extra";
 import semver from "semver";
 import { patchRootTsx } from "../remotion/composition-patch.js";
 import { fetchRegistryItem } from "../registry/fetch-item.js";
@@ -48,6 +49,7 @@ export async function addCommand(
     const config = await getConfig(cwd);
     const installed = new Set<string>();
     const dependencies = new Set<string>();
+    const skipped = new Set<string>();
     const installedRemotionVersion = await getInstalledRemotionVersion(cwd);
 
     for (const name of names) {
@@ -58,6 +60,8 @@ export async function addCommand(
         preset: options.preset ?? config.preset,
         installed,
         dependencies,
+        skipped,
+        overwrite: options.yes ?? false,
         json,
         installedRemotionVersion,
       });
@@ -81,9 +85,18 @@ export async function addCommand(
           ok: true,
           installed: [...installed],
           dependencies: [...dependencies],
+          skipped: [...skipped],
         }),
       );
     } else {
+      if (skipped.size > 0) {
+        console.log(
+          `\n⚠ Skipped ${skipped.size} file(s) with local changes:\n` +
+            [...skipped].map((file) => `  - ${file}`).join("\n") +
+            `\nRun with --yes to overwrite, or use "remotion-ui diff" to review first.`,
+        );
+      }
+
       console.log(`\nAdded ${names.length} component(s) successfully.`);
 
       if (options.showStarPrompt !== false) {
@@ -107,6 +120,8 @@ async function installComponent(
     preset: string;
     installed: Set<string>;
     dependencies: Set<string>;
+    skipped: Set<string>;
+    overwrite: boolean;
     json: boolean;
     installedRemotionVersion?: string;
   },
@@ -135,9 +150,19 @@ async function installComponent(
     }
 
     const targetPath = resolveInstallPath(ctx.cwd, ctx.config, file);
+    const relativePath = path.relative(ctx.cwd, targetPath);
+
+    if (!ctx.overwrite && (await fs.pathExists(targetPath))) {
+      const existing = await fs.readFile(targetPath, "utf-8");
+      if (existing !== file.content) {
+        ctx.skipped.add(relativePath);
+        continue;
+      }
+    }
+
     await writeFile(targetPath, file.content);
     if (!ctx.json) {
-      console.log(`  ✓ ${path.relative(ctx.cwd, targetPath)}`);
+      console.log(`  ✓ ${relativePath}`);
     }
   }
 
