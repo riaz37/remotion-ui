@@ -1,23 +1,24 @@
 import { HomeLayout } from "fumadocs-ui/layouts/home";
 import type { Metadata } from "next";
+import { KineFilm } from "@/components/early-access/kine-film";
 import { EarlyAccessForm } from "@/components/early-access/early-access-form";
 import { earlyAccessCopy } from "@/components/early-access/early-access-copy";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteLogo } from "@/components/site-logo";
 import { PerforationRule } from "@/components/studio/perforation-rule";
-import { cutawayNavLink } from "@/components/early-access/cutaway-nav-link";
+import { kineNavLink } from "@/components/early-access/kine-nav-link";
 import { githubStarNavLink } from "@/lib/github-nav-link";
 import { navLinks, siteConfig } from "@/lib/site-config";
 
-const title = "Cutaway";
+const title = "Kine";
 const description = `${earlyAccessCopy.definition} ${earlyAccessCopy.lead}`;
 
 /**
  * Set once the first signed + notarized DMG is published by the CI release
- * pipeline in the cutaway-desktop repo (see PLAN.md T10). Until then this
+ * pipeline in the kine-desktop repo (see PLAN.md T10). Until then this
  * stays "#" and the download CTA falls back to the waitlist below it.
  */
-const DOWNLOAD_URL = process.env.NEXT_PUBLIC_CUTAWAY_DOWNLOAD_URL ?? "#";
+const DOWNLOAD_URL = process.env.NEXT_PUBLIC_KINE_DOWNLOAD_URL ?? "#";
 const DOWNLOAD_READY = DOWNLOAD_URL !== "#";
 
 export const metadata: Metadata = {
@@ -27,7 +28,7 @@ export const metadata: Metadata = {
     title: `${title} · ${siteConfig.name}`,
     description,
     type: "website",
-    url: `${siteConfig.url}/cutaway`,
+    url: `${siteConfig.url}/kine`,
   },
   alternates: {
     canonical: `${siteConfig.url}/early-access`,
@@ -67,13 +68,19 @@ export default function EarlyAccessPage() {
           url: link.url,
           active: link.active,
         })),
-        cutawayNavLink,
+        kineNavLink,
         githubStarNavLink,
       ]}
       className="flex flex-1 flex-col"
     >
       <section className="border-b border-[var(--bay-border)]">
-        <div className="mx-auto max-w-[1120px] px-6 py-[112px]">
+        {/*
+          Two columns from `lg` up: the pitch on the left, the film on the
+          right. The hero's right half was empty, and the film is the one thing
+          on this page that answers "what is it" without being read.
+        */}
+        <div className="mx-auto grid max-w-[1120px] items-start gap-12 px-6 py-[112px] lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+          <div>
           <p className="text-mono-xs uppercase text-[var(--bay-phosphor)]">
             {earlyAccessCopy.eyebrow}
           </p>
@@ -120,13 +127,16 @@ export default function EarlyAccessPage() {
           <p className="mt-3 max-w-[52ch] text-xs leading-relaxed text-fd-muted-foreground">
             {earlyAccessCopy.assurance}
           </p>
+          </div>
+
+          <KineFilm className="lg:sticky lg:top-24" />
         </div>
       </section>
 
       <section className="relative border-b border-[var(--bay-border)] bg-[var(--bay-surface)]">
         <PerforationRule className="absolute inset-x-0 top-0" />
         <div className="mx-auto max-w-[1120px] px-6 py-[104px]">
-          <h2 className="text-display-lg">How Cutaway works</h2>
+          <h2 className="text-display-lg">How Kine works</h2>
           <ol className="mt-12 grid gap-px overflow-hidden rounded-sm border border-[var(--bay-border)] bg-[var(--bay-border)] sm:grid-cols-2">
             {STAGES.map((stage) => (
               <li
@@ -183,7 +193,7 @@ const FAQ = [
       "Nothing during the first round. Pricing gets decided in the open before anything is charged, and nobody on the list is billed by surprise.",
   },
   {
-    question: "Do I need to know Remotion to use Cutaway?",
+    question: "Do I need to know Remotion to use Kine?",
     answer:
       "No. The output is a normal Remotion project, so knowing it helps if you want to hand-edit a scene — but the default path is one command in, one MP4 out.",
   },

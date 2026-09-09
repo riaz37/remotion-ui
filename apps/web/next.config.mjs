@@ -21,8 +21,15 @@ const config = {
     return [
       {
         source: "/early-access",
-        destination: "/cutaway",
+        destination: "/kine",
         permanent: false,
+      },
+      // The page was /cutaway until the product settled on the name Kine.
+      // Permanent, and kept indefinitely: the old address is in the wild.
+      {
+        source: "/cutaway",
+        destination: "/kine",
+        permanent: true,
       },
       {
         source: "/docs/ai/recipes/:slug*",

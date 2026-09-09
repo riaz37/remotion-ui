@@ -4,11 +4,11 @@
  * across three files.
  */
 export const earlyAccessCopy = {
-  name: "Cutaway",
-  eyebrow: "Cutaway · Early access",
-  /** The one-line answer to "what is Cutaway". Used wherever the name appears cold. */
+  name: "Kine",
+  eyebrow: "Kine · Early access",
+  /** The one-line answer to "what is Kine". Used wherever the name appears cold. */
   definition:
-    "Cutaway films your own running app and cuts the footage into a demo video.",
+    "Kine films your own running app and cuts the footage into a demo video.",
   title: "Ship your product demo without opening After Effects",
   lead: "One command against your own localhost. What comes back is a Remotion project you own, with every frame checked before you watch one.",
   bullets: [
@@ -18,7 +18,7 @@ export const earlyAccessCopy = {
   ],
   assurance:
     "One email the moment your spot opens. Nothing before that, and we never share the list.",
-  modalTitle: "Before you go: want Cutaway early?",
+  modalTitle: "Before you go: want Kine early?",
   modalLead:
-    "Cutaway films your own app and cuts it into a demo video. We're opening a small first round — leave an email and we'll tell you when your spot is ready.",
+    "Kine films your own app and cuts it into a demo video. We're opening a small first round — leave an email and we'll tell you when your spot is ready.",
 } as const;

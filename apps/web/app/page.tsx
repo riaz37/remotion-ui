@@ -7,7 +7,7 @@ import { ComponentContactSheet } from "@/components/landing/component-contact-sh
 import { StudioHero } from "@/components/landing/studio-hero";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteLogo } from "@/components/site-logo";
-import { cutawayNavLink } from "@/components/early-access/cutaway-nav-link";
+import { kineNavLink } from "@/components/early-access/kine-nav-link";
 import { githubStarNavLink } from "@/lib/github-nav-link";
 import { navLinks, siteConfig } from "@/lib/site-config";
 
@@ -41,7 +41,7 @@ export default function HomePage() {
           url: link.url,
           active: link.active,
         })),
-        cutawayNavLink,
+        kineNavLink,
         githubStarNavLink,
       ]}
       className="flex flex-1 flex-col"

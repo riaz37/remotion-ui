@@ -28,7 +28,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.75,
     },
     {
-      url: `${siteConfig.url}/cutaway`,
+      url: `${siteConfig.url}/kine`,
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.9,

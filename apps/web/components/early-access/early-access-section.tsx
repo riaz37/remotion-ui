@@ -1,3 +1,4 @@
+import { KineFilm } from "@/components/early-access/kine-film";
 import { EarlyAccessForm } from "@/components/early-access/early-access-form";
 import { earlyAccessCopy } from "@/components/early-access/early-access-copy";
 import { Reveal } from "@/components/landing/reveal";
@@ -12,6 +13,17 @@ export function EarlyAccessSection() {
     <section className="relative border-b border-[var(--bay-border)]">
       <PerforationRule className="absolute inset-x-0 top-0" />
       <div className="mx-auto grid max-w-[1120px] gap-10 px-6 py-[120px] md:grid-cols-12 md:gap-12">
+        {/*
+          Full width, ahead of the pitch: at five columns the film is ~420px
+          and its interface reads as a dark rectangle. Across the whole grid it
+          is legible, and it answers "what is this" before the copy does.
+        */}
+        <div className="md:col-span-12">
+          <Reveal>
+            <KineFilm />
+          </Reveal>
+        </div>
+
         <div className="md:col-span-5">
           <Reveal>
             <p className="text-mono-xs uppercase text-[var(--bay-phosphor)]">
