@@ -9,6 +9,18 @@ import { PerforationRule } from "@/components/studio/perforation-rule";
 import { kineNavLink } from "@/components/early-access/kine-nav-link";
 import { githubStarNavLink } from "@/lib/github-nav-link";
 import { navLinks, siteConfig } from "@/lib/site-config";
+import { EARLY_ACCESS_SOURCES, type EarlyAccessSource } from "@/lib/early-access";
+
+/**
+ * `?ref=` on this page's links (the X thread, reply copy, LinkedIn post)
+ * overrides the default source so signups are attributable per channel.
+ * Falls back to "early-access-page" for anyone who lands here directly.
+ */
+function resolveSource(ref: string | undefined): EarlyAccessSource {
+  return (EARLY_ACCESS_SOURCES as readonly string[]).includes(ref ?? "")
+    ? (ref as EarlyAccessSource)
+    : "early-access-page";
+}
 
 const title = "Kine";
 const description = `${earlyAccessCopy.definition} ${earlyAccessCopy.lead}`;
@@ -58,7 +70,13 @@ const STAGES = [
   },
 ];
 
-export default function EarlyAccessPage() {
+export default async function EarlyAccessPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ ref?: string }>;
+}) {
+  const source = resolveSource((await searchParams).ref);
+
   return (
     <HomeLayout
       nav={{ title: <SiteLogo />, url: "/" }}
@@ -108,7 +126,7 @@ export default function EarlyAccessPage() {
                 Prefer email updates instead? Join the list below.
               </p>
               <EarlyAccessForm
-                source="early-access-page"
+                source={source}
                 className="mt-4 max-w-lg"
               />
             </>
@@ -119,7 +137,7 @@ export default function EarlyAccessPage() {
                 we&apos;ll email you the moment it is.
               </p>
               <EarlyAccessForm
-                source="early-access-page"
+                source={source}
                 className="mt-4 max-w-lg"
               />
             </>
@@ -175,7 +193,7 @@ export default function EarlyAccessPage() {
           </dl>
 
           <EarlyAccessForm
-            source="early-access-page"
+            source={source}
             className="mt-12 max-w-lg"
           />
         </div>

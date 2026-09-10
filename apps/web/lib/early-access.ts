@@ -10,6 +10,9 @@ export const EARLY_ACCESS_SOURCES = [
   "early-access-page",
   "exit-intent",
   "corner-promo",
+  "x-thread",
+  "x-reply",
+  "linkedin",
 ] as const;
 
 export type EarlyAccessSource = (typeof EARLY_ACCESS_SOURCES)[number];
