@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { IBM_Plex_Sans, JetBrains_Mono, Newsreader } from "next/font/google";
 import type { ReactNode } from "react";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { KineCornerPromo } from "@/components/early-access/kine-corner-promo";
 import {
   siteMetadata,
@@ -104,6 +105,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <KineCornerPromo />
         </RootProvider>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
