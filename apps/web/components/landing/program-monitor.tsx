@@ -40,6 +40,9 @@ const OPEN_FRAME = 0;
 /** Progress past which the copy has finished fading and should leave the DOM tree. */
 const COPY_CLEARED = 0.25;
 
+/** Progress stops for the bezel: hidden, starts at 2%, full by 25%, out 75% to 100%. */
+const RING_STOPS = [0, 0.02, 0.25, 0.75, 1];
+
 type ProgramMonitorProps = {
   /** Hero copy. Server-rendered and passed through, so it needs no hydration. */
   children: ReactNode;
@@ -100,6 +103,14 @@ export function ProgramMonitor({ children }: ProgramMonitorProps) {
     reduce ? [0, 0] : [0, 1],
   );
 
+  /**
+   * Bezel opacity. Hidden at rest so the logo floats in the page light with no
+   * box cut out of it; fades in once scrolling starts, and back out once the
+   * monitor is the whole stage. Reduced motion pins progress at 0, so it stays
+   * hidden there.
+   */
+  const ringOpacity = useTransform(progress, RING_STOPS, [0, 0, 1, 1, 0]);
+
   useMotionValueEvent(progress, "change", (value) => {
     const gone = value > COPY_CLEARED;
     if (gone !== copyGone) setCopyGone(gone);
@@ -152,8 +163,9 @@ export function ProgramMonitor({ children }: ProgramMonitorProps) {
             The monitor is a window into the page's own light: the screen has
             no fill, and the loop is rendered with a transparent background, so
             the phosphor field behind it runs straight through. Only the
-            hairline bezel is drawn. `bay-stage-scope` still scopes the dark
-            tokens to the monitor's subtree.
+            hairline bezel is drawn, and only once scrolling starts.
+            `bay-stage-scope` still scopes the dark tokens to the monitor's
+            subtree.
           */}
           <div className="program-shell bay-stage-scope relative aspect-video w-full shrink-0 overflow-hidden">
             {/*
@@ -206,8 +218,12 @@ export function ProgramMonitor({ children }: ProgramMonitorProps) {
               acknowledgeRemotionLicense
             />
 
-            <div
-              className="program-ring pointer-events-none absolute inset-0 rounded-[inherit]"
+            <motion.div
+              className="pointer-events-none absolute inset-0 rounded-[inherit]"
+              style={{
+                opacity: ringOpacity,
+                boxShadow: "inset 0 0 0 1px var(--bay-border-strong)",
+              }}
               aria-hidden
             />
           </div>
