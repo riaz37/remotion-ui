@@ -1,6 +1,6 @@
 "use client";
 
-import { SubtitleTranslate } from "../registry-exports";
+import { SubtitleTranslate } from "../../registry/bases/default/primitives/subtitle-translate";
 import { PreviewFrame } from "./preview-frame";
 
 const CUES = [

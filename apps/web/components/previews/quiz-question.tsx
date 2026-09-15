@@ -1,6 +1,6 @@
 "use client";
 
-import { QuizQuestion } from "../registry-exports";
+import { QuizQuestion } from "../../registry/bases/default/scenes/quiz-question";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**

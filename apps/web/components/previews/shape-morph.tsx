@@ -1,7 +1,7 @@
 "use client";
 
 import { interpolate, useCurrentFrame } from "remotion";
-import { ShapeMorph } from "../registry-exports";
+import { ShapeMorph } from "../../registry/bases/default/primitives/shape-morph";
 import { EASING } from "@/remotion/lib/motion-tokens";
 import { PreviewFrame } from "./preview-frame";
 import { usePreviewStage } from "./preview-stage";

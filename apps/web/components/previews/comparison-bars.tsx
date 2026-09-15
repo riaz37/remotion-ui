@@ -1,6 +1,6 @@
 "use client";
 
-import { ComparisonBars } from "../registry-exports";
+import { ComparisonBars } from "../../registry/bases/default/primitives/comparison-bars";
 import { PreviewFrame } from "./preview-frame";
 
 const ROWS = [

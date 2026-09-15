@@ -1,6 +1,6 @@
 "use client";
 
-import { SimulatedCursor } from "../registry-exports";
+import { SimulatedCursor } from "../../registry/bases/default/primitives/simulated-cursor";
 import { PreviewFrame } from "./preview-frame";
 import { usePreviewStage } from "./preview-stage";
 import { DEMO_PALETTE } from "@/lib/demo-assets";

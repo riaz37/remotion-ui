@@ -1,6 +1,6 @@
 "use client";
 
-import { CaptionEmojiBeat } from "../registry-exports";
+import { CaptionEmojiBeat } from "../../registry/bases/default/primitives/caption-emoji-beat";
 import { PreviewFrame } from "./preview-frame";
 
 const BEATS = [

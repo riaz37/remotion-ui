@@ -1,6 +1,6 @@
 "use client";
 
-import { SkewIn } from "../registry-exports";
+import { SkewIn } from "../../registry/bases/default/primitives/skew-in";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, ProductCard } from "./preview-frame";
 

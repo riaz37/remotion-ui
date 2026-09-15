@@ -1,7 +1,7 @@
 "use client";
 
 import { AbsoluteFill } from "remotion";
-import { VoiceNoteBubble } from "../registry-exports";
+import { VoiceNoteBubble } from "../../registry/bases/default/primitives/voice-note-bubble";
 import { PreviewFrame } from "./preview-frame";
 
 /**

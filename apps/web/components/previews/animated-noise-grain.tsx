@@ -1,7 +1,7 @@
 "use client";
 
 import { AbsoluteFill } from "remotion";
-import { AnimatedNoiseGrain } from "../registry-exports";
+import { AnimatedNoiseGrain } from "../../registry/bases/default/primitives/animated-noise-grain";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, ProductCard } from "./preview-frame";
 

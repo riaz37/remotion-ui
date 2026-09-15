@@ -1,6 +1,6 @@
 "use client";
 
-import { FileTreeReveal } from "../registry-exports";
+import { FileTreeReveal } from "../../registry/bases/default/scenes/file-tree-reveal";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**

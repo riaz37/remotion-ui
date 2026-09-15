@@ -3,13 +3,11 @@
 import type { ComponentProps } from "react";
 import { AbsoluteFill } from "remotion";
 import { TransitionSeries } from "@remotion/transitions";
-import {
-  TransitionLightLeak,
-  transitionClockWipe,
-  transitionFade,
-  transitionSlide,
-  transitionWipe,
-} from "../registry-exports";
+import { TransitionLightLeak } from "../../registry/bases/default/primitives/transition-light-leak";
+import { transitionClockWipe } from "../../registry/bases/default/primitives/transition-clock-wipe";
+import { transitionFade } from "../../registry/bases/default/primitives/transition-fade";
+import { transitionSlide } from "../../registry/bases/default/primitives/transition-slide";
+import { transitionWipe } from "../../registry/bases/default/primitives/transition-wipe";
 import { ProductCard, PreviewFrame } from "./preview-frame";
 import { DARK_STAGE, LIGHT_STAGE, PreviewStageProvider } from "./preview-stage";
 import { PREVIEW_DEFAULTS } from "@/lib/preview-config";

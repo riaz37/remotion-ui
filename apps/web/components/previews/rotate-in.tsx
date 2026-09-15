@@ -1,6 +1,6 @@
 "use client";
 
-import { RotateIn } from "../registry-exports";
+import { RotateIn } from "../../registry/bases/default/primitives/rotate-in";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, PreviewGhostStack, ProductCard } from "./preview-frame";
 

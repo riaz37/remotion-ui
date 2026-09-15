@@ -1,7 +1,7 @@
 "use client";
 
 import { AbsoluteFill } from "remotion";
-import { ParallaxLayers } from "../registry-exports";
+import { ParallaxLayers } from "../../registry/bases/default/primitives/parallax-layers";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, ProductCard } from "./preview-frame";
 

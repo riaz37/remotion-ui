@@ -1,6 +1,6 @@
 "use client";
 
-import { transitionLiquidWarp } from "../registry-exports";
+import { transitionLiquidWarp } from "../../registry/bases/default/primitives/transition-liquid-warp";
 import {
   TRANSITION_FRAMES,
   TransitionSeriesPreview,

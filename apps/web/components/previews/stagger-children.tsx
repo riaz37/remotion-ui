@@ -1,6 +1,7 @@
 "use client";
 
-import { SlideUp, StaggerChildren } from "../registry-exports";
+import { SlideUp } from "../../registry/bases/default/primitives/slide-up";
+import { StaggerChildren } from "../../registry/bases/default/primitives/stagger-children";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, PreviewKicker } from "./preview-frame";
 import { usePreviewStage } from "./preview-stage";

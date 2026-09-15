@@ -1,7 +1,7 @@
 "use client";
 
 import { Sequence } from "remotion";
-import { TutorialClip } from "../registry-exports";
+import { TutorialClip } from "../../registry/bases/default/compositions/tutorial-clip";
 import { DEMO_APP_PORTRAIT_SRC, DEMO_COPY } from "@/lib/demo-assets";
 
 /**

@@ -3,18 +3,16 @@
 import { useEffect, useState } from "react";
 import { AbsoluteFill, Easing, useDelayRender } from "remotion";
 import { loadFont as loadMarqueeFont } from "@remotion/google-fonts/Inter";
-import {
-  BlurFocusIn,
-  InfiniteMarquee,
-  LightSweepText,
-  MaskedSlideReveal,
-  MatrixDecode,
-  PerspectiveMarquee,
-  RgbGlitchText,
-  SlotRoll,
-  StaggeredFadeUp,
-  TrackingIn,
-} from "../registry-exports";
+import { BlurFocusIn } from "../../registry/bases/default/primitives/blur-focus-in";
+import { InfiniteMarquee } from "../../registry/bases/default/primitives/infinite-marquee";
+import { LightSweepText } from "../../registry/bases/default/primitives/light-sweep-text";
+import { MaskedSlideReveal } from "../../registry/bases/default/primitives/masked-slide-reveal";
+import { MatrixDecode } from "../../registry/bases/default/primitives/matrix-decode";
+import { PerspectiveMarquee } from "../../registry/bases/default/primitives/perspective-marquee";
+import { RgbGlitchText } from "../../registry/bases/default/primitives/rgb-glitch-text";
+import { SlotRoll } from "../../registry/bases/default/primitives/slot-roll";
+import { StaggeredFadeUp } from "../../registry/bases/default/primitives/staggered-fade-up";
+import { TrackingIn } from "../../registry/bases/default/primitives/tracking-in";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, PreviewGhostStack, PreviewKicker } from "./preview-frame";
 

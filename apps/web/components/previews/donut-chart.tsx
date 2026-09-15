@@ -1,6 +1,6 @@
 "use client";
 
-import { DonutChart } from "../registry-exports";
+import { DonutChart } from "../../registry/bases/default/primitives/donut-chart";
 import { PreviewFrame } from "./preview-frame";
 
 const SEGMENTS = [

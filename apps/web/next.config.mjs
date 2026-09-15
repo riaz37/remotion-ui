@@ -17,6 +17,17 @@ const legacyComponentSections = [
 const config = {
   reactStrictMode: true,
   transpilePackages: ["remotion", "@remotion/player"],
+  async rewrites() {
+    // beforeFiles: the generated public/llms*.txt would otherwise shadow the routes.
+    return {
+      beforeFiles: [
+        { source: "/llms.txt", destination: "/llms.mdx/llms.txt" },
+        { source: "/llms-full.txt", destination: "/llms.mdx/llms-full.txt" },
+        { source: "/docs.md", destination: "/llms.mdx/docs" },
+        { source: "/docs/:path(.+)\\.md", destination: "/llms.mdx/docs/:path" },
+      ],
+    };
+  },
   async redirects() {
     return [
       {

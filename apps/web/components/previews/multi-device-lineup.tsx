@@ -1,6 +1,6 @@
 "use client";
 
-import { MultiDeviceLineup } from "../registry-exports";
+import { MultiDeviceLineup } from "../../registry/bases/default/primitives/multi-device-lineup";
 import { PREVIEW_UI_FONT, PreviewFrame } from "./preview-frame";
 
 /** One responsive layout, laying itself out at whatever width it is given. */

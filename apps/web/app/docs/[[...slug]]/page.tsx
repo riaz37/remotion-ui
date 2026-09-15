@@ -7,6 +7,7 @@ import {
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { getComponentPageToc } from "@/components/component-page";
 import { PageAiActions } from "@/components/docs/page-ai-actions";
 import { getMDXComponents } from "@/mdx-components";
 import { getPageMarkdown } from "@/lib/page-markdown";
@@ -28,15 +29,29 @@ export default async function Page(props: {
   const markdown = await getPageMarkdown(page);
   const markdownUrl = `${siteConfig.url}/llms.mdx${page.url}`;
 
+  // Component pages render their Agent notes / Usage / API Reference / Related
+  // headings as JSX inside <ComponentPage>, which fumadocs never sees, so the
+  // TOC is synthesized from the same conditions that render those headings.
+  const componentName =
+    params.slug?.length === 2 && params.slug[0] === "components"
+      ? params.slug[1]
+      : null;
+  // Check the raw MDX: `markdown` has its JSX stripped.
+  const rawMdx = componentName ? await page.data.getText("raw") : "";
+  const toc =
+    componentName && rawMdx.includes("<ComponentPage")
+      ? [...page.data.toc, ...getComponentPageToc(componentName)]
+      : page.data.toc;
+
   return (
-    <DocsPage toc={page.data.toc} full={page.data.full}>
+    <DocsPage toc={toc} full={page.data.full}>
       {faqJsonLd ? (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
         />
       ) : null}
-      <div className="mb-6 flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
+      <div className="mb-6 flex flex-col items-start justify-between gap-x-6 gap-y-3 sm:flex-row sm:flex-wrap">
         <div className="min-w-0 flex-1">
           <DocsTitle className="text-display-lg font-medium tracking-tight">
             {page.data.title}
@@ -76,6 +91,13 @@ export async function generateMetadata(props: {
 
   const title = page.data.title;
   const description = page.data.description;
+  // Served by app/og/docs/[...slug]/route.tsx; the /docs index has no slugs.
+  const ogImage = {
+    url: `/og/docs/${[...page.slugs, "image.png"].join("/")}`,
+    width: 1200,
+    height: 630,
+    alt: title,
+  };
 
   return {
     title,
@@ -85,11 +107,13 @@ export async function generateMetadata(props: {
       description,
       type: "article",
       url: `${siteConfig.url}${page.url}`,
+      images: [ogImage],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      images: [ogImage.url],
     },
     alternates: {
       canonical: `${siteConfig.url}${page.url}`,

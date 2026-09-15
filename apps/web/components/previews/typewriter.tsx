@@ -1,6 +1,6 @@
 "use client";
 
-import { Typewriter } from "../registry-exports";
+import { Typewriter } from "../../registry/bases/default/primitives/typewriter";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, PreviewKicker } from "./preview-frame";
 import { usePreviewStage } from "./preview-stage";

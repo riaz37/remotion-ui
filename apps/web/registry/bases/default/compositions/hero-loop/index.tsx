@@ -1,828 +1,555 @@
-import { loadFont as loadBodyFont } from "@remotion/google-fonts/IBMPlexSans";
-import { loadFont as loadMonoFont } from "@remotion/google-fonts/JetBrainsMono";
 import { loadFont as loadDisplayFont } from "@remotion/google-fonts/Newsreader";
-import type { CSSProperties, ReactNode } from "react";
-import { useMemo } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import {
   AbsoluteFill,
-  Sequence,
-  interpolate,
+  Easing,
+  Solid,
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { Counter } from "@/remotion/primitives/counter";
-import { FadeIn } from "@/remotion/primitives/fade-in";
-import { SlideUp } from "@/remotion/primitives/slide-up";
-import { SpringIn } from "@/remotion/primitives/spring-in";
-import { StaggerChildren } from "@/remotion/primitives/stagger-children";
-import { Typewriter } from "@/remotion/primitives/typewriter";
-import { getSafeAreaPadding, scaleFont } from "@/remotion/lib/layout";
-import { EASING } from "@/remotion/lib/motion-tokens";
-import { enterProgress } from "@/remotion/lib/timing";
+import { makeShaderEffect } from "@/remotion/lib/gpu";
 
 /**
- * hero-loop — the landing-page monitor composition.
+ * hero-loop — a brand ident, animated from the logo's own anatomy.
  *
- * Four beats over 360 frames (12s @ 30fps):
- *   title 0-50 · install 36-150 · catalog 136-258 · render 244-330 · title 316-360
+ * The RemotionUI lockup (tile, back frame, front frame, gold play triangle,
+ * wordmark) holds over the site's phosphor light — gold halftone streaks
+ * fanning up from below — and moves three times in 360 frames (12s @ 30fps):
  *
- * Every beat travels the same direction — it arrives from below and leaves
- * upward — so the overlapping handoffs read as one continuous roll instead of a
- * double exposure of two centred layouts.
+ *   hold · parallax frames 54-120 · hold · play press 166-214 · hold
+ *   wordmark re-reveal 252-324 · hold to 360
  *
- * The title beat is a single element driven by the global frame, so its state
- * at the last frame is its state at frame 0 and the wrap is invisible. The only
- * moving thing that crosses the seam is the tally light, whose 30-frame period
- * divides 360 exactly. Everything else lives in a `<Sequence>` so off-screen
- * beats are unmounted.
+ * Every move is keyframed on custom bezier curves with anticipation and a
+ * small overshoot, the icon leads and the wordmark follows, and every curve
+ * lands exactly on its rest value, so the lockup at frame 324 is the lockup at
+ * frame 0. The light behind it stays steady; its slow drift runs on a closed
+ * path, one lap per loop, so the wrap is seamless. No text beyond the wordmark.
  */
 
 const { fontFamily: displayFamily } = loadDisplayFont("normal", {
-  weights: ["500"],
+  weights: ["600"],
   subsets: ["latin"],
 });
 
-const { fontFamily: bodyFamily } = loadBodyFont("normal", {
-  weights: ["400", "500"],
-  subsets: ["latin"],
-});
+/** Overall brightness of the phosphor light. Tuned so the wordmark never sits on its brightest streak. */
+const LIGHT = 0.62;
 
-const { fontFamily: monoFamily } = loadMonoFont("normal", {
-  weights: ["400", "500"],
-  subsets: ["latin"],
-});
-
-/** Edit Bay palette. No blue anywhere — phosphor amber is the only accent. */
 const COLORS = {
-  stage: "#050505",
-  panel: "#0d0c0b",
-  panelRaised: "#141210",
-  hairline: "rgba(236, 236, 236, 0.09)",
-  hairlineStrong: "rgba(236, 236, 236, 0.16)",
+  stage: "#060605",
   ink: "#ececec",
-  muted: "#8b857c",
-  dim: "#575149",
   phosphor: "#e8b86d",
+  /** Mark geometry colours, straight from public/logo.svg. */
+  plate: "#2a2928",
+  window: "#050505",
 } as const;
 
-/** Lane stripe hues from the registry atlas — stripe only, never a surface. */
-const LANE = {
-  atoms: "oklch(0.55 0.06 252)",
-  signals: "oklch(0.55 0.06 285)",
-  vectors: "oklch(0.55 0.06 195)",
-  spatial: "oklch(0.55 0.06 155)",
-  blocks: "oklch(0.55 0.06 48)",
-  cuts: "oklch(0.55 0.06 25)",
-  reels: "oklch(0.55 0.06 330)",
-} as const;
+const LOOP_FRAMES = 360;
+const WORDMARK = "RemotionUI";
+
+/* ------------------------------------------------------------------------ */
+/* Curves                                                                    */
+/* ------------------------------------------------------------------------ */
+
+/** Ease into a move: the anticipation and the push. */
+const EASE_IN = Easing.bezier(0.5, 0, 0.75, 0);
+/** Travel between keys. */
+const EASE_MOVE = Easing.bezier(0.45, 0, 0.2, 1);
+/** Settle: decelerates hard into the rest value. */
+const EASE_SETTLE = Easing.bezier(0.22, 1, 0.36, 1);
+
+type Key = readonly [frame: number, value: number];
 
 /**
- * Handoff shape, shared by every beat.
- *
- * Opacity and travel run on different clocks on purpose. The fade is short and
- * front-loaded so an outgoing beat is a faint ghost within three frames, while
- * the longer travel keeps both layouts physically apart for the whole handoff.
- * Fading and moving on one curve is what turns an overlap into a double
- * exposure of two centred layouts.
+ * Piecewise keyframes. The first segment eases in (anticipation), the last
+ * settles, everything between travels. Outside the keys it holds the end
+ * values, so a finished move is exactly at rest.
  */
-const BEAT_ENTER_FADE = 14;
-const BEAT_ENTER_MOVE = 24;
-const BEAT_EXIT_FADE = 12;
-const BEAT_EXIT_MOVE = 18;
-/** The title carries more travel than a panel — it is the only full-bleed beat. */
-const TITLE_ENTER_MOVE = 26;
-/** Frames between one beat starting to leave and the next arriving. */
-const BEAT_OVERLAP = 4;
+function curve(frame: number, keys: readonly Key[]): number {
+  const first = keys[0];
+  const last = keys[keys.length - 1];
+  if (frame <= first[0]) return first[1];
+  if (frame >= last[0]) return last[1];
+  for (let i = 0; i < keys.length - 1; i++) {
+    const [f0, v0] = keys[i];
+    const [f1, v1] = keys[i + 1];
+    if (frame >= f0 && frame <= f1) {
+      const t = (frame - f0) / Math.max(1e-6, f1 - f0);
+      const ease =
+        i === 0 ? EASE_IN : i === keys.length - 2 ? EASE_SETTLE : EASE_MOVE;
+      return v0 + (v1 - v0) * ease(t);
+    }
+  }
+  return last[1];
+}
 
-/** A beat's Sequence has to outlive its fade so the travel can finish. */
-const beat = (from: number, exitAt: number) =>
-  ({ from, exitAt, durationInFrames: exitAt + BEAT_EXIT_MOVE }) as const;
+/** Rate of change per frame, used to blur only the genuinely fast frames. */
+function speed(frame: number, keys: readonly Key[]): number {
+  return Math.abs(curve(frame, keys) - curve(frame - 1, keys));
+}
 
-/** Each beat is chained off the previous one so the schedule cannot drift. */
-const TITLE_EXIT = 32;
-const INSTALL = beat(TITLE_EXIT + BEAT_OVERLAP, 96);
-const CATALOG = beat(INSTALL.from + INSTALL.exitAt + BEAT_OVERLAP, 104);
-const RENDER = beat(CATALOG.from + CATALOG.exitAt + BEAT_OVERLAP, 68);
-const TITLE_ENTER = RENDER.from + RENDER.exitAt + BEAT_OVERLAP;
-/** Frame where the title switches from "leaving" to "returning". */
-const TITLE_PIVOT = 180;
+/* ------------------------------------------------------------------------ */
+/* Choreography (absolute frames, logo.svg 32-unit space for the icon)       */
+/* ------------------------------------------------------------------------ */
 
-const PREMOUNT = 10;
+/** Moment 1 — parallax frames. */
+const M1 = {
+  backX: [[54, 0], [62, 0.35], [84, -2.4], [102, 0.25], [114, 0]],
+  backY: [[54, 0], [62, 0.28], [84, -1.8], [102, 0.2], [114, 0]],
+  frontX: [[54, 0], [62, -0.12], [84, 0.7], [102, -0.08], [114, 0]],
+  frontY: [[54, 0], [62, -0.1], [84, 0.55], [102, -0.06], [114, 0]],
+  tiltY: [[54, 0], [62, 1.2], [86, -8], [106, 0.8], [120, 0]],
+  tiltX: [[54, 0], [62, -0.8], [86, 5], [106, -0.5], [120, 0]],
+  tileScale: [[54, 1], [62, 0.99], [86, 1.02], [106, 0.998], [120, 1]],
+} as const satisfies Record<string, readonly Key[]>;
 
-const TITLE_LINES = ["Compositions you own,", "frame by frame."] as const;
+/** Moment 2 — play press. */
+const M2 = {
+  tri: [[166, 1], [172, 1.07], [178, 0.74], [190, 1.1], [202, 0.97], [212, 1]],
+  front: [[170, 1], [178, 0.985], [190, 1.008], [204, 1]],
+  bloom: [[176, 0], [184, 1], [214, 0]],
+} as const satisfies Record<string, readonly Key[]>;
 
-const TITLE_SUB = "Install with the CLI. Every frame lands in your repo.";
+/** Moment 3 — the tile catches the light, then the wordmark re-reveals. */
+const M3 = {
+  tiltX: [[252, 0], [258, -1], [276, 6], [300, -0.6], [314, 0]],
+  tiltY: [[252, 0], [258, -0.6], [276, 3], [300, -0.3], [314, 0]],
+} as const satisfies Record<string, readonly Key[]>;
 
-const INSTALL_COMMAND = "npx remotion-ui@latest add social-clip";
+/** One glint per moment that touches the tile: [start, end]. */
+const GLINTS: readonly (readonly [number, number])[] = [
+  [96, 114],
+  [186, 204],
+  [270, 290],
+];
 
-const INSTALL_FILES = [
-  "src/compositions/social-clip/index.tsx",
-  "src/remotion/scenes/caption-scene.tsx",
-  "src/remotion/primitives/typewriter.tsx",
-  "src/remotion/lib/timing.ts",
-] as const;
+/** Wordmark follows moment 1 and 2 in sympathy, a few frames behind the icon. */
+function letterSympathy(frame: number, index: number): number {
+  const m1 = curve(frame - 6 - index, [[60, 0], [70, 0.012], [92, -0.04], [108, 0.006], [122, 0]]);
+  const m2 = curve(frame - 8 - index, [[178, 0], [188, -0.02], [202, 0.004], [214, 0]]);
+  return m1 + m2;
+}
 
-/**
- * The two facts the hero states about the registry. Both are written by
- * `pnpm registry:build` from registry.json + the atlas, so a rename or a new
- * component can never leave a stale number or a dead name on the landing page.
- * Edit the curated card order in scripts/build-registry.mts, not here.
- */
-// #region generated:registry-facts
-const REGISTRY_COUNT = 200;
+/** Moment 3 per letter: out behind the mask left to right, back in with blur-to-sharp. */
+function letterReveal(frame: number, index: number): { y: number; blur: number } {
+  const exit = 262 + index * 1.5;
+  const enter = 284 + index * 2;
+  const keys: readonly Key[] = [
+    [exit, 0],
+    [exit + 3, -0.06],
+    [exit + 12, 1.12],
+    [enter, 1.12],
+    [enter + 14, -0.08],
+    [enter + 22, 0],
+  ];
+  const blur = curve(frame, [[enter, 1], [enter + 12, 0]]) * (frame >= enter ? 1 : 0);
+  return { y: curve(frame, keys), blur };
+}
 
-const CATALOG_ITEMS = [
-  { name: "social-clip", kind: "composition", stripe: LANE.reels },
-  { name: "caption-scene", kind: "scene", stripe: LANE.signals },
-  { name: "typewriter", kind: "primitive", stripe: LANE.atoms },
-  { name: "audiogram-bars", kind: "primitive", stripe: LANE.signals },
-  { name: "lower-third", kind: "scene", stripe: LANE.blocks },
-  { name: "path-draw", kind: "primitive", stripe: LANE.vectors },
-  { name: "metric-ticker", kind: "scene", stripe: LANE.signals },
-  { name: "transition-wipe", kind: "primitive", stripe: LANE.cuts },
-  { name: "data-story", kind: "composition", stripe: LANE.reels },
-  { name: "karaoke-captions", kind: "primitive", stripe: LANE.signals },
-  { name: "code-reveal", kind: "scene", stripe: LANE.blocks },
-  { name: "logo-reveal", kind: "scene", stripe: LANE.vectors },
-] as const;
-// #endregion generated:registry-facts
+/* ------------------------------------------------------------------------ */
+/* Composition                                                              */
+/* ------------------------------------------------------------------------ */
 
 type Metrics = {
-  /** Scale a 1080p-reference size against the frame's shorter edge. */
   s: (size: number) => number;
-  safe: ReturnType<typeof getSafeAreaPadding>;
-  contentWidth: number;
-  panelWidth: number;
-  gridWidth: number;
-  gridColumns: number;
-  gridGap: number;
-  cardHeight: number;
-  titleWidth: number;
-  /** Auto-fit so the longest headline never wraps in a narrow crop. */
-  headlineSize: number;
-  mono: number;
-  tick: number;
+  icon: number;
+  gap: number;
+  wordmark: number;
 };
-
-/** Longest title line, in ems, at Newsreader 500 — used to auto-fit the display size. */
-const TITLE_LINE_EMS = 10.6;
 
 function useMetrics(): Metrics {
   const { width, height } = useVideoConfig();
-
   return useMemo(() => {
-    const basis = Math.min(width, height);
-    const s = (size: number) => scaleFont(size, basis);
-    const safe = getSafeAreaPadding({ width, height });
-    const inner = s(36);
-    const contentWidth = Math.max(
-      s(320),
-      width - safe.paddingLeft - safe.paddingRight - inner * 2,
-    );
-    const gridWidth = Math.min(contentWidth, s(1500));
-    const titleWidth = Math.min(contentWidth, s(1300));
-
-    return {
-      s,
-      safe,
-      contentWidth,
-      panelWidth: Math.min(contentWidth, s(1300)),
-      gridWidth,
-      gridColumns: gridWidth >= s(1000) ? 4 : 2,
-      gridGap: s(14),
-      cardHeight: s(94),
-      titleWidth,
-      headlineSize: Math.min(s(92), Math.floor(titleWidth / TITLE_LINE_EMS)),
-      mono: s(26),
-      tick: s(30),
-    };
+    const basis = Math.min(width, (height * 16) / 9);
+    const s = (size: number) => Math.round(size * (basis / 1920));
+    return { s, icon: s(250), gap: s(54), wordmark: s(168) };
   }, [width, height]);
 }
 
-export const HeroLoop: React.FC = () => {
-  const metrics = useMetrics();
+export type HeroLoopBackground = "phosphor" | "transparent";
 
+export type HeroLoopProps = {
+  /**
+   * `phosphor` (default) paints the stage and the site's gold light, for
+   * renders, the poster, docs and the README. `transparent` paints no stage at
+   * all, only the lockup and a soft well, so a page can show its own live light
+   * through the video — the homepage monitor does this.
+   */
+  background?: HeroLoopBackground;
+  /**
+   * Page theme the transparent variant sits on. `light` inks the wordmark dark
+   * and lifts the well to the page colour so the lockup reads on #f7f5f1.
+   * Ignored by the phosphor background, which is always dark.
+   */
+  tone?: "dark" | "light";
+};
+
+/** Ink and well colours for the transparent variant on each page theme. */
+const TONES = {
+  dark: { ink: "#ececec", well: "6, 6, 5" },
+  light: { ink: "#1c1a17", well: "247, 245, 241" },
+} as const;
+
+export const HeroLoop: React.FC<HeroLoopProps> = ({
+  background = "phosphor",
+  tone = "dark",
+}) => {
+  const m = useMetrics();
+  const transparent = background === "transparent";
+  const palette = TONES[transparent ? tone : "dark"];
   return (
-    <AbsoluteFill
-      style={{
-        backgroundColor: COLORS.stage,
-        color: COLORS.ink,
-        fontFamily: bodyFamily,
-      }}
-    >
-      <StageChrome m={metrics} />
-      <TitleBeat m={metrics} />
-
-      <Sequence
-        from={INSTALL.from}
-        durationInFrames={INSTALL.durationInFrames}
-        premountFor={PREMOUNT}
-        name="install"
-      >
-        <InstallBeat m={metrics} />
-      </Sequence>
-
-      <Sequence
-        from={CATALOG.from}
-        durationInFrames={CATALOG.durationInFrames}
-        premountFor={PREMOUNT}
-        name="catalog"
-      >
-        <CatalogBeat m={metrics} />
-      </Sequence>
-
-      <Sequence
-        from={RENDER.from}
-        durationInFrames={RENDER.durationInFrames}
-        premountFor={PREMOUNT}
-        name="render"
-      >
-        <RenderBeat m={metrics} />
-      </Sequence>
+    <AbsoluteFill style={transparent ? undefined : { backgroundColor: COLORS.stage }}>
+      {transparent ? null : <PhosphorLight />}
+      <CentreWell soft={transparent} rgb={palette.well} />
+      <AbsoluteFill style={{ alignItems: "center", justifyContent: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: m.gap }}>
+          <Tile m={m} />
+          <Wordmark m={m} ink={palette.ink} />
+        </div>
+      </AbsoluteFill>
     </AbsoluteFill>
   );
 };
 
-/**
- * Safe-area corner ticks plus a two-label slate. Static apart from the tally
- * light, which is the one thing alive during the title hold.
- *
- * The tally blinks on a 30-frame period and 360 divides by 30, so the phase at
- * the wrap is the phase at frame 0 — the loop stays seamless even though the
- * frames either side of the seam are no longer pixel-identical.
- */
-const TALLY_BLINK = 30;
+/* ------------------------------------------------------------------------ */
+/* The tile: back frame, front frame and triangle move as separate parts    */
+/* ------------------------------------------------------------------------ */
 
-const StageChrome: React.FC<{ m: Metrics }> = ({ m }) => {
+const TRIANGLE_CENTRE = [17, 17] as const;
+const FRONT_CENTRE = [18, 16.5] as const;
+
+const Tile: React.FC<{ m: Metrics }> = ({ m }) => {
   const frame = useCurrentFrame();
-  const { width, height, fps } = useVideoConfig();
-  const { safe, tick, s } = m;
-  const labelSize = s(17);
-  const tally = interpolate(
-    (frame % TALLY_BLINK) / TALLY_BLINK,
-    [0, 0.42, 0.5, 0.92, 1],
-    [1, 1, 0.22, 0.22, 1],
-    { easing: EASING.editorial },
-  );
+
+  const tiltX = curve(frame, M1.tiltX) + curve(frame, M3.tiltX);
+  const tiltY = curve(frame, M1.tiltY) + curve(frame, M3.tiltY);
+  const tileScale = curve(frame, M1.tileScale);
+
+  const backX = curve(frame, M1.backX);
+  const backY = curve(frame, M1.backY);
+  const frontX = curve(frame, M1.frontX);
+  const frontY = curve(frame, M1.frontY);
+  const frontScale = curve(frame, M2.front);
+  const tri = curve(frame, M2.tri);
+  const bloom = curve(frame, M2.bloom);
+
+  // Motion blur only while the press is genuinely fast.
+  const triSpeed = speed(frame, M2.tri);
+  const triBlur = triSpeed > 0.025 ? Math.min(0.35, (triSpeed - 0.025) * 6) : 0;
+
+  const scaleAbout = ([cx, cy]: readonly [number, number], k: number) =>
+    `translate(${cx} ${cy}) scale(${k.toFixed(5)}) translate(${-cx} ${-cy})`;
+
+  const glint = glintAt(frame);
+
+  const style: CSSProperties = {
+    position: "relative",
+    width: m.icon,
+    height: m.icon,
+    flexShrink: 0,
+    transform: `perspective(1400px) rotateX(${tiltX.toFixed(3)}deg) rotateY(${tiltY.toFixed(3)}deg) scale(${tileScale.toFixed(5)})`,
+  };
 
   return (
-    <AbsoluteFill>
-      <div
-        style={{
-          position: "absolute",
-          left: safe.paddingLeft,
-          right: safe.paddingRight,
-          top: safe.paddingTop,
-          bottom: safe.paddingBottom,
-        }}
+    <div style={style}>
+      <svg
+        width={m.icon}
+        height={m.icon}
+        viewBox="0 0 32 32"
+        fill="none"
+        style={{ display: "block", overflow: "visible" }}
       >
-        <CornerTick size={tick} corner="tl" />
-        <CornerTick size={tick} corner="tr" />
-        <CornerTick size={tick} corner="bl" />
-        <CornerTick size={tick} corner="br" />
-      </div>
-
-      <div
-        style={{
-          position: "absolute",
-          left: safe.paddingLeft + tick + s(16),
-          top: safe.paddingTop - labelSize,
-          display: "flex",
-          alignItems: "center",
-          gap: s(9),
-          fontFamily: monoFamily,
-          fontSize: labelSize,
-          letterSpacing: "0.01em",
-          color: COLORS.muted,
-        }}
-      >
-        <span
-          style={{
-            width: s(6),
-            height: s(6),
-            backgroundColor: COLORS.phosphor,
-            opacity: tally,
-          }}
-        />
-        remotion-ui
-      </div>
-
-      <div
-        style={{
-          position: "absolute",
-          right: safe.paddingRight + tick + s(16),
-          bottom: safe.paddingBottom - labelSize,
-          fontFamily: monoFamily,
-          fontSize: labelSize,
-          letterSpacing: "0.01em",
-          color: COLORS.dim,
-        }}
-      >
-        {width} × {height} · {fps} fps
-      </div>
-    </AbsoluteFill>
+        <rect width={32} height={32} rx={6} fill={COLORS.plate} />
+        <g transform="translate(-1.5 -1)">
+          <g transform={`translate(${backX.toFixed(4)} ${backY.toFixed(4)})`}>
+            <rect x={5} y={6} width={18} height={13} rx={3} stroke={COLORS.ink} strokeWidth={1.25} fill="none" opacity={0.35} />
+          </g>
+          <g
+            transform={`translate(${frontX.toFixed(4)} ${frontY.toFixed(4)}) ${scaleAbout(FRONT_CENTRE, frontScale)}`}
+          >
+            <rect x={9} y={10} width={18} height={13} rx={3} fill={COLORS.window} stroke={COLORS.ink} strokeWidth={1.5} opacity={0.95} />
+            <g transform={scaleAbout(TRIANGLE_CENTRE, tri)}>
+              <path
+                d="M15.5 14.5v5l4.5-2.5-4.5-2.5z"
+                fill={COLORS.phosphor}
+                style={{
+                  filter: [
+                    `drop-shadow(0 0 ${m.s(14 + 30 * bloom)}px rgba(255, 196, 110, ${(0.6 + 0.4 * bloom).toFixed(3)}))`,
+                    triBlur > 0.01 ? `blur(${(triBlur * m.s(8)).toFixed(2)}px)` : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" "),
+                }}
+              />
+            </g>
+          </g>
+        </g>
+      </svg>
+      {glint >= 0 ? <TileGlint m={m} progress={glint} /> : null}
+    </div>
   );
 };
 
-const CornerTick: React.FC<{
-  size: number;
-  corner: "tl" | "tr" | "bl" | "br";
-}> = ({ size, corner }) => {
-  const isTop = corner === "tl" || corner === "tr";
-  const isLeft = corner === "tl" || corner === "bl";
-  const edge = `1px solid ${COLORS.hairlineStrong}`;
+function glintAt(frame: number): number {
+  for (const [start, end] of GLINTS) {
+    if (frame >= start && frame <= end) {
+      return EASE_MOVE((frame - start) / (end - start));
+    }
+  }
+  return -1;
+}
 
+/** One specular band crossing the tile, clipped to its rounded plate. */
+const TileGlint: React.FC<{ m: Metrics; progress: number }> = ({ m, progress }) => {
+  const x = -60 + progress * 220;
   return (
     <div
+      aria-hidden
       style={{
         position: "absolute",
-        width: size,
-        height: size,
-        [isTop ? "top" : "bottom"]: 0,
-        [isLeft ? "left" : "right"]: 0,
-        [isTop ? "borderTop" : "borderBottom"]: edge,
-        [isLeft ? "borderLeft" : "borderRight"]: edge,
+        inset: 0,
+        borderRadius: (m.icon * 6) / 32,
+        overflow: "hidden",
+        pointerEvents: "none",
+        mixBlendMode: "screen",
+        opacity: Math.sin(progress * Math.PI) * 0.75,
+        background: `linear-gradient(105deg, rgba(255,236,200,0) ${x - 16}%, rgba(255,236,200,0.5) ${x}%, rgba(255,236,200,0) ${x + 16}%)`,
       }}
     />
   );
 };
 
-/**
- * The loop anchor. Rendered on every frame from the global clock so the state
- * at frame 359 is the state at frame 0 — the wrap has nothing to hide.
- */
-const TitleBeat: React.FC<{ m: Metrics }> = ({ m }) => {
-  const frame = useCurrentFrame();
-  const { s, titleWidth, headlineSize } = m;
-  const returning = frame >= TITLE_PIVOT;
-  const rise = s(130);
+/* ------------------------------------------------------------------------ */
+/* The wordmark: per-letter, masked                                          */
+/* ------------------------------------------------------------------------ */
 
-  /**
-   * One direction of travel across the whole loop: lines leave upward and
-   * return from below, so the cycle reads as a continuous roll. Both branches
-   * resolve to opacity 1 / offset 0 outside their window, which is what makes
-   * frame 359 and frame 0 the same picture.
-   */
-  const lineStyle = (index: number): CSSProperties => {
-    if (returning) {
-      const at = TITLE_ENTER + index * 4;
-      const fade = enterProgress(frame, at, BEAT_ENTER_FADE);
-      const move = enterProgress(frame, at, TITLE_ENTER_MOVE);
-      return { opacity: fade, translate: `0px ${(1 - move) * rise}px` };
+const Wordmark: React.FC<{ m: Metrics; ink: string }> = ({ m, ink }) => {
+  const frame = useCurrentFrame();
+  const pad = m.wordmark * 0.18;
+
+  return (
+    <div
+      style={{
+        fontFamily: displayFamily,
+        fontWeight: 600,
+        fontSize: m.wordmark,
+        lineHeight: 1,
+        letterSpacing: "-0.01em",
+        color: ink,
+        whiteSpace: "nowrap",
+        display: "flex",
+        // The mask: letters leave and return through this edge.
+        clipPath: `inset(${-pad}px ${-pad}px 0px ${-pad}px)`,
+        paddingBottom: pad * 0.4,
+      }}
+    >
+      {WORDMARK.split("").map((letter, index) => {
+        const reveal = letterReveal(frame, index);
+        const lift = letterSympathy(frame, index);
+        const y = (reveal.y + lift) * m.wordmark;
+        return (
+          <span
+            key={`${letter}-${index}`}
+            style={{
+              display: "inline-block",
+              translate: `0px ${y.toFixed(2)}px`,
+              filter:
+                reveal.blur > 0.02
+                  ? `blur(${(reveal.blur * m.s(10)).toFixed(2)}px)`
+                  : undefined,
+            }}
+          >
+            {letter}
+          </span>
+        );
+      })}
+    </div>
+  );
+};
+
+/* ------------------------------------------------------------------------ */
+/* Background: the site's phosphor light, as the video's own copy           */
+/* ------------------------------------------------------------------------ */
+
+/**
+ * A darker well under the lockup so the wordmark always sits on near-black.
+ * Over a live page light it is softer and wider, so it reads as shade, not as
+ * a box behind the logo.
+ */
+const CentreWell: React.FC<{ soft?: boolean; rgb: string }> = ({ soft = false, rgb }) => (
+  <AbsoluteFill
+    style={{
+      background: soft
+        ? `radial-gradient(ellipse 46% 30% at 50% 50%, rgba(${rgb}, 0.62) 0%, rgba(${rgb}, 0.4) 50%, rgba(${rgb}, 0) 100%)`
+        : `radial-gradient(ellipse 40% 20% at 50% 50%, rgba(${rgb}, 0.9) 0%, rgba(${rgb}, 0.72) 45%, rgba(${rgb}, 0) 100%)`,
+    }}
+  />
+);
+
+/**
+ * Ported from components/landing/phosphor-field-shaders.ts and folded into one
+ * pass: the halftone samples the light field directly at each cell centre
+ * instead of reading a framebuffer, so it runs as a single `lib/gpu` effect.
+ * Driven by frame, not clock: the noise drifts round a closed circle once per
+ * loop and the breathing runs twice per loop, so the light loops seamlessly.
+ * The per-frame grain is left out on purpose — it is uncorrelated between
+ * frames, which made the wrap measure as a jump.
+ */
+const PHOSPHOR_SHADER = `#version 300 es
+precision highp float;
+
+in vec2 vUv;
+uniform sampler2D uSource;
+uniform vec2 uResolution;
+uniform float uPhase;
+uniform float uLight;
+out vec4 outColor;
+
+const float DEG = 0.01745329252;
+const float TAU = 6.28318530718;
+const vec3 STAGE = vec3(0.0235, 0.0235, 0.0196);
+const vec3 LUMA = vec3(0.2126, 0.7152, 0.0722);
+const float ANGLE = 0.52;
+
+vec3 oklchToLinear(float L, float C, float h) {
+  float a = C * cos(h), b = C * sin(h);
+  vec3 lms = vec3(
+    L + 0.3963377774 * a + 0.2158037573 * b,
+    L - 0.1055613458 * a - 0.0638541728 * b,
+    L - 0.0894841775 * a - 1.2914855480 * b
+  );
+  lms = lms * lms * lms;
+  return mat3(4.0767416621, -1.2684380046, -0.0041960863,
+              -3.3077115913, 2.6097574011, -0.7034186147,
+              0.2309699292, -0.3413193965, 1.7076147010) * lms;
+}
+
+float hash(vec2 p) {
+  p = fract(p * vec2(123.34, 456.21));
+  p += dot(p, p + 45.32);
+  return fract(p.x * p.y);
+}
+
+float noise(vec2 p) {
+  vec2 i = floor(p);
+  vec2 f = fract(p);
+  vec2 u = f * f * (3.0 - 2.0 * f);
+  return mix(
+    mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x),
+    mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0)), u.x),
+    u.y
+  );
+}
+
+float fbm(vec2 p) {
+  float value = 0.0;
+  float amp = 0.5;
+  mat2 turn = mat2(1.6, 1.2, -1.2, 1.6);
+  for (int i = 0; i < 5; i++) {
+    value += amp * noise(p);
+    p = turn * p;
+    amp *= 0.5;
+  }
+  return value;
+}
+
+vec3 field(vec2 px) {
+  vec2 pos = (px - 0.5 * uResolution) / uResolution.y;
+  vec2 d = pos - vec2(0.0, -0.66);
+  float r = length(d);
+  float angle = atan(d.x, d.y);
+
+  float th = uPhase * TAU;
+  vec2 loop = vec2(cos(th), sin(th));
+
+  float fan = smoothstep(1.2, 0.36, abs(angle));
+  float lobes = mix(0.3, 1.0, smoothstep(0.06, 0.5, abs(angle)));
+
+  float warp = fbm(vec2(angle * 3.2 + loop.x * 0.35, r * 0.7 + loop.y * 0.35));
+  float streak = fbm(vec2(angle * 6.5 + warp * 1.6 + loop.y * 0.22, r * 0.15 + loop.x * 0.22));
+  streak = pow(smoothstep(0.26, 0.8, streak), 1.8);
+
+  float body = exp(-r * 0.78);
+  float haze = exp(-r * 1.6) * 0.38;
+  float breath = 0.92 + 0.08 * sin(th * 2.0);
+  float intensity = (streak * 1.7 * body + haze) * fan * lobes * breath;
+
+  float k = clamp(r * 0.65 + (warp - 0.5) * 0.7, 0.0, 1.0);
+  float hue = mix(52.0, 80.0, k);
+  hue = mix(hue, 30.0, smoothstep(0.6, 1.2, abs(angle)) * 0.55);
+  vec3 tint = clamp(oklchToLinear(0.84 - 0.1 * k, 0.14, hue * DEG), 0.0, 1.0);
+
+  vec3 x = tint * intensity * 1.85 * uLight;
+  vec3 mapped = (x * (2.51 * x + 0.03)) / (x * (2.43 * x + 0.59) + 0.14);
+  return clamp(mapped, 0.0, 1.0);
+}
+
+void main() {
+  vec2 frag = gl_FragCoord.xy;
+  float cell = max(2.5, 4.8 * uResolution.y / 1080.0);
+  mat2 turn = mat2(cos(ANGLE), -sin(ANGLE), sin(ANGLE), cos(ANGLE));
+  vec2 rotated = turn * frag;
+  vec2 centre = (floor(rotated / cell) + 0.5) * cell;
+  vec2 samplePx = transpose(turn) * centre;
+
+  vec3 soft = field(frag);
+  vec3 cellInk = field(samplePx);
+  float level = clamp(dot(cellInk, LUMA), 0.0, 1.0);
+
+  float radius = cell * sqrt(level / 3.14159265);
+  float dotMask = 1.0 - smoothstep(radius - 0.7, radius + 0.7, length(rotated - centre));
+  vec3 dots = cellInk * min(0.8 / max(level, 1e-3), 2.4) * dotMask;
+  float presence = smoothstep(0.02, 0.15, level) * 0.62;
+  vec3 ink = clamp(mix(soft, dots, presence), 0.0, 1.0);
+
+  outColor = vec4(clamp(STAGE + ink * (1.0 - STAGE), 0.0, 1.0), 1.0);
+}
+`;
+
+type PhosphorParams = { readonly phase: number; readonly light: number };
+
+const phosphorLight = makeShaderEffect<PhosphorParams>({
+  type: "dev.remotionui.hero-loop.phosphorLight",
+  label: "phosphorLight()",
+  fragmentShader: PHOSPHOR_SHADER,
+  calculateKey: (p) => `phosphor-${p.phase.toFixed(5)}-${p.light.toFixed(4)}`,
+  setUniforms: (gl, program, p) => {
+    gl.uniform1f(gl.getUniformLocation(program, "uPhase"), p.phase);
+    gl.uniform1f(gl.getUniformLocation(program, "uLight"), p.light);
+  },
+});
+
+/**
+ * WebGL2 is checked once. Without it the light is skipped and the flat stage
+ * and well remain, the same fallback the site's own phosphor field uses.
+ */
+function useWebGl2(): boolean {
+  const [available] = useState(() => {
+    if (typeof document === "undefined") return false;
+    try {
+      return Boolean(document.createElement("canvas").getContext("webgl2"));
+    } catch {
+      return false;
     }
-
-    const at = TITLE_EXIT + index * 3;
-    const fade = enterProgress(frame, at, BEAT_EXIT_FADE);
-    const move = enterProgress(frame, at, BEAT_EXIT_MOVE, EASING.editorial);
-    return { opacity: 1 - fade, translate: `0px ${move * -rise}px` };
-  };
-
-  return (
-    <AbsoluteFill
-      style={{
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <div style={{ width: titleWidth, textAlign: "center" }}>
-        {TITLE_LINES.map((line, index) => (
-          <h1
-            key={line}
-            style={{
-              margin: 0,
-              fontFamily: displayFamily,
-              fontWeight: 500,
-              fontSize: headlineSize,
-              lineHeight: 1.12,
-              letterSpacing: "-0.01em",
-              color: index === 0 ? COLORS.ink : COLORS.phosphor,
-              ...lineStyle(index),
-            }}
-          >
-            {line}
-          </h1>
-        ))}
-        <p
-          style={{
-            margin: `${s(28)}px 0 0`,
-            fontSize: s(28),
-            lineHeight: 1.5,
-            color: COLORS.muted,
-            ...lineStyle(2),
-          }}
-        >
-          {TITLE_SUB}
-        </p>
-      </div>
-    </AbsoluteFill>
-  );
-};
-
-/** Frames, local to the beat, over which the panel opens for its output. */
-const INSTALL_OPEN = [34, 48] as const;
-
-const InstallBeat: React.FC<{ m: Metrics }> = ({ m }) => {
-  const frame = useCurrentFrame();
-  const { s, panelWidth, mono } = m;
-  const rowHeight = Math.round(mono * 1.7);
-  const rowGap = s(8);
-  const filesHeight = rowHeight * INSTALL_FILES.length + rowGap * 3;
-  /**
-   * The output block owns its full height as one eased opening, timed to the
-   * last keystroke. Letting the rows size the panel themselves would re-centre
-   * the whole card four times; reserving the height from frame zero — the
-   * earlier fix — left a terminal that was a mostly-empty box for a second and
-   * a half while the command typed. One growth, once, at the moment output
-   * would actually arrive.
-   */
-  const open = interpolate(frame, INSTALL_OPEN, [0, 1], {
-    easing: EASING.editorial,
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
   });
+  return available;
+}
+
+/** Steady light: it drifts on its own clock and does not react to the logo. */
+const PhosphorLight: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { width, height } = useVideoConfig();
+  const webgl = useWebGl2();
+  if (!webgl) return null;
 
   return (
-    <Beat m={m} exitAt={INSTALL.exitAt}>
-      <div style={{ ...panelStyle, width: panelWidth, borderRadius: s(8) }}>
-        <PanelHeader m={m} label="terminal" trailing="add" />
-
-        <div
-          style={{
-            display: "grid",
-            gap: s(26),
-            padding: `${s(30)}px ${s(34)}px ${s(32)}px`,
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "baseline",
-              gap: s(14),
-              height: rowHeight,
-            }}
-          >
-            <span
-              style={{
-                fontFamily: monoFamily,
-                fontSize: mono,
-                color: COLORS.dim,
-              }}
-            >
-              $
-            </span>
-            <Typewriter
-              text={INSTALL_COMMAND}
-              charFrames={1}
-              delayInFrames={6}
-              showCursor
-              cursorStyle="block"
-              cursorColor={COLORS.phosphor}
-              cursorBlinkFrames={TALLY_BLINK}
-              style={{
-                fontFamily: monoFamily,
-                fontSize: mono,
-                fontWeight: 400,
-                color: COLORS.ink,
-                lineHeight: `${rowHeight}px`,
-              }}
-            />
-          </div>
-
-          <div
-            style={{
-              display: "grid",
-              gap: rowGap,
-              height: filesHeight * open,
-              overflow: "hidden",
-            }}
-          >
-            <StaggerChildren staggerInFrames={6} baseDelayInFrames={42}>
-              {INSTALL_FILES.map((file) => (
-                <SlideUp key={file} durationInFrames={18} distance={s(12)}>
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: s(16),
-                      fontFamily: monoFamily,
-                      fontSize: mono,
-                      lineHeight: `${rowHeight}px`,
-                    }}
-                  >
-                    <span style={{ color: COLORS.phosphor }}>+</span>
-                    <span style={{ color: COLORS.muted }}>{file}</span>
-                  </div>
-                </SlideUp>
-              ))}
-            </StaggerChildren>
-          </div>
-
-          <FadeIn delayInFrames={70} durationInFrames={14}>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: monoFamily,
-                fontSize: s(21),
-                color: COLORS.dim,
-              }}
-            >
-              4 files written · 0 runtime dependencies
-            </p>
-          </FadeIn>
-        </div>
-      </div>
-    </Beat>
-  );
-};
-
-const CatalogBeat: React.FC<{ m: Metrics }> = ({ m }) => {
-  const { s, gridWidth, gridColumns, gridGap, cardHeight } = m;
-  const headingSize = s(56);
-  /** Cards arrive inside Sequences, so the track has to be laid out for the
-   *  full set from frame one — otherwise the block re-centres each new row. */
-  const rows = Math.ceil(CATALOG_ITEMS.length / gridColumns);
-
-  return (
-    <Beat m={m} exitAt={CATALOG.exitAt}>
-      <div style={{ width: gridWidth }}>
-        <SlideUp durationInFrames={22} distance={s(20)}>
-          {/* MotionWrapper shrink-wraps, so the heading carries the track
-                width itself to stay centred over the grid. */}
-          <h2
-            style={{
-              width: gridWidth,
-              margin: `0 0 ${s(36)}px`,
-              display: "flex",
-              alignItems: "baseline",
-              justifyContent: "center",
-              gap: s(16),
-              fontFamily: displayFamily,
-              fontWeight: 500,
-              fontSize: headingSize,
-              lineHeight: 1.1,
-              color: COLORS.ink,
-            }}
-          >
-            <Counter
-              from={REGISTRY_COUNT - 18}
-              to={REGISTRY_COUNT}
-              durationInFrames={34}
-              delayInFrames={2}
-              fontSize={headingSize}
-              color={COLORS.phosphor}
-              fontFamily={displayFamily}
-              style={{ fontWeight: 500 }}
-            />
-            components, one registry.
-          </h2>
-        </SlideUp>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))`,
-            gridTemplateRows: `repeat(${rows}, ${cardHeight}px)`,
-            gap: gridGap,
-            height: rows * cardHeight + (rows - 1) * gridGap,
-          }}
-        >
-          <StaggerChildren staggerInFrames={3} baseDelayInFrames={18}>
-            {CATALOG_ITEMS.map((item) => (
-              <SpringIn key={item.name} durationInFrames={22}>
-                <ClipCard m={m} {...item} />
-              </SpringIn>
-            ))}
-          </StaggerChildren>
-        </div>
-      </div>
-    </Beat>
-  );
-};
-
-const ClipCard: React.FC<{
-  m: Metrics;
-  name: string;
-  kind: string;
-  stripe: string;
-}> = ({ m, name, kind, stripe }) => {
-  const { s } = m;
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        width: "100%",
-        height: m.cardHeight,
-        boxSizing: "border-box",
-        borderRadius: s(6),
-        border: `1px solid ${COLORS.hairline}`,
-        backgroundColor: COLORS.panel,
-        overflow: "hidden",
-      }}
-    >
-      <span
-        style={{
-          width: s(4),
-          alignSelf: "stretch",
-          flex: "0 0 auto",
-          backgroundColor: stripe,
-        }}
+    <AbsoluteFill>
+      <Solid
+        width={width}
+        height={height}
+        color={COLORS.stage}
+        effects={[phosphorLight({ phase: frame / LOOP_FRAMES, light: LIGHT })]}
+        style={{ width: "100%", height: "100%" }}
       />
-      <div
-        style={{
-          display: "grid",
-          gap: s(7),
-          padding: `${s(18)}px ${s(20)}px`,
-          minWidth: 0,
-        }}
-      >
-        <span
-          style={{
-            fontSize: s(22),
-            fontWeight: 500,
-            color: COLORS.ink,
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {name}
-        </span>
-        <span
-          style={{
-            fontFamily: monoFamily,
-            fontSize: s(16),
-            color: COLORS.muted,
-          }}
-        >
-          {kind}
-        </span>
-      </div>
-    </div>
-  );
-};
-
-const RenderBeat: React.FC<{ m: Metrics }> = ({ m }) => {
-  const frame = useCurrentFrame();
-  const { width, height, fps } = useVideoConfig();
-  const { s, panelWidth, mono } = m;
-
-  const progress = interpolate(frame, [4, 34], [0, 1], {
-    easing: EASING.editorial,
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const percent = Math.round(progress * 100);
-  const rowStyle: CSSProperties = {
-    display: "flex",
-    alignItems: "baseline",
-    justifyContent: "space-between",
-    gap: s(24),
-    fontFamily: monoFamily,
-    fontSize: mono,
-    lineHeight: 1.6,
-  };
-
-  return (
-    <Beat m={m} exitAt={RENDER.exitAt}>
-      <div style={{ ...panelStyle, width: panelWidth, borderRadius: s(8) }}>
-        <PanelHeader
-          m={m}
-          label="render queue"
-          trailing={`h264 · ${fps} fps`}
-        />
-
-        <div
-          style={{
-            display: "grid",
-            gap: s(22),
-            padding: `${s(30)}px ${s(34)}px ${s(32)}px`,
-          }}
-        >
-          <div style={{ ...rowStyle, color: COLORS.dim }}>
-            <span>hero-loop</span>
-            <span>done</span>
-          </div>
-
-          <div style={{ display: "grid", gap: s(14) }}>
-            <div style={rowStyle}>
-              <span style={{ color: COLORS.ink }}>social-clip</span>
-              <span
-                style={{
-                  color: COLORS.phosphor,
-                  fontVariantNumeric: "tabular-nums",
-                }}
-              >
-                {percent}%
-              </span>
-            </div>
-
-            <div
-              style={{
-                height: s(4),
-                borderRadius: s(4),
-                overflow: "hidden",
-                backgroundColor: COLORS.hairline,
-              }}
-            >
-              <div
-                style={{
-                  width: `${progress * 100}%`,
-                  height: "100%",
-                  backgroundColor: COLORS.phosphor,
-                }}
-              />
-            </div>
-          </div>
-
-          <div style={{ height: Math.round(mono * 1.6) }}>
-            <FadeIn delayInFrames={36} durationInFrames={12}>
-              <div style={{ ...rowStyle, width: panelWidth - s(68) }}>
-                <span style={{ color: COLORS.muted }}>out/social-clip.mp4</span>
-                <span style={{ color: COLORS.dim, whiteSpace: "nowrap" }}>
-                  {width} × {height}
-                </span>
-              </div>
-            </FadeIn>
-          </div>
-        </div>
-      </div>
-    </Beat>
-  );
-};
-
-const PanelHeader: React.FC<{
-  m: Metrics;
-  label: string;
-  trailing: string;
-}> = ({ m, label, trailing }) => {
-  const { s } = m;
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: `${s(15)}px ${s(24)}px`,
-        borderBottom: `1px solid ${COLORS.hairline}`,
-        backgroundColor: COLORS.panelRaised,
-        fontFamily: monoFamily,
-        fontSize: s(17),
-        color: COLORS.dim,
-      }}
-    >
-      <span>{label}</span>
-      <span>{trailing}</span>
-    </div>
-  );
-};
-
-/**
- * Beat container. Owns the handoff so no beat ever cross-dissolves on top of
- * the next one at the same coordinates — the outgoing beat is already lifting
- * away while the incoming beat is still rising into place.
- */
-const Beat: React.FC<{
-  m: Metrics;
-  exitAt: number;
-  children: ReactNode;
-}> = ({ m, exitAt, children }) => {
-  const frame = useCurrentFrame();
-  const lift = m.s(170);
-  const enterFade = enterProgress(frame, 0, BEAT_ENTER_FADE);
-  const enterMove = enterProgress(frame, 0, BEAT_ENTER_MOVE);
-  const exitFade = enterProgress(frame, exitAt, BEAT_EXIT_FADE);
-  const exitMove = enterProgress(
-    frame,
-    exitAt,
-    BEAT_EXIT_MOVE,
-    EASING.editorial,
-  );
-
-  return (
-    <AbsoluteFill
-      style={{
-        alignItems: "center",
-        justifyContent: "center",
-        paddingLeft: m.safe.paddingLeft,
-        paddingRight: m.safe.paddingRight,
-        paddingTop: m.safe.paddingTop,
-        paddingBottom: m.safe.paddingBottom,
-        boxSizing: "border-box",
-        opacity: enterFade * (1 - exitFade),
-        translate: `0px ${(1 - enterMove) * lift - exitMove * lift}px`,
-      }}
-    >
-      {children}
     </AbsoluteFill>
   );
-};
-
-/** No drop shadow: on a #050505 stage it only reads as a grey ghost box while
- *  the panel springs in from zero opacity. */
-const panelStyle: CSSProperties = {
-  overflow: "hidden",
-  border: `1px solid ${COLORS.hairline}`,
-  backgroundColor: COLORS.panel,
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import { MeshGradientBg } from "../registry-exports";
+import { MeshGradientBg } from "../../registry/bases/default/primitives/mesh-gradient-bg";
 import { PreviewFrame, ProductCard } from "./preview-frame";
 import { DEMO_COPY } from "@/lib/demo-assets";
 

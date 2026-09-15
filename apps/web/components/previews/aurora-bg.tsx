@@ -1,6 +1,6 @@
 "use client";
 
-import { AuroraBg } from "../registry-exports";
+import { AuroraBg } from "../../registry/bases/default/primitives/aurora-bg";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, ProductCard } from "./preview-frame";
 

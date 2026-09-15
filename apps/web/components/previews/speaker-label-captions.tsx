@@ -1,6 +1,6 @@
 "use client";
 
-import { SpeakerLabelCaptions } from "../registry-exports";
+import { SpeakerLabelCaptions } from "../../registry/bases/default/primitives/speaker-label-captions";
 import { PreviewFrame } from "./preview-frame";
 
 const CUES = [

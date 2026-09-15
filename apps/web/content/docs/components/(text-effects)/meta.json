@@ -1,0 +1,30 @@
+{
+  "title": "Text effects",
+  "pagesIndex": "text-effects",
+  "defaultOpen": false,
+  "pages": [
+    "blur-focus-in",
+    "counter",
+    "handwriting-text",
+    "infinite-marquee",
+    "light-sweep-text",
+    "liquid-text-morph",
+    "marker-highlight",
+    "masked-slide-reveal",
+    "matrix-decode",
+    "neon-flicker-text",
+    "perspective-marquee",
+    "rgb-glitch-text",
+    "scramble-text",
+    "slot-roll",
+    "split-text-chars",
+    "staggered-fade-up",
+    "strikethrough-replace",
+    "stroke-to-fill-text",
+    "text-mask-video",
+    "tracking-in",
+    "typewriter",
+    "variable-font-morph",
+    "wave-text"
+  ]
+}

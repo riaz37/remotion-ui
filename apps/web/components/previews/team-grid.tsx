@@ -1,6 +1,6 @@
 "use client";
 
-import { TeamGrid } from "../registry-exports";
+import { TeamGrid } from "../../registry/bases/default/scenes/team-grid";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**

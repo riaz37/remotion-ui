@@ -1,6 +1,6 @@
 "use client";
 
-import { CountdownTimer } from "../registry-exports";
+import { CountdownTimer } from "../../registry/bases/default/scenes/countdown-timer";
 import { PreviewFrame } from "./preview-frame";
 
 /**

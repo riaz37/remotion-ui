@@ -1,6 +1,6 @@
 "use client";
 
-import { DataStory } from "../registry-exports";
+import { DataStory } from "../../registry/bases/default/compositions/data-story";
 import {
   DEMO_BAR_DATA,
   DEMO_COPY,

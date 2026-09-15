@@ -1,0 +1,28 @@
+{
+  "title": "Compositions",
+  "pagesIndex": "compositions",
+  "defaultOpen": false,
+  "pages": [
+    "ai-composer-showcase",
+    "ai-generation-canvas",
+    "bento-pan",
+    "browser-flow",
+    "creator-reel",
+    "dashboard-populate",
+    "data-story",
+    "deploy-reveal",
+    "ecosystem-orbit",
+    "hero-device-assemble",
+    "hero-loop",
+    "image-expand",
+    "intro",
+    "landing-code-showcase",
+    "live-code-split",
+    "podcast-clip",
+    "pricing-focus",
+    "showcase",
+    "social-clip",
+    "tool-menu-slide",
+    "tutorial-clip"
+  ]
+}

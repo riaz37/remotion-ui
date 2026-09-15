@@ -1,6 +1,6 @@
 "use client";
 
-import { FunnelChart } from "../registry-exports";
+import { FunnelChart } from "../../registry/bases/default/primitives/funnel-chart";
 import { PreviewFrame } from "./preview-frame";
 
 const STAGES = [

@@ -268,7 +268,7 @@ export const HookCard: React.FC<HookCardProps> = ({
           </div>
         ) : null}
 
-        <h1
+        <div
           style={{
             margin: 0,
             fontSize: headlineSize,
@@ -361,7 +361,7 @@ export const HookCard: React.FC<HookCardProps> = ({
               </div>
             );
           })}
-        </h1>
+        </div>
 
         {subtitle ? (
           <p

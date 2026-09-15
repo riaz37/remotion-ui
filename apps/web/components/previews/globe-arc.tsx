@@ -1,6 +1,6 @@
 "use client";
 
-import { GlobeArc } from "../registry-exports";
+import { GlobeArc } from "../../registry/bases/default/primitives/globe-arc";
 import { PreviewFrame } from "./preview-frame";
 
 /**

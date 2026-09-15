@@ -1,6 +1,6 @@
 "use client";
 
-import { transitionGridPixelateWipe } from "../registry-exports";
+import { transitionGridPixelateWipe } from "../../registry/bases/default/primitives/grid-pixelate-wipe";
 import {
   TRANSITION_FRAMES,
   TransitionSeriesPreview,

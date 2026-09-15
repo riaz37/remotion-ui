@@ -1,6 +1,6 @@
 "use client";
 
-import { MediaFrame } from "../registry-exports";
+import { MediaFrame } from "../../registry/bases/default/scenes/media-frame";
 import { DEMO_MEDIA_SRC } from "@/lib/demo-assets";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 

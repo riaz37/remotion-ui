@@ -1,6 +1,6 @@
 "use client";
 
-import { MarkerHighlight } from "../registry-exports";
+import { MarkerHighlight } from "../../registry/bases/default/primitives/marker-highlight";
 import { DEMO_COPY, DEMO_PALETTE } from "@/lib/demo-assets";
 import { PreviewFrame, PreviewKicker } from "./preview-frame";
 import { usePreviewStage } from "./preview-stage";

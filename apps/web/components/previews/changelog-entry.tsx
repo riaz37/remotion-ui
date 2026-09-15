@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangelogEntry } from "../registry-exports";
+import { ChangelogEntry } from "../../registry/bases/default/scenes/changelog-entry";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**

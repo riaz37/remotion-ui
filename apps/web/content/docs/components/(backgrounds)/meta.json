@@ -1,0 +1,15 @@
+{
+  "title": "Backgrounds",
+  "pagesIndex": "backgrounds",
+  "defaultOpen": false,
+  "pages": [
+    "animated-noise-grain",
+    "aurora-bg",
+    "caustics-bg",
+    "dynamic-grid",
+    "light-rays",
+    "mesh-gradient-bg",
+    "particle-field",
+    "topographic-lines-bg"
+  ]
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { PieSliceReveal } from "../registry-exports";
+import { PieSliceReveal } from "../../registry/bases/default/primitives/pie-slice-reveal";
 import { PreviewFrame } from "./preview-frame";
 
 const SLICES = [

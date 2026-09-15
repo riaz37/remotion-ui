@@ -1,7 +1,7 @@
 "use client";
 
 import { AbsoluteFill, Loop, useVideoConfig } from "remotion";
-import { KaraokeCaptions } from "../registry-exports";
+import { KaraokeCaptions } from "../../registry/bases/default/primitives/karaoke-captions";
 import { DEMO_CAPTIONS } from "@/lib/demo-assets";
 import { groupCaptionsIntoPages } from "@/remotion/lib/caption-utils";
 import { scaleFont } from "@/remotion/lib/layout";

@@ -33,7 +33,7 @@ export function StudioHero() {
         </h1>
 
         <p
-          className="hero-rise mt-4 max-w-[46ch] text-[0.9375rem] leading-relaxed text-fd-muted-foreground"
+          className="hero-rise mx-auto mt-4 max-w-[46ch] text-[0.9375rem] leading-relaxed text-fd-muted-foreground"
           style={rise(1)}
         >
           Install any of {componentCount} components with the CLI. The source
@@ -41,7 +41,7 @@ export function StudioHero() {
         </p>
 
         <div
-          className="hero-rise mt-7 flex flex-wrap items-center gap-x-6 gap-y-3"
+          className="hero-rise mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-3"
           style={rise(2)}
         >
           <CompactCommandRail

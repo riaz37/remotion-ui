@@ -32,15 +32,24 @@ const SESSION = "remotionui-qa";
 const OUT = path.join(ROOT, ".qa-screenshots");
 fs.mkdirSync(OUT, { recursive: true });
 
+/** Every .mdx under dir, including `(group)` folders (which stay out of the URL). */
+function listMdx(dir) {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) return listMdx(full);
+    return entry.name.endsWith(".mdx") ? [full] : [];
+  });
+}
+
 /** Any doc page with <RemotionPreview> gets tested — no manual list to maintain. */
 function discoverPreviewPages() {
   const pages = [];
   for (const category of PREVIEW_CATEGORIES) {
     const dir = path.join(DOCS_ROOT, category);
     if (!fs.existsSync(dir)) continue;
-    for (const file of fs.readdirSync(dir)) {
-      if (!file.endsWith(".mdx")) continue;
-      const content = fs.readFileSync(path.join(dir, file), "utf-8");
+    for (const filePath of listMdx(dir)) {
+      const file = path.basename(filePath);
+      const content = fs.readFileSync(filePath, "utf-8");
       if (
         !content.includes("<RemotionPreview") &&
         !content.includes("preview={")

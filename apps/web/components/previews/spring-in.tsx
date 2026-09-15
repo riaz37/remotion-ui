@@ -1,6 +1,6 @@
 "use client";
 
-import { SpringIn } from "../registry-exports";
+import { SpringIn } from "../../registry/bases/default/primitives/spring-in";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, PreviewGhostStack, ProductCard } from "./preview-frame";
 

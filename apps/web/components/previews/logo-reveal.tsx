@@ -1,6 +1,6 @@
 "use client";
 
-import { LogoReveal } from "../registry-exports";
+import { LogoReveal } from "../../registry/bases/default/scenes/logo-reveal";
 import { DEMO_LOGO_PATH } from "@/lib/demo-assets";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 

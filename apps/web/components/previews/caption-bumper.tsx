@@ -1,6 +1,6 @@
 "use client";
 
-import { CaptionBumper } from "../registry-exports";
+import { CaptionBumper } from "../../registry/bases/default/scenes/caption-bumper";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 export const CaptionBumperPreview: React.FC = () => (

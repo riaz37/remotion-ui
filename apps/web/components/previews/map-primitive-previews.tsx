@@ -8,12 +8,10 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import {
-  MapCanvas,
-  MapMarkers,
-  MapRoute,
-  MapFlight,
-} from "../registry-exports";
+import { MapCanvas } from "../../registry/bases/default/primitives/map-canvas";
+import { MapMarkers } from "../../registry/bases/default/primitives/map-markers";
+import { MapRoute } from "../../registry/bases/default/primitives/map-route";
+import { MapFlight } from "../../registry/bases/default/scenes/map-flight";
 import {
   createMarkerCollection,
   DEMO_MARKERS,

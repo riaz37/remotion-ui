@@ -72,8 +72,10 @@ export function getAtlasSections(): ComponentSection[] {
         .sort()
         .map((name) => {
           const atlas = getAtlasMeta(name);
+          // Card label uses the MDX page title, the same source as the sidebar.
+          const title = source.getPage(["components", name])?.data.title;
           return {
-            name,
+            name: title ?? name,
             slug: name,
             url: getComponentDocPath(name),
             lane,

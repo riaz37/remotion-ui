@@ -1,6 +1,6 @@
 "use client";
 
-import { PathDraw } from "../registry-exports";
+import { PathDraw } from "../../registry/bases/default/primitives/path-draw";
 import { DEMO_LOGO_PATH, DEMO_PALETTE } from "@/lib/demo-assets";
 import { PreviewFrame } from "./preview-frame";
 

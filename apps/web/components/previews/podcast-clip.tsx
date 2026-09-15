@@ -1,13 +1,18 @@
 "use client";
 
 import { Sequence } from "remotion";
-import { PodcastClip } from "../registry-exports";
-import { DEMO_AUDIO_SRC, DEMO_CAPTIONS, DEMO_COPY } from "@/lib/demo-assets";
+import { PodcastClip } from "../../registry/bases/default/compositions/podcast-clip";
+import { DEMO_CAPTIONS, DEMO_COPY } from "@/lib/demo-assets";
+import { useDemoAudioSrc } from "@/lib/demo-assets-audio";
 
-export const PodcastClipPreview: React.FC = () => (
+export const PodcastClipPreview: React.FC = () => {
+  const audioSrc = useDemoAudioSrc();
+  // Shared in-memory copy; see lib/demo-assets-audio.ts.
+  if (!audioSrc) return null;
+  return (
   <Sequence from={0}>
     <PodcastClip
-      audioSrc={DEMO_AUDIO_SRC}
+      audioSrc={audioSrc}
       captions={DEMO_CAPTIONS}
       title={DEMO_COPY.podcast.title}
       subtitle={DEMO_COPY.podcast.subtitle}
@@ -15,4 +20,5 @@ export const PodcastClipPreview: React.FC = () => (
       ctaLabel={DEMO_COPY.endCard.ctaLabel}
     />
   </Sequence>
-);
+  );
+};

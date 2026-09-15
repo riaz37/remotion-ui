@@ -1,7 +1,7 @@
 "use client";
 
 import { AbsoluteFill } from "remotion";
-import { SportsScorebug } from "../registry-exports";
+import { SportsScorebug } from "../../registry/bases/default/scenes/sports-scorebug";
 import { PreviewFrame } from "./preview-frame";
 
 /**

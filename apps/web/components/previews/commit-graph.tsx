@@ -1,6 +1,6 @@
 "use client";
 
-import { CommitGraph } from "../registry-exports";
+import { CommitGraph } from "../../registry/bases/default/scenes/commit-graph";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**

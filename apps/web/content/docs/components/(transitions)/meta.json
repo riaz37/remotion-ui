@@ -1,0 +1,25 @@
+{
+  "title": "Transitions",
+  "pagesIndex": "transitions",
+  "defaultOpen": false,
+  "pages": [
+    "blur-reveal",
+    "chromatic-aberration-wipe",
+    "directional-wipe",
+    "frosted-glass-wipe",
+    "grid-pixelate-wipe",
+    "spatial-push",
+    "transition-blinds",
+    "transition-card-flip",
+    "transition-circle-reveal",
+    "transition-clock-wipe",
+    "transition-fade",
+    "transition-light-leak",
+    "transition-liquid-warp",
+    "transition-morph-shape",
+    "transition-slide",
+    "transition-whip-pan",
+    "transition-wipe",
+    "zoom-through"
+  ]
+}

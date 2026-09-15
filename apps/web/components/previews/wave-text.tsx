@@ -1,6 +1,6 @@
 "use client";
 
-import { WaveText } from "../registry-exports";
+import { WaveText } from "../../registry/bases/default/primitives/wave-text";
 import { PreviewFrame } from "./preview-frame";
 
 /**

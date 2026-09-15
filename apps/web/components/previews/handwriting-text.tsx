@@ -1,7 +1,7 @@
 "use client";
 
 import { loadFont } from "@remotion/google-fonts/Caveat";
-import { HandwritingText } from "../registry-exports";
+import { HandwritingText } from "../../registry/bases/default/primitives/handwriting-text";
 import { PreviewFrame } from "./preview-frame";
 
 /**

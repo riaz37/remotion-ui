@@ -1,6 +1,6 @@
 "use client";
 
-import { transitionCircleReveal } from "../registry-exports";
+import { transitionCircleReveal } from "../../registry/bases/default/primitives/transition-circle-reveal";
 import {
   TRANSITION_FRAMES,
   TransitionSeriesPreview,

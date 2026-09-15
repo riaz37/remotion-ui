@@ -1,6 +1,6 @@
 "use client";
 
-import { BRollStack } from "../registry-exports";
+import { BRollStack } from "../../registry/bases/default/scenes/b-roll-stack";
 import {
   DEMO_MEDIA_ALT_SRC,
   DEMO_MEDIA_SRC,

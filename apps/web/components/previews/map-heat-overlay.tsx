@@ -4,7 +4,8 @@ import { useCallback, useMemo, useState } from "react";
 import type { FeatureCollection, Point } from "geojson";
 import type { Map } from "maplibre-gl";
 import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
-import { MapCanvas, MapHeatOverlay } from "../registry-exports";
+import { MapCanvas } from "../../registry/bases/default/primitives/map-canvas";
+import { MapHeatOverlay } from "../../registry/bases/default/primitives/map-heat-overlay";
 import { isMapStyleReady } from "../../registry/bases/default/lib/map-utils";
 
 /**

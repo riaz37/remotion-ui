@@ -1,0 +1,16 @@
+---
+title: Hero Loop
+description: 12-second seamless brand ident — the RemotionUI logo animated from its own parts over the site's phosphor light.
+---
+
+import { HeroLoopPreview } from "@/components/previews/hero-loop";
+
+<ComponentPage name="hero-loop" preview={HeroLoopPreview}>
+
+A silent 1920×1080 ident built to run on loop forever. The RemotionUI lockup holds over the site's gold phosphor light and moves three times, each move built from the logo's own anatomy: the back frame slides out from behind the front frame in parallax, the gold play triangle presses and springs back with a bloom, and the wordmark drops behind a mask and rises back letter by letter.
+
+Every move uses keyframed bezier curves with anticipation and a small overshoot, and each lands exactly on its rest pose, so the last frame hands back to frame 0 with no seam. The light is a single-pass port of the homepage shader, driven by frame on a closed path.
+
+Pass `background="transparent"` to drop the stage and light so a page can show its own background through the video; `tone="light"` inks the wordmark for a light page.
+
+</ComponentPage>

@@ -206,7 +206,7 @@ export const TitleCard: React.FC<TitleCardProps> = ({
           </div>
         ) : null}
 
-        <h1
+        <div
           style={{
             margin: 0,
             position: "relative",
@@ -277,7 +277,7 @@ export const TitleCard: React.FC<TitleCardProps> = ({
               }}
             />
           </span>
-        </h1>
+        </div>
 
         {subtitle ? (
           <p

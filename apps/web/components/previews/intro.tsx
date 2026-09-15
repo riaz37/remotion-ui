@@ -1,6 +1,6 @@
 "use client";
 
-import { Intro } from "../registry-exports";
+import { Intro } from "../../registry/bases/default/compositions/intro";
 import { DEMO_COPY } from "@/lib/demo-assets";
 
 export const IntroPreview: React.FC = () => (

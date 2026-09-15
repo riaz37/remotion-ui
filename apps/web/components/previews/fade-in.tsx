@@ -1,6 +1,6 @@
 "use client";
 
-import { FadeIn } from "../registry-exports";
+import { FadeIn } from "../../registry/bases/default/primitives/fade-in";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, PreviewGhostStack, ProductCard } from "./preview-frame";
 

@@ -1,0 +1,15 @@
+{
+  "title": "Maps & devices",
+  "pagesIndex": "maps-and-devices",
+  "defaultOpen": false,
+  "pages": [
+    "device-mockup-zoom",
+    "globe-arc",
+    "map-canvas",
+    "map-flight",
+    "map-heat-overlay",
+    "map-markers",
+    "map-route",
+    "multi-device-lineup"
+  ]
+}

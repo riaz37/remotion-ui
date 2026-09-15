@@ -1,6 +1,6 @@
 "use client";
 
-import { PricingCard } from "../registry-exports";
+import { PricingCard } from "../../registry/bases/default/scenes/pricing-card";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**

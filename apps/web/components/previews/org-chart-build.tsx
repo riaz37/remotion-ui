@@ -1,6 +1,6 @@
 "use client";
 
-import { OrgChartBuild } from "../registry-exports";
+import { OrgChartBuild } from "../../registry/bases/default/scenes/org-chart-build";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**

@@ -1,7 +1,7 @@
 "use client";
 
 import { AbsoluteFill } from "remotion";
-import { NotificationStack } from "../registry-exports";
+import { NotificationStack } from "../../registry/bases/default/scenes/notification-stack";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /** Stand-in for the app the toasts are sitting over. */

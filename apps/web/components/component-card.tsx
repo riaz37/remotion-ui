@@ -43,14 +43,19 @@ export function ComponentCard({
 
   return (
     <ClipCard
-      name={slug}
+      name={name}
       url={url}
       lane={resolvedLane}
       durationFrames={durationFrames}
       command={cliAddCommand(slug)}
       className={className}
       thumbnail={
-        <AtlasMiniPreview slug={slug} lane={resolvedLane} scrubOnHover />
+        <AtlasMiniPreview
+          slug={slug}
+          lane={resolvedLane}
+          scrubOnHover
+          mountOn="hover"
+        />
       }
     />
   );

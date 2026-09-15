@@ -2,7 +2,7 @@
 
 import type { Caption } from "@remotion/captions";
 import { AbsoluteFill, useVideoConfig } from "remotion";
-import { WordPopCaptions } from "../registry-exports";
+import { WordPopCaptions } from "../../registry/bases/default/primitives/word-pop-captions";
 import { groupCaptionsIntoPages } from "@/remotion/lib/caption-utils";
 import { scaleFont } from "@/remotion/lib/layout";
 import { PreviewFrame } from "./preview-frame";

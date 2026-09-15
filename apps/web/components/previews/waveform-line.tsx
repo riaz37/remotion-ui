@@ -2,13 +2,17 @@
 
 import { Audio } from "@remotion/media";
 import { AbsoluteFill, Sequence, useVideoConfig } from "remotion";
-import { WaveformLine } from "../registry-exports";
-import { DEMO_AUDIO_SRC, DEMO_PALETTE } from "@/lib/demo-assets";
+import { WaveformLine } from "../../registry/bases/default/primitives/waveform-line";
+import { DEMO_PALETTE } from "@/lib/demo-assets";
+import { useDemoAudioSrc } from "@/lib/demo-assets-audio";
 import { scaleFont } from "@/remotion/lib/layout";
 import { PreviewFrame } from "./preview-frame";
 
 export const WaveformLinePreview: React.FC = () => {
   const { fps, width, height } = useVideoConfig();
+  const audioSrc = useDemoAudioSrc();
+  // Shared in-memory copy; see lib/demo-assets-audio.ts.
+  if (!audioSrc) return null;
   const contentWidth = width - 128;
 
   return (
@@ -21,7 +25,7 @@ export const WaveformLinePreview: React.FC = () => {
             instead of running silence under a live meter. */}
         <Sequence from={0} premountFor={fps}>
           <Audio
-            src={DEMO_AUDIO_SRC}
+            src={audioSrc}
             loop
             fallbackHtml5AudioProps={{ pauseWhenBuffering: true }}
           />
@@ -84,7 +88,7 @@ export const WaveformLinePreview: React.FC = () => {
               }}
             >
               <WaveformLine
-                src={DEMO_AUDIO_SRC}
+                src={audioSrc}
                 width={contentWidth}
                 height={Math.round(height * 0.24)}
                 strokeColor={DEMO_PALETTE.phosphor}

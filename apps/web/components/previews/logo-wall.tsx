@@ -1,6 +1,6 @@
 "use client";
 
-import { LogoWall } from "../registry-exports";
+import { LogoWall } from "../../registry/bases/default/scenes/logo-wall";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**

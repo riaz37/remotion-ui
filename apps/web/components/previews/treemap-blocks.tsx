@@ -1,6 +1,6 @@
 "use client";
 
-import { TreemapBlocks } from "../registry-exports";
+import { TreemapBlocks } from "../../registry/bases/default/primitives/treemap-blocks";
 import { PreviewFrame } from "./preview-frame";
 
 const BLOCKS = [

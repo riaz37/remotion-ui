@@ -83,7 +83,7 @@ export const AudiogramScene: React.FC<AudiogramSceneProps> = ({
               />
             ) : null}
             {title ? (
-              <h1
+              <div
                 style={{
                   color: COLORS.title,
                   fontSize: scaleFont(64, width),
@@ -94,7 +94,7 @@ export const AudiogramScene: React.FC<AudiogramSceneProps> = ({
                 }}
               >
                 {title}
-              </h1>
+              </div>
             ) : null}
             {subtitle ? (
               <p

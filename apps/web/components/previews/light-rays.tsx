@@ -1,6 +1,6 @@
 "use client";
 
-import { LightRays } from "../registry-exports";
+import { LightRays } from "../../registry/bases/default/primitives/light-rays";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, ProductCard } from "./preview-frame";
 

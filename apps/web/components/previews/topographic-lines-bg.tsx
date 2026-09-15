@@ -1,6 +1,6 @@
 "use client";
 
-import { TopographicLinesBg } from "../registry-exports";
+import { TopographicLinesBg } from "../../registry/bases/default/primitives/topographic-lines-bg";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, ProductCard } from "./preview-frame";
 

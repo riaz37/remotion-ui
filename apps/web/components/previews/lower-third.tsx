@@ -1,7 +1,7 @@
 "use client";
 
 import { AbsoluteFill } from "remotion";
-import { LowerThird } from "../registry-exports";
+import { LowerThird } from "../../registry/bases/default/scenes/lower-third";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 const PreviewBackdrop: React.FC = () => (

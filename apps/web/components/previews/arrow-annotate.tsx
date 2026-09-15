@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowAnnotate } from "../registry-exports";
+import { ArrowAnnotate } from "../../registry/bases/default/primitives/arrow-annotate";
 import { PreviewFrame } from "./preview-frame";
 
 const WIDTH = 620;

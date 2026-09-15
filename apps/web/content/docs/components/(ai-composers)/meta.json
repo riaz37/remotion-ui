@@ -1,0 +1,12 @@
+{
+  "title": "AI composers",
+  "pagesIndex": "ai-composers",
+  "defaultOpen": false,
+  "pages": [
+    "chat-gpt",
+    "claude-chat",
+    "claude-code",
+    "opencode",
+    "v0"
+  ]
+}

@@ -2,12 +2,16 @@
 
 import { Audio } from "@remotion/media";
 import { Sequence, useVideoConfig } from "remotion";
-import { AudiogramScene } from "../registry-exports";
-import { DEMO_AUDIO_SRC, DEMO_COPY, DEMO_LOGO_SRC } from "@/lib/demo-assets";
+import { AudiogramScene } from "../../registry/bases/default/scenes/audiogram-scene";
+import { DEMO_COPY, DEMO_LOGO_SRC } from "@/lib/demo-assets";
+import { useDemoAudioSrc } from "@/lib/demo-assets-audio";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 export const AudiogramScenePreview: React.FC = () => {
   const { fps } = useVideoConfig();
+  const audioSrc = useDemoAudioSrc();
+  // Shared in-memory copy; see lib/demo-assets-audio.ts.
+  if (!audioSrc) return null;
 
   return (
     <ScenePreviewPlate>
@@ -18,13 +22,13 @@ export const AudiogramScenePreview: React.FC = () => {
         instead of running silence under a live meter. */}
       <Sequence from={0} premountFor={fps}>
         <Audio
-          src={DEMO_AUDIO_SRC}
+          src={audioSrc}
           loop
           fallbackHtml5AudioProps={{ pauseWhenBuffering: true }}
         />
       </Sequence>
       <AudiogramScene
-        src={DEMO_AUDIO_SRC}
+        src={audioSrc}
         title={DEMO_COPY.podcast.title}
         subtitle={DEMO_COPY.podcast.subtitle}
         logoSrc={DEMO_LOGO_SRC}

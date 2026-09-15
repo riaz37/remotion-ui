@@ -114,7 +114,7 @@ export default function SponsorPage() {
       </section>
 
       <section className="border-b border-[var(--bay-border)]">
-        <div className="mx-auto grid max-w-[1120px] gap-12 px-6 py-[104px] md:grid-cols-2">
+        <div className="mx-auto max-w-[1120px] px-6 py-[104px]">
           <div>
             <h2 className="text-display-lg">Sponsoring as a company</h2>
             <p className="mt-4 max-w-[46ch] text-[0.9375rem] leading-relaxed text-fd-muted-foreground">
@@ -127,21 +127,6 @@ export default function SponsorPage() {
               successCopy="Thanks. We'll email you within two days."
               className="mt-6 max-w-lg"
             />
-          </div>
-          <div>
-            <h2 className="text-display-lg">Supporting as a person</h2>
-            <p className="mt-4 max-w-[46ch] text-[0.9375rem] leading-relaxed text-fd-muted-foreground">
-              Using RemotionUI in your own projects? Any amount on GitHub
-              Sponsors helps pay for hosting and render time.
-            </p>
-            <a
-              href={siteConfig.sponsorsUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-6 inline-flex w-fit items-center rounded-sm bg-fd-foreground px-5 py-2.5 text-sm font-medium text-fd-background transition-opacity hover:opacity-90"
-            >
-              Sponsor on GitHub
-            </a>
           </div>
         </div>
       </section>

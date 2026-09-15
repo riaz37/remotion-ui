@@ -1,208 +1,10 @@
 "use client";
 
 import { Player, type PlayerRef } from "@remotion/player";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ComponentType } from "react";
 import type { AtlasLane } from "@/lib/atlas";
 import { laneAccentMuted } from "@/lib/lane-visuals";
 import { previewMeta } from "@/lib/preview-config";
-import { AnimatedBarChartPreview } from "./previews/animated-bar-chart";
-import {
-  ChatGptPreview,
-  ClaudeChatPreview,
-  ClaudeCodePreview,
-  OpencodePreview,
-  V0ComposerPreview,
-} from "./previews/ai-composer-previews";
-import { AudioPulsePreview } from "./previews/audio-pulse";
-import { AudiogramBarsPreview } from "./previews/audiogram-bars";
-import { AudiogramScenePreview } from "./previews/audiogram-scene";
-import { AutoFitTitlePreview } from "./previews/auto-fit-title";
-import { BRollStackPreview } from "./previews/b-roll-stack";
-import { BlurInPreview } from "./previews/blur-in";
-import { CalloutSpotlightPreview } from "./previews/callout-spotlight";
-import { CaptionBumperPreview } from "./previews/caption-bumper";
-import { CaptionHighlightPreview } from "./previews/caption-highlight";
-import { CaptionScenePreview } from "./previews/caption-scene";
-import { ChatToPreviewPreview } from "./previews/chat-to-preview";
-import { CodeAccordionPreview } from "./previews/code-accordion";
-import { CodeDiffWipePreview } from "./previews/code-diff-wipe";
-import { CodeRevealPreview } from "./previews/code-reveal";
-import { CommentCalloutPreview } from "./previews/comment-callout";
-import { CounterPreview } from "./previews/counter";
-import { CreatorReelPreview } from "./previews/creator-reel";
-import { CursorPathPreview } from "./previews/cursor-path";
-import { DataFlowPipesPreview } from "./previews/data-flow-pipes";
-import { DataStoryPreview } from "./previews/data-story";
-import { DragDropFlowPreview } from "./previews/drag-drop-flow";
-import { EndCardPreview } from "./previews/end-card";
-import { FadeInPreview } from "./previews/fade-in";
-import { FadeOutPreview } from "./previews/fade-out";
-import { FeatureListPreview } from "./previews/feature-list";
-import { HeroLoopPreview } from "./previews/hero-loop";
-import { HookCardPreview } from "./previews/hook-card";
-import { IntroPreview } from "./previews/intro";
-import { KaraokeCaptionsPreview } from "./previews/karaoke-captions";
-import { LineChartDrawPreview } from "./previews/line-chart-draw";
-import { LogoRevealPreview } from "./previews/logo-reveal";
-import { LowerThirdPreview } from "./previews/lower-third";
-import {
-  MapCanvasPreview,
-  MapMarkersPreview,
-  MapRoutePreview,
-} from "./previews/map-primitive-previews";
-import { MapFlightPreview } from "./previews/map-flight";
-import { MediaFramePreview } from "./previews/media-frame";
-import { MediaSequencePreview } from "./previews/media-sequence";
-import { MetricTickerPreview } from "./previews/metric-ticker";
-import { PathDrawPreview } from "./previews/path-draw";
-import { PodcastClipPreview } from "./previews/podcast-clip";
-import { ProgressBarPreview } from "./previews/progress-bar";
-import { QuoteCardPreview } from "./previews/quote-card";
-import { RotateInPreview } from "./previews/rotate-in";
-import { ScaleInPreview } from "./previews/scale-in";
-import { ShowcasePreview } from "./previews/showcase";
-import { SlideLeftPreview } from "./previews/slide-left";
-import { SlideUpPreview } from "./previews/slide-up";
-import { SocialClipPreview } from "./previews/social-clip";
-import { SplitScreenPreview } from "./previews/split-screen";
-import { SplitTextCharsPreview } from "./previews/split-text-chars";
-import { AudioReactiveScalePreview } from "./previews/audio-reactive-scale";
-import { SrtCaptionTrackPreview } from "./previews/srt-caption-track";
-import { SpringInPreview } from "./previews/spring-in";
-import { StaggerChildrenPreview } from "./previews/stagger-children";
-import { StatCardPreview } from "./previews/stat-card";
-import { TerminalSimulatorPreview } from "./previews/terminal-simulator";
-import { TimelineStepsPreview } from "./previews/timeline-steps";
-import { TitleCardPreview } from "./previews/title-card";
-import { TalkingHeadLayoutPreview } from "./previews/talking-head-layout";
-import {
-  TransitionClockWipePreview,
-  TransitionFadePreview,
-  TransitionLightLeakPreview,
-  TransitionSlidePreview,
-  TransitionWipePreview,
-} from "./previews/transition-previews";
-import { ConfettiBurstPreview } from "./previews/confetti-burst";
-import { DeviceMockupZoomPreview } from "./previews/device-mockup-zoom";
-import { DynamicGridPreview } from "./previews/dynamic-grid";
-import { MeshGradientBgPreview } from "./previews/mesh-gradient-bg";
-import { SimulatedCursorPreview } from "./previews/simulated-cursor";
-import { TransitionBlurRevealPreview } from "./previews/transition-blur-reveal";
-import { TransitionChromaticAberrationWipePreview } from "./previews/transition-chromatic-aberration-wipe";
-import { TransitionDirectionalWipePreview } from "./previews/transition-directional-wipe";
-import { TransitionFrostedGlassWipePreview } from "./previews/transition-frosted-glass-wipe";
-import { TransitionCircleRevealPreview } from "./previews/transition-circle-reveal";
-import { TransitionCardFlipPreview } from "./previews/transition-card-flip";
-import { TransitionBlindsPreview } from "./previews/transition-blinds";
-import { TransitionWhipPanPreview } from "./previews/transition-whip-pan";
-import { TransitionMorphShapePreview } from "./previews/transition-morph-shape";
-import { TransitionLiquidWarpPreview } from "./previews/transition-liquid-warp";
-import { TransitionGridPixelateWipePreview } from "./previews/transition-grid-pixelate-wipe";
-import { TransitionSpatialPushPreview } from "./previews/transition-spatial-push";
-import { TransitionZoomThroughPreview } from "./previews/transition-zoom-through";
-import { TutorialClipPreview } from "./previews/tutorial-clip";
-import { TypewriterPreview } from "./previews/typewriter";
-import {
-  AiComposerShowcasePreview,
-  AiGenerationCanvasPreview,
-  BentoPanPreview,
-  BrowserFlowPreview,
-  DashboardPopulatePreview,
-  DeployRevealPreview,
-  EcosystemOrbitPreview,
-  HeroDeviceAssemblePreview,
-  ImageExpandPreview,
-  LandingCodeShowcasePreview,
-  LiveCodeSplitPreview,
-  PricingFocusPreview,
-  ToolMenuSlidePreview,
-} from "./previews/wave-batch-previews";
-import { WaveformLinePreview } from "./previews/waveform-line";
-import { MarkerHighlightPreview } from "./previews/marker-highlight";
-import { ZoomPanFramePreview } from "./previews/zoom-pan-frame";
-import { SkewInPreview } from "./previews/skew-in";
-import { ScrambleTextPreview } from "./previews/scramble-text";
-import { TextMaskVideoPreview } from "./previews/text-mask-video";
-import { HandwritingTextPreview } from "./previews/handwriting-text";
-import { StrokeToFillTextPreview } from "./previews/stroke-to-fill-text";
-import { VariableFontMorphPreview } from "./previews/variable-font-morph";
-import { LiquidTextMorphPreview } from "./previews/liquid-text-morph";
-import { WaveTextPreview } from "./previews/wave-text";
-import { NeonFlickerTextPreview } from "./previews/neon-flicker-text";
-import { AuroraBgPreview } from "./previews/aurora-bg";
-import { ParticleFieldPreview } from "./previews/particle-field";
-import { TopographicLinesBgPreview } from "./previews/topographic-lines-bg";
-import { CausticsBgPreview } from "./previews/caustics-bg";
-import { AnimatedNoiseGrainPreview } from "./previews/animated-noise-grain";
-import { LightRaysPreview } from "./previews/light-rays";
-import { ParallaxLayersPreview } from "./previews/parallax-layers";
-import { ShakeEmphasisPreview } from "./previews/shake-emphasis";
-import { GlowPulsePreview } from "./previews/glow-pulse";
-import { MotionTrailPreview } from "./previews/motion-trail";
-import { SquashStretchPreview } from "./previews/squash-stretch";
-import { OrbitMotionPreview } from "./previews/orbit-motion";
-import { DepthOfFieldBlurPreview } from "./previews/depth-of-field-blur";
-import { ScanlineCrtPreview } from "./previews/scanline-crt";
-import { BarChartRacePreview } from "./previews/bar-chart-race";
-import { DonutChartPreview } from "./previews/donut-chart";
-import { PieSliceRevealPreview } from "./previews/pie-slice-reveal";
-import { ScatterPlotPopPreview } from "./previews/scatter-plot-pop";
-import { BubbleChartPackPreview } from "./previews/bubble-chart-pack";
-import { GaugeDialPreview } from "./previews/gauge-dial";
-import { SparklineRowPreview } from "./previews/sparkline-row";
-import { HeatmapGridPreview } from "./previews/heatmap-grid";
-import { ComparisonBarsPreview } from "./previews/comparison-bars";
-import { FunnelChartPreview } from "./previews/funnel-chart";
-import { RadarChartPreview } from "./previews/radar-chart";
-import { TreemapBlocksPreview } from "./previews/treemap-blocks";
-import { WaterfallChartPreview } from "./previews/waterfall-chart";
-import { StackedAreaChartPreview } from "./previews/stacked-area-chart";
-import { CandlestickChartPreview } from "./previews/candlestick-chart";
-import { GanttTimelinePreview } from "./previews/gantt-timeline";
-import { WordPopCaptionsPreview } from "./previews/word-pop-captions";
-import { CaptionEmojiBeatPreview } from "./previews/caption-emoji-beat";
-import { SpeakerLabelCaptionsPreview } from "./previews/speaker-label-captions";
-import { TranscriptScrollPreview } from "./previews/transcript-scroll";
-import { SubtitleTranslatePreview } from "./previews/subtitle-translate";
-import { WaveformBarsRadialPreview } from "./previews/waveform-bars-radial";
-import { VuMeterPreview } from "./previews/vu-meter";
-import { VoiceNoteBubblePreview } from "./previews/voice-note-bubble";
-import { BeatPulseGridPreview } from "./previews/beat-pulse-grid";
-import { AudioScrubberPreview } from "./previews/audio-scrubber";
-import { PollOverlayPreview } from "./previews/poll-overlay";
-import { ReactionBurstPreview } from "./previews/reaction-burst";
-import { CountdownTimerPreview } from "./previews/countdown-timer";
-import { SportsScorebugPreview } from "./previews/sports-scorebug";
-import { NewsTickerBarPreview } from "./previews/news-ticker-bar";
-import { FormFillSequencePreview } from "./previews/form-fill-sequence";
-import { NotificationStackPreview } from "./previews/notification-stack";
-import { TabSwitchPanelPreview } from "./previews/tab-switch-panel";
-import { SearchResultsPopulatePreview } from "./previews/search-results-populate";
-import { FileTreeRevealPreview } from "./previews/file-tree-reveal";
-import { KanbanMovePreview } from "./previews/kanban-move";
-import { CommitGraphPreview } from "./previews/commit-graph";
-import { ComparisonTablePreview } from "./previews/comparison-table";
-import { PricingCardPreview } from "./previews/pricing-card";
-import { FaqAccordionPreview } from "./previews/faq-accordion";
-import { TeamGridPreview } from "./previews/team-grid";
-import { LogoWallPreview } from "./previews/logo-wall";
-import { ChangelogEntryPreview } from "./previews/changelog-entry";
-import { RoadmapLanesPreview } from "./previews/roadmap-lanes";
-import { OrgChartBuildPreview } from "./previews/org-chart-build";
-import { QuizQuestionPreview } from "./previews/quiz-question";
-import { WeatherCardPreview } from "./previews/weather-card";
-import { CalendarMonthFillPreview } from "./previews/calendar-month-fill";
-import { ArrowAnnotatePreview } from "./previews/arrow-annotate";
-import { BadgeStampPreview } from "./previews/badge-stamp";
-import { ShapeMorphPreview } from "./previews/shape-morph";
-import { BlobMorphPreview } from "./previews/blob-morph";
-import { DashedPathTravelPreview } from "./previews/dashed-path-travel";
-import { ConnectorLinesPreview } from "./previews/connector-lines";
-import { SvgMaskRevealPreview } from "./previews/svg-mask-reveal";
-import { MapHeatOverlayPreview } from "./previews/map-heat-overlay";
-import { GlobeArcPreview } from "./previews/globe-arc";
-import { MultiDeviceLineupPreview } from "./previews/multi-device-lineup";
-
 type AtlasMiniPreviewProps = {
   slug: string;
   lane: AtlasLane;
@@ -214,221 +16,242 @@ type AtlasMiniPreviewProps = {
    * compositions are not burning frames.
    */
   playWhenVisible?: boolean;
+  /**
+   * When the live Player mounts. "near": as the card nears the viewport.
+   * "hover": the poster stays until the card is hovered (grids of cards).
+   */
+  mountOn?: "near" | "hover";
   aspectRatio?: "16 / 9" | "9 / 16";
 };
 
-const PREVIEWS: Record<string, React.ComponentType> = {
-  "animated-bar-chart": AnimatedBarChartPreview,
-  "audio-pulse": AudioPulsePreview,
-  "audiogram-bars": AudiogramBarsPreview,
-  "audiogram-scene": AudiogramScenePreview,
-  "auto-fit-title": AutoFitTitlePreview,
-  "b-roll-stack": BRollStackPreview,
-  "blur-in": BlurInPreview,
-  "callout-spotlight": CalloutSpotlightPreview,
-  "caption-bumper": CaptionBumperPreview,
-  "caption-highlight": CaptionHighlightPreview,
-  "caption-scene": CaptionScenePreview,
-  "chat-to-preview": ChatToPreviewPreview,
-  "claude-chat": ClaudeChatPreview,
-  "chat-gpt": ChatGptPreview,
-  v0: V0ComposerPreview,
-  "claude-code": ClaudeCodePreview,
-  opencode: OpencodePreview,
-  "code-accordion": CodeAccordionPreview,
-  "code-diff-wipe": CodeDiffWipePreview,
-  "code-reveal": CodeRevealPreview,
-  "comment-callout": CommentCalloutPreview,
-  counter: CounterPreview,
-  "creator-reel": CreatorReelPreview,
-  "cursor-path": CursorPathPreview,
-  "data-flow-pipes": DataFlowPipesPreview,
-  "data-story": DataStoryPreview,
-  "drag-drop-flow": DragDropFlowPreview,
-  "end-card": EndCardPreview,
-  "fade-in": FadeInPreview,
-  "fade-out": FadeOutPreview,
-  "feature-list": FeatureListPreview,
-  "hero-loop": HeroLoopPreview,
-  "hero-device-assemble": HeroDeviceAssemblePreview,
-  "ecosystem-orbit": EcosystemOrbitPreview,
-  "bento-pan": BentoPanPreview,
-  "browser-flow": BrowserFlowPreview,
-  "ai-generation-canvas": AiGenerationCanvasPreview,
-  "ai-composer-showcase": AiComposerShowcasePreview,
-  "live-code-split": LiveCodeSplitPreview,
-  "deploy-reveal": DeployRevealPreview,
-  "dashboard-populate": DashboardPopulatePreview,
-  "pricing-focus": PricingFocusPreview,
-  "landing-code-showcase": LandingCodeShowcasePreview,
-  "tool-menu-slide": ToolMenuSlidePreview,
-  "image-expand": ImageExpandPreview,
-  "hook-card": HookCardPreview,
-  intro: IntroPreview,
-  "karaoke-captions": KaraokeCaptionsPreview,
-  "line-chart-draw": LineChartDrawPreview,
-  "logo-reveal": LogoRevealPreview,
-  "lower-third": LowerThirdPreview,
-  "map-canvas": MapCanvasPreview,
-  "map-flight": MapFlightPreview,
-  "map-markers": MapMarkersPreview,
-  "map-route": MapRoutePreview,
-  "media-frame": MediaFramePreview,
-  "media-sequence": MediaSequencePreview,
-  "metric-ticker": MetricTickerPreview,
-  "path-draw": PathDrawPreview,
-  "podcast-clip": PodcastClipPreview,
-  "progress-bar": ProgressBarPreview,
-  "quote-card": QuoteCardPreview,
-  "rotate-in": RotateInPreview,
-  "scale-in": ScaleInPreview,
-  showcase: ShowcasePreview,
-  "slide-left": SlideLeftPreview,
-  "slide-up": SlideUpPreview,
-  "social-clip": SocialClipPreview,
-  "split-screen": SplitScreenPreview,
-  "split-text-chars": SplitTextCharsPreview,
-  "audio-reactive-scale": AudioReactiveScalePreview,
-  "srt-caption-track": SrtCaptionTrackPreview,
-  "spring-in": SpringInPreview,
-  "stagger-children": StaggerChildrenPreview,
-  "stat-card": StatCardPreview,
-  "terminal-simulator": TerminalSimulatorPreview,
-  "timeline-steps": TimelineStepsPreview,
-  "title-card": TitleCardPreview,
-  "talking-head-layout": TalkingHeadLayoutPreview,
-  "transition-clock-wipe": TransitionClockWipePreview,
-  "transition-fade": TransitionFadePreview,
-  "transition-light-leak": TransitionLightLeakPreview,
-  "transition-slide": TransitionSlidePreview,
-  "transition-wipe": TransitionWipePreview,
-  "blur-reveal": TransitionBlurRevealPreview,
-  "chromatic-aberration-wipe": TransitionChromaticAberrationWipePreview,
-  "confetti-burst": ConfettiBurstPreview,
-  "device-mockup-zoom": DeviceMockupZoomPreview,
-  "directional-wipe": TransitionDirectionalWipePreview,
-  "dynamic-grid": DynamicGridPreview,
-  "grid-pixelate-wipe": TransitionGridPixelateWipePreview,
-  "frosted-glass-wipe": TransitionFrostedGlassWipePreview,
-  "transition-circle-reveal": TransitionCircleRevealPreview,
-  "transition-card-flip": TransitionCardFlipPreview,
-  "transition-blinds": TransitionBlindsPreview,
-  "transition-whip-pan": TransitionWhipPanPreview,
-  "transition-morph-shape": TransitionMorphShapePreview,
-  "transition-liquid-warp": TransitionLiquidWarpPreview,
-  "mesh-gradient-bg": MeshGradientBgPreview,
-  "simulated-cursor": SimulatedCursorPreview,
-  "spatial-push": TransitionSpatialPushPreview,
-  "zoom-through": TransitionZoomThroughPreview,
-  "tutorial-clip": TutorialClipPreview,
-  typewriter: TypewriterPreview,
-  "waveform-line": WaveformLinePreview,
-  "marker-highlight": MarkerHighlightPreview,
-  "zoom-pan-frame": ZoomPanFramePreview,
-  "skew-in": SkewInPreview,
-  "scramble-text": ScrambleTextPreview,
-  "text-mask-video": TextMaskVideoPreview,
-  "handwriting-text": HandwritingTextPreview,
-  "stroke-to-fill-text": StrokeToFillTextPreview,
-  "variable-font-morph": VariableFontMorphPreview,
-  "liquid-text-morph": LiquidTextMorphPreview,
-  "wave-text": WaveTextPreview,
-  "neon-flicker-text": NeonFlickerTextPreview,
-  "aurora-bg": AuroraBgPreview,
-  "particle-field": ParticleFieldPreview,
-  "topographic-lines-bg": TopographicLinesBgPreview,
-  "caustics-bg": CausticsBgPreview,
-  "animated-noise-grain": AnimatedNoiseGrainPreview,
-  "light-rays": LightRaysPreview,
-  "parallax-layers": ParallaxLayersPreview,
-  "shake-emphasis": ShakeEmphasisPreview,
-  "glow-pulse": GlowPulsePreview,
-  "motion-trail": MotionTrailPreview,
-  "squash-stretch": SquashStretchPreview,
-  "orbit-motion": OrbitMotionPreview,
-  "depth-of-field-blur": DepthOfFieldBlurPreview,
-  "scanline-crt": ScanlineCrtPreview,
-  "bar-chart-race": BarChartRacePreview,
-  "donut-chart": DonutChartPreview,
-  "pie-slice-reveal": PieSliceRevealPreview,
-  "scatter-plot-pop": ScatterPlotPopPreview,
-  "bubble-chart-pack": BubbleChartPackPreview,
-  "gauge-dial": GaugeDialPreview,
-  "sparkline-row": SparklineRowPreview,
-  "heatmap-grid": HeatmapGridPreview,
-  "comparison-bars": ComparisonBarsPreview,
-  "funnel-chart": FunnelChartPreview,
-  "radar-chart": RadarChartPreview,
-  "treemap-blocks": TreemapBlocksPreview,
-  "waterfall-chart": WaterfallChartPreview,
-  "stacked-area-chart": StackedAreaChartPreview,
-  "candlestick-chart": CandlestickChartPreview,
-  "gantt-timeline": GanttTimelinePreview,
-  "word-pop-captions": WordPopCaptionsPreview,
-  "caption-emoji-beat": CaptionEmojiBeatPreview,
-  "speaker-label-captions": SpeakerLabelCaptionsPreview,
-  "transcript-scroll": TranscriptScrollPreview,
-  "subtitle-translate": SubtitleTranslatePreview,
-  "waveform-bars-radial": WaveformBarsRadialPreview,
-  "vu-meter": VuMeterPreview,
-  "voice-note-bubble": VoiceNoteBubblePreview,
-  "beat-pulse-grid": BeatPulseGridPreview,
-  "audio-scrubber": AudioScrubberPreview,
-  "poll-overlay": PollOverlayPreview,
-  "reaction-burst": ReactionBurstPreview,
-  "countdown-timer": CountdownTimerPreview,
-  "sports-scorebug": SportsScorebugPreview,
-  "news-ticker-bar": NewsTickerBarPreview,
-  "form-fill-sequence": FormFillSequencePreview,
-  "notification-stack": NotificationStackPreview,
-  "tab-switch-panel": TabSwitchPanelPreview,
-  "search-results-populate": SearchResultsPopulatePreview,
-  "file-tree-reveal": FileTreeRevealPreview,
-  "kanban-move": KanbanMovePreview,
-  "commit-graph": CommitGraphPreview,
-  "comparison-table": ComparisonTablePreview,
-  "pricing-card": PricingCardPreview,
-  "faq-accordion": FaqAccordionPreview,
-  "team-grid": TeamGridPreview,
-  "logo-wall": LogoWallPreview,
-  "changelog-entry": ChangelogEntryPreview,
-  "roadmap-lanes": RoadmapLanesPreview,
-  "org-chart-build": OrgChartBuildPreview,
-  "quiz-question": QuizQuestionPreview,
-  "weather-card": WeatherCardPreview,
-  "calendar-month-fill": CalendarMonthFillPreview,
-  "arrow-annotate": ArrowAnnotatePreview,
-  "badge-stamp": BadgeStampPreview,
-  "shape-morph": ShapeMorphPreview,
-  "blob-morph": BlobMorphPreview,
-  "dashed-path-travel": DashedPathTravelPreview,
-  "connector-lines": ConnectorLinesPreview,
-  "svg-mask-reveal": SvgMaskRevealPreview,
-  "map-heat-overlay": MapHeatOverlayPreview,
-  "globe-arc": GlobeArcPreview,
-  "multi-device-lineup": MultiDeviceLineupPreview,
-};
+type PreviewLoader = () => Promise<{ default: ComponentType }>;
 
+/**
+ * One loader per slug, so each preview (and the registry component and fonts
+ * it pulls in) is its own chunk. The catalog ships this table, not 167
+ * components; a chunk is fetched only when its card nears the viewport.
+ */
+const PREVIEWS: Record<string, PreviewLoader> = {
+  "animated-bar-chart": () => import("./previews/animated-bar-chart").then((m) => ({ default: m.AnimatedBarChartPreview })),
+  "audio-pulse": () => import("./previews/audio-pulse").then((m) => ({ default: m.AudioPulsePreview })),
+  "audiogram-bars": () => import("./previews/audiogram-bars").then((m) => ({ default: m.AudiogramBarsPreview })),
+  "audiogram-scene": () => import("./previews/audiogram-scene").then((m) => ({ default: m.AudiogramScenePreview })),
+  "auto-fit-title": () => import("./previews/auto-fit-title").then((m) => ({ default: m.AutoFitTitlePreview })),
+  "b-roll-stack": () => import("./previews/b-roll-stack").then((m) => ({ default: m.BRollStackPreview })),
+  "blur-in": () => import("./previews/blur-in").then((m) => ({ default: m.BlurInPreview })),
+  "callout-spotlight": () => import("./previews/callout-spotlight").then((m) => ({ default: m.CalloutSpotlightPreview })),
+  "caption-bumper": () => import("./previews/caption-bumper").then((m) => ({ default: m.CaptionBumperPreview })),
+  "caption-highlight": () => import("./previews/caption-highlight").then((m) => ({ default: m.CaptionHighlightPreview })),
+  "caption-scene": () => import("./previews/caption-scene").then((m) => ({ default: m.CaptionScenePreview })),
+  "chat-to-preview": () => import("./previews/chat-to-preview").then((m) => ({ default: m.ChatToPreviewPreview })),
+  "claude-chat": () => import("./previews/ai-composer-previews").then((m) => ({ default: m.ClaudeChatPreview })),
+  "chat-gpt": () => import("./previews/ai-composer-previews").then((m) => ({ default: m.ChatGptPreview })),
+  v0: () => import("./previews/ai-composer-previews").then((m) => ({ default: m.V0ComposerPreview })),
+  "claude-code": () => import("./previews/ai-composer-previews").then((m) => ({ default: m.ClaudeCodePreview })),
+  opencode: () => import("./previews/ai-composer-previews").then((m) => ({ default: m.OpencodePreview })),
+  "code-accordion": () => import("./previews/code-accordion").then((m) => ({ default: m.CodeAccordionPreview })),
+  "code-diff-wipe": () => import("./previews/code-diff-wipe").then((m) => ({ default: m.CodeDiffWipePreview })),
+  "code-reveal": () => import("./previews/code-reveal").then((m) => ({ default: m.CodeRevealPreview })),
+  "comment-callout": () => import("./previews/comment-callout").then((m) => ({ default: m.CommentCalloutPreview })),
+  counter: () => import("./previews/counter").then((m) => ({ default: m.CounterPreview })),
+  "creator-reel": () => import("./previews/creator-reel").then((m) => ({ default: m.CreatorReelPreview })),
+  "cursor-path": () => import("./previews/cursor-path").then((m) => ({ default: m.CursorPathPreview })),
+  "data-flow-pipes": () => import("./previews/data-flow-pipes").then((m) => ({ default: m.DataFlowPipesPreview })),
+  "data-story": () => import("./previews/data-story").then((m) => ({ default: m.DataStoryPreview })),
+  "drag-drop-flow": () => import("./previews/drag-drop-flow").then((m) => ({ default: m.DragDropFlowPreview })),
+  "end-card": () => import("./previews/end-card").then((m) => ({ default: m.EndCardPreview })),
+  "fade-in": () => import("./previews/fade-in").then((m) => ({ default: m.FadeInPreview })),
+  "fade-out": () => import("./previews/fade-out").then((m) => ({ default: m.FadeOutPreview })),
+  "feature-list": () => import("./previews/feature-list").then((m) => ({ default: m.FeatureListPreview })),
+  "hero-loop": () => import("./previews/hero-loop").then((m) => ({ default: m.HeroLoopPreview })),
+  "hero-device-assemble": () => import("./previews/wave-batch-previews").then((m) => ({ default: m.HeroDeviceAssemblePreview })),
+  "ecosystem-orbit": () => import("./previews/wave-batch-previews").then((m) => ({ default: m.EcosystemOrbitPreview })),
+  "bento-pan": () => import("./previews/wave-batch-previews").then((m) => ({ default: m.BentoPanPreview })),
+  "browser-flow": () => import("./previews/wave-batch-previews").then((m) => ({ default: m.BrowserFlowPreview })),
+  "ai-generation-canvas": () => import("./previews/wave-batch-previews").then((m) => ({ default: m.AiGenerationCanvasPreview })),
+  "ai-composer-showcase": () => import("./previews/wave-batch-previews").then((m) => ({ default: m.AiComposerShowcasePreview })),
+  "live-code-split": () => import("./previews/wave-batch-previews").then((m) => ({ default: m.LiveCodeSplitPreview })),
+  "deploy-reveal": () => import("./previews/wave-batch-previews").then((m) => ({ default: m.DeployRevealPreview })),
+  "dashboard-populate": () => import("./previews/wave-batch-previews").then((m) => ({ default: m.DashboardPopulatePreview })),
+  "pricing-focus": () => import("./previews/wave-batch-previews").then((m) => ({ default: m.PricingFocusPreview })),
+  "landing-code-showcase": () => import("./previews/wave-batch-previews").then((m) => ({ default: m.LandingCodeShowcasePreview })),
+  "tool-menu-slide": () => import("./previews/wave-batch-previews").then((m) => ({ default: m.ToolMenuSlidePreview })),
+  "image-expand": () => import("./previews/wave-batch-previews").then((m) => ({ default: m.ImageExpandPreview })),
+  "hook-card": () => import("./previews/hook-card").then((m) => ({ default: m.HookCardPreview })),
+  intro: () => import("./previews/intro").then((m) => ({ default: m.IntroPreview })),
+  "karaoke-captions": () => import("./previews/karaoke-captions").then((m) => ({ default: m.KaraokeCaptionsPreview })),
+  "line-chart-draw": () => import("./previews/line-chart-draw").then((m) => ({ default: m.LineChartDrawPreview })),
+  "logo-reveal": () => import("./previews/logo-reveal").then((m) => ({ default: m.LogoRevealPreview })),
+  "lower-third": () => import("./previews/lower-third").then((m) => ({ default: m.LowerThirdPreview })),
+  "map-canvas": () => import("./previews/map-primitive-previews").then((m) => ({ default: m.MapCanvasPreview })),
+  "map-flight": () => import("./previews/map-flight").then((m) => ({ default: m.MapFlightPreview })),
+  "map-markers": () => import("./previews/map-primitive-previews").then((m) => ({ default: m.MapMarkersPreview })),
+  "map-route": () => import("./previews/map-primitive-previews").then((m) => ({ default: m.MapRoutePreview })),
+  "media-frame": () => import("./previews/media-frame").then((m) => ({ default: m.MediaFramePreview })),
+  "media-sequence": () => import("./previews/media-sequence").then((m) => ({ default: m.MediaSequencePreview })),
+  "metric-ticker": () => import("./previews/metric-ticker").then((m) => ({ default: m.MetricTickerPreview })),
+  "path-draw": () => import("./previews/path-draw").then((m) => ({ default: m.PathDrawPreview })),
+  "podcast-clip": () => import("./previews/podcast-clip").then((m) => ({ default: m.PodcastClipPreview })),
+  "progress-bar": () => import("./previews/progress-bar").then((m) => ({ default: m.ProgressBarPreview })),
+  "quote-card": () => import("./previews/quote-card").then((m) => ({ default: m.QuoteCardPreview })),
+  "rotate-in": () => import("./previews/rotate-in").then((m) => ({ default: m.RotateInPreview })),
+  "scale-in": () => import("./previews/scale-in").then((m) => ({ default: m.ScaleInPreview })),
+  showcase: () => import("./previews/showcase").then((m) => ({ default: m.ShowcasePreview })),
+  "slide-left": () => import("./previews/slide-left").then((m) => ({ default: m.SlideLeftPreview })),
+  "slide-up": () => import("./previews/slide-up").then((m) => ({ default: m.SlideUpPreview })),
+  "social-clip": () => import("./previews/social-clip").then((m) => ({ default: m.SocialClipPreview })),
+  "split-screen": () => import("./previews/split-screen").then((m) => ({ default: m.SplitScreenPreview })),
+  "split-text-chars": () => import("./previews/split-text-chars").then((m) => ({ default: m.SplitTextCharsPreview })),
+  "audio-reactive-scale": () => import("./previews/audio-reactive-scale").then((m) => ({ default: m.AudioReactiveScalePreview })),
+  "srt-caption-track": () => import("./previews/srt-caption-track").then((m) => ({ default: m.SrtCaptionTrackPreview })),
+  "spring-in": () => import("./previews/spring-in").then((m) => ({ default: m.SpringInPreview })),
+  "stagger-children": () => import("./previews/stagger-children").then((m) => ({ default: m.StaggerChildrenPreview })),
+  "stat-card": () => import("./previews/stat-card").then((m) => ({ default: m.StatCardPreview })),
+  "terminal-simulator": () => import("./previews/terminal-simulator").then((m) => ({ default: m.TerminalSimulatorPreview })),
+  "timeline-steps": () => import("./previews/timeline-steps").then((m) => ({ default: m.TimelineStepsPreview })),
+  "title-card": () => import("./previews/title-card").then((m) => ({ default: m.TitleCardPreview })),
+  "talking-head-layout": () => import("./previews/talking-head-layout").then((m) => ({ default: m.TalkingHeadLayoutPreview })),
+  "transition-clock-wipe": () => import("./previews/transition-previews").then((m) => ({ default: m.TransitionClockWipePreview })),
+  "transition-fade": () => import("./previews/transition-previews").then((m) => ({ default: m.TransitionFadePreview })),
+  "transition-light-leak": () => import("./previews/transition-previews").then((m) => ({ default: m.TransitionLightLeakPreview })),
+  "transition-slide": () => import("./previews/transition-previews").then((m) => ({ default: m.TransitionSlidePreview })),
+  "transition-wipe": () => import("./previews/transition-previews").then((m) => ({ default: m.TransitionWipePreview })),
+  "blur-reveal": () => import("./previews/transition-blur-reveal").then((m) => ({ default: m.TransitionBlurRevealPreview })),
+  "chromatic-aberration-wipe": () => import("./previews/transition-chromatic-aberration-wipe").then((m) => ({ default: m.TransitionChromaticAberrationWipePreview })),
+  "confetti-burst": () => import("./previews/confetti-burst").then((m) => ({ default: m.ConfettiBurstPreview })),
+  "device-mockup-zoom": () => import("./previews/device-mockup-zoom").then((m) => ({ default: m.DeviceMockupZoomPreview })),
+  "directional-wipe": () => import("./previews/transition-directional-wipe").then((m) => ({ default: m.TransitionDirectionalWipePreview })),
+  "dynamic-grid": () => import("./previews/dynamic-grid").then((m) => ({ default: m.DynamicGridPreview })),
+  "grid-pixelate-wipe": () => import("./previews/transition-grid-pixelate-wipe").then((m) => ({ default: m.TransitionGridPixelateWipePreview })),
+  "frosted-glass-wipe": () => import("./previews/transition-frosted-glass-wipe").then((m) => ({ default: m.TransitionFrostedGlassWipePreview })),
+  "transition-circle-reveal": () => import("./previews/transition-circle-reveal").then((m) => ({ default: m.TransitionCircleRevealPreview })),
+  "transition-card-flip": () => import("./previews/transition-card-flip").then((m) => ({ default: m.TransitionCardFlipPreview })),
+  "transition-blinds": () => import("./previews/transition-blinds").then((m) => ({ default: m.TransitionBlindsPreview })),
+  "transition-whip-pan": () => import("./previews/transition-whip-pan").then((m) => ({ default: m.TransitionWhipPanPreview })),
+  "transition-morph-shape": () => import("./previews/transition-morph-shape").then((m) => ({ default: m.TransitionMorphShapePreview })),
+  "transition-liquid-warp": () => import("./previews/transition-liquid-warp").then((m) => ({ default: m.TransitionLiquidWarpPreview })),
+  "mesh-gradient-bg": () => import("./previews/mesh-gradient-bg").then((m) => ({ default: m.MeshGradientBgPreview })),
+  "simulated-cursor": () => import("./previews/simulated-cursor").then((m) => ({ default: m.SimulatedCursorPreview })),
+  "spatial-push": () => import("./previews/transition-spatial-push").then((m) => ({ default: m.TransitionSpatialPushPreview })),
+  "zoom-through": () => import("./previews/transition-zoom-through").then((m) => ({ default: m.TransitionZoomThroughPreview })),
+  "tutorial-clip": () => import("./previews/tutorial-clip").then((m) => ({ default: m.TutorialClipPreview })),
+  typewriter: () => import("./previews/typewriter").then((m) => ({ default: m.TypewriterPreview })),
+  "blur-focus-in": () => import("./previews/text-effects-previews").then((m) => ({ default: m.BlurFocusInPreview })),
+  "staggered-fade-up": () => import("./previews/text-effects-previews").then((m) => ({ default: m.StaggeredFadeUpPreview })),
+  "masked-slide-reveal": () => import("./previews/text-effects-previews").then((m) => ({ default: m.MaskedSlideRevealPreview })),
+  "tracking-in": () => import("./previews/text-effects-previews").then((m) => ({ default: m.TrackingInPreview })),
+  "light-sweep-text": () => import("./previews/text-effects-previews").then((m) => ({ default: m.LightSweepTextPreview })),
+  "slot-roll": () => import("./previews/text-effects-previews").then((m) => ({ default: m.SlotRollPreview })),
+  "matrix-decode": () => import("./previews/text-effects-previews").then((m) => ({ default: m.MatrixDecodePreview })),
+  "rgb-glitch-text": () => import("./previews/text-effects-previews").then((m) => ({ default: m.RgbGlitchTextPreview })),
+  "infinite-marquee": () => import("./previews/text-effects-previews").then((m) => ({ default: m.InfiniteMarqueePreview })),
+  "perspective-marquee": () => import("./previews/text-effects-previews").then((m) => ({ default: m.PerspectiveMarqueePreview })),
+  "waveform-line": () => import("./previews/waveform-line").then((m) => ({ default: m.WaveformLinePreview })),
+  "marker-highlight": () => import("./previews/marker-highlight").then((m) => ({ default: m.MarkerHighlightPreview })),
+  "zoom-pan-frame": () => import("./previews/zoom-pan-frame").then((m) => ({ default: m.ZoomPanFramePreview })),
+  "skew-in": () => import("./previews/skew-in").then((m) => ({ default: m.SkewInPreview })),
+  "scramble-text": () => import("./previews/scramble-text").then((m) => ({ default: m.ScrambleTextPreview })),
+  "text-mask-video": () => import("./previews/text-mask-video").then((m) => ({ default: m.TextMaskVideoPreview })),
+  "handwriting-text": () => import("./previews/handwriting-text").then((m) => ({ default: m.HandwritingTextPreview })),
+  "stroke-to-fill-text": () => import("./previews/stroke-to-fill-text").then((m) => ({ default: m.StrokeToFillTextPreview })),
+  "variable-font-morph": () => import("./previews/variable-font-morph").then((m) => ({ default: m.VariableFontMorphPreview })),
+  "liquid-text-morph": () => import("./previews/liquid-text-morph").then((m) => ({ default: m.LiquidTextMorphPreview })),
+  "wave-text": () => import("./previews/wave-text").then((m) => ({ default: m.WaveTextPreview })),
+  "neon-flicker-text": () => import("./previews/neon-flicker-text").then((m) => ({ default: m.NeonFlickerTextPreview })),
+  "aurora-bg": () => import("./previews/aurora-bg").then((m) => ({ default: m.AuroraBgPreview })),
+  "particle-field": () => import("./previews/particle-field").then((m) => ({ default: m.ParticleFieldPreview })),
+  "topographic-lines-bg": () => import("./previews/topographic-lines-bg").then((m) => ({ default: m.TopographicLinesBgPreview })),
+  "caustics-bg": () => import("./previews/caustics-bg").then((m) => ({ default: m.CausticsBgPreview })),
+  "animated-noise-grain": () => import("./previews/animated-noise-grain").then((m) => ({ default: m.AnimatedNoiseGrainPreview })),
+  "light-rays": () => import("./previews/light-rays").then((m) => ({ default: m.LightRaysPreview })),
+  "parallax-layers": () => import("./previews/parallax-layers").then((m) => ({ default: m.ParallaxLayersPreview })),
+  "shake-emphasis": () => import("./previews/shake-emphasis").then((m) => ({ default: m.ShakeEmphasisPreview })),
+  "glow-pulse": () => import("./previews/glow-pulse").then((m) => ({ default: m.GlowPulsePreview })),
+  "motion-trail": () => import("./previews/motion-trail").then((m) => ({ default: m.MotionTrailPreview })),
+  "squash-stretch": () => import("./previews/squash-stretch").then((m) => ({ default: m.SquashStretchPreview })),
+  "orbit-motion": () => import("./previews/orbit-motion").then((m) => ({ default: m.OrbitMotionPreview })),
+  "depth-of-field-blur": () => import("./previews/depth-of-field-blur").then((m) => ({ default: m.DepthOfFieldBlurPreview })),
+  "scanline-crt": () => import("./previews/scanline-crt").then((m) => ({ default: m.ScanlineCrtPreview })),
+  "bar-chart-race": () => import("./previews/bar-chart-race").then((m) => ({ default: m.BarChartRacePreview })),
+  "donut-chart": () => import("./previews/donut-chart").then((m) => ({ default: m.DonutChartPreview })),
+  "pie-slice-reveal": () => import("./previews/pie-slice-reveal").then((m) => ({ default: m.PieSliceRevealPreview })),
+  "scatter-plot-pop": () => import("./previews/scatter-plot-pop").then((m) => ({ default: m.ScatterPlotPopPreview })),
+  "bubble-chart-pack": () => import("./previews/bubble-chart-pack").then((m) => ({ default: m.BubbleChartPackPreview })),
+  "gauge-dial": () => import("./previews/gauge-dial").then((m) => ({ default: m.GaugeDialPreview })),
+  "sparkline-row": () => import("./previews/sparkline-row").then((m) => ({ default: m.SparklineRowPreview })),
+  "heatmap-grid": () => import("./previews/heatmap-grid").then((m) => ({ default: m.HeatmapGridPreview })),
+  "comparison-bars": () => import("./previews/comparison-bars").then((m) => ({ default: m.ComparisonBarsPreview })),
+  "funnel-chart": () => import("./previews/funnel-chart").then((m) => ({ default: m.FunnelChartPreview })),
+  "radar-chart": () => import("./previews/radar-chart").then((m) => ({ default: m.RadarChartPreview })),
+  "treemap-blocks": () => import("./previews/treemap-blocks").then((m) => ({ default: m.TreemapBlocksPreview })),
+  "waterfall-chart": () => import("./previews/waterfall-chart").then((m) => ({ default: m.WaterfallChartPreview })),
+  "stacked-area-chart": () => import("./previews/stacked-area-chart").then((m) => ({ default: m.StackedAreaChartPreview })),
+  "candlestick-chart": () => import("./previews/candlestick-chart").then((m) => ({ default: m.CandlestickChartPreview })),
+  "gantt-timeline": () => import("./previews/gantt-timeline").then((m) => ({ default: m.GanttTimelinePreview })),
+  "word-pop-captions": () => import("./previews/word-pop-captions").then((m) => ({ default: m.WordPopCaptionsPreview })),
+  "caption-emoji-beat": () => import("./previews/caption-emoji-beat").then((m) => ({ default: m.CaptionEmojiBeatPreview })),
+  "speaker-label-captions": () => import("./previews/speaker-label-captions").then((m) => ({ default: m.SpeakerLabelCaptionsPreview })),
+  "transcript-scroll": () => import("./previews/transcript-scroll").then((m) => ({ default: m.TranscriptScrollPreview })),
+  "subtitle-translate": () => import("./previews/subtitle-translate").then((m) => ({ default: m.SubtitleTranslatePreview })),
+  "waveform-bars-radial": () => import("./previews/waveform-bars-radial").then((m) => ({ default: m.WaveformBarsRadialPreview })),
+  "vu-meter": () => import("./previews/vu-meter").then((m) => ({ default: m.VuMeterPreview })),
+  "voice-note-bubble": () => import("./previews/voice-note-bubble").then((m) => ({ default: m.VoiceNoteBubblePreview })),
+  "beat-pulse-grid": () => import("./previews/beat-pulse-grid").then((m) => ({ default: m.BeatPulseGridPreview })),
+  "audio-scrubber": () => import("./previews/audio-scrubber").then((m) => ({ default: m.AudioScrubberPreview })),
+  "poll-overlay": () => import("./previews/poll-overlay").then((m) => ({ default: m.PollOverlayPreview })),
+  "reaction-burst": () => import("./previews/reaction-burst").then((m) => ({ default: m.ReactionBurstPreview })),
+  "countdown-timer": () => import("./previews/countdown-timer").then((m) => ({ default: m.CountdownTimerPreview })),
+  "sports-scorebug": () => import("./previews/sports-scorebug").then((m) => ({ default: m.SportsScorebugPreview })),
+  "news-ticker-bar": () => import("./previews/news-ticker-bar").then((m) => ({ default: m.NewsTickerBarPreview })),
+  "form-fill-sequence": () => import("./previews/form-fill-sequence").then((m) => ({ default: m.FormFillSequencePreview })),
+  "notification-stack": () => import("./previews/notification-stack").then((m) => ({ default: m.NotificationStackPreview })),
+  "tab-switch-panel": () => import("./previews/tab-switch-panel").then((m) => ({ default: m.TabSwitchPanelPreview })),
+  "search-results-populate": () => import("./previews/search-results-populate").then((m) => ({ default: m.SearchResultsPopulatePreview })),
+  "file-tree-reveal": () => import("./previews/file-tree-reveal").then((m) => ({ default: m.FileTreeRevealPreview })),
+  "kanban-move": () => import("./previews/kanban-move").then((m) => ({ default: m.KanbanMovePreview })),
+  "commit-graph": () => import("./previews/commit-graph").then((m) => ({ default: m.CommitGraphPreview })),
+  "comparison-table": () => import("./previews/comparison-table").then((m) => ({ default: m.ComparisonTablePreview })),
+  "pricing-card": () => import("./previews/pricing-card").then((m) => ({ default: m.PricingCardPreview })),
+  "faq-accordion": () => import("./previews/faq-accordion").then((m) => ({ default: m.FaqAccordionPreview })),
+  "team-grid": () => import("./previews/team-grid").then((m) => ({ default: m.TeamGridPreview })),
+  "logo-wall": () => import("./previews/logo-wall").then((m) => ({ default: m.LogoWallPreview })),
+  "changelog-entry": () => import("./previews/changelog-entry").then((m) => ({ default: m.ChangelogEntryPreview })),
+  "roadmap-lanes": () => import("./previews/roadmap-lanes").then((m) => ({ default: m.RoadmapLanesPreview })),
+  "org-chart-build": () => import("./previews/org-chart-build").then((m) => ({ default: m.OrgChartBuildPreview })),
+  "quiz-question": () => import("./previews/quiz-question").then((m) => ({ default: m.QuizQuestionPreview })),
+  "weather-card": () => import("./previews/weather-card").then((m) => ({ default: m.WeatherCardPreview })),
+  "calendar-month-fill": () => import("./previews/calendar-month-fill").then((m) => ({ default: m.CalendarMonthFillPreview })),
+  "arrow-annotate": () => import("./previews/arrow-annotate").then((m) => ({ default: m.ArrowAnnotatePreview })),
+  "badge-stamp": () => import("./previews/badge-stamp").then((m) => ({ default: m.BadgeStampPreview })),
+  "shape-morph": () => import("./previews/shape-morph").then((m) => ({ default: m.ShapeMorphPreview })),
+  "blob-morph": () => import("./previews/blob-morph").then((m) => ({ default: m.BlobMorphPreview })),
+  "dashed-path-travel": () => import("./previews/dashed-path-travel").then((m) => ({ default: m.DashedPathTravelPreview })),
+  "connector-lines": () => import("./previews/connector-lines").then((m) => ({ default: m.ConnectorLinesPreview })),
+  "svg-mask-reveal": () => import("./previews/svg-mask-reveal").then((m) => ({ default: m.SvgMaskRevealPreview })),
+  "map-heat-overlay": () => import("./previews/map-heat-overlay").then((m) => ({ default: m.MapHeatOverlayPreview })),
+  "globe-arc": () => import("./previews/globe-arc").then((m) => ({ default: m.GlobeArcPreview })),
+  "multi-device-lineup": () => import("./previews/multi-device-lineup").then((m) => ({ default: m.MultiDeviceLineupPreview })),
+};
 
 export function AtlasMiniPreview({
   slug,
   lane,
   scrubOnHover = false,
-  playWhenVisible = false,
+  mountOn = "near",
   aspectRatio,
 }: AtlasMiniPreviewProps) {
-  const component = PREVIEWS[slug];
+  const loader = PREVIEWS[slug];
 
-  if (!component) {
+  if (!loader) {
     return <DesignedFallback slug={slug} lane={lane} aspectRatio={aspectRatio} />;
   }
 
   return (
     <LivePreview
       slug={slug}
-      component={component}
+      loader={loader}
       scrubOnHover={scrubOnHover}
-      playWhenVisible={playWhenVisible}
+      mountOn={mountOn}
       aspectRatio={aspectRatio}
     />
   );
@@ -436,15 +259,15 @@ export function AtlasMiniPreview({
 
 function LivePreview({
   slug,
-  component,
+  loader,
   scrubOnHover,
-  playWhenVisible = false,
+  mountOn,
   aspectRatio: aspectRatioProp,
 }: {
   slug: string;
-  component: React.ComponentType;
+  loader: PreviewLoader;
   scrubOnHover: boolean;
-  playWhenVisible?: boolean;
+  mountOn: "near" | "hover";
   aspectRatio?: "16 / 9" | "9 / 16";
 }) {
   const playerRef = useRef<PlayerRef>(null);
@@ -453,44 +276,35 @@ function LivePreview({
   const aspectRatio =
     aspectRatioProp ?? (height > width ? "9 / 16" : "16 / 9");
 
-  // Some previews (audiogram, waveform, …) read browser-only audio data
-  // synchronously on their first client render, which never matches the
-  // server's placeholder markup. Deferring the Player to a post-mount
-  // effect keeps it out of SSR output entirely, so there's nothing for
-  // hydration to mismatch against.
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  // The Player only exists while the card is near the viewport. It starts
+  // false on the server and the first client render, which also keeps
+  // browser-only previews (audiogram, waveform, …) out of SSR markup, so
+  // hydration has nothing to mismatch against.
+  const [near, setNear] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const [posterFailed, setPosterFailed] = useState(false);
+  // Hover-mounted cards show only their poster until pointed at; a card whose
+  // poster is missing falls back to mounting when near, so it is never blank.
+  const live = near && (mountOn === "near" || posterFailed || hovered);
 
   useEffect(() => {
-    const player = playerRef.current;
-    if (!player) return;
-    player.setVolume(0);
-
-    if (!playWhenVisible) {
-      const id = window.requestAnimationFrame(() => player.play());
-      return () => window.cancelAnimationFrame(id);
-    }
-
     const target = containerRef.current;
     if (!target) return;
-
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        const current = playerRef.current;
-        if (!current) return;
-        if (entry.isIntersecting) {
-          current.play();
-        } else {
-          current.pause();
-        }
-      },
+      ([entry]) => setNear(entry.isIntersecting),
       { rootMargin: "200px 0px", threshold: 0 },
     );
     observer.observe(target);
     return () => observer.disconnect();
-  }, [playWhenVisible]);
+  }, []);
+
+  useEffect(() => {
+    const player = playerRef.current;
+    if (!live || !player) return;
+    player.setVolume(0);
+    const id = window.requestAnimationFrame(() => player.play());
+    return () => window.cancelAnimationFrame(id);
+  }, [live]);
 
   const handleScrub = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
@@ -508,23 +322,47 @@ function LivePreview({
   );
 
   const handleLeave = useCallback(() => {
+    setHovered(false);
     if (!scrubOnHover || !playerRef.current) return;
     playerRef.current.seekTo(0);
     playerRef.current.play();
   }, [scrubOnHover]);
 
+  // Still frame shown before the Player mounts and while its chunk loads.
+  // alt="" means a missing file renders nothing, and onError drops the element
+  // so it is not requested again on remount.
+  const poster = posterFailed ? null : (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={`/previews/${slug}.webp`}
+      alt=""
+      loading="lazy"
+      decoding="async"
+      width={width}
+      height={height}
+      onError={() => setPosterFailed(true)}
+      className="block size-full object-contain"
+    />
+  );
+
   return (
+    // The stage is decorative: preview text (title cards render <h1>) must not
+    // reach the accessibility tree as page headings.
     <div
       ref={containerRef}
+      aria-hidden
+      data-mini-stage
       className="relative w-full overflow-hidden bg-[var(--bay-stage)]"
       style={{ aspectRatio }}
+      onMouseEnter={() => setHovered(true)}
       onMouseMove={scrubOnHover ? handleScrub : undefined}
-      onMouseLeave={scrubOnHover ? handleLeave : undefined}
+      onMouseLeave={handleLeave}
     >
-      {mounted ? (
+      {live ? (
         <Player
           ref={playerRef}
-          component={component}
+          lazyComponent={loader}
+          renderLoading={() => poster}
           durationInFrames={duration}
           fps={30}
           compositionWidth={width}
@@ -532,13 +370,15 @@ function LivePreview({
           style={{ width: "100%", height: "100%", display: "block" }}
           controls={false}
           loop
-          autoPlay={!playWhenVisible}
+          autoPlay
           clickToPlay={false}
           initiallyMuted
           showPosterWhenUnplayed={false}
           acknowledgeRemotionLicense
         />
-      ) : null}
+      ) : (
+        poster
+      )}
     </div>
   );
 }

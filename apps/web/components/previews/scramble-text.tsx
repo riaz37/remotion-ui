@@ -1,6 +1,6 @@
 "use client";
 
-import { ScrambleText } from "../registry-exports";
+import { ScrambleText } from "../../registry/bases/default/primitives/scramble-text";
 import { PreviewFrame } from "./preview-frame";
 
 /**

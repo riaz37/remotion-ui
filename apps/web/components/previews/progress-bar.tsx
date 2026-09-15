@@ -1,7 +1,7 @@
 "use client";
 
 import { Easing } from "remotion";
-import { ProgressBar } from "../registry-exports";
+import { ProgressBar } from "../../registry/bases/default/primitives/progress-bar";
 import { DEMO_COPY, DEMO_PALETTE } from "@/lib/demo-assets";
 import { PreviewFrame } from "./preview-frame";
 import { usePreviewStage } from "./preview-stage";

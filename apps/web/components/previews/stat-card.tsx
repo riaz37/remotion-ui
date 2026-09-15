@@ -1,6 +1,6 @@
 "use client";
 
-import { StatCard } from "../registry-exports";
+import { StatCard } from "../../registry/bases/default/scenes/stat-card";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 // A four-figure value against a `max`, so the roll has enough states to be

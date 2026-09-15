@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarMonthFill } from "../registry-exports";
+import { CalendarMonthFill } from "../../registry/bases/default/scenes/calendar-month-fill";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**

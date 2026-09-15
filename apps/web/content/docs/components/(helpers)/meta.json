@@ -1,0 +1,11 @@
+{
+  "title": "Helpers",
+  "pagesIndex": "helpers",
+  "defaultOpen": false,
+  "pages": [
+    "layout",
+    "springs",
+    "timing",
+    "use-stagger"
+  ]
+}

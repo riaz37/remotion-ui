@@ -1,6 +1,6 @@
 "use client";
 
-import { EndCard } from "../registry-exports";
+import { EndCard } from "../../registry/bases/default/scenes/end-card";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 

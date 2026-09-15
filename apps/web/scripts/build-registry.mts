@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { componentReference } from "../lib/component-reference.ts";
-import { ATLAS_LANES, REGISTRY_ATLAS, TAG_GROUPS } from "../registry/atlas.ts";
+import { REGISTRY_ATLAS } from "../registry/atlas.ts";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const appRoot = path.resolve(__dirname, "..");
@@ -10,17 +10,6 @@ const registryJsonPath = path.join(appRoot, "registry.json");
 const outputDir = path.join(appRoot, "public", "r", "presets", "default");
 const siteUrl = "https://remotionui.com";
 const docsComponentsDir = path.join(appRoot, "content", "docs", "components");
-const componentsMetaPath = path.join(docsComponentsDir, "meta.json");
-
-const LANE_ORDER = [
-  "atoms",
-  "signals",
-  "vectors",
-  "spatial",
-  "blocks",
-  "cuts",
-  "reels",
-] as const;
 
 const LIBRARY_SLUGS = new Set(["timing", "springs", "layout", "use-stagger"]);
 
@@ -108,20 +97,6 @@ function assertCategoryAlignment(registry: Registry): void {
   }
 }
 
-function slugsForLaneTag(
-  laneSlugs: string[],
-  tag: string,
-  assigned: Set<string>,
-): string[] {
-  return laneSlugs
-    .filter(
-      (slug) =>
-        !assigned.has(slug) &&
-        REGISTRY_ATLAS[slug]?.tags?.includes(tag),
-    )
-    .sort();
-}
-
 type RegistryFile = {
   path: string;
   type: string;
@@ -155,138 +130,6 @@ type Registry = {
   homepage?: string;
   items: RegistryItem[];
 };
-
-const heroLoopPath = path.join(
-  appRoot,
-  "registry",
-  "bases",
-  "default",
-  "compositions",
-  "hero-loop",
-  "index.tsx",
-);
-
-/** Cards the hero shows, in order, when they still exist in the registry. */
-const HERO_LOOP_CURATED = [
-  "social-clip",
-  "caption-scene",
-  "typewriter",
-  "audiogram-bars",
-  "lower-third",
-  "path-draw",
-  "metric-ticker",
-  "transition-wipe",
-  "data-story",
-  "karaoke-captions",
-  "code-reveal",
-  "logo-reveal",
-] as const;
-
-/** The grid is 4 × 3 at wide crops and 2 × 6 at narrow ones. */
-const HERO_LOOP_CARD_COUNT = 12;
-
-const COMPONENT_CATEGORIES = new Set<DerivedCategory>([
-  "primitive",
-  "scene",
-  "composition",
-]);
-
-type HeroLoopCard = { name: string; kind: DerivedCategory; lane: string };
-
-/**
- * The hero states two facts about the registry — how many components there are
- * and twelve of their names. Both are generated here so a rename or an added
- * component can never leave a stale claim on the landing page.
- *
- * A curated name that has disappeared is dropped rather than fatal: the deck is
- * topped up from the registry, round-robin across lanes so the stripes stay
- * varied. A missing card is a cosmetic loss, not a reason to fail a deploy.
- */
-function heroLoopCards(registry: Registry): HeroLoopCard[] {
-  const byName = new Map<string, HeroLoopCard>();
-
-  for (const item of registry.items) {
-    const kind = deriveCategory(item);
-    const lane = REGISTRY_ATLAS[item.name]?.lane;
-    if (!kind || !COMPONENT_CATEGORIES.has(kind) || !lane) continue;
-    byName.set(item.name, { name: item.name, kind, lane });
-  }
-
-  const picked: HeroLoopCard[] = [];
-  const taken = new Set<string>();
-
-  for (const name of HERO_LOOP_CURATED) {
-    const card = byName.get(name);
-    if (!card || picked.length >= HERO_LOOP_CARD_COUNT) continue;
-    picked.push(card);
-    taken.add(name);
-  }
-
-  const remainingByLane = LANE_ORDER.map((lane) =>
-    [...byName.values()]
-      .filter((card) => card.lane === lane && !taken.has(card.name))
-      .sort((a, b) => a.name.localeCompare(b.name)),
-  );
-
-  for (let round = 0; picked.length < HERO_LOOP_CARD_COUNT; round++) {
-    const slice = remainingByLane.map((lane) => lane[round]).filter(Boolean);
-    if (slice.length === 0) break;
-
-    for (const card of slice) {
-      if (picked.length >= HERO_LOOP_CARD_COUNT) break;
-      picked.push(card);
-      taken.add(card.name);
-    }
-  }
-
-  return picked;
-}
-
-async function syncHeroLoopFacts(registry: Registry): Promise<void> {
-  const count = registry.items.filter((item) => {
-    const category = deriveCategory(item);
-    return category !== undefined && COMPONENT_CATEGORIES.has(category);
-  }).length;
-
-  const cards = heroLoopCards(registry);
-  if (cards.length < HERO_LOOP_CARD_COUNT) {
-    throw new Error(
-      `hero-loop needs ${HERO_LOOP_CARD_COUNT} catalog cards, resolved ${cards.length}`,
-    );
-  }
-
-  const block = [
-    "// #region generated:registry-facts",
-    `const REGISTRY_COUNT = ${count};`,
-    "",
-    "const CATALOG_ITEMS = [",
-    ...cards.map(
-      (card) =>
-        `  { name: "${card.name}", kind: "${card.kind}", stripe: LANE.${card.lane} },`,
-    ),
-    "] as const;",
-    "// #endregion generated:registry-facts",
-  ].join("\n");
-
-  const source = await fs.readFile(heroLoopPath, "utf-8");
-  const region =
-    /\/\/ #region generated:registry-facts[\s\S]*?\/\/ #endregion generated:registry-facts/;
-
-  if (!region.test(source)) {
-    throw new Error(
-      "hero-loop is missing its generated:registry-facts region — see scripts/build-registry.mts",
-    );
-  }
-
-  const next = source.replace(region, block);
-  if (next === source) {
-    console.log(`  ✓ hero-loop registry facts current (${count} components)`);
-    return;
-  }
-
-  await fs.writeFile(heroLoopPath, next, "utf-8");
-  console.log(`  ✓ hero-loop registry facts regenerated (${count} components)`);
-}
 
 async function readFileContent(relativePath: string): Promise<string | null> {
   const absolutePath = path.join(appRoot, relativePath);
@@ -450,135 +293,55 @@ Remotion is the framework. RemotionUI is the component registry: production-read
   console.log(`AI files built: public/ai/`);
 }
 
-async function writeLlmsTxt(registry: Registry): Promise<void> {
-  const compositions = registry.items
-    .filter((item) => item.type === "registry:block" && item.files[0]?.path.includes("/compositions/"))
-    .map((item) => item.name);
+/**
+ * The sidebar is hand-curated: components live in category folder groups,
+ * `content/docs/components/(<category>)/`, each with a meta.json. This only
+ * checks the tree against the registry; it never writes meta.json.
+ */
+async function assertComponentDocs(registry: Registry): Promise<void> {
+  const entries = await fs.readdir(docsComponentsDir, { withFileTypes: true });
+  const errors: string[] = [];
 
-  const compositionLines = compositions
-    .slice(0, 12)
-    .map((name) => `- ${name}`)
-    .join("\n");
-
-  const llmsTxt = `# RemotionUI
-
-> Production-ready motion for Remotion. Source you own. The npm package is a CLI; components install as editable source in the user's project.
-
-## Canonical URLs
-
-- Site: ${siteUrl}
-- Docs: ${siteUrl}/docs
-- Component catalog: ${siteUrl}/docs/components
-- AI guide: ${siteUrl}/docs/ai
-- Full LLM guide: ${siteUrl}/llms-full.txt
-- Component index: ${siteUrl}/ai/components.json
-- Agent prompt: ${siteUrl}/ai/remotionui-agent.md
-- Registry: ${siteUrl}/r/index.json
-
-## Use RemotionUI for
-
-- Animated captions and social clips
-- Counters, metrics, charts, and data stories
-- Lower thirds, title cards, quote cards, and callouts
-- Audio visualizers and podcast clips
-- Transitions, intros, showcases, and reel templates
-
-## Flagship compositions
-
-${compositionLines}
-
-## CLI
-
-\`\`\`bash
-npx remotion-ui@latest init my-video
-cd my-video
-npx remotion-ui@latest search -q caption
-npx remotion-ui@latest add social-clip caption-highlight lower-third
-\`\`\`
-
-Every command supports \`--json\` for structured output. An MCP server (\`remotion-ui-mcp\`) and an installable Claude Code skill (\`remotion-ui init --agent-skill\`) are also available — see ${siteUrl}/docs/ai.
-
-## Agent rules
-
-- Use Remotion docs for framework fundamentals: https://www.remotion.dev/docs
-- Use RemotionUI for source-installed components.
-- Run \`npx remotion-ui@latest add <component>\` before importing.
-- Import from local source paths, not from \`remotion-ui\`.
-- Animate with Remotion frame APIs, not CSS transitions.
-`;
-
-  await fs.writeFile(path.join(appRoot, "public", "llms.txt"), llmsTxt, "utf-8");
-  console.log("llms.txt generated: public/llms.txt");
-}
-
-async function buildComponentsMeta(registry: Registry): Promise<void> {
-  const entries = await fs.readdir(docsComponentsDir);
-  const mdxSlugs = entries
-    .filter(
-      (file) => file.endsWith(".mdx") && file !== "browse.mdx",
-    )
-    .map((file) => file.replace(/\.mdx$/, ""))
-    .sort();
+  const loose = entries
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".mdx"))
+    .map((entry) => entry.name)
+    .filter((name) => name !== "browse.mdx");
+  if (loose.length > 0) {
+    errors.push(`MDX outside a category group: ${loose.join(", ")}`);
+  }
 
   const registryNames = new Set(registry.items.map((item) => item.name));
-  const orphans = mdxSlugs.filter((slug) => !registryNames.has(slug));
-  if (orphans.length > 0) {
-    throw new Error(
-      `Component MDX without registry entry: ${orphans.join(", ")}`,
-    );
-  }
+  let count = 0;
 
-  const pages: string[] = [];
+  for (const entry of entries) {
+    const group = /^\((.+)\)$/.exec(entry.name)?.[1];
+    if (!entry.isDirectory() || !group) continue;
 
-  for (const lane of LANE_ORDER) {
-    const laneSlugs = mdxSlugs
-      .filter(
-        (slug) =>
-          !LIBRARY_SLUGS.has(slug) && REGISTRY_ATLAS[slug]?.lane === lane,
-      )
-      .sort();
+    const dir = path.join(docsComponentsDir, entry.name);
+    const meta = JSON.parse(
+      await fs.readFile(path.join(dir, "meta.json"), "utf-8"),
+    ) as { pages?: string[] };
+    const listed = new Set(meta.pages ?? []);
+    const slugs = (await fs.readdir(dir))
+      .filter((file) => file.endsWith(".mdx"))
+      .map((file) => file.replace(/\.mdx$/, ""))
+      .filter((slug) => slug !== group);
 
-    if (laneSlugs.length === 0) continue;
-
-    pages.push(`---${ATLAS_LANES[lane].label}---`);
-
-    const assigned = new Set<string>();
-    const tagGroups = TAG_GROUPS[lane] ?? [];
-
-    for (const group of tagGroups) {
-      const matching = slugsForLaneTag(laneSlugs, group.tag, assigned);
-      const min = group.minItems ?? 3;
-      if (matching.length < min) continue;
-
-      pages.push(`---${group.label}---`);
-      pages.push(...matching);
-      for (const slug of matching) assigned.add(slug);
+    for (const slug of slugs) {
+      count += 1;
+      if (!registryNames.has(slug)) {
+        errors.push(`${entry.name}/${slug}.mdx has no registry entry`);
+      }
+      if (!listed.has(slug)) {
+        errors.push(`${entry.name}/${slug}.mdx is missing from its meta.json`);
+      }
     }
-
-    const remaining = laneSlugs.filter((slug) => !assigned.has(slug));
-    pages.push(...remaining);
   }
 
-  const librarySlugs = mdxSlugs.filter((slug) => LIBRARY_SLUGS.has(slug)).sort();
-  if (librarySlugs.length > 0) {
-    pages.push("---Helpers---");
-    pages.push(...librarySlugs);
+  if (errors.length > 0) {
+    throw new Error(`Component docs out of sync:\n${errors.join("\n")}`);
   }
-
-  const inMeta = new Set(pages.filter((entry) => !entry.startsWith("---")));
-  const missingFromMeta = mdxSlugs.filter((slug) => !inMeta.has(slug));
-  if (missingFromMeta.length > 0) {
-    throw new Error(
-      `Component MDX not assigned to sidebar meta: ${missingFromMeta.join(", ")}`,
-    );
-  }
-
-  await writeJson(componentsMetaPath, {
-    title: "Components",
-    pagesIndex: "browse",
-    pages,
-  });
-  console.log(`  ✓ components/meta.json (${mdxSlugs.length} items)`);
+  console.log(`  ✓ component docs (${count} pages in category groups)`);
 }
 
 async function buildRegistry(): Promise<void> {
@@ -589,9 +352,6 @@ async function buildRegistry(): Promise<void> {
 
   await fs.mkdir(outputDir, { recursive: true });
 
-  // Before the copy loop: the generated block has to be in the source that
-  // ships inside hero-loop.json.
-  await syncHeroLoopFacts(registry);
 
   const index: Array<{
     name: string;
@@ -658,10 +418,9 @@ async function buildRegistry(): Promise<void> {
   console.log(`\nRegistry built: ${registry.items.length} item(s)`);
   console.log(`Output: public/r/`);
 
-  await buildComponentsMeta(registry);
+  await assertComponentDocs(registry);
   assertCategoryAlignment(registry);
   await buildAiFiles(registry);
-  await writeLlmsTxt(registry);
 }
 
 buildRegistry().catch((error) => {

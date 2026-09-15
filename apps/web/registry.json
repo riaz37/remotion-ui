@@ -655,21 +655,13 @@
     {
       "name": "hero-loop",
       "type": "registry:block",
-      "description": "12-second seamless-looping website hero composition",
+      "description": "12-second seamless brand ident: the RemotionUI logo animated from its own parts over the site's phosphor light, with a transparent variant",
       "dependencies": [
         "remotion",
         "@remotion/google-fonts"
       ],
       "registryDependencies": [
-        "counter",
-        "fade-in",
-        "slide-up",
-        "spring-in",
-        "stagger-children",
-        "typewriter",
-        "layout",
-        "motion-tokens",
-        "timing"
+        "gpu"
       ],
       "composition": {
         "id": "HeroLoop",

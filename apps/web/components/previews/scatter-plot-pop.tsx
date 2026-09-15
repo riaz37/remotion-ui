@@ -1,6 +1,6 @@
 "use client";
 
-import { ScatterPlotPop } from "../registry-exports";
+import { ScatterPlotPop } from "../../registry/bases/default/primitives/scatter-plot-pop";
 import { PreviewFrame } from "./preview-frame";
 
 /** Deterministic cloud with a real positive correlation and honest spread. */

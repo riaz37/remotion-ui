@@ -1,6 +1,6 @@
 "use client";
 
-import { DynamicGrid } from "../registry-exports";
+import { DynamicGrid } from "../../registry/bases/default/primitives/dynamic-grid";
 import { PreviewFrame } from "./preview-frame";
 import { usePreviewStage } from "./preview-stage";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { FormFillSequence } from "../registry-exports";
+import { FormFillSequence } from "../../registry/bases/default/scenes/form-fill-sequence";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**

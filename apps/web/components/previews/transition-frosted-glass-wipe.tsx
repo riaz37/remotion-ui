@@ -1,6 +1,6 @@
 "use client";
 
-import { transitionFrostedGlassWipe } from "../registry-exports";
+import { transitionFrostedGlassWipe } from "../../registry/bases/default/primitives/frosted-glass-wipe";
 import {
   TRANSITION_FRAMES,
   TransitionSeriesPreview,

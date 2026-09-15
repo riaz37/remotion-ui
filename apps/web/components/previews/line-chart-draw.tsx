@@ -1,7 +1,7 @@
 "use client";
 
 import { AbsoluteFill, useVideoConfig } from "remotion";
-import { LineChartDraw } from "../registry-exports";
+import { LineChartDraw } from "../../registry/bases/default/primitives/line-chart-draw";
 import { DEMO_LINE_POINTS, DEMO_PALETTE } from "@/lib/demo-assets";
 import { scaleFont } from "@/remotion/lib/layout";
 import { PreviewFrame } from "./preview-frame";

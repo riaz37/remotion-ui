@@ -92,7 +92,9 @@ function buildGridMask(
       if (shape === "dot") {
         // The dot grows with its own reveal, so the frame fills in as a field
         // of expanding points rather than a grid of fading squares.
-        const r = (Math.min(cellW, cellH) / 2) * opacity;
+        // Grows to the cell's half-diagonal, so the dots close into a solid
+        // field on the last frames instead of popping from dots to full frame.
+        const r = (Math.hypot(cellW, cellH) / 2) * opacity;
         cells.push(
           `<circle cx="${(col + 0.5) * cellW}" cy="${(row + 0.5) * cellH}" r="${r.toFixed(3)}" fill="white" fill-opacity="${alpha}"/>`,
         );
@@ -134,7 +136,11 @@ const GridPixelateWipePresentation: React.FC<
     // Only the arriving scene is masked. Masking the outgoing one as well
     // would leave both partly transparent mid-cut and show the background
     // through the gaps between cells.
-    if (!phase.isEntering) {
+    // `displace === 0` means untouched. TransitionSeries keeps the
+    // presentation mounted for the scene's whole life, and a `dot` mask at
+    // full size still leaves every cell's corners transparent — so without
+    // this the arriving scene stayed perforated long after the cut landed.
+    if (!phase.isEntering || filled >= 1) {
       return undefined;
     }
 

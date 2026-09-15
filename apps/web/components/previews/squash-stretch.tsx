@@ -1,7 +1,7 @@
 "use client";
 
 import { AbsoluteFill } from "remotion";
-import { SquashStretch } from "../registry-exports";
+import { SquashStretch } from "../../registry/bases/default/primitives/squash-stretch";
 import { PreviewFrame } from "./preview-frame";
 
 const Ball: React.FC = () => (

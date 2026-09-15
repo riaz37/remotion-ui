@@ -1,6 +1,6 @@
 "use client";
 
-import { GanttTimeline } from "../registry-exports";
+import { GanttTimeline } from "../../registry/bases/default/primitives/gantt-timeline";
 import { PreviewFrame } from "./preview-frame";
 
 const COLUMNS = ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"];
