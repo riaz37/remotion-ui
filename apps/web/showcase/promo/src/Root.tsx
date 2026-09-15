@@ -4,6 +4,10 @@ import {
   AnnouncementClip,
 } from "./announcement-clip";
 import {
+  HERO_BEFORE_AFTER_DURATION,
+  HeroBeforeAfter,
+} from "./hero-before-after";
+import {
   REGISTRY_LISTING_CLIP_DURATION,
   RegistryListingClip,
 } from "./registry-listing-clip";
@@ -34,6 +38,22 @@ export const MarketingRoot: React.FC = () => (
       fps={30}
       width={1920}
       height={1080}
+    />
+    <Composition
+      id="HeroBeforeAfter"
+      component={HeroBeforeAfter}
+      durationInFrames={HERO_BEFORE_AFTER_DURATION}
+      fps={30}
+      width={1080}
+      height={1080}
+    />
+    <Composition
+      id="HeroBeforeAfterVertical"
+      component={HeroBeforeAfter}
+      durationInFrames={HERO_BEFORE_AFTER_DURATION}
+      fps={30}
+      width={1080}
+      height={1920}
     />
     <Composition
       id="RegistryListingClip"
