@@ -8,9 +8,7 @@ export const siteConfig = {
   url: "https://remotionui.com",
   githubUrl: "https://github.com/riaz37/remotion-ui",
   npmUrl: "https://www.npmjs.com/package/remotion-ui",
-  docsUrl: "/docs",
-  sponsorsUrl: "https://github.com/sponsors/riaz37",
-} as const;
+  docsUrl: "/docs",} as const;
 
 export const navLinks = [
   { text: "Components", url: "/docs/components", active: "url" as const },

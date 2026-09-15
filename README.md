@@ -83,7 +83,7 @@ Component ideas, bug reports, and PRs are welcome — see [CONTRIBUTING.md](CONT
 
 ## Sponsors
 
-RemotionUI is free and MIT-licensed. [Sponsor on GitHub](https://github.com/sponsors/riaz37), or [take the sponsor slot](https://remotionui.com/sponsor) to put your product on every component page.
+RemotionUI is free and MIT-licensed. [Take the sponsor slot](https://remotionui.com/sponsor) to put your product on every component page.
 
 ## License
 
