@@ -278,15 +278,17 @@ h3 {
 @media (min-width: 1024px) {
   .program-shell {
     /*
-      Rest: half size, flush to the stage's right edge, with its baseline on the
-      copy's. Flush right rather than inset is the affordance: the monitor is
-      already touching one edge of the window, so opening it out to the rest
-      reads as the obvious next move.
+      Rest: centred under the copy and cut off by the stage's bottom edge. The
+      picture rising out of the fold is the affordance: scroll and it comes up
+      to meet you, but most of the picture must already show. --rest-y puts
+      the scaled monitor's top edge at 47% of the stage. The box is 56.25vw
+      tall, so its half-height at rest is scale × 28.125vw, and the stage is
+      100dvh less the 3.5rem header.
     */
-    --rest-scale: 0.5;
-    --rest-x: 25%;
-    --rest-y: -7%;
-    --rest-radius: 12px;
+    --rest-scale: 0.72;
+    --rest-x: 0%;
+    --rest-y: calc(var(--rest-scale) * 28.125vw - 3dvh + 0.105rem);
+    --rest-radius: 16px;
     /*
       Expansion is offset from raw scroll on both ends. It waits out the first
       tenth so the copy has started clearing, and finishes at three quarters so
@@ -315,6 +317,13 @@ h3 {
       scale(calc(var(--rest-scale) + (1 - var(--rest-scale)) * var(--pm)));
     border-radius: calc(var(--rest-radius) * (1 - var(--pm)));
     will-change: transform;
+  }
+
+  /* Wide screens: hold the resting monitor near 1120px instead of 72% of the window. */
+  @media (min-width: 1600px) {
+    .program-shell {
+      --rest-scale: 0.56;
+    }
   }
 
   /*
@@ -358,6 +367,30 @@ h3 {
 @media (prefers-reduced-motion: reduce) {
   .program-runway {
     display: none;
+  }
+}
+
+/*
+  Three masks, intersected, over the phosphor field: a wide vignette so the
+  light never reaches the stage's sides, a vertical fade into the header and
+  the scrub bar, and a dark well behind the copy so the headline is never
+  printed over light.
+*/
+.phosphor-mask {
+  mask-image:
+    radial-gradient(ellipse 95% 80% at 50% 62%, #000 20%, transparent 88%),
+    linear-gradient(to bottom, transparent 0%, #000 22%, #000 90%, transparent 100%),
+    radial-gradient(ellipse 40% 36% at 50% 30%, transparent 48%, #000 100%);
+  mask-composite: intersect;
+}
+
+/* On a phone the copy is most of the stage, so the well tightens to the headline. */
+@media (max-width: 1023px) {
+  .phosphor-mask {
+    mask-image:
+      radial-gradient(ellipse 120% 90% at 50% 60%, #000 30%, transparent 95%),
+      linear-gradient(to bottom, transparent 0%, #000 14%, #000 92%, transparent 100%),
+      radial-gradient(ellipse 46% 16% at 50% 38%, transparent 30%, #000 100%);
   }
 }
 

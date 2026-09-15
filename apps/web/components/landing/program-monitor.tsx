@@ -20,6 +20,7 @@ import {
 import { HeroLoopPreview } from "@/components/previews/hero-loop";
 import { previewMeta } from "@/lib/preview-config";
 import { usePlayerFrameValue } from "@/lib/use-player-frame-value";
+import { PhosphorField } from "./phosphor-field";
 import { ProgramScrubBar } from "./program-scrub-bar";
 
 /** Length and framing come from the docs preview config, not a fourth copy. */
@@ -118,6 +119,17 @@ export function ProgramMonitor({ children }: ProgramMonitorProps) {
       >
         <div className="relative flex min-h-0 flex-col lg:block">
           {/*
+            Light field behind the copy. It reads the same scroll progress as
+            the monitor, so opening the program also brings the lights down.
+          */}
+          <div
+            aria-hidden
+            className="phosphor-mask pointer-events-none absolute inset-0"
+          >
+            <PhosphorField progress={progress} />
+          </div>
+
+          {/*
             The monitor. `bay-stage-scope` is scoped to it alone, so the dark
             picture is an object inside the page's own theme rather than a
             section that inverts the page.
@@ -139,7 +151,7 @@ export function ProgramMonitor({ children }: ProgramMonitorProps) {
                 at `lg` rest is --rest-scale, half the stage. Claiming 100vw at
                 `lg` fetched a source twice the size ever painted.
               */
-              sizes="(min-width: 1024px) 50vw, 100vw"
+              sizes="(min-width: 1024px) 72vw, 100vw"
               className={`object-cover transition-opacity duration-500 ${
                 live ? "opacity-0" : "opacity-100"
               }`}
@@ -169,13 +181,15 @@ export function ProgramMonitor({ children }: ProgramMonitorProps) {
           </div>
 
           <div
-            className={`program-copy relative z-10 flex flex-1 items-center ${
+            className={`program-copy relative z-10 order-first flex flex-1 items-center ${
               copyGone ? "pointer-events-none" : ""
-            } lg:absolute lg:inset-0`}
+            } lg:absolute lg:inset-x-0 lg:top-0 lg:items-start`}
             aria-hidden={copyGone || undefined}
           >
-            <div className="mx-auto w-full max-w-[1280px] px-6 py-8 lg:py-0">
-              <div className="lg:max-w-[34rem]">{children}</div>
+            <div className="mx-auto w-full max-w-[1280px] px-6 py-8 lg:pt-[clamp(2.5rem,9dvh,6rem)] lg:pb-0">
+              <div className="mx-auto max-w-[40rem] text-center">
+                {children}
+              </div>
             </div>
           </div>
         </div>
