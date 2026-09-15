@@ -20,9 +20,7 @@ import {
 } from "react";
 import { HeroLoopPreview } from "@/components/previews/hero-loop";
 import { previewMeta } from "@/lib/preview-config";
-import { usePlayerFrameValue } from "@/lib/use-player-frame-value";
 import { PhosphorField } from "./phosphor-field";
-import { ProgramScrubBar } from "./program-scrub-bar";
 
 /** Length and framing come from the docs preview config, not a fourth copy. */
 const HERO = previewMeta("hero-loop");
@@ -53,8 +51,7 @@ type ProgramMonitorProps = {
  *
  * At rest the loop is an object on the page: a cornered monitor flush to the
  * right edge with the copy beside it. Scrolling opens it out until it is the
- * whole stage, and the copy hands over on the way. The scrub bar stays pinned
- * under both states, because the transport belongs to the program at any size.
+ * whole stage, and the copy hands over on the way.
  *
  * Mechanics worth knowing before editing:
  * - Progress is a MotionValue written to a CSS custom property, never to state.
@@ -67,7 +64,6 @@ type ProgramMonitorProps = {
 export function ProgramMonitor({ children }: ProgramMonitorProps) {
   const playerRef = useRef<PlayerRef>(null);
   const sectionRef = useRef<HTMLElement>(null);
-  const frame = usePlayerFrameValue(playerRef);
   const reduce = useReducedMotion();
 
   const [live, setLive] = useState(false);
@@ -122,9 +118,7 @@ export function ProgramMonitor({ children }: ProgramMonitorProps) {
 
     player.setVolume(0);
 
-    // Reduced motion keeps the composition mounted and parked on OPEN_FRAME, so
-    // the scrub bar still works: the visitor drives the loop instead of it
-    // driving itself.
+    // Reduced motion keeps the composition mounted and parked on OPEN_FRAME.
     const reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
@@ -145,7 +139,7 @@ export function ProgramMonitor({ children }: ProgramMonitorProps) {
     >
       <motion.div
         style={{ "--p": progress } as CSSProperties}
-        className="sticky top-14 grid h-[calc(100dvh-3.5rem)] grid-rows-[1fr_auto] overflow-hidden border-b border-[var(--bay-border)]"
+        className="sticky top-14 grid h-[calc(100dvh-3.5rem)] grid-rows-[1fr] overflow-hidden border-b border-[var(--bay-border)]"
       >
         <div className="relative flex min-h-0 flex-col lg:block">
           {/*
@@ -241,13 +235,6 @@ export function ProgramMonitor({ children }: ProgramMonitorProps) {
             </div>
           </div>
         </div>
-
-        <ProgramScrubBar
-          playerRef={playerRef}
-          frame={frame}
-          durationInFrames={HERO.durationInFrames}
-          fps={HERO.fps}
-        />
       </motion.div>
 
       {/*
