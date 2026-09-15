@@ -1,0 +1,176 @@
+---
+title: When a shader beats CSS in Remotion
+description: We ported four CSS backgrounds to WebGL with Remotion's effects API. Two got better, two got reverted. The rule that sorts them in advance, and the traps that make a broken shader render exit 0.
+date: 2026-09-16
+author: RemotionUI
+tags: ["remotion", "webgl", "shaders", "performance"]
+---
+
+Remotion quietly grew a GPU layer this year. `<Solid>` and `createEffect()`
+landed in 4.0.464, `<HtmlInCanvas>` in 4.0.455, and `@remotion/effects` ships a
+library of ready-made passes you apply through an `effects` prop on `<Solid>`,
+`<Img>`, `<Video>`, and the `@remotion/shapes` components. If your background is
+a stack of CSS gradients under a `blur()`, it's tempting to move all of it to a
+fragment shader.
+
+We tried that on four RemotionUI backgrounds. We kept two ports and reverted the
+other two, one after four iterations. What follows is the rule that would have
+told us which was which before writing any GLSL, plus the traps that cost a
+render each.
+
+## The rule: is `blur()` doing structural work?
+
+Layer count doesn't decide it, and neither does how "graphical" the component
+looks. What decides it is what the CSS is standing in for.
+
+**A shader wins when CSS is faking a per-pixel field.** `mesh-gradient-bg` was
+a few radial gradients blurred together to look like a smooth colour field. A
+fragment shader evaluates that field directly. The port looked better than the
+original and had fewer moving parts.
+
+**A shader wins when `blur()` only softens an edge.** `light-rays` was eleven
+clipped divs under a 13px blur, blended with `screen`. The clip path already
+defined each shaft, and the blur just feathered it. In GLSL a `smoothstep`
+across the wedge boundary does the same feathering, and the whole thing becomes
+one field evaluation instead of eleven blurred layers:
+
+<CodeSnippet
+  label="light-rays — the blur becomes an edge function"
+  code={`float halfWidth = width * (HALF_AT_SOURCE + HALF_GAIN * t);
+float cover = 1.0 - smoothstep(halfWidth - uBlur, halfWidth + uBlur, abs(across));`}
+/>
+
+We rendered both versions and compared frames 12, 45, and 90 side by side. The
+GPU shafts look softer and more volumetric. The CSS ones look like hard streaks.
+
+**A shader loses when the CSS filter pipeline *is* the algorithm.**
+`caustics-bg` layers five wave trains, blurs them, then cranks `contrast()`. The
+blur isn't there to soften anything. It merges neighbouring wave crests into the
+ridges that make the caustic web. Take it out and you get ragged patches. We
+tried to rebuild it with a 12-tap disc average and never closed the gap, so the
+port was reverted.
+
+**A shader loses when the identity is a vector shape.** `aurora-bg` is built
+from tapered SVG paths driven by 13 props, and none of them map cleanly to
+uniforms. We skipped that one without trying.
+
+## The port that changed nothing
+
+The most useful failure was a gradient-heavy device mockup backdrop: three
+stacked gradients plus a masked grid, no blur anywhere. It seemed like the
+strongest candidate because it had so many layers. We ported the whole thing and
+measured the result:
+
+- Pixel colours were identical. The accent pool centre sampled `(55,48,42)` in
+  both versions, and the mid-ramp sampled `(19,23,29)` in both.
+- Banding got slightly *worse*: 46 distinct levels across the ramp against 49
+  for CSS, with a longest flat plateau of 68px against 56px.
+
+The reason is that **output bit depth sets banding, not compositing precision.**
+A shallow ramp that crosses about 1200px with only around 48 available 8-bit
+levels will plateau every 25px or so, whether a browser compositor or a fragment
+shader produces it. Float math in the shader only helps when many layers each
+quantise and the combined result is steep enough to show it. We reverted it.
+
+There's also a cost CSS doesn't pay. Our docs landing page mounts twelve live
+`<Player>`s, and every shader-backed tile takes a WebGL context. A port that
+looks the same isn't free.
+
+## Check `children` before anything else
+
+An effect consumes the frame as a texture. `<Solid>`, `<Img>`, and `<Video>`
+give it one directly. Arbitrary DOM content doesn't, so shading a component that
+wraps `children` means routing it through `<HtmlInCanvas>`.
+
+That changes who can see the result. Rendering is unaffected, since Remotion
+ships its own Chrome build with the flag enabled for `npx remotion render`,
+Lambda, and SSR. But **previewing `<HtmlInCanvas>` needs Chrome 149 or later with
+`chrome://flags/#canvas-draw-element` turned on.** Most visitors to a docs site
+don't have that flag, so a transition built on it won't play for them in a
+`<Player>`. Remotion's docs also mark the API unstable, since Chrome may change
+or remove it.
+
+For us, one grep for `children` ruled out three of the five effect mappings we
+had planned. Overlays like a CRT scanline pass or a noise grain wrap content, so
+they couldn't take a shipped effect without becoming preview-gated.
+
+## Three ways a broken shader renders green
+
+Each of these produces a wrong video from a render that exits 0.
+
+**1. No ANGLE renderer.** Without it, GPU-backed frames come out blank or
+unshaded, and the render reports success. Set it once in the config:
+
+<CodeSnippet
+  label="remotion.config.ts"
+  code={`import { Config } from "@remotion/cli/config";
+
+Config.setChromiumOpenGlRenderer("angle");`}
+/>
+
+Or pass it per render. Use `swangle` on machines with no GPU.
+
+<CommandRail
+  label="Render with ANGLE"
+  command="npx remotion render src/index.ts MyComp out.mp4 --gl=angle"
+/>
+
+**2. A shader that fails to compile.** WebGL doesn't throw on its own. If you
+don't check `COMPILE_STATUS`, you get a black frame and a clean exit. One that cost
+us a render was a variable named `half`, which is a reserved word in GLSL ES.
+Make the failure loud:
+
+<CodeSnippet
+  label="Throw on compile errors"
+  code={`gl.compileShader(shader);
+if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+  throw new Error(\`Shader failed to compile: \${gl.getShaderInfoLog(shader)}\`);
+}`}
+/>
+
+**3. A mirrored image.** For a fullscreen quad, `vUv.y = 0` is the *bottom* of
+the frame, while CSS percentages measure from the top. Position anything from
+DOM coordinates without flipping and the output is upside down. A mirrored
+background still looks plausible, so only a side-by-side comparison with the
+CSS version caught it:
+
+<CodeSnippet
+  label="Flip before using DOM-space coordinates"
+  code={`vec2 uv = vec2(vUv.x, 1.0 - vUv.y);
+vec2 px = uv * uResolution;`}
+/>
+
+## Two smaller notes
+
+**Match the falloff curve, not just the shape.** A CSS radial gradient ramps
+linearly to transparent. Swapping in a `smoothstep` keeps the core near full
+strength for most of the radius. With a bloom 40% of the frame wide, that
+swamped the shafts it was supposed to sit behind. Both of our kept ports needed a
+linear falloff.
+
+**Put the plumbing in one place.** Every `createEffect()` with a `webgl2`
+backend repeats the same work: compile a program, set up a fullscreen quad,
+upload the source texture, draw, and clean up. We wrapped it in a
+`makeShaderEffect({ type, fragmentShader, calculateKey, setUniforms })` helper
+so each component only supplies its shader and uniforms. Keep in mind that
+`calculateKey` is how Remotion tells effect instances apart. Anything that
+changes per frame has to be part of the key.
+
+## The short version
+
+Before porting a CSS background to a shader, ask three questions:
+
+1. Is CSS approximating a per-pixel field, or is `blur()` only feathering edges?
+   Port it.
+2. Is the blur and filter pipeline itself making the look, or is the look a
+   vector shape? Leave it in CSS.
+3. Does it wrap `children`? Then shading it means `<HtmlInCanvas>` and a
+   flag-gated preview.
+
+When you do port, set `--gl=angle`, throw on shader compile errors, flip `vUv.y`,
+and compare rendered frames against the CSS original. A single still won't catch
+any of these.
+
+Both kept ports ship in the registry. Run
+`npx remotion-ui@latest add light-rays` or `add mesh-gradient-bg`, and the CLI
+pulls in the shared GPU helper with them.
