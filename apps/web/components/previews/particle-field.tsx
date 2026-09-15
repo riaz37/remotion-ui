@@ -1,6 +1,6 @@
 "use client";
 
-import { ParticleField } from "../registry-exports";
+import { ParticleField } from "../../registry/bases/default/primitives/particle-field";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, ProductCard } from "./preview-frame";
 

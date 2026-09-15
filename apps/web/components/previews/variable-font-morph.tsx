@@ -1,7 +1,7 @@
 "use client";
 
 import { loadFont } from "@remotion/google-fonts/Inter";
-import { VariableFontMorph } from "../registry-exports";
+import { VariableFontMorph } from "../../registry/bases/default/primitives/variable-font-morph";
 import { PreviewFrame } from "./preview-frame";
 
 /**

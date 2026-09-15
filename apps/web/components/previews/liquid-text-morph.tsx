@@ -1,6 +1,6 @@
 "use client";
 
-import { LiquidTextMorph } from "../registry-exports";
+import { LiquidTextMorph } from "../../registry/bases/default/primitives/liquid-text-morph";
 import { PreviewFrame } from "./preview-frame";
 
 /**

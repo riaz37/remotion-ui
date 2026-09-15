@@ -1,6 +1,6 @@
 "use client";
 
-import { transitionBlurReveal } from "../registry-exports";
+import { transitionBlurReveal } from "../../registry/bases/default/primitives/blur-reveal";
 import {
   TRANSITION_FRAMES,
   TransitionSeriesPreview,

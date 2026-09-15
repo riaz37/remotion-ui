@@ -1,6 +1,6 @@
 "use client";
 
-import { transitionDirectionalWipe } from "../registry-exports";
+import { transitionDirectionalWipe } from "../../registry/bases/default/primitives/directional-wipe";
 import {
   TRANSITION_FRAMES,
   TransitionSeriesPreview,

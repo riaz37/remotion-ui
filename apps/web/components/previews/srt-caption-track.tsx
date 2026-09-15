@@ -1,7 +1,7 @@
 "use client";
 
 import { AbsoluteFill, useVideoConfig } from "remotion";
-import { SrtCaptionTrack } from "../registry-exports";
+import { SrtCaptionTrack } from "../../registry/bases/default/primitives/srt-caption-track";
 import { DEMO_SRT_SRC } from "@/lib/demo-assets";
 import { scaleFont } from "@/remotion/lib/layout";
 import { PreviewFrame } from "./preview-frame";

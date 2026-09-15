@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatedBarChart } from "../registry-exports";
+import { AnimatedBarChart } from "../../registry/bases/default/scenes/animated-bar-chart";
 import { DEMO_BAR_DATA, DEMO_PALETTE } from "@/lib/demo-assets";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { ScaleIn } from "../registry-exports";
+import { ScaleIn } from "../../registry/bases/default/primitives/scale-in";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, PreviewGhostStack, ProductCard } from "./preview-frame";
 

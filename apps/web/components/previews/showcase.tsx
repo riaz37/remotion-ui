@@ -1,6 +1,6 @@
 "use client";
 
-import { Showcase } from "../registry-exports";
+import { Showcase } from "../../registry/bases/default/compositions/showcase";
 import { DEMO_COPY } from "@/lib/demo-assets";
 
 export const ShowcasePreview: React.FC = () => (

@@ -1,6 +1,6 @@
 "use client";
 
-import { CandlestickChart } from "../registry-exports";
+import { CandlestickChart } from "../../registry/bases/default/primitives/candlestick-chart";
 import { PreviewFrame } from "./preview-frame";
 
 /** Deterministic tape: a drift up, a pullback, then a recovery. */

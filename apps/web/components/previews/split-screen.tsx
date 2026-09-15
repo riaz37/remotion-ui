@@ -1,6 +1,6 @@
 "use client";
 
-import { SplitScreen } from "../registry-exports";
+import { SplitScreen } from "../../registry/bases/default/scenes/split-screen";
 import { DEMO_MEDIA_ALT_PLAIN_SRC, DEMO_MEDIA_PLAIN_SRC } from "@/lib/demo-assets";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 

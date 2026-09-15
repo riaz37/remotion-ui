@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChartRace } from "../registry-exports";
+import { BarChartRace } from "../../registry/bases/default/primitives/bar-chart-race";
 import { PreviewFrame } from "./preview-frame";
 
 /** Two deliberate overtakes: Motion passes Studio, Render passes Editor. */

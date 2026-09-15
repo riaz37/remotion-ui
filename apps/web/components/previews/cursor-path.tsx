@@ -1,6 +1,6 @@
 "use client";
 
-import { CursorPath } from "../registry-exports";
+import { CursorPath } from "../../registry/bases/default/primitives/cursor-path";
 import { DEMO_PALETTE } from "@/lib/demo-assets";
 import { PreviewFrame } from "./preview-frame";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { DataFlowPipes } from "../registry-exports";
+import { DataFlowPipes } from "../../registry/bases/default/scenes/data-flow-pipes";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**

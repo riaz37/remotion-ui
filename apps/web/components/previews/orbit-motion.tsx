@@ -1,6 +1,6 @@
 "use client";
 
-import { OrbitMotion } from "../registry-exports";
+import { OrbitMotion } from "../../registry/bases/default/primitives/orbit-motion";
 import { PreviewFrame } from "./preview-frame";
 
 const SATELLITES = ["Scenes", "Atoms", "Cuts", "Blocks"];

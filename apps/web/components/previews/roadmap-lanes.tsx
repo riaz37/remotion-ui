@@ -1,6 +1,6 @@
 "use client";
 
-import { RoadmapLanes } from "../registry-exports";
+import { RoadmapLanes } from "../../registry/bases/default/scenes/roadmap-lanes";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**

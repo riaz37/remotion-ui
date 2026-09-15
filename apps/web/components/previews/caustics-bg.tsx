@@ -1,6 +1,6 @@
 "use client";
 
-import { CausticsBg } from "../registry-exports";
+import { CausticsBg } from "../../registry/bases/default/primitives/caustics-bg";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, ProductCard } from "./preview-frame";
 

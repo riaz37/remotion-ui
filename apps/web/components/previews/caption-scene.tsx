@@ -1,7 +1,7 @@
 "use client";
 
 import { Loop, useVideoConfig } from "remotion";
-import { CaptionScene } from "../registry-exports";
+import { CaptionScene } from "../../registry/bases/default/scenes/caption-scene";
 import {
   DEMO_CAPTIONS,
   DEMO_MEDIA_ALT_SRC,

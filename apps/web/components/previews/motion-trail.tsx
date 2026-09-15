@@ -1,7 +1,7 @@
 "use client";
 
 import { useCurrentFrame } from "remotion";
-import { MotionTrail } from "../registry-exports";
+import { MotionTrail } from "../../registry/bases/default/primitives/motion-trail";
 import { PreviewFrame } from "./preview-frame";
 
 const BOX = { width: 816, height: 396 } as const;

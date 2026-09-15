@@ -1,7 +1,7 @@
 "use client";
 
 import { AbsoluteFill } from "remotion";
-import { SvgMaskReveal } from "../registry-exports";
+import { SvgMaskReveal } from "../../registry/bases/default/primitives/svg-mask-reveal";
 import { PREVIEW_UI_FONT } from "./preview-frame";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 

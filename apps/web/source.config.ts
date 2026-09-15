@@ -2,11 +2,18 @@ import {
   defineCollections,
   defineConfig,
   defineDocs,
+  frontmatterSchema,
 } from "fumadocs-mdx/config";
 import { z } from "zod";
 
 export const docs = defineDocs({
   dir: "content/docs",
+  docs: {
+    schema: frontmatterSchema.extend({
+      /** Shows a "New" badge next to the page in the docs sidebar. */
+      new: z.boolean().optional(),
+    }),
+  },
 });
 
 export const blog = defineCollections({

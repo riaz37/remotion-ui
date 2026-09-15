@@ -1,6 +1,6 @@
 "use client";
 
-import { SearchResultsPopulate } from "../registry-exports";
+import { SearchResultsPopulate } from "../../registry/bases/default/scenes/search-results-populate";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**

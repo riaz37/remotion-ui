@@ -1,0 +1,16 @@
+{
+  "title": "Captions",
+  "pagesIndex": "captions",
+  "defaultOpen": false,
+  "pages": [
+    "caption-emoji-beat",
+    "caption-highlight",
+    "caption-scene",
+    "karaoke-captions",
+    "speaker-label-captions",
+    "srt-caption-track",
+    "subtitle-translate",
+    "transcript-scroll",
+    "word-pop-captions"
+  ]
+}

@@ -1,13 +1,17 @@
 {
   "title": "Documentation",
   "pages": [
+    "---Getting Started---",
     "index",
     "installation",
     "cli",
-    "components",
     "guides",
+    "---Components---",
+    "...components",
+    "---AI---",
     "ai",
     "mcp",
+    "---Reference---",
     "registry"
   ]
 }

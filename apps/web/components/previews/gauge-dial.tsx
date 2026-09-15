@@ -1,6 +1,6 @@
 "use client";
 
-import { GaugeDial } from "../registry-exports";
+import { GaugeDial } from "../../registry/bases/default/primitives/gauge-dial";
 import { PreviewFrame } from "./preview-frame";
 
 /**

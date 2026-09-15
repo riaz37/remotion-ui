@@ -1,6 +1,6 @@
 "use client";
 
-import { DragDropFlow } from "../registry-exports";
+import { DragDropFlow } from "../../registry/bases/default/scenes/drag-drop-flow";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**

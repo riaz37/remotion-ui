@@ -1,7 +1,7 @@
 "use client";
 
 import { AbsoluteFill } from "remotion";
-import { AudioScrubber } from "../registry-exports";
+import { AudioScrubber } from "../../registry/bases/default/primitives/audio-scrubber";
 import { PreviewFrame } from "./preview-frame";
 
 const MARKS = [

@@ -2,12 +2,16 @@
 
 import { Audio } from "@remotion/media";
 import { AbsoluteFill, Sequence, useVideoConfig } from "remotion";
-import { AudiogramBars } from "../registry-exports";
-import { DEMO_AUDIO_SRC, DEMO_PALETTE } from "@/lib/demo-assets";
+import { AudiogramBars } from "../../registry/bases/default/primitives/audiogram-bars";
+import { DEMO_PALETTE } from "@/lib/demo-assets";
+import { useDemoAudioSrc } from "@/lib/demo-assets-audio";
 import { PreviewFrame } from "./preview-frame";
 
 export const AudiogramBarsPreview: React.FC = () => {
   const { fps } = useVideoConfig();
+  const audioSrc = useDemoAudioSrc();
+  // Shared in-memory copy; see lib/demo-assets-audio.ts.
+  if (!audioSrc) return null;
 
   return (
     <PreviewFrame lane="signals" padding={0}>
@@ -19,7 +23,7 @@ export const AudiogramBarsPreview: React.FC = () => {
           instead of running silence under a live meter. */}
         <Sequence from={0} premountFor={fps}>
           <Audio
-            src={DEMO_AUDIO_SRC}
+            src={audioSrc}
             loop
             fallbackHtml5AudioProps={{ pauseWhenBuffering: true }}
           />
@@ -40,7 +44,7 @@ export const AudiogramBarsPreview: React.FC = () => {
         >
           <div style={{ width: "100%", maxWidth: 860 }}>
             <AudiogramBars
-              src={DEMO_AUDIO_SRC}
+              src={audioSrc}
               height={160}
               barColor={DEMO_PALETTE.phosphor}
             />

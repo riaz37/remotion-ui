@@ -1,6 +1,6 @@
 "use client";
 
-import { SparklineRow } from "../registry-exports";
+import { SparklineRow } from "../../registry/bases/default/primitives/sparkline-row";
 import { PreviewFrame } from "./preview-frame";
 
 const ROWS = [

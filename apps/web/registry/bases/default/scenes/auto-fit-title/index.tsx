@@ -152,7 +152,7 @@ export const AutoFitTitle: React.FC<AutoFitTitleProps> = ({
           />
         ) : null}
 
-        <h1
+        <div
           style={{
             margin: 0,
             display: "flex",
@@ -189,7 +189,7 @@ export const AutoFitTitle: React.FC<AutoFitTitleProps> = ({
               </span>
             );
           })}
-        </h1>
+        </div>
 
         {subtitle ? (
           <p

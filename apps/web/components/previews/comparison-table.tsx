@@ -1,6 +1,6 @@
 "use client";
 
-import { ComparisonTable } from "../registry-exports";
+import { ComparisonTable } from "../../registry/bases/default/scenes/comparison-table";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**

@@ -1,8 +1,9 @@
 "use client";
 
 import { Sequence, useVideoConfig } from "remotion";
-import { TalkingHeadLayout } from "../registry-exports";
-import { DEMO_AUDIO_SRC, DEMO_SPEAKER_SRC } from "@/lib/demo-assets";
+import { TalkingHeadLayout } from "../../registry/bases/default/scenes/talking-head-layout";
+import { DEMO_SPEAKER_SRC } from "@/lib/demo-assets";
+import { useDemoAudioSrc } from "@/lib/demo-assets-audio";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**
@@ -15,12 +16,15 @@ import { ScenePreviewPlate } from "./scene-preview-plate";
  */
 export const TalkingHeadLayoutPreview: React.FC = () => {
   const { fps } = useVideoConfig();
+  const audioSrc = useDemoAudioSrc();
+  // Shared in-memory copy; see lib/demo-assets-audio.ts.
+  if (!audioSrc) return null;
   return (
     <ScenePreviewPlate direct>
       <Sequence from={0} premountFor={fps}>
         <TalkingHeadLayout
           mediaSrc={DEMO_SPEAKER_SRC}
-          audioSrc={DEMO_AUDIO_SRC}
+          audioSrc={audioSrc}
           fit="cover"
           eyebrow="On camera"
           title="Maya Okonkwo"

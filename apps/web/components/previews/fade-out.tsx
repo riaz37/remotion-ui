@@ -1,6 +1,6 @@
 "use client";
 
-import { FadeOut } from "../registry-exports";
+import { FadeOut } from "../../registry/bases/default/primitives/fade-out";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, ProductCard } from "./preview-frame";
 

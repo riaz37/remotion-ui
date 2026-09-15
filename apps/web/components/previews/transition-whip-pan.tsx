@@ -1,6 +1,6 @@
 "use client";
 
-import { transitionWhipPan } from "../registry-exports";
+import { transitionWhipPan } from "../../registry/bases/default/primitives/transition-whip-pan";
 import {
   TRANSITION_FRAMES,
   TransitionSeriesPreview,

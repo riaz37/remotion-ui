@@ -1,15 +1,12 @@
 "use client";
 
 import type { ComponentType } from "react";
+import { CreatorReel } from "@/registry/bases/default/compositions/creator-reel";
+import { DataStory } from "@/registry/bases/default/compositions/data-story";
+import { Intro } from "@/registry/bases/default/compositions/intro";
+import { PodcastClip } from "@/registry/bases/default/compositions/podcast-clip";
+import { SocialClip } from "@/registry/bases/default/compositions/social-clip";
 import {
-  CreatorReel,
-  DataStory,
-  Intro,
-  PodcastClip,
-  SocialClip,
-} from "@/components/registry-exports";
-import {
-  DEMO_AUDIO_SRC,
   DEMO_BAR_DATA,
   DEMO_CAPTIONS,
   DEMO_COPY,
@@ -22,6 +19,7 @@ import {
   DEMO_TIMELINE_STEPS,
 } from "@/lib/demo-assets";
 import { getComponentReference } from "@/lib/component-reference";
+import { useDemoAudioSrc } from "@/lib/demo-assets-audio";
 import {
   getCompositionPlaygroundMeta,
   hasCompositionPlayground,
@@ -34,12 +32,14 @@ const PLAYGROUND_COMPONENTS: Record<
   {
     component: ComponentType<Record<string, unknown>>;
     baseProps: Record<string, unknown>;
+    /** Gets the shared in-memory demo audio as `audioSrc` once it has loaded. */
+    usesDemoAudio?: boolean;
   }
 > = {
   "social-clip": {
     component: SocialClip as ComponentType<Record<string, unknown>>,
+    usesDemoAudio: true,
     baseProps: {
-      audioSrc: DEMO_AUDIO_SRC,
       captions: DEMO_SOCIAL_CLIP_CAPTIONS,
       logoSrc: DEMO_LOGO_SRC,
       hookTitle: DEMO_COPY.productLaunch.title,
@@ -52,6 +52,7 @@ const PLAYGROUND_COMPONENTS: Record<
   },
   "creator-reel": {
     component: CreatorReel as ComponentType<Record<string, unknown>>,
+    usesDemoAudio: true,
     baseProps: {
       hookHeadline: DEMO_COPY.creatorHook.headline,
       hookSubtitle: DEMO_COPY.creatorHook.subtitle,
@@ -59,7 +60,6 @@ const PLAYGROUND_COMPONENTS: Record<
       talkingHeadTitle: DEMO_COPY.productLaunch.title,
       mediaSrc: DEMO_MEDIA_ALT_SRC,
       mediaFit: "contain",
-      audioSrc: DEMO_AUDIO_SRC,
       captions: DEMO_CAPTIONS,
       comment: DEMO_COPY.creatorComment.body,
       author: DEMO_COPY.creatorComment.author,
@@ -83,8 +83,8 @@ const PLAYGROUND_COMPONENTS: Record<
   },
   "podcast-clip": {
     component: PodcastClip as ComponentType<Record<string, unknown>>,
+    usesDemoAudio: true,
     baseProps: {
-      audioSrc: DEMO_AUDIO_SRC,
       captions: DEMO_CAPTIONS,
       title: DEMO_COPY.podcast.title,
       subtitle: DEMO_COPY.podcast.subtitle,
@@ -112,6 +112,9 @@ const PLAYGROUND_COMPONENTS: Record<
 };
 
 export function CompositionPlaygroundSection({ name }: { name: string }) {
+  // Called before the early returns so hook order stays stable.
+  const audioSrc = useDemoAudioSrc();
+
   if (!hasCompositionPlayground(name)) {
     return null;
   }
@@ -124,11 +127,20 @@ export function CompositionPlaygroundSection({ name }: { name: string }) {
     return null;
   }
 
+  // Shared in-memory copy; see lib/demo-assets-audio.ts.
+  if (runtime.usesDemoAudio && !audioSrc) {
+    return null;
+  }
+
   return (
     <PropsPlayground
       name={name}
       component={runtime.component}
-      baseProps={runtime.baseProps}
+      baseProps={
+        runtime.usesDemoAudio
+          ? { ...runtime.baseProps, audioSrc }
+          : runtime.baseProps
+      }
       editablePropNames={meta.editablePropNames}
       propDefinitions={reference.props}
       durationInFrames={meta.durationInFrames}

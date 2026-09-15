@@ -1,7 +1,7 @@
 "use client";
 
 import { AbsoluteFill } from "remotion";
-import { PollOverlay } from "../registry-exports";
+import { PollOverlay } from "../../registry/bases/default/scenes/poll-overlay";
 import { PreviewFrame } from "./preview-frame";
 
 /** Stand-in for the stream under the overlay. */

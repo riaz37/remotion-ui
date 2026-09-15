@@ -1,6 +1,6 @@
 "use client";
 
-import { StrokeToFillText } from "../registry-exports";
+import { StrokeToFillText } from "../../registry/bases/default/primitives/stroke-to-fill-text";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame } from "./preview-frame";
 

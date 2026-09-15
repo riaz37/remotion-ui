@@ -1,6 +1,6 @@
 "use client";
 
-import { StackedAreaChart } from "../registry-exports";
+import { StackedAreaChart } from "../../registry/bases/default/primitives/stacked-area-chart";
 import { PreviewFrame } from "./preview-frame";
 
 const LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"];

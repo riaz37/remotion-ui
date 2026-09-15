@@ -1,6 +1,6 @@
 "use client";
 
-import { SlideUp } from "../registry-exports";
+import { SlideUp } from "../../registry/bases/default/primitives/slide-up";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, PreviewGhostStack, ProductCard } from "./preview-frame";
 import { usePreviewStage } from "./preview-stage";

@@ -1,6 +1,6 @@
 "use client";
 
-import { BlobMorph } from "../registry-exports";
+import { BlobMorph } from "../../registry/bases/default/primitives/blob-morph";
 import { PreviewFrame } from "./preview-frame";
 
 /**

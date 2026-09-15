@@ -1,7 +1,7 @@
 "use client";
 
 import { AbsoluteFill } from "remotion";
-import { DepthOfFieldBlur } from "../registry-exports";
+import { DepthOfFieldBlur } from "../../registry/bases/default/primitives/depth-of-field-blur";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, ProductCard } from "./preview-frame";
 

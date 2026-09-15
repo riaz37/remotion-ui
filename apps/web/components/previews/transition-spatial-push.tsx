@@ -1,6 +1,6 @@
 "use client";
 
-import { transitionSpatialPush } from "../registry-exports";
+import { transitionSpatialPush } from "../../registry/bases/default/primitives/spatial-push";
 import {
   TRANSITION_FRAMES,
   TransitionSeriesPreview,

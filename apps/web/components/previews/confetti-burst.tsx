@@ -1,7 +1,7 @@
 "use client";
 
 import { Sequence } from "remotion";
-import { ConfettiBurst } from "../registry-exports";
+import { ConfettiBurst } from "../../registry/bases/default/primitives/confetti-burst";
 import { PreviewFrame, ProductCard } from "./preview-frame";
 import { DEMO_COPY } from "@/lib/demo-assets";
 

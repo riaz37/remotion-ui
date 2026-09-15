@@ -1,6 +1,6 @@
 "use client";
 
-import { StrikethroughReplace } from "../registry-exports";
+import { StrikethroughReplace } from "../../registry/bases/default/primitives/strikethrough-replace";
 import { DEMO_PALETTE } from "@/lib/demo-assets";
 import { PreviewFrame, PreviewKicker } from "./preview-frame";
 import { usePreviewStage } from "./preview-stage";

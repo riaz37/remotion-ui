@@ -8,6 +8,7 @@ import { getComponentReference } from "@/lib/component-reference";
 import { hasCompositionPlayground } from "@/lib/composition-playground";
 import { laneAccent } from "@/lib/lane-visuals";
 import { previewMeta } from "@/lib/preview-config";
+import { source } from "@/lib/source";
 import { CompositionPlaygroundSection } from "./composition-playground-section";
 import { InstallCommand } from "./install-command";
 import { PropsTable } from "./props-table";
@@ -60,11 +61,11 @@ export function ComponentPage({
   const reference = getComponentReference(name);
   const atlas = getAtlasMeta(name);
 
+  const categoryLabel = reference ? categoryLabels[reference.category] : null;
   const metaParts = [
-    reference
-      ? { key: "category", label: categoryLabels[reference.category] }
-      : null,
-    atlas?.lane
+    categoryLabel ? { key: "category", label: categoryLabel } : null,
+    // "Primitive · Primitives" says the same thing twice; keep only the category.
+    atlas?.lane && ATLAS_LANES[atlas.lane].label !== `${categoryLabel}s`
       ? {
           key: "lane",
           label: ATLAS_LANES[atlas.lane].label,
@@ -139,7 +140,7 @@ export function ComponentPage({
 
       {reference ? (
         <>
-          <h2 className="docs-section-heading mt-10 scroll-m-20">
+          <h2 id="agent-notes" className="docs-section-heading mt-10 scroll-m-20">
             Agent notes
           </h2>
           <p className="mt-2 text-sm text-fd-muted-foreground">
@@ -165,19 +166,19 @@ export function ComponentPage({
             </li>
           </ul>
 
-          <h2 className="docs-section-heading mt-10 scroll-m-20">
+          <h2 id="usage" className="docs-section-heading mt-10 scroll-m-20">
             Usage
           </h2>
           <CodeSnippet label="Example" code={reference.usage} />
 
-          <h2 className="docs-section-heading mt-10 scroll-m-20">
+          <h2 id="api-reference" className="docs-section-heading mt-10 scroll-m-20">
             API Reference
           </h2>
           <PropsTable props={reference.props} />
 
           {reference.related && reference.related.length > 0 ? (
             <>
-              <h2 className="docs-section-heading mt-10 scroll-m-20">
+              <h2 id="related" className="docs-section-heading mt-10 scroll-m-20">
                 Related
               </h2>
               <div className="not-prose flex flex-wrap gap-2">
@@ -187,7 +188,7 @@ export function ComponentPage({
                     href={getComponentDocPath(slug)}
                     className="rounded-md border border-[var(--bay-border)] px-3 py-1.5 text-sm transition-colors hover:border-[var(--bay-border-strong)]"
                   >
-                    {slug}
+                    {source.getPage(["components", slug])?.data.title ?? slug}
                   </Link>
                 ))}
               </div>
@@ -199,6 +200,25 @@ export function ComponentPage({
       <SponsorSlot />
     </>
   );
+}
+
+/**
+ * TOC entries for the JSX headings above. Must mirror their render conditions
+ * and `id`s, since fumadocs only extracts headings written in the MDX itself.
+ */
+export function getComponentPageToc(
+  name: string,
+): { title: string; url: string; depth: number }[] {
+  const reference = getComponentReference(name);
+  if (!reference) return [];
+  return [
+    { title: "Agent notes", url: "#agent-notes", depth: 2 },
+    { title: "Usage", url: "#usage", depth: 2 },
+    { title: "API Reference", url: "#api-reference", depth: 2 },
+    ...(reference.related && reference.related.length > 0
+      ? [{ title: "Related", url: "#related", depth: 2 }]
+      : []),
+  ];
 }
 
 function getAiImportPath(slug: string): string {

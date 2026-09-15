@@ -1150,10 +1150,14 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     category: "composition",
     usage: `import { HeroLoop } from "@/compositions/hero-loop";
 
-<HeroLoop />`,
-    props: [],
-    note: "12-second silent hero composition for website embeds. The final frame resolves back into frame 0, so it loops without a seam. Installs as source and demonstrates the primitives it uses.",
-    related: ["typewriter", "counter", "stagger-children"],
+<HeroLoop />
+<HeroLoop background="transparent" tone="light" />`,
+    props: [
+      { name: "background", type: '"phosphor" | "transparent"', default: '"phosphor"', description: "Paint the gold phosphor stage, or nothing so the page shows through.", schema: { type: "string", enum: ["phosphor", "transparent"] } },
+      { name: "tone", type: '"dark" | "light"', default: '"dark"', description: "Page theme under the transparent variant; light inks the wordmark dark.", schema: { type: "string", enum: ["dark", "light"] } },
+    ],
+    note: "12-second silent brand ident: the RemotionUI logo animated from its own parts (parallax frames, play press, wordmark re-reveal) over a port of the site's phosphor light. Loops without a seam. The light needs WebGL2 and falls back to a flat stage.",
+    related: ["logo-reveal", "path-draw"],
   },
   "caption-highlight": {
     category: "primitive",

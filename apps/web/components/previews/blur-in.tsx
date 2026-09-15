@@ -1,6 +1,6 @@
 "use client";
 
-import { BlurIn } from "../registry-exports";
+import { BlurIn } from "../../registry/bases/default/primitives/blur-in";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, PreviewGhostStack, ProductCard } from "./preview-frame";
 

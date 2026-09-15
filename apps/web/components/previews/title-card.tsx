@@ -1,6 +1,6 @@
 "use client";
 
-import { TitleCard } from "../registry-exports";
+import { TitleCard } from "../../registry/bases/default/scenes/title-card";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 

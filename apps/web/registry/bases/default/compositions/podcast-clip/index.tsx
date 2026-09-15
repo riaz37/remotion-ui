@@ -102,7 +102,7 @@ const PodcastIntro: React.FC<{
           >
             Podcast clip
           </p>
-          <h1
+          <div
             style={{
               margin: `${scaleFont(16, width)}px 0 0`,
               color: "#fafafa",
@@ -113,7 +113,7 @@ const PodcastIntro: React.FC<{
             }}
           >
             {title}
-          </h1>
+          </div>
           <p
             style={{
               margin: `${scaleFont(18, width)}px 0 0`,

@@ -2,8 +2,8 @@
 
 import { Audio } from "@remotion/media";
 import { AbsoluteFill, Sequence, useVideoConfig } from "remotion";
-import { VuMeter } from "../registry-exports";
-import { DEMO_AUDIO_SRC } from "@/lib/demo-assets";
+import { VuMeter } from "../../registry/bases/default/primitives/vu-meter";
+import { useDemoAudioSrc } from "@/lib/demo-assets-audio";
 import { PreviewFrame } from "./preview-frame";
 
 /**
@@ -95,6 +95,9 @@ const HorizontalScale: React.FC = () => (
 
 export const VuMeterPreview: React.FC = () => {
   const { fps } = useVideoConfig();
+  const audioSrc = useDemoAudioSrc();
+  // Shared in-memory copy; see lib/demo-assets-audio.ts.
+  if (!audioSrc) return null;
 
   return (
     <PreviewFrame lane="signals" padding={0}>
@@ -108,7 +111,7 @@ export const VuMeterPreview: React.FC = () => {
             instead of running silence under a live meter. */}
         <Sequence from={0} premountFor={fps}>
           <Audio
-            src={DEMO_AUDIO_SRC}
+            src={audioSrc}
             loop
             fallbackHtml5AudioProps={{ pauseWhenBuffering: true }}
           />
@@ -136,7 +139,7 @@ export const VuMeterPreview: React.FC = () => {
             <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
               <VerticalScale />
               <VuMeter
-                src={DEMO_AUDIO_SRC}
+                src={audioSrc}
                 orientation="vertical"
                 length={METER_LENGTH}
                 thickness={46}
@@ -158,7 +161,7 @@ export const VuMeterPreview: React.FC = () => {
           >
             <span style={captionStyle}>MONO SUM</span>
             <VuMeter
-              src={DEMO_AUDIO_SRC}
+              src={audioSrc}
               orientation="horizontal"
               channels={1}
               segments={22}

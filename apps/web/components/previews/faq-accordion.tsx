@@ -1,6 +1,6 @@
 "use client";
 
-import { FaqAccordion } from "../registry-exports";
+import { FaqAccordion } from "../../registry/bases/default/scenes/faq-accordion";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**

@@ -1,7 +1,7 @@
 "use client";
 
 import { AbsoluteFill, Img } from "remotion";
-import { ReactionBurst } from "../registry-exports";
+import { ReactionBurst } from "../../registry/bases/default/scenes/reaction-burst";
 import { DEMO_PHOTO_SRC } from "@/lib/demo-assets";
 import { PreviewFrame } from "./preview-frame";
 

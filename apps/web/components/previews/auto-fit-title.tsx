@@ -1,6 +1,6 @@
 "use client";
 
-import { AutoFitTitle } from "../registry-exports";
+import { AutoFitTitle } from "../../registry/bases/default/scenes/auto-fit-title";
 import { DEMO_COPY, DEMO_LOGO_SRC } from "@/lib/demo-assets";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 

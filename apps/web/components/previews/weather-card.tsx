@@ -1,6 +1,6 @@
 "use client";
 
-import { WeatherCard } from "../registry-exports";
+import { WeatherCard } from "../../registry/bases/default/scenes/weather-card";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**

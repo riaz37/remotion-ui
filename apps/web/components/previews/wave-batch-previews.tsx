@@ -1,20 +1,18 @@
 "use client";
 
-import {
-  AiComposerShowcase,
-  AiGenerationCanvas,
-  BentoPan,
-  BrowserFlow,
-  DashboardPopulate,
-  DeployReveal,
-  EcosystemOrbit,
-  HeroDeviceAssemble,
-  ImageExpand,
-  LandingCodeShowcase,
-  LiveCodeSplit,
-  PricingFocus,
-  ToolMenuSlide,
-} from "../registry-exports";
+import { AiComposerShowcase } from "../../registry/bases/default/compositions/ai-composer-showcase";
+import { AiGenerationCanvas } from "../../registry/bases/default/compositions/ai-generation-canvas";
+import { BentoPan } from "../../registry/bases/default/compositions/bento-pan";
+import { BrowserFlow } from "../../registry/bases/default/compositions/browser-flow";
+import { DashboardPopulate } from "../../registry/bases/default/compositions/dashboard-populate";
+import { DeployReveal } from "../../registry/bases/default/compositions/deploy-reveal";
+import { EcosystemOrbit } from "../../registry/bases/default/compositions/ecosystem-orbit";
+import { HeroDeviceAssemble } from "../../registry/bases/default/compositions/hero-device-assemble";
+import { ImageExpand } from "../../registry/bases/default/compositions/image-expand";
+import { LandingCodeShowcase } from "../../registry/bases/default/compositions/landing-code-showcase";
+import { LiveCodeSplit } from "../../registry/bases/default/compositions/live-code-split";
+import { PricingFocus } from "../../registry/bases/default/compositions/pricing-focus";
+import { ToolMenuSlide } from "../../registry/bases/default/compositions/tool-menu-slide";
 import { DEMO_PHOTO_SRC } from "@/lib/demo-assets";
 import { PreviewFrame } from "./preview-frame";
 

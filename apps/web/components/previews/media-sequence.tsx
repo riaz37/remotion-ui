@@ -1,6 +1,6 @@
 "use client";
 
-import { MediaSequence } from "../registry-exports";
+import { MediaSequence } from "../../registry/bases/default/scenes/media-sequence";
 import {
   DEMO_MEDIA_ALT_SRC,
   DEMO_MEDIA_SRC,

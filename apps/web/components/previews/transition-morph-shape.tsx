@@ -1,6 +1,6 @@
 "use client";
 
-import { transitionMorphShape } from "../registry-exports";
+import { transitionMorphShape } from "../../registry/bases/default/primitives/transition-morph-shape";
 import {
   TRANSITION_FRAMES,
   TransitionSeriesPreview,

@@ -1,7 +1,7 @@
 "use client";
 
 import { Sequence } from "remotion";
-import { CommentCallout } from "../registry-exports";
+import { CommentCallout } from "../../registry/bases/default/scenes/comment-callout";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 

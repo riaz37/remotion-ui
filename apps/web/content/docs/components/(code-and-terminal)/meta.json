@@ -1,0 +1,13 @@
+{
+  "title": "Code & terminal",
+  "pagesIndex": "code-and-terminal",
+  "defaultOpen": false,
+  "pages": [
+    "code-accordion",
+    "code-diff-wipe",
+    "code-reveal",
+    "commit-graph",
+    "file-tree-reveal",
+    "terminal-simulator"
+  ]
+}

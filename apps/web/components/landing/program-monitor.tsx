@@ -12,6 +12,7 @@ import {
 import Image from "next/image";
 import {
   useEffect,
+  useMemo,
   useRef,
   useState,
   type CSSProperties,
@@ -29,13 +30,12 @@ const HERO = previewMeta("hero-loop");
 /**
  * Frame the monitor opens on.
  *
- * hero-loop's own title beat runs 316-50 and sets a display headline in the
- * middle of the picture, which would land beside the page's headline on
- * arrival. 200 is inside the catalog beat: the count has settled on its real
- * value, all twelve cards are in, and nothing in the picture repeats the copy.
- * The poster is the same frame, so the handoff from image to Player is silent.
+ * hero-loop is built so frame 0 is its calmest picture: the clean, fully lit
+ * mark in a hold, no pass acting, glow at its peak. There is no headline in the
+ * loop to collide with the page's own, so there is nothing to skip past. The
+ * poster is the same frame, so the handoff from image to Player is silent.
  */
-const OPEN_FRAME = 200;
+const OPEN_FRAME = 0;
 
 /** Progress past which the copy has finished fading and should leave the DOM tree. */
 const COPY_CLEARED = 0.25;
@@ -68,6 +68,25 @@ export function ProgramMonitor({ children }: ProgramMonitorProps) {
   const reduce = useReducedMotion();
 
   const [live, setLive] = useState(false);
+  /**
+   * The loop is transparent here, so it needs to know the page theme to ink
+   * the wordmark. Read from the root's `dark` class, which is what the site's
+   * theme toggle flips; it changes only on a theme switch, never per frame.
+   */
+  const [tone, setTone] = useState<"dark" | "light">("dark");
+  const inputProps = useMemo(
+    () => ({ background: "transparent" as const, tone }),
+    [tone],
+  );
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const read = () => setTone(root.classList.contains("dark") ? "dark" : "light");
+    read();
+    const watch = new MutationObserver(read);
+    watch.observe(root, { attributes: true, attributeFilter: ["class"] });
+    return () => watch.disconnect();
+  }, []);
   /** Discrete, not continuous: flips once, when the copy has finished fading. */
   const [copyGone, setCopyGone] = useState(false);
 
@@ -130,15 +149,18 @@ export function ProgramMonitor({ children }: ProgramMonitorProps) {
           </div>
 
           {/*
-            The monitor. `bay-stage-scope` is scoped to it alone, so the dark
-            picture is an object inside the page's own theme rather than a
-            section that inverts the page.
+            The monitor is a window into the page's own light: the screen has
+            no fill, and the loop is rendered with a transparent background, so
+            the phosphor field behind it runs straight through. Only the
+            hairline bezel is drawn. `bay-stage-scope` still scopes the dark
+            tokens to the monitor's subtree.
           */}
-          <div className="program-shell bay-stage-scope relative aspect-video w-full shrink-0 overflow-hidden bg-[var(--bay-stage)] lg:shadow-[0_50px_110px_-40px_rgba(0,0,0,0.65)]">
+          <div className="program-shell bay-stage-scope relative aspect-video w-full shrink-0 overflow-hidden">
             {/*
-              Poster. The stage paints a real frame on first byte instead of a
-              black hole waiting for hydration, and it is what reduced-motion
-              and no-JS visitors keep looking at.
+              Posters: frame 0 with an alpha background, one per theme, so first
+              paint is the same logo over the same live light the Player shows.
+              CSS picks the theme's poster before hydration, so there is no
+              flash of the wrong one.
             */}
             <Image
               src="/media/hero-loop-frame.webp"
@@ -152,13 +174,23 @@ export function ProgramMonitor({ children }: ProgramMonitorProps) {
                 `lg` fetched a source twice the size ever painted.
               */
               sizes="(min-width: 1024px) 72vw, 100vw"
-              className={`object-cover transition-opacity duration-500 ${
+              className={`hero-poster-dark object-cover transition-opacity duration-500 ${
+                live ? "opacity-0" : "opacity-100"
+              }`}
+            />
+            <Image
+              src="/media/hero-loop-frame-light.webp"
+              alt=""
+              fill
+              sizes="(min-width: 1024px) 72vw, 100vw"
+              className={`hero-poster-light object-cover transition-opacity duration-500 ${
                 live ? "opacity-0" : "opacity-100"
               }`}
             />
             <Player
               ref={playerRef}
               component={HeroLoopPreview}
+              inputProps={inputProps}
               durationInFrames={HERO.durationInFrames}
               fps={HERO.fps}
               compositionWidth={HERO.width}

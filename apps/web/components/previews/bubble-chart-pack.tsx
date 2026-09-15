@@ -1,6 +1,6 @@
 "use client";
 
-import { BubbleChartPack } from "../registry-exports";
+import { BubbleChartPack } from "../../registry/bases/default/primitives/bubble-chart-pack";
 import { PreviewFrame } from "./preview-frame";
 
 const BUBBLES = [

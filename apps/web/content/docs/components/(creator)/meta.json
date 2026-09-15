@@ -1,0 +1,13 @@
+{
+  "title": "Creator",
+  "pagesIndex": "creator",
+  "defaultOpen": false,
+  "pages": [
+    "comment-callout",
+    "countdown-timer",
+    "hook-card",
+    "poll-overlay",
+    "reaction-burst",
+    "talking-head-layout"
+  ]
+}

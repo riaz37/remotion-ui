@@ -1,6 +1,6 @@
 "use client";
 
-import { ConnectorLines } from "../registry-exports";
+import { ConnectorLines } from "../../registry/bases/default/primitives/connector-lines";
 import { PreviewFrame } from "./preview-frame";
 
 const WIDTH = 700;

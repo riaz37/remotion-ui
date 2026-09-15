@@ -64,8 +64,9 @@ function extractProse(body) {
   return prose.replace(/^Exports .+$/m, "").trim();
 }
 
-function enrichFile(category, slug) {
-  const filePath = path.join(DOCS, category, `${slug}.mdx`);
+function enrichFile(dir, slug) {
+  const filePath = path.join(dir, `${slug}.mdx`);
+  const category = path.relative(DOCS, dir);
   if (!fs.existsSync(filePath)) return;
 
   const raw = fs.readFileSync(filePath, "utf-8");
@@ -106,12 +107,22 @@ ${prose}
   console.log(`updated ${category}/${slug}.mdx`);
 }
 
-for (const category of ["primitives", "scenes", "compositions"]) {
-  const metaPath = path.join(DOCS, category, "meta.json");
-  if (!fs.existsSync(metaPath)) continue;
-  const { pages } = JSON.parse(fs.readFileSync(metaPath, "utf-8"));
-  for (const slug of pages) {
-    enrichFile(category, slug);
+/** Every directory under dir (itself included) that has a meta.json. */
+function metaDirs(dir) {
+  const children = fs
+    .readdirSync(dir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .flatMap((entry) => metaDirs(path.join(dir, entry.name)));
+  return fs.existsSync(path.join(dir, "meta.json")) ? [dir, ...children] : children;
+}
+
+const COMPONENTS = path.join(DOCS, "components");
+
+for (const dir of fs.existsSync(COMPONENTS) ? metaDirs(COMPONENTS) : []) {
+  const { pages = [] } = JSON.parse(fs.readFileSync(path.join(dir, "meta.json"), "utf-8"));
+  // Skip folder refs such as "(captions)" and "...rest" spreads.
+  for (const slug of pages.filter((page) => /^[a-z0-9-]+$/.test(page))) {
+    enrichFile(dir, slug);
   }
 }
 

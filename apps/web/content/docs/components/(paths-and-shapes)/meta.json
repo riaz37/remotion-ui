@@ -1,0 +1,18 @@
+{
+  "title": "Paths & shapes",
+  "pagesIndex": "paths-and-shapes",
+  "defaultOpen": false,
+  "pages": [
+    "arrow-annotate",
+    "badge-stamp",
+    "blob-morph",
+    "connector-lines",
+    "cursor-path",
+    "dashed-path-travel",
+    "logo-reveal",
+    "path-draw",
+    "shape-morph",
+    "simulated-cursor",
+    "svg-mask-reveal"
+  ]
+}

@@ -2,14 +2,17 @@
 
 import { Audio } from "@remotion/media";
 import { AbsoluteFill, Sequence, useVideoConfig } from "remotion";
-import { BeatPulseGrid } from "../registry-exports";
-import { DEMO_AUDIO_SRC } from "@/lib/demo-assets";
+import { BeatPulseGrid } from "../../registry/bases/default/primitives/beat-pulse-grid";
+import { useDemoAudioSrc } from "@/lib/demo-assets-audio";
 import { PreviewFrame } from "./preview-frame";
 
 /** Radial mapping, so the kick reads as a pulse travelling out of the centre
  * rather than as a bar meter laid on a grid. */
 export const BeatPulseGridPreview: React.FC = () => {
   const { fps } = useVideoConfig();
+  const audioSrc = useDemoAudioSrc();
+  // Shared in-memory copy; see lib/demo-assets-audio.ts.
+  if (!audioSrc) return null;
 
   return (
     <PreviewFrame lane="signals" padding={0}>
@@ -21,14 +24,14 @@ export const BeatPulseGridPreview: React.FC = () => {
           instead of running silence under a live meter. */}
         <Sequence from={0} premountFor={fps}>
           <Audio
-            src={DEMO_AUDIO_SRC}
+            src={audioSrc}
             loop
             fallbackHtml5AudioProps={{ pauseWhenBuffering: true }}
           />
         </Sequence>
         <AbsoluteFill style={{ display: "grid", placeItems: "center" }}>
           <BeatPulseGrid
-            src={DEMO_AUDIO_SRC}
+            src={audioSrc}
             columns={14}
             rows={7}
             cellSize={38}

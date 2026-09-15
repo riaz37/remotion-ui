@@ -1,6 +1,6 @@
 "use client";
 
-import { Counter } from "../registry-exports";
+import { Counter } from "../../registry/bases/default/primitives/counter";
 import { DEMO_METRICS } from "@/lib/demo-assets";
 import { MetricPanel, PreviewFrame } from "./preview-frame";
 

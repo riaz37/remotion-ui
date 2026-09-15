@@ -1,5 +1,5 @@
 /**
- * Scaffold a registry component across all nine registration points.
+ * Scaffold a registry component across all eight registration points.
  *
  *   pnpm gen:component <slug> [--kind primitive|block] [--dry-run] [--force]
  *   pnpm gen:component --lane cuts            # every unbuilt slug in a lane
@@ -265,7 +265,7 @@ function previewSource(e: SpecEntry, kind: Kind): string {
 
   return `"use client";
 
-import { ${Name} } from "../registry-exports";
+import { ${Name} } from "../../registry/bases/default/${kind === "block" ? "scenes" : "primitives"}/${e.slug}";
 import { PreviewFrame } from "./preview-frame";
 
 /**
@@ -360,20 +360,16 @@ function generate(e: SpecEntry, kindOverride: Kind | undefined, force: boolean) 
   // 5. preview wrapper
   put(join(WEB, `components/previews/${e.slug}.tsx`), previewSource(e, kind), force);
 
-  // 6. mini-preview map (import + entry)
-  const mini = join(WEB, "components/atlas-mini-preview.tsx");
-  insertAfterLast(mini, /^import .* from "\.\/previews\//, `import { ${Name}Preview } from "./previews/${e.slug}";`, `previews/${e.slug}"`);
-  insertAfterLast(mini, /^\s{2}"[a-z0-9-]+": \w+Preview,/, `  "${e.slug}": ${Name}Preview,`, `"${e.slug}": ${Name}Preview`);
-
-  // 7. export
+  // 6. mini-preview map (one lazy loader entry; no static import, so the
+  //    catalog chunk carries only the table)
   insertAfterLast(
-    join(WEB, "components/registry-exports.ts"),
-    /^export \{/,
-    `export { ${Name} } from "../registry/bases/default/${dir}/${e.slug}${kind === "block" ? "" : ""}";`,
-    `/${e.slug}"`,
+    join(WEB, "components/atlas-mini-preview.tsx"),
+    /^\s{2}(?:"[a-z0-9-]+"|\w+): \(\) => import\("\.\/previews\//,
+    `  "${e.slug}": () => import("./previews/${e.slug}").then((m) => ({ default: m.${Name}Preview })),`,
+    `import("./previews/${e.slug}")`,
   );
 
-  // 8. agent-facing reference
+  // 7. agent-facing reference
   insertIntoObject(
     join(WEB, "lib/component-reference.ts"),
     /^export const componentReference/,
@@ -393,7 +389,9 @@ function generate(e: SpecEntry, kindOverride: Kind | undefined, force: boolean) 
     `"${e.slug}": {`,
   );
 
-  // 9. docs
+  // 8. docs — written to the components root. Lanes don't map onto the
+  //    sidebar categories, so moving it into a group is a manual step (the
+  //    closing message says so; component-categories.test.ts fails until done).
   put(join(WEB, `content/docs/components/${e.slug}.mdx`), mdxSource(e), force);
 }
 
@@ -456,10 +454,10 @@ if (!targets.length) {
 for (const e of targets) {
   edits.length = 0;
   generate(e, kindArg, force);
-  // atlas-mini-preview takes two edits (import + map entry) but is one of the
-  // nine registration points, so count distinct files rather than writes.
+  // Count distinct files rather than writes, so a file edited more than once
+  // still counts as one of the eight registration points.
   const wrote = new Set(edits.filter((x) => x.status === "write").map((x) => x.file)).size;
-  console.log(`\n${e.slug}  (${e.lane}/${e.tier})  ${wrote}/9 registration points${DRY ? "  [dry run]" : ""}`);
+  console.log(`\n${e.slug}  (${e.lane}/${e.tier})  ${wrote}/8 registration points${DRY ? "  [dry run]" : ""}`);
   for (const x of edits) {
     console.log(`  ${x.status === "write" ? "+" : "·"} ${x.file}${x.note ? `  (${x.note})` : ""}`);
   }
@@ -468,5 +466,10 @@ for (const e of targets) {
 console.log(
   `\n${targets.length} component(s) scaffolded.${DRY ? " Nothing written." : ""}\n` +
     `Next: pnpm registry:build, then write the animation — every scaffold renders\n` +
-    `a "TODO" card until you do. Gate each batch on pnpm audit:stills.\n`,
+    `a "TODO" card until you do. Gate each batch on pnpm audit:stills.\n` +
+    (targets.length
+      ? `\nMove each docs page into its category: content/docs/components/<slug>.mdx →\n` +
+        `content/docs/components/(<category>)/<slug>.mdx, and add the slug to that\n` +
+        `folder's meta.json "pages". Loose MDX fails component-categories.test.ts.\n`
+      : ""),
 );

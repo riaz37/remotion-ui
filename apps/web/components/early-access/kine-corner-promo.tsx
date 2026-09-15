@@ -12,8 +12,11 @@ const STORAGE_KEY = "remotionui:kine-corner-promo";
 /** Long enough to not compete with the page's own first paint. */
 const ARM_DELAY_MS = 4_000;
 
-/** Routes where the ask would be redundant — you're already on the Kine page. */
-const SUPPRESSED_PREFIXES = ["/kine"];
+/**
+ * Routes where the ask is redundant (you're already on the Kine page) or in
+ * the way (docs readers are mid-task).
+ */
+const SUPPRESSED_PREFIXES = ["/kine", "/docs"];
 
 /**
  * A Supabase-Select-style corner card: persistent (not an exit trap), a real

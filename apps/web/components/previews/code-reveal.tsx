@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeReveal } from "../registry-exports";
+import { CodeReveal } from "../../registry/bases/default/scenes/code-reveal";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 export const CodeRevealPreview: React.FC = () => (

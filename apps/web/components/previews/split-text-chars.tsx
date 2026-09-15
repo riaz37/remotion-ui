@@ -1,6 +1,6 @@
 "use client";
 
-import { SplitTextChars } from "../registry-exports";
+import { SplitTextChars } from "../../registry/bases/default/primitives/split-text-chars";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame } from "./preview-frame";
 

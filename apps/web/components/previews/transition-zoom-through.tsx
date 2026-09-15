@@ -1,6 +1,6 @@
 "use client";
 
-import { transitionZoomThrough } from "../registry-exports";
+import { transitionZoomThrough } from "../../registry/bases/default/primitives/zoom-through";
 import {
   TRANSITION_FRAMES,
   TransitionSeriesPreview,

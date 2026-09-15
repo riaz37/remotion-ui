@@ -1,6 +1,6 @@
 "use client";
 
-import { ShakeEmphasis } from "../registry-exports";
+import { ShakeEmphasis } from "../../registry/bases/default/primitives/shake-emphasis";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, ProductCard } from "./preview-frame";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { transitionChromaticAberrationWipe } from "../registry-exports";
+import { transitionChromaticAberrationWipe } from "../../registry/bases/default/primitives/chromatic-aberration-wipe";
 import {
   TRANSITION_FRAMES,
   TransitionSeriesPreview,

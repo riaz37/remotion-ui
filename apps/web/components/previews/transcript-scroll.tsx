@@ -1,6 +1,6 @@
 "use client";
 
-import { TranscriptScroll } from "../registry-exports";
+import { TranscriptScroll } from "../../registry/bases/default/primitives/transcript-scroll";
 import { PreviewFrame } from "./preview-frame";
 
 const CUES = [

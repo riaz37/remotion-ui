@@ -1,6 +1,6 @@
 "use client";
 
-import { SlideLeft } from "../registry-exports";
+import { SlideLeft } from "../../registry/bases/default/primitives/slide-left";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, PreviewGhostStack, ProductCard } from "./preview-frame";
 

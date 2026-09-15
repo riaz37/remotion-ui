@@ -1,6 +1,6 @@
 "use client";
 
-import { ZoomPanFrame } from "../registry-exports";
+import { ZoomPanFrame } from "../../registry/bases/default/scenes/zoom-pan-frame";
 import { DEMO_MEDIA_PLAIN_SRC } from "@/lib/demo-assets";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { WaterfallChart } from "../registry-exports";
+import { WaterfallChart } from "../../registry/bases/default/primitives/waterfall-chart";
 import { PreviewFrame } from "./preview-frame";
 
 const STEPS = [

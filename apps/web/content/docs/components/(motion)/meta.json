@@ -1,0 +1,27 @@
+{
+  "title": "Motion",
+  "pagesIndex": "motion",
+  "defaultOpen": false,
+  "pages": [
+    "blur-in",
+    "confetti-burst",
+    "depth-of-field-blur",
+    "fade-in",
+    "fade-out",
+    "glow-pulse",
+    "motion-trail",
+    "orbit-motion",
+    "parallax-layers",
+    "progress-bar",
+    "rotate-in",
+    "scale-in",
+    "scanline-crt",
+    "shake-emphasis",
+    "skew-in",
+    "slide-left",
+    "slide-up",
+    "spring-in",
+    "squash-stretch",
+    "stagger-children"
+  ]
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { HeatmapGrid } from "../registry-exports";
+import { HeatmapGrid } from "../../registry/bases/default/primitives/heatmap-grid";
 import { PreviewFrame } from "./preview-frame";
 
 const DAYS = ["Mon", "", "Wed", "", "Fri", "", "Sun"];

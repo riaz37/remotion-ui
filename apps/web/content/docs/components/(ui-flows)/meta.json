@@ -1,0 +1,15 @@
+{
+  "title": "UI flows",
+  "pagesIndex": "ui-flows",
+  "defaultOpen": false,
+  "pages": [
+    "chat-to-preview",
+    "drag-drop-flow",
+    "faq-accordion",
+    "form-fill-sequence",
+    "kanban-move",
+    "notification-stack",
+    "search-results-populate",
+    "tab-switch-panel"
+  ]
+}

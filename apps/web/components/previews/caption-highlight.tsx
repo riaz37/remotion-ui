@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { AbsoluteFill, Loop, useVideoConfig } from "remotion";
-import { CaptionHighlight } from "../registry-exports";
+import { CaptionHighlight } from "../../registry/bases/default/primitives/caption-highlight";
 import { DEMO_CAPTIONS } from "@/lib/demo-assets";
 import { groupCaptionsIntoPages } from "@/remotion/lib/caption-utils";
 import { scaleFont } from "@/remotion/lib/layout";

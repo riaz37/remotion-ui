@@ -1,6 +1,6 @@
 "use client";
 
-import { TabSwitchPanel } from "../registry-exports";
+import { TabSwitchPanel } from "../../registry/bases/default/scenes/tab-switch-panel";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**

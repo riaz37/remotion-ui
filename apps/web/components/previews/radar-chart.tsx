@@ -1,6 +1,6 @@
 "use client";
 
-import { RadarChart } from "../registry-exports";
+import { RadarChart } from "../../registry/bases/default/primitives/radar-chart";
 import { PreviewFrame } from "./preview-frame";
 
 const AXES = ["Speed", "Polish", "Reuse", "Docs", "Types", "Motion"];

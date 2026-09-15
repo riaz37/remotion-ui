@@ -1,6 +1,6 @@
 "use client";
 
-import { transitionBlinds } from "../registry-exports";
+import { transitionBlinds } from "../../registry/bases/default/primitives/transition-blinds";
 import {
   TRANSITION_FRAMES,
   TransitionSeriesPreview,

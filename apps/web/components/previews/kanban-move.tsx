@@ -1,6 +1,6 @@
 "use client";
 
-import { KanbanMove } from "../registry-exports";
+import { KanbanMove } from "../../registry/bases/default/scenes/kanban-move";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**

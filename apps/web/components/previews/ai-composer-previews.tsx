@@ -1,13 +1,11 @@
 "use client";
 
 import { PreviewFrame } from "./preview-frame";
-import {
-  ChatGpt,
-  ClaudeChat,
-  ClaudeCode,
-  Opencode,
-  V0Composer,
-} from "../registry-exports";
+import { ChatGpt } from "../../registry/bases/default/scenes/chat-gpt";
+import { ClaudeChat } from "../../registry/bases/default/scenes/claude-chat";
+import { ClaudeCode } from "../../registry/bases/default/scenes/claude-code";
+import { Opencode } from "../../registry/bases/default/scenes/opencode";
+import { V0Composer } from "../../registry/bases/default/scenes/v0";
 
 /**
  * Dark theme: both products ship one, and a light plate was one of the last two

@@ -1,6 +1,6 @@
 "use client";
 
-import { DashedPathTravel } from "../registry-exports";
+import { DashedPathTravel } from "../../registry/bases/default/primitives/dashed-path-travel";
 import { PreviewFrame } from "./preview-frame";
 
 /**

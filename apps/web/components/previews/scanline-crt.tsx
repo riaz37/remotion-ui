@@ -1,7 +1,7 @@
 "use client";
 
 import { AbsoluteFill } from "remotion";
-import { ScanlineCrt } from "../registry-exports";
+import { ScanlineCrt } from "../../registry/bases/default/primitives/scanline-crt";
 import { PreviewFrame } from "./preview-frame";
 
 const BARS = ["#c0c0c0", "#c0c000", "#00c0c0", "#00c000", "#c000c0", "#c00000", "#0000c0"];

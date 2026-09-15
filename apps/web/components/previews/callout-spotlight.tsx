@@ -1,6 +1,6 @@
 "use client";
 
-import { CalloutSpotlight } from "../registry-exports";
+import { CalloutSpotlight } from "../../registry/bases/default/scenes/callout-spotlight";
 import { DEMO_MEDIA_PLAIN_SRC } from "@/lib/demo-assets";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 

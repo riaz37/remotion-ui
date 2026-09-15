@@ -1,6 +1,6 @@
 "use client";
 
-import { transitionCardFlip } from "../registry-exports";
+import { transitionCardFlip } from "../../registry/bases/default/primitives/transition-card-flip";
 import {
   TRANSITION_FRAMES,
   TransitionSeriesPreview,

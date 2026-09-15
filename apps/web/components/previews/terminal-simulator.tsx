@@ -1,6 +1,6 @@
 "use client";
 
-import { TerminalSimulator } from "../registry-exports";
+import { TerminalSimulator } from "../../registry/bases/default/scenes/terminal-simulator";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**

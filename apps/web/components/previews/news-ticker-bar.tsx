@@ -1,7 +1,7 @@
 "use client";
 
 import { AbsoluteFill } from "remotion";
-import { NewsTickerBar } from "../registry-exports";
+import { NewsTickerBar } from "../../registry/bases/default/scenes/news-ticker-bar";
 import { PreviewFrame } from "./preview-frame";
 
 /** Stand-in for the broadcast feed above the bar. */

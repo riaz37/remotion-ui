@@ -1,7 +1,7 @@
 "use client";
 
 import { staticFile } from "remotion";
-import { TextMaskVideo } from "../registry-exports";
+import { TextMaskVideo } from "../../registry/bases/default/primitives/text-mask-video";
 import { PreviewFrame } from "./preview-frame";
 
 /**

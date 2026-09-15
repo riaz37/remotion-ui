@@ -1,6 +1,6 @@
 "use client";
 
-import { BadgeStamp } from "../registry-exports";
+import { BadgeStamp } from "../../registry/bases/default/primitives/badge-stamp";
 import { PreviewFrame } from "./preview-frame";
 
 /**

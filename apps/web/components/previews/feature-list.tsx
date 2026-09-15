@@ -1,6 +1,6 @@
 "use client";
 
-import { FeatureList } from "../registry-exports";
+import { FeatureList } from "../../registry/bases/default/scenes/feature-list";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 

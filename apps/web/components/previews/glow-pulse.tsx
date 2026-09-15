@@ -1,6 +1,6 @@
 "use client";
 
-import { GlowPulse } from "../registry-exports";
+import { GlowPulse } from "../../registry/bases/default/primitives/glow-pulse";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame } from "./preview-frame";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { NeonFlickerText } from "../registry-exports";
+import { NeonFlickerText } from "../../registry/bases/default/primitives/neon-flicker-text";
 import { PreviewFrame } from "./preview-frame";
 
 /**
