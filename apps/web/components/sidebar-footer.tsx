@@ -12,6 +12,12 @@ export function SidebarFooter() {
         >
           Home
         </Link>
+        <Link
+          href="/sponsor"
+          className="rounded-md px-2 py-1 transition-colors hover:bg-[var(--bay-surface-raised)] hover:text-fd-foreground"
+        >
+          Sponsor
+        </Link>
       </div>
       <a
         href={siteConfig.npmUrl}

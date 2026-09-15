@@ -40,6 +40,15 @@ describe("earlyAccessInputSchema", () => {
     expect(result.success).toBe(false);
   });
 
+  it("accepts sponsor inquiries from /sponsor", () => {
+    const result = earlyAccessInputSchema.safeParse({
+      email: "a@b.co",
+      source: "sponsor-inquiry",
+    });
+
+    expect(result.success).toBe(true);
+  });
+
   it("rejects a filled honeypot", () => {
     const result = earlyAccessInputSchema.safeParse({
       email: "a@b.co",

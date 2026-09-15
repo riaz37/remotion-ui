@@ -13,6 +13,8 @@ export const EARLY_ACCESS_SOURCES = [
   "x-thread",
   "x-reply",
   "linkedin",
+  /** A company asking about the sponsor slot on /sponsor, not a Kine signup. */
+  "sponsor-inquiry",
 ] as const;
 
 export type EarlyAccessSource = (typeof EARLY_ACCESS_SOURCES)[number];

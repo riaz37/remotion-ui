@@ -11,6 +11,7 @@ import { previewMeta } from "@/lib/preview-config";
 import { CompositionPlaygroundSection } from "./composition-playground-section";
 import { InstallCommand } from "./install-command";
 import { PropsTable } from "./props-table";
+import { SponsorSlot } from "./sponsor-slot";
 
 const categoryLabels = {
   primitive: "Primitive",
@@ -194,6 +195,8 @@ export function ComponentPage({
           ) : null}
         </>
       ) : null}
+
+      <SponsorSlot />
     </>
   );
 }

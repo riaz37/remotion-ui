@@ -11,6 +11,9 @@ type EarlyAccessFormProps = {
   onSubscribed?: () => void;
   autoFocus?: boolean;
   className?: string;
+  /** Overrides for surfaces that reuse the form for something other than the waitlist. */
+  submitLabel?: string;
+  successCopy?: string;
 };
 
 const SUCCESS_COPY: Record<"created" | "duplicate", string> = {
@@ -23,6 +26,8 @@ export function EarlyAccessForm({
   onSubscribed,
   autoFocus = false,
   className = "",
+  submitLabel = "Get early access",
+  successCopy,
 }: EarlyAccessFormProps) {
   const inputId = useId();
   const [email, setEmail] = useState("");
@@ -75,7 +80,7 @@ export function EarlyAccessForm({
           aria-hidden
           className="mr-2 inline-block size-1.5 translate-y-[-2px] rounded-full bg-[var(--bay-phosphor)]"
         />
-        {SUCCESS_COPY[status]}
+        {successCopy ?? SUCCESS_COPY[status]}
       </p>
     );
   }
@@ -127,7 +132,7 @@ export function EarlyAccessForm({
           disabled={submitting}
           className="inline-flex shrink-0 items-center justify-center rounded-sm border border-[var(--bay-border-strong)] bg-[var(--bay-surface-raised)] px-4 py-2.5 text-sm font-medium text-fd-foreground transition-[border-color,transform,opacity] duration-200 hover:border-[var(--bay-phosphor)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {submitting ? "Adding you…" : "Get early access"}
+          {submitting ? "Adding you…" : submitLabel}
         </button>
       </div>
 

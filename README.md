@@ -81,6 +81,10 @@ Or point any MCP client at the [RemotionUI MCP server](packages/remotion-ui-mcp/
 
 Component ideas, bug reports, and PRs are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for the monorepo layout, dev setup, and how to author a registry component.
 
+## Sponsors
+
+RemotionUI is free and MIT-licensed. [Sponsor on GitHub](https://github.com/sponsors/riaz37), or [take the sponsor slot](https://remotionui.com/sponsor) to put your product on every component page.
+
 ## License
 
 MIT

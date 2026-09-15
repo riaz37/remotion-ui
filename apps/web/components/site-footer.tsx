@@ -26,6 +26,9 @@ export function SiteFooter() {
           <Link href="/blog" className="transition-colors hover:text-fd-foreground">
             Blog
           </Link>
+          <Link href="/sponsor" className="transition-colors hover:text-fd-foreground">
+            Sponsor
+          </Link>
           <a
             href={siteConfig.githubUrl}
             target="_blank"
