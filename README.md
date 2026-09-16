@@ -1,16 +1,18 @@
 <div align="center">
 
-<img src="apps/web/public/logo.svg" alt="RemotionUI" width="56" height="56" />
+<img src="https://raw.githubusercontent.com/riaz37/remotion-ui/main/apps/web/public/logo.svg" alt="RemotionUI" width="56" height="56" />
 
 # RemotionUI
 
-**200 copy-paste components for [Remotion](https://www.remotion.dev). Source you own, frame by frame.**
+**206 copy-paste components for [Remotion](https://www.remotion.dev). Source you own, frame by frame.**
 
 <a href="https://remotionui.com"><img src="https://img.shields.io/badge/docs-remotionui.com-e8b563?style=flat-square" alt="Docs" /></a>
 <a href="https://www.npmjs.com/package/remotion-ui"><img src="https://img.shields.io/npm/v/remotion-ui?style=flat-square&color=e8b563" alt="npm version" /></a>
+<a href="https://github.com/riaz37/remotion-ui/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/riaz37/remotion-ui/ci.yml?branch=main&style=flat-square&label=ci" alt="CI" /></a>
+<a href="https://www.npmjs.com/package/remotion-ui"><img src="https://img.shields.io/npm/dm/remotion-ui?style=flat-square&color=e8b563" alt="npm downloads" /></a>
 <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="MIT License" /></a>
 
-<img src=".github/assets/hero.gif" alt="RemotionUI: install a composition with one command, 200 components in one registry" width="820" />
+<img src="https://raw.githubusercontent.com/riaz37/remotion-ui/main/.github/assets/hero.webp" alt="The RemotionUI logo animated from its own parts over the site's phosphor light" width="700" />
 
 [Browse components](https://remotionui.com/docs/components/browse) · [Quick start](https://remotionui.com/docs/installation) · [CLI](https://remotionui.com/docs/cli) · [MCP server](https://remotionui.com/docs/mcp)
 
@@ -32,27 +34,67 @@ Or install straight from the shadcn CLI — every component is published under t
 npx shadcn@latest add @remotionui/social-clip
 ```
 
-## Why
+## What you get
 
-- **You own the source.** Components land in your repo as plain `.tsx`. No black-box npm package to fight — edit any frame, any easing, any color.
-- **Composed, not just primitives.** Full compositions (social clips, data stories, creator reels) alongside the primitives they're built from.
-- **Built for agents.** Every command speaks `--json`, plus an [agent index](https://remotionui.com/ai/components.json), [llms.txt](https://remotionui.com/llms.txt), an [MCP server](packages/remotion-ui-mcp/README.md), and an installable Claude Code skill.
+`add social-clip` writes a 9:16 clip — hook, audiogram, captions, end card — into your repo as plain `.tsx`. Register it and render:
+
+```tsx
+import { Composition } from "remotion";
+import { SocialClip } from "@/compositions/social-clip/index";
+
+export const RemotionRoot = () => (
+  <Composition
+    id="SocialClip"
+    component={SocialClip}
+    durationInFrames={228}
+    fps={30}
+    width={1080}
+    height={1920}
+    defaultProps={{
+      hookTitle: "This line stops the scroll",
+      podcastTitle: "Weekly Brief",
+      ctaTitle: "Hear the full episode",
+    }}
+  />
+);
+```
+
+Every prop is yours to change, and so is every frame behind it — the scenes, the easing, the transition timing.
+
+## Set it up with your agent
+
+Paste this into Claude Code, Cursor, or any agent with shell access:
+
+```text
+Set up RemotionUI in this project. Run `npx remotion-ui@latest init --existing --agent-skill`
+to install the CLI config and the RemotionUI agent skill, then use
+`npx remotion-ui@latest search -q <what I need> --json` to find components
+and `npx remotion-ui@latest add <name>` to install them.
+```
+
+Every command speaks `--json`. There's also an [agent index](https://remotionui.com/ai/components.json), [llms.txt](https://remotionui.com/llms.txt), and an [MCP server](packages/remotion-ui-mcp/README.md) for search-and-install over the registry.
 
 ## What's inside
 
-200 components, grouped by how they behave on the timeline:
+206 components, grouped by how they behave on the timeline:
 
 | Lane | Count | What it covers |
 |------|------:|----------------|
-| **Primitives** | 51 | Motion, text effects, backgrounds |
 | **Scenes** | 53 | Composed layouts, cards, UI blocks |
+| **Primitives** | 51 | Motion, text effects, backgrounds |
 | **Data & media** | 38 | Captions, audio, charts, live metrics |
 | **Compositions** | 21 | Full video templates, ready to render |
 | **Transitions** | 18 | `TransitionSeries` scene cuts |
 | **Paths & shapes** | 11 | SVG draw-on, logos, cursors |
 | **Maps & device** | 8 | Map scenes and device mockups |
+| **Shaders** | 5 | Full-frame GPU fields, evaluated per pixel |
+| **3D** | 1 | WebGL scenes via `@remotion/three` |
 
 [Browse the full catalog →](https://remotionui.com/docs/components/browse)
+
+## Why it holds up under render
+
+A component that looks right in the browser can still render wrong. Every component here is checked by rendering it and inspecting the actual output frames — not by screenshotting a preview — which is how the silent ones get caught: frozen tails, dead frames, `delayRender` gaps on map tiles, `Math.random()` that breaks determinism across a distributed render.
 
 ## CLI
 
@@ -65,25 +107,17 @@ npx remotion-ui@latest doctor              # diagnose config and aliases
 
 Full reference: [remotionui.com/docs/cli](https://remotionui.com/docs/cli)
 
-## Use it with your agent
-
-```bash
-npx remotion-ui@latest init --agent-skill   # install the Claude Code skill
-```
-
-Or point any MCP client at the [RemotionUI MCP server](packages/remotion-ui-mcp/README.md) to give it search-and-install over the registry.
-
 ## Guides
 
-[Captions](https://remotionui.com/docs/guides/captions) · [Audio visualization](https://remotionui.com/docs/guides/audio-viz) · [Transitions](https://remotionui.com/docs/guides/transitions) · [Motion tokens](https://remotionui.com/docs/guides/motion-tokens) · [Maps](https://remotionui.com/docs/guides/maps) · [Authoring scenes](https://remotionui.com/docs/guides/authoring-scenes)
+**Build** — [Authoring scenes](https://remotionui.com/docs/guides/authoring-scenes) · [Motion tokens](https://remotionui.com/docs/guides/motion-tokens) · [Transitions](https://remotionui.com/docs/guides/transitions)
+
+**Media** — [Captions](https://remotionui.com/docs/guides/captions) · [Audio visualization](https://remotionui.com/docs/guides/audio-viz) · [Maps](https://remotionui.com/docs/guides/maps)
 
 ## Contributing
 
 Component ideas, bug reports, and PRs are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for the monorepo layout, dev setup, and how to author a registry component.
 
-## Sponsors
-
-RemotionUI is free and MIT-licensed. [Take the sponsor slot](https://remotionui.com/sponsor) to put your product on every component page.
+Built by [@riaz37](https://github.com/riaz37). If RemotionUI saved you a render, a ⭐ is how other people find it.
 
 ## License
 
