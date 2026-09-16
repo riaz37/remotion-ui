@@ -231,6 +231,7 @@ const PREVIEWS: Record<string, PreviewLoader> = {
   "map-heat-overlay": () => import("./previews/map-heat-overlay").then((m) => ({ default: m.MapHeatOverlayPreview })),
   "globe-arc": () => import("./previews/globe-arc").then((m) => ({ default: m.GlobeArcPreview })),
   "multi-device-lineup": () => import("./previews/multi-device-lineup").then((m) => ({ default: m.MultiDeviceLineupPreview })),
+  "device-mockup-3d": () => import("./previews/device-mockup-3d").then((m) => ({ default: m.DeviceMockup3DPreview })),
 };
 
 export function AtlasMiniPreview({

@@ -44,6 +44,15 @@ export const EXPORT_OVERRIDES: Record<
   "map-markers": { renderFlags: [...GL_RENDER_FLAGS] },
   "map-route": { renderFlags: [...GL_RENDER_FLAGS] },
   "transition-light-leak": { renderFlags: [...GL_RENDER_FLAGS] },
+  // The digit in the slug defeats preview auto-discovery: `DeviceMockup3DPreview`
+  // kebab-cases to `device-mockup3-d`, so the wrapper is named here.
+  "device-mockup-3d": {
+    renderFlags: [...GL_RENDER_FLAGS],
+    source: {
+      importPath: "@/components/previews/device-mockup-3d",
+      exportName: "DeviceMockup3DPreview",
+    },
+  },
   v0: {
     source: {
       importPath: "@/components/previews/ai-composer-previews",

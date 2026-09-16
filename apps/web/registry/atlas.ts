@@ -15,6 +15,12 @@ export const ATLAS_LANES = {
     label: "Maps & device",
     description: "Map scenes and device mockups",
   },
+  // Quoted, and not an integer-like key, so it keeps its insertion order in
+  // Object.keys() — the order getAtlasSections() lays lanes out in.
+  "3d": {
+    label: "3D",
+    description: "WebGL scenes rendered with @remotion/three",
+  },
   blocks: {
     label: "Scenes",
     description: "Composed layouts, cards, and UI blocks",
@@ -52,6 +58,7 @@ export const TAG_GROUPS: Record<AtlasLane, AtlasTagGroup[]> = {
   ],
   vectors: [],
   spatial: [],
+  "3d": [],
   blocks: [
     { tag: "ai", label: "AI composers", minItems: 3 },
     { tag: "code", label: "Code & terminal", minItems: 3 },
@@ -373,6 +380,8 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   "map-heat-overlay": { lane: "spatial", drive: "spatial", tier: "advanced" },
   "globe-arc": { lane: "spatial", drive: "spatial", tier: "advanced" },
   "multi-device-lineup": { lane: "spatial", drive: "spatial", tier: "advanced" },
+  // 3D
+  "device-mockup-3d": { lane: "3d", drive: "time", tier: "advanced", tags: ["device"] },
 };
 
 export function getAtlasMeta(name: string): AtlasMeta | undefined {

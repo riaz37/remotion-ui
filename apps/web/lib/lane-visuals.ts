@@ -29,6 +29,11 @@ export const LANE_VISUALS: Record<AtlasLane, LaneVisual> = {
     hue: 155,
     iconPath: "M12 4c-4 6-4 10 0 16 4-6 4-10 0-16z",
   },
+  "3d": {
+    label: ATLAS_LANES["3d"].label,
+    hue: 110,
+    iconPath: "M12 3l8 4.5v9L12 21l-8-4.5v-9zM4 7.5l8 4.5 8-4.5M12 12v9",
+  },
   blocks: {
     label: ATLAS_LANES.blocks.label,
     hue: 48,

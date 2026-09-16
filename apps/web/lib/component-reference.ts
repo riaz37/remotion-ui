@@ -5007,6 +5007,27 @@ const [map, setMap] = useState<Map | null>(null);
     note: "Each screen is a real element at that device's own pixel size, not one screenshot scaled three ways — pass the same children and a responsive layout lays itself out per width, which is the only reason to show three devices. Devices land smallest first so the laptop arrives onto a lineup that already exists. Hardware ratios are the real ones, and the laptop's base and hinge are drawn as their own strip. For one device with a camera move into the screen, use device-mockup-zoom.",
     related: ["device-mockup-zoom", "tab-switch-panel", "notification-stack"],
   },
+  "device-mockup-3d": {
+    category: "scene",
+    usage: `import { staticFile } from "remotion";
+import { DeviceMockup3D } from "@/remotion/scenes/device-mockup-3d";
+
+// Render with --gl=angle
+<DeviceMockup3D src={staticFile("app.png")} />`,
+    props: [
+      { name: "src", type: "string", default: "hosted demo screenshot", description: "Screenshot on the screen. A bright UI reads best; a mostly black image reads as a slab." },
+      { name: "screenAspect", type: "number", description: "Screen width / height. Omit to use the image's own ratio." },
+      { name: "backgroundColor", type: "string", default: '"#0a0c11"', description: "Outer backdrop." },
+      { name: "glowColor", type: "string", default: '"#1c212c"', description: "Soft glow behind the device." },
+      { name: "floorColor", type: "string", default: '"#3a404c"', description: "Lit floor pool the contact shadow falls on. Keep it lighter than the backdrop." },
+      { name: "bodyColor", type: "string", default: '"#9ba1ab"', description: "Aluminium body." },
+      { name: "rimColor", type: "string", default: '"#7aa2ff"', description: "Cool rim light from the left." },
+      { name: "accentColor", type: "string", default: '"#ffb27a"', description: "Warm accent light from the right." },
+      { name: "glare", type: "number", default: "1", description: "Strength of the glass reflection over the screen, 0–1." },
+    ],
+    note: "A lit WebGL scene on @remotion/three — render with --gl=angle. The shot paces itself to the composition length: the laptop settles as the lid opens, then turns and pushes in, with a slow drift under both so the last frame never parks. Deterministic by construction: motion comes only from useCurrentFrame(), the screen image loads behind delayRender, and the environment is built from Lightformers instead of a CDN HDRI. For a CSS mockup with staged UI and no WebGL, use device-mockup-zoom.",
+    related: ["device-mockup-zoom", "multi-device-lineup"],
+  },
 };
 
 export function getComponentReference(name: string): ComponentReference | undefined {
