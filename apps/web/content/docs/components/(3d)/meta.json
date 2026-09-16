@@ -3,6 +3,10 @@
   "pagesIndex": "3d",
   "defaultOpen": false,
   "pages": [
-    "device-mockup-3d"
+    "device-mockup-3d",
+    "product-turntable-3d",
+    "text-extrude-3d",
+    "card-stack-3d",
+    "globe-points-3d"
   ]
 }

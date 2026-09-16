@@ -60,6 +60,36 @@ export const EXPORT_OVERRIDES: Record<
       exportName: "DeviceMockup3DPreview",
     },
   },
+  // Same digit trap as above, and the scaffold names these wrappers `…3dPreview`
+  // with a lowercase d, so neither casing round-trips through auto-discovery.
+  "product-turntable-3d": {
+    renderFlags: [...GL_RENDER_FLAGS],
+    source: {
+      importPath: "@/components/previews/product-turntable-3d",
+      exportName: "ProductTurntable3dPreview",
+    },
+  },
+  "text-extrude-3d": {
+    renderFlags: [...GL_RENDER_FLAGS],
+    source: {
+      importPath: "@/components/previews/text-extrude-3d",
+      exportName: "TextExtrude3dPreview",
+    },
+  },
+  "card-stack-3d": {
+    renderFlags: [...GL_RENDER_FLAGS],
+    source: {
+      importPath: "@/components/previews/card-stack-3d",
+      exportName: "CardStack3dPreview",
+    },
+  },
+  "globe-points-3d": {
+    renderFlags: [...GL_RENDER_FLAGS],
+    source: {
+      importPath: "@/components/previews/globe-points-3d",
+      exportName: "GlobePoints3dPreview",
+    },
+  },
   v0: {
     source: {
       importPath: "@/components/previews/ai-composer-previews",

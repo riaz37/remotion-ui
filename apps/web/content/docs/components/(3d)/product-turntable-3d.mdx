@@ -1,0 +1,20 @@
+---
+title: Product Turntable 3d
+description: A product on a studio turntable: the model turns a full revolution under a soft key and rim while the camera holds, with a contact shadow anchoring it to the floor. Install with npx remotion-ui@latest add product-turntable-3d.
+---
+
+import { ProductTurntable3dPreview } from '@/components/previews/product-turntable-3d';
+
+<ComponentPage name="product-turntable-3d" preview={ProductTurntable3dPreview} durationInFrames={120}>
+
+A product on a studio turntable: the model turns a full revolution under a soft key and rim while the camera holds, with a contact shadow anchoring it to the floor. Takes a GLTF via prop and falls back to a built-in primitive, so it is the generic product shot device-mockup-3d is not.
+
+## Usage
+
+```tsx
+import { ProductTurntable3d } from "@/remotion/scenes/product-turntable-3d";
+
+<ProductTurntable3d />
+```
+
+</ComponentPage>

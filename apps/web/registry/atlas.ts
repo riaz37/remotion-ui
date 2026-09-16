@@ -393,6 +393,10 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   "grain-gradient-bg": { lane: "shaders", drive: "time", tier: "advanced", tags: ["background"] },
   "light-tunnel-bg": { lane: "shaders", drive: "time", tier: "advanced", tags: ["background"] },
   "text-reveal-shader": { lane: "shaders", drive: "time", tier: "advanced", tags: ["text"] },
+  "product-turntable-3d": { lane: "3d", drive: "time", tier: "advanced" },
+  "text-extrude-3d": { lane: "3d", drive: "time", tier: "advanced" },
+  "card-stack-3d": { lane: "3d", drive: "time", tier: "advanced" },
+  "globe-points-3d": { lane: "3d", drive: "time", tier: "advanced" },
 };
 
 export function getAtlasMeta(name: string): AtlasMeta | undefined {

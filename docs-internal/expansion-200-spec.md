@@ -214,15 +214,27 @@ Weights shifted after dedup: spatial collapsed from +8 to +3 because `device-moc
 
 ---
 
-## 3d — +1
+## 3d — +5
 
 Outside the 200 allocation: the first entry in a new lane for `@remotion/three` scenes. Every 3D entry carries `@remotion/three`, `three`, `@react-three/fiber` and `@react-three/drei` as dependencies and renders with `--gl=angle`.
 
 | Slug | Tier | Intent |
 |---|---|---|
 | `device-mockup-3d` | advanced | Laptop product shot in real 3D: the lid opens, then the camera turns and pushes in over a lit floor. Not a fork of `device-mockup-zoom` — that one is a CSS mockup with staged UI; this one is a lit WebGL model with glass reflections and a contact shadow. |
+| `product-turntable-3d` | advanced | A product on a studio turntable: the model turns a full revolution under a soft key and rim while the camera holds, with a contact shadow anchoring it to the floor. Takes a GLTF via prop and falls back to a built-in primitive, so it is the generic product shot `device-mockup-3d` is not. |
+| `text-extrude-3d` | advanced | Extruded 3D headline with a lit bevel: the letters rise and settle as the camera pulls back across them. Distinct from `stroke-to-fill-text` and the other atoms, which are flat SVG or DOM type with no real depth or lighting. |
+| `card-stack-3d` | advanced | A stack of physical cards fanning out in depth, each with real thickness and an edge highlight, turning to face the camera. The 3D counterpart to flat card reveals: the depth is geometry, not a CSS perspective trick. |
+| `globe-points-3d` | advanced | Lit sphere with instanced city markers and arcs rising between them, turning slowly under a rim light. The real-3D counterpart to the flat `globe-arc` projection, with genuine occlusion as markers pass behind the horizon. |
 
 > **Determinism:** all motion from `useCurrentFrame()` — no r3f `useFrame` animation, no clock-driven drei helpers (`Float`, `Sparkles`, …). Textures load by hand behind `useDelayRender`, not drei `useTexture`. `<Environment>` is built from `<Lightformer>` children; presets fetch HDRIs from a CDN.
+>
+> **Banned drei helpers** (each animates off the wall clock or accumulates across real render calls, so a preview scrub and a headless render disagree): `Float`, `Sparkles`, `Stars`, `Cloud`, `Trail`, `CameraShake`, `OrbitControls autoRotate`, `AccumulativeShadows` in `temporal` mode, and the `speed` prop on `MeshDistortMaterial` / `MeshWobbleMaterial`. Reimplement the motion as a sine or seeded-noise function of `frame / fps`, or pass `speed={0}` and drive the material's `time` uniform explicitly.
+>
+> **Safe as shipped:** `Environment`, `Lightformer`, `ContactShadows`, `RoundedBox`, `Text3D`, `Center`, `Instances`/`Instance`, `Billboard`, `Edges`, `Outlines`, `Backdrop`, `Grid`, `GradientTexture`, `Merged`, `Detailed`, `MeshTransmissionMaterial`, `MeshReflectorMaterial`, and the `shaderMaterial` factory when every uniform is passed as a frame-derived prop.
+>
+> **GLTF:** load by hand behind `useDelayRender` and hold the handle until a frame has actually drawn, as `device-mockup-3d` does for its screen texture. Clip animation never uses `.play()` with the auto-advancing mixer: play once to initialise, then set the pose absolutely with `mixer.setTime(frame / fps)` in a layout effect, which is idempotent and survives the non-sequential frame order a render can use. Never `mixer.update(delta)`.
+>
+> **Postprocessing:** velocity-buffer effects (motion blur) have no previous frame to work from under per-frame capture, and any effect reaching for `Math.random()`, `Date.now()` or `performance.now()` in a uniform breaks determinism. Audit before adding.
 
 ---
 
