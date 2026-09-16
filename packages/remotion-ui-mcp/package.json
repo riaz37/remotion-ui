@@ -44,11 +44,11 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
     "remotion-ui": "^0.8.0",
-    "zod": "^4.4.3"
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@remotionui/typescript-config": "workspace:*",
-    "@types/node": "^25.9.5",
+    "@types/node": "^26.5.1",
     "tsup": "^8.3.6",
     "typescript": "^6.0.3",
     "vitest": "^4.1.11"
