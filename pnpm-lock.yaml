@@ -26,6 +26,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@paper-design/shaders-react':
+        specifier: 0.0.80
+        version: 0.0.80(@types/react@19.2.18)(react@19.2.8)
       '@react-three/drei':
         specifier: ^10.7.8
         version: 10.7.8(@react-three/fiber@9.7.0(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(three@0.186.0))(@types/react@19.2.18)(@types/three@0.186.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(three@0.186.0)
@@ -60,8 +63,8 @@ importers:
         specifier: ^4.0.524
         version: 4.0.525(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@remotion/three':
-        specifier: 4.0.524
-        version: 4.0.524(@react-three/fiber@9.7.0(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(three@0.186.0))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(remotion@4.0.525(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(three@0.186.0)
+        specifier: 4.0.525
+        version: 4.0.525(@react-three/fiber@9.7.0(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(three@0.186.0))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(remotion@4.0.525(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(three@0.186.0)
       '@remotion/transitions':
         specifier: ^4.0.524
         version: 4.0.525(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -1374,6 +1377,18 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@paper-design/shaders-react@0.0.80':
+    resolution: {integrity: sha512-Y1oxUeh5D2AECo05O+4UYRbaMfQzKKYH3Q5jcvirOcoX0hTPYbezCLn5g94nvcuzxy5LN/uqwsL3jDUp8r3E+A==}
+    peerDependencies:
+      '@types/react': ^18 || ^19
+      react: ^18 || ^19
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
+  '@paper-design/shaders@0.0.80':
+    resolution: {integrity: sha512-pcabvt5xDlFoEhpjUj4b1tGJMfqb0i5mXifWMNQf6z7FoOJYxYDo7F8R6k0JAh5D/7ouxjX5+N0cIq5WURyQ1Q==}
+
   '@pnpm/deps.graph-sequencer@1100.0.1':
     resolution: {integrity: sha512-pOr5+q1fLYKwFN3LAJuGZEnfXDcQ73zqgDHMtGy+K+uIoUqyY+6MeDCWFwfu+4EFuq76I5EPFofoNAI+Bmmq4A==}
     engines: {node: '>=22.13'}
@@ -1912,13 +1927,13 @@ packages:
       '@remotion/whisper-webgpu':
         optional: true
 
-  '@remotion/three@4.0.524':
-    resolution: {integrity: sha512-7iA3YcVXEbBwK0ZyU2fzRiaa4GxQSrorg1wWXfDKbvK966Walno5BseBkV11ioGxUpN+Q0R87f/CXYcZ6USp5A==}
+  '@remotion/three@4.0.525':
+    resolution: {integrity: sha512-QcrXfnj2N0lWe5VmjHf+XQ+QpQvSqlqlj/LRmhlwcgOsRARmZ/QZtH374G7v550FMhJifQHZO66oEmtGP3Y2Ag==}
     peerDependencies:
       '@react-three/fiber': '>=8.0.0'
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
-      remotion: 4.0.524
+      remotion: 4.0.525
       three: '>=0.137.0'
 
   '@remotion/timeline-utils@4.0.525':
@@ -6425,6 +6440,15 @@ snapshots:
   '@next/swc-win32-x64-msvc@16.2.7':
     optional: true
 
+  '@paper-design/shaders-react@0.0.80(@types/react@19.2.18)(react@19.2.8)':
+    dependencies:
+      '@paper-design/shaders': 0.0.80
+      react: 19.2.8
+    optionalDependencies:
+      '@types/react': 19.2.18
+
+  '@paper-design/shaders@0.0.80': {}
+
   '@pnpm/deps.graph-sequencer@1100.0.1': {}
 
   '@radix-ui/number@1.1.3': {}
@@ -7120,7 +7144,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@remotion/three@4.0.524(@react-three/fiber@9.7.0(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(three@0.186.0))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(remotion@4.0.525(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(three@0.186.0)':
+  '@remotion/three@4.0.525(@react-three/fiber@9.7.0(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(three@0.186.0))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(remotion@4.0.525(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(three@0.186.0)':
     dependencies:
       '@react-three/fiber': 9.7.0(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(three@0.186.0)
       react: 19.2.8
