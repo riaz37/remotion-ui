@@ -5,6 +5,7 @@ import { AbsoluteFill, Sequence, useVideoConfig } from "remotion";
 import { WaveformBarsRadial } from "../../registry/bases/default/primitives/waveform-bars-radial";
 import { useDemoAudioSrc } from "@/lib/demo-assets-audio";
 import { PreviewFrame } from "./preview-frame";
+import { usePreviewStage } from "./preview-stage";
 
 /**
  * The ring reacts to the demo loop, so every frame differs from the last; the
@@ -13,6 +14,7 @@ import { PreviewFrame } from "./preview-frame";
  */
 export const WaveformBarsRadialPreview: React.FC = () => {
   const { fps } = useVideoConfig();
+  const tokens = usePreviewStage();
   const audioSrc = useDemoAudioSrc();
   // Shared in-memory copy; see lib/demo-assets-audio.ts.
   if (!audioSrc) return null;
@@ -43,7 +45,7 @@ export const WaveformBarsRadialPreview: React.FC = () => {
             <div style={{ textAlign: "center" }}>
               <div
                 style={{
-                  color: "#fafafa",
+                  color: tokens.ink,
                   fontSize: 34,
                   fontWeight: 700,
                   lineHeight: 1.1,
@@ -53,7 +55,7 @@ export const WaveformBarsRadialPreview: React.FC = () => {
               </div>
               <div
                 style={{
-                  color: "rgba(250,250,250,0.55)",
+                  color: tokens.muted,
                   fontSize: 20,
                   fontWeight: 600,
                   marginTop: 6,

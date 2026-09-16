@@ -12,5 +12,10 @@ export const TransitionDirectionalWipePreview: React.FC = () => (
       durationInFrames: TRANSITION_FRAMES,
       direction: "from-left",
     })}
+    label={{
+      name: "Directional wipe",
+      beforeDetail: "Covered by a wipe sweeping in from the left",
+      afterDetail: "Uncovered as the wipe clears to the right",
+    }}
   />
 );

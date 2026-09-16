@@ -1,7 +1,6 @@
 "use client";
 
 import { TopographicLinesBg } from "../../registry/bases/default/primitives/topographic-lines-bg";
-import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, ProductCard } from "./preview-frame";
 
 /**
@@ -24,9 +23,9 @@ export const TopographicLinesBgPreview: React.FC = () => (
     />
     <PreviewFrame lane="blocks" backgroundColor="transparent" padding={72}>
       <ProductCard
-        kicker="Ambient layer"
+        kicker="Contour map"
         title="Topographic lines"
-        detail={DEMO_COPY.creatorHook.subtitle}
+        detail="Two peaks emit rings that travel from ridge to rim."
       />
     </PreviewFrame>
   </PreviewFrame>

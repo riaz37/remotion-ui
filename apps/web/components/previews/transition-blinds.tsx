@@ -18,5 +18,10 @@ export const TransitionBlindsPreview: React.FC = () => (
       durationInFrames: TRANSITION_FRAMES,
       orientation: "horizontal", slats: 12,
     })}
+    label={{
+      name: "Blinds",
+      beforeDetail: "Twelve horizontal slats close over the frame",
+      afterDetail: "The slats open to reveal the next scene",
+    }}
   />
 );

@@ -17,5 +17,10 @@ export const TransitionLiquidWarpPreview: React.FC = () => (
     transition={transitionLiquidWarp({
       durationInFrames: TRANSITION_FRAMES,
     })}
+    label={{
+      name: "Liquid warp",
+      beforeDetail: "Distorts as if pulled through liquid",
+      afterDetail: "Settles once the warp releases",
+    }}
   />
 );

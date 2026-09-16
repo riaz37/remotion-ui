@@ -154,6 +154,7 @@ const PREVIEWS: Record<string, PreviewLoader> = {
   "text-mask-video": () => import("./previews/text-mask-video").then((m) => ({ default: m.TextMaskVideoPreview })),
   "handwriting-text": () => import("./previews/handwriting-text").then((m) => ({ default: m.HandwritingTextPreview })),
   "stroke-to-fill-text": () => import("./previews/stroke-to-fill-text").then((m) => ({ default: m.StrokeToFillTextPreview })),
+  "strikethrough-replace": () => import("./previews/strikethrough-replace").then((m) => ({ default: m.StrikethroughReplacePreview })),
   "variable-font-morph": () => import("./previews/variable-font-morph").then((m) => ({ default: m.VariableFontMorphPreview })),
   "liquid-text-morph": () => import("./previews/liquid-text-morph").then((m) => ({ default: m.LiquidTextMorphPreview })),
   "wave-text": () => import("./previews/wave-text").then((m) => ({ default: m.WaveTextPreview })),
@@ -239,6 +240,21 @@ const PREVIEWS: Record<string, PreviewLoader> = {
   "grain-gradient-bg": () => import("./previews/grain-gradient-bg").then((m) => ({ default: m.GrainGradientBgPreview })),
 };
 
+/**
+ * Tile-only playback window. `infinite-marquee` and `perspective-marquee`
+ * declare a 1800-frame (60s) duration in `lib/preview-config.ts` so the doc
+ * page shows a full loop before the `Player` restarts it — that number is
+ * correct there. A contact-sheet or atlas-grid tile is ~308px: nothing needs
+ * a 60-second loop to read as "this scrolls." Cap what the *tile* plays
+ * without touching the composition's real duration (`previewMeta` stays the
+ * single source everywhere else — the doc page, the still audit, etc.).
+ */
+const TILE_MAX_DURATION = 180;
+const TILE_DURATION_OVERRIDES: Record<string, number> = {
+  "infinite-marquee": TILE_MAX_DURATION,
+  "perspective-marquee": TILE_MAX_DURATION,
+};
+
 export function AtlasMiniPreview({
   slug,
   lane,
@@ -278,7 +294,8 @@ function LivePreview({
 }) {
   const playerRef = useRef<PlayerRef>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const { width, height, durationInFrames: duration } = previewMeta(slug);
+  const { width, height, durationInFrames: fullDuration } = previewMeta(slug);
+  const duration = TILE_DURATION_OVERRIDES[slug] ?? fullDuration;
   const aspectRatio =
     aspectRatioProp ?? (height > width ? "9 / 16" : "16 / 9");
 

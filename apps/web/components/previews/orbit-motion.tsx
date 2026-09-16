@@ -2,25 +2,30 @@
 
 import { OrbitMotion } from "../../registry/bases/default/primitives/orbit-motion";
 import { PreviewFrame } from "./preview-frame";
+import { PREVIEW_RADIUS, usePreviewStage } from "./preview-stage";
 
 const SATELLITES = ["Scenes", "Atoms", "Cuts", "Blocks"];
 
-const Chip: React.FC<{ label: string }> = ({ label }) => (
-  <div
-    style={{
-      padding: "16px 28px",
-      borderRadius: 999,
-      background: "rgba(255,255,255,0.07)",
-      border: "1px solid rgba(255,255,255,0.16)",
-      color: "#ececec",
-      fontSize: 28,
-      fontWeight: 600,
-      whiteSpace: "nowrap",
-    }}
-  >
-    {label}
-  </div>
-);
+const Chip: React.FC<{ label: string }> = ({ label }) => {
+  const tokens = usePreviewStage();
+
+  return (
+    <div
+      style={{
+        padding: "16px 28px",
+        borderRadius: PREVIEW_RADIUS.pill,
+        background: "rgba(255,255,255,0.07)",
+        border: "1px solid rgba(255,255,255,0.16)",
+        color: tokens.ink,
+        fontSize: 28,
+        fontWeight: 600,
+        whiteSpace: "nowrap",
+      }}
+    >
+      {label}
+    </div>
+  );
+};
 
 const Hub: React.FC = () => (
   <div

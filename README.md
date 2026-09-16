@@ -12,7 +12,7 @@
 <a href="https://www.npmjs.com/package/remotion-ui"><img src="https://img.shields.io/npm/dm/remotion-ui?style=flat-square&color=e8b563" alt="npm downloads" /></a>
 <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="MIT License" /></a>
 
-<img src="https://raw.githubusercontent.com/riaz37/remotion-ui/main/.github/assets/hero.webp" alt="The RemotionUI logo animated from its own parts over the site's phosphor light" width="700" />
+<img src="https://raw.githubusercontent.com/riaz37/remotion-ui/main/.github/assets/readme-hero.webp" alt="The RemotionUI mark and install command beside a grid of component tiles flipping between layouts" width="700" />
 
 [Browse components](https://remotionui.com/docs/components/browse) · [Quick start](https://remotionui.com/docs/installation) · [CLI](https://remotionui.com/docs/cli) · [MCP server](https://remotionui.com/docs/mcp)
 

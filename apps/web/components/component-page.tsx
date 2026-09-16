@@ -46,6 +46,7 @@ export function ComponentPage({
   // the render harness read, so a doc page can never play a component at a
   // size or length nobody else uses.
   const meta = previewMeta(name);
+  const atlas = getAtlasMeta(name);
   const previewNode = preview ? (
     <SceneMonitorPreview
       name={name}
@@ -55,11 +56,11 @@ export function ComponentPage({
       previewHeight={previewHeight ?? meta.height}
       previewLoop={previewLoop}
       inputProps={inputProps}
+      lane={atlas?.lane}
     />
   ) : null;
 
   const reference = getComponentReference(name);
-  const atlas = getAtlasMeta(name);
 
   const categoryLabel = reference ? categoryLabels[reference.category] : null;
   const metaParts = [

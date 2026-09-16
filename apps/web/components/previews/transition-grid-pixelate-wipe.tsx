@@ -11,5 +11,10 @@ export const TransitionGridPixelateWipePreview: React.FC = () => (
     transition={transitionGridPixelateWipe({
       durationInFrames: TRANSITION_FRAMES,
     })}
+    label={{
+      name: "Grid pixelate wipe",
+      beforeDetail: "Dissolves into a mosaic of blocks",
+      afterDetail: "Resolves back out of the pixel grid",
+    }}
   />
 );

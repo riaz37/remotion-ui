@@ -11,5 +11,10 @@ export const TransitionChromaticAberrationWipePreview: React.FC = () => (
     transition={transitionChromaticAberrationWipe({
       durationInFrames: TRANSITION_FRAMES,
     })}
+    label={{
+      name: "Chromatic aberration wipe",
+      beforeDetail: "Colour channels split apart as the wipe passes",
+      afterDetail: "Channels re-converge on the new scene",
+    }}
   />
 );

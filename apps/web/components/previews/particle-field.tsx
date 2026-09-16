@@ -1,7 +1,6 @@
 "use client";
 
 import { ParticleField } from "../../registry/bases/default/primitives/particle-field";
-import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, ProductCard } from "./preview-frame";
 
 /**
@@ -15,9 +14,9 @@ export const ParticleFieldPreview: React.FC = () => (
     <ParticleField count={80} size={18} minSize={3} speed={1.35} glow={1.8} drift={5} />
     <PreviewFrame lane="blocks" backgroundColor="transparent" padding={72}>
       <ProductCard
-        kicker="Ambient layer"
+        kicker="Drifting particles"
         title="Particle field"
-        detail={DEMO_COPY.creatorHook.subtitle}
+        detail="Eighty glowing particles drift the frame at their own pace."
       />
     </PreviewFrame>
   </PreviewFrame>

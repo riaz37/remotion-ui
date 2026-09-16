@@ -2,16 +2,15 @@
 
 import { MeshGradientBg } from "../../registry/bases/default/primitives/mesh-gradient-bg";
 import { PreviewFrame, ProductCard } from "./preview-frame";
-import { DEMO_COPY } from "@/lib/demo-assets";
 
 export const MeshGradientBgPreview: React.FC = () => (
   <PreviewFrame lane="atoms" padding={0}>
     <MeshGradientBg />
     <PreviewFrame lane="blocks" backgroundColor="transparent" padding={72}>
       <ProductCard
-        kicker="Ambient layer"
+        kicker="Mesh blend"
         title="Mesh gradient"
-        detail={DEMO_COPY.productLaunch.subtitle}
+        detail="Soft colour fields blend and drift across a mesh grid."
       />
     </PreviewFrame>
   </PreviewFrame>

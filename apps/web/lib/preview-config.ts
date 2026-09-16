@@ -162,6 +162,10 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "text-mask-video": { durationInFrames: 120 },
   "handwriting-text": { durationInFrames: 120 },
   "stroke-to-fill-text": { durationInFrames: 120 },
+  /* Three staggered corrections; the last starts at delay 70 and runs
+   * strike(18) + hold(5) + depart(14) + replaceDelay(12) + replace(22) = 71
+   * more frames, so it needs 141+ to resolve instead of freezing mid-swap. */
+  "strikethrough-replace": { durationInFrames: 150 },
   "variable-font-morph": { durationInFrames: 120 },
   "liquid-text-morph": { durationInFrames: 120 },
   "wave-text": { durationInFrames: 120 },

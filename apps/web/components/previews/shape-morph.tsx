@@ -4,7 +4,7 @@ import { interpolate, useCurrentFrame } from "remotion";
 import { ShapeMorph } from "../../registry/bases/default/primitives/shape-morph";
 import { EASING } from "@/remotion/lib/motion-tokens";
 import { PreviewFrame } from "./preview-frame";
-import { usePreviewStage } from "./preview-stage";
+import { PREVIEW_TRACKING, usePreviewStage } from "./preview-stage";
 
 const SHAPES = ["circle", "squircle", "triangle", "diamond"] as const;
 
@@ -58,7 +58,7 @@ const ShapeCaption: React.FC = () => {
           color: tokens.ink,
           fontSize: 40,
           fontWeight: 600,
-          letterSpacing: 0,
+          letterSpacing: PREVIEW_TRACKING,
         }}
       >
         {SHAPES[index]}

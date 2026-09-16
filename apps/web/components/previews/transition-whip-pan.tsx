@@ -18,5 +18,10 @@ export const TransitionWhipPanPreview: React.FC = () => (
       durationInFrames: TRANSITION_FRAMES,
       direction: "from-left",
     })}
+    label={{
+      name: "Whip pan",
+      beforeDetail: "Blurs into a fast whip pan to the left",
+      afterDetail: "Snaps back into focus as the pan lands",
+    }}
   />
 );

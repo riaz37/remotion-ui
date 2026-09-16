@@ -1,7 +1,6 @@
 "use client";
 
 import { DitherFieldBg } from "../../registry/bases/default/primitives/dither-field-bg";
-import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, ProductCard } from "./preview-frame";
 
 /**
@@ -14,9 +13,9 @@ export const DitherFieldBgPreview: React.FC = () => (
     <DitherFieldBg />
     <PreviewFrame lane="blocks" backgroundColor="transparent" padding={72}>
       <ProductCard
-        kicker="Ambient layer"
+        kicker="Quantised grid"
         title="Dither field"
-        detail={DEMO_COPY.productLaunch.subtitle}
+        detail="A quantised noise grid tests contrast against small text."
       />
     </PreviewFrame>
   </PreviewFrame>

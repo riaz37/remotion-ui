@@ -2,7 +2,12 @@ import type { CSSProperties, ReactNode } from "react";
 import { loadFont as loadInter } from "@remotion/google-fonts/Inter";
 import { loadFont as loadMono } from "@remotion/google-fonts/JetBrainsMono";
 import { AbsoluteFill } from "remotion";
-import { usePreviewStage } from "./preview-stage";
+import type { AtlasLane } from "@/lib/atlas";
+import {
+  PREVIEW_RADIUS,
+  PREVIEW_TRACKING,
+  usePreviewStage,
+} from "./preview-stage";
 
 /**
  * Real faces for the whole preview stage.
@@ -34,17 +39,6 @@ export const PREVIEW_UI_FONT = `${uiFontFamily}, system-ui, sans-serif`;
 /** JetBrains Mono, for terminals and code plates. */
 export const PREVIEW_MONO_FONT = `${monoFontFamily}, SFMono-Regular, Menlo, Consolas, monospace`;
 
-type PreviewLane =
-  | "atoms"
-  | "signals"
-  | "vectors"
-  | "spatial"
-  | "3d"
-  | "shaders"
-  | "cuts"
-  | "blocks"
-  | "reels";
-
 export const previewTextStyle: CSSProperties = {
   color: "#ececec",
   fontSize: 52,
@@ -52,13 +46,13 @@ export const previewTextStyle: CSSProperties = {
   textAlign: "center",
   lineHeight: 1,
   fontWeight: 600,
-  letterSpacing: 0,
+  letterSpacing: PREVIEW_TRACKING,
 };
 
 /** Full-frame scene root: neutral studio stage. */
 export const PreviewFrame: React.FC<{
   children: ReactNode;
-  lane?: PreviewLane;
+  lane?: AtlasLane;
   backgroundColor?: string;
   justifyContent?: CSSProperties["justifyContent"];
   alignItems?: CSSProperties["alignItems"];
@@ -120,13 +114,9 @@ export const PreviewGhostStack: React.FC<{
   </div>
 );
 
-export function laneAccent(_lane: PreviewLane): string {
-  return "#ececec";
-}
-
 export const PreviewKicker: React.FC<{
   children: ReactNode;
-  lane?: PreviewLane;
+  lane?: AtlasLane;
 }> = ({ children }) => {
   const tokens = usePreviewStage();
 
@@ -158,7 +148,7 @@ export const PreviewHeadline: React.FC<{
       fontSize: size,
       lineHeight: 0.94,
       fontWeight: 600,
-      letterSpacing: 0,
+      letterSpacing: PREVIEW_TRACKING,
       textAlign: "center",
     }}
   >
@@ -171,7 +161,7 @@ export const ProductCard: React.FC<{
   kicker: string;
   title: string;
   detail?: string;
-  lane?: PreviewLane;
+  lane?: AtlasLane;
 }> = ({ kicker, title, detail }) => {
   const tokens = usePreviewStage();
 
@@ -183,7 +173,7 @@ export const ProductCard: React.FC<{
         display: "grid",
         alignContent: "center",
         gap: 16,
-        borderRadius: 8,
+        borderRadius: PREVIEW_RADIUS.panel,
         padding: "40px 48px",
         background: tokens.panelFill,
         border: `1px solid ${tokens.panelBorder}`,
@@ -212,7 +202,7 @@ export const MetricPanel: React.FC<{
   label: string;
   value: ReactNode;
   delta: string;
-  lane?: PreviewLane;
+  lane?: AtlasLane;
 }> = ({ label, value, delta }) => {
   const tokens = usePreviewStage();
 
@@ -220,7 +210,7 @@ export const MetricPanel: React.FC<{
     <div
       style={{
         width: 520,
-        borderRadius: 8,
+        borderRadius: PREVIEW_RADIUS.panel,
         padding: "42px 46px",
         background: tokens.panelFill,
         border: `1px solid ${tokens.panelBorder}`,
@@ -234,7 +224,7 @@ export const MetricPanel: React.FC<{
           fontSize: 92,
           lineHeight: 0.9,
           fontWeight: 600,
-          letterSpacing: 0,
+          letterSpacing: PREVIEW_TRACKING,
         }}
       >
         {value}
@@ -255,7 +245,7 @@ export const MetricPanel: React.FC<{
 
 export const CodePanel: React.FC<{
   lines: string[];
-  lane?: PreviewLane;
+  lane?: AtlasLane;
 }> = ({ lines }) => {
   const tokens = usePreviewStage();
 
@@ -263,7 +253,7 @@ export const CodePanel: React.FC<{
     <div
       style={{
         width: 650,
-        borderRadius: 8,
+        borderRadius: PREVIEW_RADIUS.panel,
         overflow: "hidden",
         background: tokens.panelFill,
         border: `1px solid ${tokens.panelBorder}`,
@@ -283,7 +273,12 @@ export const CodePanel: React.FC<{
         {["#737373", "#737373", "#737373"].map((color, i) => (
           <span
             key={i}
-            style={{ width: 12, height: 12, borderRadius: 999, background: color }}
+            style={{
+              width: 12,
+              height: 12,
+              borderRadius: PREVIEW_RADIUS.pill,
+              background: color,
+            }}
           />
         ))}
       </div>
@@ -309,7 +304,7 @@ export const CodePanel: React.FC<{
 export const MediaTile: React.FC<{
   title: string;
   subtitle: string;
-  lane?: PreviewLane;
+  lane?: AtlasLane;
 }> = ({ title, subtitle }) => {
   const tokens = usePreviewStage();
 
@@ -321,7 +316,7 @@ export const MediaTile: React.FC<{
         display: "grid",
         alignContent: "end",
         gap: 12,
-        borderRadius: 8,
+        borderRadius: PREVIEW_RADIUS.panel,
         padding: 36,
         background: tokens.panelFill,
         border: `1px solid ${tokens.panelBorder}`,

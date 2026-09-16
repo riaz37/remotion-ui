@@ -11,5 +11,10 @@ export const TransitionFrostedGlassWipePreview: React.FC = () => (
     transition={transitionFrostedGlassWipe({
       durationInFrames: TRANSITION_FRAMES,
     })}
+    label={{
+      name: "Frosted glass wipe",
+      beforeDetail: "Blurs out behind a frosted-glass pane",
+      afterDetail: "Comes into focus as the pane slides clear",
+    }}
   />
 );

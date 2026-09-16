@@ -29,6 +29,10 @@ export function ScaledPlayerStage({
   const isPortrait = height > width;
 
   return (
+    // Deliberately bare: every caller mats this stage itself
+    // (`scene-monitor-preview` with a card + ring, `program-monitor-workspace`
+    // flush between its header and timecode bars). Adding a frame here
+    // double-mats the doc page and breaks the monitor strip.
     <div
       ref={containerRef}
       className={

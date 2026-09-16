@@ -2,6 +2,7 @@
 
 import { ConnectorLines } from "../../registry/bases/default/primitives/connector-lines";
 import { PreviewFrame } from "./preview-frame";
+import { PREVIEW_RADIUS, usePreviewStage } from "./preview-stage";
 
 const WIDTH = 700;
 const HEIGHT = 380;
@@ -24,40 +25,45 @@ const ANCHORS = [
  * through the 16-frame exit (cubic-in, so 0.79 of the window). See
  * docs-internal/preview-audit-rubric.md.
  */
-export const ConnectorLinesPreview: React.FC = () => (
-  <PreviewFrame lane="vectors">
-    <div style={{ position: "relative", width: WIDTH, height: HEIGHT }}>
-      <ConnectorLines
-        width={WIDTH}
-        height={HEIGHT}
-        strokeWidth={5}
-        anchors={ANCHORS}
-        delayInFrames={0}
-        durationInFrames={26}
-        staggerInFrames={14}
-        exitAtInFrames={95}
-      />
-      {ANCHORS.map((anchor) => (
-        <div
-          key={anchor.id}
-          style={{
-            position: "absolute",
-            left: anchor.x * WIDTH,
-            top: anchor.y * HEIGHT,
-            transform: "translate(-50%, -50%)",
-            padding: "10px 20px",
-            borderRadius: 10,
-            background: "#0B0C11",
-            border: "1px solid rgba(232,184,109,0.45)",
-            color: "#D8DCE4",
-            fontSize: 24,
-            fontWeight: 600,
-            whiteSpace: "nowrap",
-          }}
-        >
-          {anchor.label}
-        </div>
-      ))}
-    </div>
-  </PreviewFrame>
-);
+export const ConnectorLinesPreview: React.FC = () => {
+  const tokens = usePreviewStage();
+
+  return (
+    <PreviewFrame lane="vectors">
+      <div style={{ position: "relative", width: WIDTH, height: HEIGHT }}>
+        <ConnectorLines
+          width={WIDTH}
+          height={HEIGHT}
+          strokeWidth={5}
+          anchors={ANCHORS}
+          delayInFrames={0}
+          durationInFrames={26}
+          staggerInFrames={14}
+          exitAtInFrames={95}
+        />
+        {ANCHORS.map((anchor) => (
+          <div
+            key={anchor.id}
+            style={{
+              position: "absolute",
+              left: anchor.x * WIDTH,
+              top: anchor.y * HEIGHT,
+              transform: "translate(-50%, -50%)",
+              padding: "10px 20px",
+              borderRadius: PREVIEW_RADIUS.panel,
+              // Opaque on purpose: the edges draw behind these nodes.
+              background: tokens.panelSolid,
+              border: `1px solid ${tokens.accent}73`,
+              color: tokens.ink,
+              fontSize: 24,
+              fontWeight: 600,
+              whiteSpace: "nowrap",
+            }}
+          >
+            {anchor.label}
+          </div>
+        ))}
+      </div>
+    </PreviewFrame>
+  );
+};

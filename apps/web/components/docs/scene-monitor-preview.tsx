@@ -1,9 +1,11 @@
 "use client";
 
 import type { PlayerRef } from "@remotion/player";
-import type { ComponentType } from "react";
+import type { ComponentType, CSSProperties } from "react";
 import { useEffect, useRef } from "react";
 import { ScaledPlayerStage } from "@/components/studio/scaled-player-stage";
+import type { AtlasLane } from "@/lib/atlas";
+import { laneAccent } from "@/lib/lane-visuals";
 
 type SceneMonitorPreviewProps = {
   name: string;
@@ -13,6 +15,7 @@ type SceneMonitorPreviewProps = {
   previewHeight: number;
   inputProps?: Record<string, unknown>;
   previewLoop?: boolean;
+  lane?: AtlasLane;
 };
 
 export function SceneMonitorPreview({
@@ -23,6 +26,7 @@ export function SceneMonitorPreview({
   previewHeight,
   inputProps = {},
   previewLoop = true,
+  lane,
 }: SceneMonitorPreviewProps) {
   const playerRef = useRef<PlayerRef>(null);
   const meta = `30fps · ${previewWidth}×${previewHeight}`;
@@ -55,7 +59,20 @@ export function SceneMonitorPreview({
         below are what make the frame read as an object instead of a hole.
       */}
       <div className="p-2.5">
-        <div className="overflow-hidden rounded-md ring-1 ring-[var(--bay-border-strong)]">
+        {/*
+          The mat's ring carries the lane colour: it is the one edge the eye
+          already reads as the frame, so category identity needs no new chrome.
+        */}
+        <div
+          style={
+            {
+              "--lane-accent": lane
+                ? laneAccent(lane)
+                : "var(--bay-border-strong)",
+            } as CSSProperties
+          }
+          className="overflow-hidden rounded-md ring-1 ring-[var(--lane-accent)]"
+        >
       <ScaledPlayerStage
         playerRef={playerRef}
         component={component}

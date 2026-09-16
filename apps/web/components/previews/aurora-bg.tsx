@@ -1,7 +1,6 @@
 "use client";
 
 import { AuroraBg } from "../../registry/bases/default/primitives/aurora-bg";
-import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, ProductCard } from "./preview-frame";
 
 /**
@@ -18,9 +17,9 @@ export const AuroraBgPreview: React.FC = () => (
     <AuroraBg ribbonCount={5} amplitude={13} thickness={13} blur={12} intensity={1.4} />
     <PreviewFrame lane="blocks" backgroundColor="transparent" padding={72}>
       <ProductCard
-        kicker="Ambient layer"
+        kicker="Aurora ribbons"
         title="Aurora"
-        detail={DEMO_COPY.creatorHook.subtitle}
+        detail="Five ribbons fold across two overlapping timing beats."
       />
     </PreviewFrame>
   </PreviewFrame>

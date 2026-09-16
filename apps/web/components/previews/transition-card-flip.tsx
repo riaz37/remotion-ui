@@ -26,5 +26,10 @@ export const TransitionCardFlipPreview: React.FC = () => (
       durationInFrames: TRANSITION_FRAMES,
       axis: "y",
     })}
+    label={{
+      name: "Card flip",
+      beforeDetail: "Turns edge-on around its vertical axis",
+      afterDetail: "Lands face-first after a 180° turn",
+    }}
   />
 );

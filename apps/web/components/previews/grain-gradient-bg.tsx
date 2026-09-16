@@ -1,7 +1,6 @@
 "use client";
 
 import { GrainGradientBg } from "../../registry/bases/default/primitives/grain-gradient-bg";
-import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, ProductCard } from "./preview-frame";
 
 /**
@@ -14,9 +13,9 @@ export const GrainGradientBgPreview: React.FC = () => (
     <GrainGradientBg />
     <PreviewFrame lane="blocks" backgroundColor="transparent" padding={72}>
       <ProductCard
-        kicker="Ambient layer"
+        kicker="Anti-banding noise"
         title="Grain gradient"
-        detail={DEMO_COPY.productLaunch.subtitle}
+        detail="Grain masks the banding in a wide, shallow gradient sweep."
       />
     </PreviewFrame>
   </PreviewFrame>

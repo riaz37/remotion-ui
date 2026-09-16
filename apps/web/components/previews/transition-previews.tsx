@@ -25,26 +25,41 @@ const SCENE_DURATION = (PREVIEW_DEFAULTS.durationInFrames + TRANSITION_FRAMES) /
  * one continuous frame, which hides which way a wipe travelled, whether a push
  * moved both scenes, and whether the background ever showed through the cut.
  */
-const BeforeScene: React.FC = () => (
+
+/**
+ * Per-transition labeling: each of the 18 transition previews names the
+ * transition it demonstrates and describes what its own before/after beat
+ * actually looks like, instead of every tile sharing the same
+ * "Editorial opener" / "Feature spotlight" placeholder pair.
+ */
+export type TransitionLabel = {
+  name: string;
+  beforeDetail: string;
+  afterDetail: string;
+};
+
+const DEFAULT_LABEL: TransitionLabel = {
+  name: "Scene cut",
+  beforeDetail: "Holds the setup",
+  afterDetail: "Carries the payoff",
+};
+
+const BeforeScene: React.FC<{ label?: TransitionLabel }> = ({
+  label = DEFAULT_LABEL,
+}) => (
   <PreviewStageProvider tokens={LIGHT_STAGE}>
     <PreviewFrame lane="cuts">
-      <ProductCard
-        kicker="Scene one"
-        title="Editorial opener"
-        detail="Holds the setup"
-      />
+      <ProductCard kicker="Before" title={label.name} detail={label.beforeDetail} />
     </PreviewFrame>
   </PreviewStageProvider>
 );
 
-const AfterScene: React.FC = () => (
+const AfterScene: React.FC<{ label?: TransitionLabel }> = ({
+  label = DEFAULT_LABEL,
+}) => (
   <PreviewStageProvider tokens={DARK_STAGE}>
     <PreviewFrame lane="cuts">
-      <ProductCard
-        kicker="Scene two"
-        title="Feature spotlight"
-        detail="Carries the payoff"
-      />
+      <ProductCard kicker="After" title={label.name} detail={label.afterDetail} />
     </PreviewFrame>
   </PreviewStageProvider>
 );
@@ -66,22 +81,24 @@ function TransitionSeriesPreview({
   transition,
   firstScene = SCENE_DURATION,
   secondScene = SCENE_DURATION,
+  label,
 }: {
   transition: TransitionConfig;
   firstScene?: number;
   secondScene?: number;
+  label?: TransitionLabel;
 }) {
   return (
     <AbsoluteFill>
       <TransitionSeries>
         <TransitionSeries.Sequence durationInFrames={firstScene}>
-          <BeforeScene />
+          <BeforeScene label={label} />
         </TransitionSeries.Sequence>
         <TransitionSeries.Transition
           {...(transition as ComponentProps<typeof TransitionSeries.Transition>)}
         />
         <TransitionSeries.Sequence durationInFrames={secondScene}>
-          <AfterScene />
+          <AfterScene label={label} />
         </TransitionSeries.Sequence>
       </TransitionSeries>
     </AbsoluteFill>
@@ -103,12 +120,18 @@ function TransitionSeriesPreview({
 const OVERLAY_SCENE_DURATION = PREVIEW_DEFAULTS.durationInFrames / 2;
 const OVERLAY_FRAMES = 24;
 
+const LIGHT_LEAK_LABEL: TransitionLabel = {
+  name: "Light leak",
+  beforeDetail: "Sits under an incoming warm flare",
+  afterDetail: "Clears once the flare burns off",
+};
+
 function OverlaySeriesPreview() {
   return (
     <AbsoluteFill>
       <TransitionSeries>
         <TransitionSeries.Sequence durationInFrames={OVERLAY_SCENE_DURATION}>
-          <BeforeScene />
+          <BeforeScene label={LIGHT_LEAK_LABEL} />
         </TransitionSeries.Sequence>
         <TransitionSeries.Overlay durationInFrames={OVERLAY_FRAMES}>
           {/* Just under full intensity, so the peak frame still shows the cut
@@ -116,7 +139,7 @@ function OverlaySeriesPreview() {
           <TransitionLightLeak seed={2} hueShift={28} intensity={0.86} />
         </TransitionSeries.Overlay>
         <TransitionSeries.Sequence durationInFrames={OVERLAY_SCENE_DURATION}>
-          <AfterScene />
+          <AfterScene label={LIGHT_LEAK_LABEL} />
         </TransitionSeries.Sequence>
       </TransitionSeries>
     </AbsoluteFill>
@@ -128,12 +151,22 @@ function OverlaySeriesPreview() {
 export const TransitionClockWipePreview: React.FC = () => (
   <TransitionSeriesPreview
     transition={transitionClockWipe({ durationInFrames: TRANSITION_FRAMES })}
+    label={{
+      name: "Clock wipe",
+      beforeDetail: "Masked behind a sweeping clock hand",
+      afterDetail: "Revealed once the sweep completes a full turn",
+    }}
   />
 );
 
 export const TransitionFadePreview: React.FC = () => (
   <TransitionSeriesPreview
     transition={transitionFade({ durationInFrames: TRANSITION_FRAMES })}
+    label={{
+      name: "Fade",
+      beforeDetail: "Cross-dissolves toward the next take",
+      afterDetail: "Fades up out of the dissolve",
+    }}
   />
 );
 
@@ -143,6 +176,11 @@ export const TransitionSlidePreview: React.FC = () => (
       direction: "from-left",
       durationInFrames: TRANSITION_FRAMES,
     })}
+    label={{
+      name: "Slide",
+      beforeDetail: "Slides off toward the right edge",
+      afterDetail: "Slides in from the left to take its place",
+    }}
   />
 );
 
@@ -152,6 +190,11 @@ export const TransitionWipePreview: React.FC = () => (
       direction: "from-left",
       durationInFrames: TRANSITION_FRAMES,
     })}
+    label={{
+      name: "Wipe",
+      beforeDetail: "Covered by a hard edge sweeping left to right",
+      afterDetail: "Uncovered as the edge clears the frame",
+    }}
   />
 );
 

@@ -21,5 +21,10 @@ export const TransitionMorphShapePreview: React.FC = () => (
     transition={transitionMorphShape({
       durationInFrames: TRANSITION_FRAMES,
     })}
+    label={{
+      name: "Morph shape",
+      beforeDetail: "Contracts into a morphing shape mask",
+      afterDetail: "Expands back out of the shape",
+    }}
   />
 );

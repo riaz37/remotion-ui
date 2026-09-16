@@ -12,5 +12,10 @@ export const TransitionSpatialPushPreview: React.FC = () => (
       durationInFrames: TRANSITION_FRAMES,
       direction: "from-left",
     })}
+    label={{
+      name: "Spatial push",
+      beforeDetail: "Pushed off-frame to the right",
+      afterDetail: "Pushes in from the left to take its place",
+    }}
   />
 );

@@ -18,5 +18,10 @@ export const TransitionCircleRevealPreview: React.FC = () => (
       durationInFrames: TRANSITION_FRAMES,
       originX: 0.34, originY: 0.42,
     })}
+    label={{
+      name: "Circle reveal",
+      beforeDetail: "Masked behind a shrinking circle",
+      afterDetail: "Revealed through a circle opening off-centre",
+    }}
   />
 );

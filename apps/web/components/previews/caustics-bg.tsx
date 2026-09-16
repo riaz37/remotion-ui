@@ -1,7 +1,6 @@
 "use client";
 
 import { CausticsBg } from "../../registry/bases/default/primitives/caustics-bg";
-import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, ProductCard } from "./preview-frame";
 
 /**
@@ -15,9 +14,9 @@ export const CausticsBgPreview: React.FC = () => (
     <CausticsBg scale={130} contrast={3.6} blur={9} intensity={1.15} />
     <PreviewFrame lane="blocks" backgroundColor="transparent" padding={72}>
       <ProductCard
-        kicker="Ambient layer"
+        kicker="Water refraction"
         title="Caustics"
-        detail={DEMO_COPY.creatorHook.subtitle}
+        detail="Three interference layers overlap into a moving light web."
       />
     </PreviewFrame>
   </PreviewFrame>

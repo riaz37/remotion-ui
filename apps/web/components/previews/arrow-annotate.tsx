@@ -2,6 +2,7 @@
 
 import { ArrowAnnotate } from "../../registry/bases/default/primitives/arrow-annotate";
 import { PreviewFrame } from "./preview-frame";
+import { PREVIEW_RADIUS, usePreviewStage } from "./preview-stage";
 
 const WIDTH = 620;
 const HEIGHT = 380;
@@ -17,38 +18,43 @@ const TARGET = { x: 0.7, y: 0.74 };
  * the *opacity* is 0.79 of the window, not half of it. See
  * docs-internal/preview-audit-rubric.md.
  */
-export const ArrowAnnotatePreview: React.FC = () => (
-  <PreviewFrame lane="vectors">
-    <div style={{ position: "relative", width: WIDTH, height: HEIGHT }}>
-      <ArrowAnnotate
-        label="this one"
-        labelSize={30}
-        to={TARGET}
-        width={WIDTH}
-        height={HEIGHT}
-        strokeWidth={5}
-        headSize={26}
-        durationInFrames={48}
-        exitAtInFrames={97}
-      />
-      <div
-        style={{
-          position: "absolute",
-          left: TARGET.x * WIDTH + 18,
-          top: TARGET.y * HEIGHT,
-          transform: "translateY(-50%)",
-          padding: "10px 20px",
-          borderRadius: 10,
-          background: "#0B0C11",
-          border: "1px solid rgba(232,184,109,0.45)",
-          color: "#D8DCE4",
-          fontSize: 28,
-          fontWeight: 600,
-          whiteSpace: "nowrap",
-        }}
-      >
-        Winner
+export const ArrowAnnotatePreview: React.FC = () => {
+  const tokens = usePreviewStage();
+
+  return (
+    <PreviewFrame lane="vectors">
+      <div style={{ position: "relative", width: WIDTH, height: HEIGHT }}>
+        <ArrowAnnotate
+          label="Best performer"
+          labelSize={30}
+          to={TARGET}
+          width={WIDTH}
+          height={HEIGHT}
+          strokeWidth={5}
+          headSize={26}
+          durationInFrames={48}
+          exitAtInFrames={97}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: TARGET.x * WIDTH + 18,
+            top: TARGET.y * HEIGHT,
+            transform: "translateY(-50%)",
+            padding: "10px 20px",
+            borderRadius: PREVIEW_RADIUS.panel,
+            // Opaque on purpose: the arrow lands behind this chip.
+            background: tokens.panelSolid,
+            border: `1px solid ${tokens.accent}73`,
+            color: tokens.ink,
+            fontSize: 28,
+            fontWeight: 600,
+            whiteSpace: "nowrap",
+          }}
+        >
+          Variant B &middot; 3.2% CTR
+        </div>
       </div>
-    </div>
-  </PreviewFrame>
-);
+    </PreviewFrame>
+  );
+};

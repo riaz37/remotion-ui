@@ -1,7 +1,6 @@
 "use client";
 
 import { LightTunnelBg } from "../../registry/bases/default/primitives/light-tunnel-bg";
-import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, ProductCard } from "./preview-frame";
 
 /**
@@ -14,9 +13,9 @@ export const LightTunnelBgPreview: React.FC = () => (
     <LightTunnelBg />
     <PreviewFrame lane="blocks" backgroundColor="transparent" padding={72}>
       <ProductCard
-        kicker="Ambient layer"
+        kicker="Radial tunnel"
         title="Light tunnel"
-        detail={DEMO_COPY.productLaunch.subtitle}
+        detail="A bright core recedes down an endless tunnel of light."
       />
     </PreviewFrame>
   </PreviewFrame>

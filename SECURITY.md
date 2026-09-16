@@ -2,10 +2,14 @@
 
 ## Supported versions
 
-| Version | Supported |
-| ------- | --------- |
-| 0.4.x   | Yes       |
-| < 0.4   | No        |
+| Package           | Version | Supported |
+| ----------------- | ------- | --------- |
+| `remotion-ui`     | 0.9.x   | Yes       |
+| `remotion-ui`     | < 0.9   | No        |
+| `remotion-ui-mcp` | 0.1.x   | Yes       |
+
+Only the latest minor of each published package receives fixes. Upgrade before
+reporting an issue against an older release.
 
 ## Reporting a vulnerability
 

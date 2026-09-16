@@ -1,6 +1,7 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import type { AtlasLane } from "@/lib/atlas";
+import { laneAccent } from "@/lib/lane-visuals";
 
 type ClipCardProps = {
   name: string;
@@ -27,7 +28,15 @@ export function ClipCard({
     <Link
       href={url}
       prefetch={false}
-      className={`motion-border group flex min-w-[220px] flex-col overflow-hidden rounded-md border border-[var(--bay-border)] bg-[var(--bay-surface)] hover:border-[var(--bay-border-strong)] ${className}`}
+      // The lane reads on hover through the border the card already has, so
+      // category identity costs no extra furniture. Lane-less tiles fall back
+      // to the neutral strong border.
+      style={
+        {
+          "--lane-accent": lane ? laneAccent(lane) : "var(--bay-border-strong)",
+        } as CSSProperties
+      }
+      className={`motion-border group flex min-w-[220px] flex-col overflow-hidden rounded-md border border-[var(--bay-border)] bg-[var(--bay-surface)] transition-colors duration-200 ease-out hover:border-[var(--lane-accent)] ${className}`}
     >
       <div className="min-h-0">{thumbnail}</div>
       <div className="border-t border-[var(--bay-border)] px-3 py-2.5">

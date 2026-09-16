@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.9.1
+
+**`add` no longer overwrites your edits.** The whole premise is that installed components are source you own, but re-running `add` — to pick up a registry fix, or because a dependency pulled the item back in — wrote over every file unconditionally, customizations included.
+
+### Fixed
+
+- **`add` skips files you have changed.** A file that already exists with different content is left alone and listed at the end of the run, pointing at `--yes` to overwrite or `diff` to review first. `--yes` still forces the overwrite, and `--json` reports the set as `skipped`.
+- **A bad component name says what to do.** A 404 from the registry printed the internal fetch URL; it now names the component and suggests `npx remotion-ui search -q <name>`. Other failures keep the URL and gain the status code.
+- **`init` stopped writing `baseUrl` into your tsconfig.** TypeScript 7 removes `baseUrl`, so adding one to a project that had none was a future break. The `@/*` path pattern is now written relative to the tsconfig itself (`./src/*`) when there is no `baseUrl`, and relative to the existing one when there is.
+
+### Maintenance
+
+- Dependency majors taken across the CLI, the MCP server, and the docs site, including the TypeScript 7 and Zod 4 lines.
+
 ## 0.9.0
 
 **200 components, and the registry is now installable with shadcn's CLI.** The registry grew from 108 to 200 — 92 new components across every lane — and RemotionUI is listed in shadcn's registry directory as `@remotionui`.

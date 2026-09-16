@@ -8,7 +8,10 @@ export type CompositionPlaygroundMeta = {
 const PLAYGROUND_META: Record<string, CompositionPlaygroundMeta> = {
   "social-clip": {
     editablePropNames: ["hookTitle", "hookSubtitle", "ctaLabel", "logoSrc"],
-    durationInFrames: 228,
+    // 60 (hook) + 120 (body) + 60 (end) - 2 * 12 (fade) = 216. Matches the
+    // scene source (registry/bases/default/compositions/social-clip/index.tsx)
+    // and lib/preview-config.ts.
+    durationInFrames: 216,
     previewWidth: 1080,
     previewHeight: 1920,
   },
@@ -26,7 +29,11 @@ const PLAYGROUND_META: Record<string, CompositionPlaygroundMeta> = {
   },
   "podcast-clip": {
     editablePropNames: ["title", "subtitle", "ctaLabel"],
-    durationInFrames: 366,
+    // 70 (intro) + 110 (caption) + 90 (studio) + 60 (end) - 3 * 12 (fade) = 294.
+    // Matches the scene source
+    // (registry/bases/default/compositions/podcast-clip/index.tsx) and
+    // lib/preview-config.ts.
+    durationInFrames: 294,
     previewWidth: 1080,
     previewHeight: 1920,
   },

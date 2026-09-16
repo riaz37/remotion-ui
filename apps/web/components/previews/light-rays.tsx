@@ -1,7 +1,6 @@
 "use client";
 
 import { LightRays } from "../../registry/bases/default/primitives/light-rays";
-import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, ProductCard } from "./preview-frame";
 
 /**
@@ -18,9 +17,9 @@ export const LightRaysPreview: React.FC = () => (
     <LightRays originX={28} originY={-14} angle={20} spread={56} rayCount={11} />
     <PreviewFrame lane="blocks" backgroundColor="transparent" padding={72}>
       <ProductCard
-        kicker="Ambient layer"
+        kicker="Volumetric shafts"
         title="Light rays"
-        detail={DEMO_COPY.creatorHook.subtitle}
+        detail="Eleven shafts fan out and sway on staggered periods."
       />
     </PreviewFrame>
   </PreviewFrame>

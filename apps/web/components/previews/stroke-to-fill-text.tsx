@@ -3,6 +3,7 @@
 import { StrokeToFillText } from "../../registry/bases/default/primitives/stroke-to-fill-text";
 import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame } from "./preview-frame";
+import { usePreviewStage } from "./preview-stage";
 
 /**
  * The audit samples at 15% / 50% / 90% of the window (frames 18, 60 and 108 on
@@ -18,20 +19,24 @@ const stage = {
   textAlign: "center" as const,
 };
 
-export const StrokeToFillTextPreview: React.FC = () => (
-  <PreviewFrame lane="atoms" padding={72}>
-    <div style={stage}>
-      <StrokeToFillText
-        text={DEMO_COPY.podcast.title}
-        delayInFrames={2}
-        staggerInFrames={5}
-        durationInFrames={24}
-        strokeWidth={2.5}
-        strokeColor="#e8b86d"
-        fillColor="#f4f4f5"
-        direction="up"
-        fontSize={72}
-      />
-    </div>
-  </PreviewFrame>
-);
+export const StrokeToFillTextPreview: React.FC = () => {
+  const tokens = usePreviewStage();
+
+  return (
+    <PreviewFrame lane="atoms" padding={72}>
+      <div style={stage}>
+        <StrokeToFillText
+          text={DEMO_COPY.podcast.title}
+          delayInFrames={2}
+          staggerInFrames={5}
+          durationInFrames={24}
+          strokeWidth={2.5}
+          strokeColor={tokens.accent}
+          fillColor={tokens.ink}
+          direction="up"
+          fontSize={72}
+        />
+      </div>
+    </PreviewFrame>
+  );
+};

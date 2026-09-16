@@ -1,7 +1,6 @@
 "use client";
 
 import { WarpBandsBg } from "../../registry/bases/default/primitives/warp-bands-bg";
-import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, ProductCard } from "./preview-frame";
 
 /**
@@ -14,9 +13,9 @@ export const WarpBandsBgPreview: React.FC = () => (
     <WarpBandsBg />
     <PreviewFrame lane="blocks" backgroundColor="transparent" padding={72}>
       <ProductCard
-        kicker="Ambient layer"
+        kicker="Warping bands"
         title="Warp bands"
-        detail={DEMO_COPY.creatorHook.subtitle}
+        detail="Bands swirl continuously with no entrance and no loop point."
       />
     </PreviewFrame>
   </PreviewFrame>

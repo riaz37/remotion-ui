@@ -31,7 +31,7 @@ export function ComponentCard({
       <Link
         href={url}
         prefetch={false}
-        className="motion-border block rounded-md border border-[var(--bay-border)] bg-[var(--bay-surface)] p-4 hover:border-[var(--bay-border-strong)]"
+        className="motion-border block rounded-md border border-[var(--bay-border)] bg-[var(--bay-surface)] p-4 transition-[box-shadow,transform,border-color] duration-200 ease-out [box-shadow:var(--bay-shadow-raised)] hover:border-[var(--bay-border-strong)] hover:[box-shadow:var(--bay-shadow-raised-hover)] motion-safe:hover:-translate-y-0.5"
       >
         <p className="text-sm font-semibold capitalize">{name.replace(/-/g, " ")}</p>
         {description ? (
