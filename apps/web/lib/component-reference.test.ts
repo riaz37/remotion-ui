@@ -15,6 +15,9 @@ const FLAGSHIP_COMPONENTS = [
   "split-text-chars",
   "audio-reactive-scale",
   "srt-caption-track",
+  // Not a Workstream 3 entry: the brand ident was authored with schema on both of its
+  // props from the start, so it is held to the same bar rather than exempted.
+  "hero-loop",
 ] as const;
 
 const ajv = new Ajv({ strict: false });

@@ -976,13 +976,13 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       {
         name: "durationInFrames",
         type: "number",
-        default: "20",
+        default: "22",
         description: "Overlap duration between scenes.",
       },
       {
         name: "direction",
         type: "string",
-        default: '"from-right"',
+        default: '"from-left"',
         description: "Slide direction: from-left, from-right, from-top, from-bottom.",
       },
     ],
@@ -1119,7 +1119,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <Intro title="My Product" subtitle="Launch video" />`,
     props: [
-      { name: "title", type: "string", default: '"RemotionUI"', description: "Main title.", schema: { type: "string" } },
+      { name: "title", type: "string", default: '"Chapter open"', description: "Main title.", schema: { type: "string" } },
       { name: "subtitle", type: "string", description: "Tagline under the title.", schema: { type: "string" } },
       { name: "backgroundColor", type: "string", description: "Page background behind the intro.", schema: { type: "string" } },
       { name: "accentColor", type: "string", description: "Accent used by the progress bar and title.", schema: { type: "string" } },
@@ -1187,7 +1187,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       { name: "captions", type: "Caption[]", required: true, description: "Remotion caption array." },
       { name: "combineTokensWithinMilliseconds", type: "number", default: "1200", description: "Words per caption page." },
       { name: "placement", type: '"lower-third" | "center"', default: '"lower-third"', description: "Caption vertical placement." },
-      { name: "mode", type: '"highlight" | "karaoke-scale" | "karaoke-underline"', default: '"karaoke-scale"', description: "Caption emphasis style." },
+      { name: "mode", type: '"highlight" | "karaoke-scale" | "karaoke-underline"', default: '"highlight"', description: "Caption emphasis style." },
     ],
     note: "Advanced. Installs @remotion/captions.",
     related: ["caption-highlight", "social-clip"],
@@ -1322,7 +1322,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <TransitionSeries.Transition {...transitionWipe({ direction: "from-left" })} />`,
     props: [
-      { name: "durationInFrames", type: "number", default: "20", description: "Transition overlap length." },
+      { name: "durationInFrames", type: "number", default: "22", description: "Transition overlap length." },
       { name: "direction", type: "string", default: '"from-left"', description: "Wipe direction." },
     ],
     related: ["transition-fade", "transition-clock-wipe"],
@@ -1351,7 +1351,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       { name: "seed", type: "number", default: "0", description: "Light leak pattern seed." },
       { name: "hueShift", type: "number", default: "28", description: "Hue rotation in degrees, warm amber by default." },
       { name: "intensity", type: "number", default: "1", description: "Peak opacity of the leak." },
-      { name: "peakAt", type: "number", default: "0.4", description: "Where the flare peaks in its window. Sit it on the cut to hide the seam." },
+      { name: "peakAt", type: "number", default: "0.5", description: "Where the flare peaks in its window. Sit it on the cut to hide the seam." },
       { name: "blendMode", type: '"screen" | "plus-lighter" | "normal"', default: '"screen"', description: "How the leak composites over the frame." },
     ],
     note: "Advanced. Installs @remotion/light-leaks. Rendering needs the ANGLE backend: pass --gl=angle.",
@@ -1850,7 +1850,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 <ClaudeChat prompt="Draft a launch tweet for our new release" />`,
     props: [
       { name: "placeholder", type: "string", default: '"Try: draft an email · summarize a doc · plan your week"', description: "Empty composer placeholder text." },
-      { name: "prompt", type: "string", default: '"Draft a launch tweet for our new release"', description: "Prompt typed into the composer." },
+      { name: "prompt", type: "string", default: '"Draft a launch tweet"', description: "Prompt typed into the composer." },
       { name: "modelName", type: "string", default: '"Opus 4.8"', description: "Model label in the toolbar." },
       { name: "modelTier", type: "string", default: '"Max"', description: "Tier label beside the model." },
       { name: "accentColor", type: "string", default: '"#D97757"', description: "Terracotta send button color." },
@@ -1867,7 +1867,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
     props: [
       { name: "greeting", type: "string", default: `"What's on your mind today?"`, description: "Headline above the composer." },
       { name: "placeholder", type: "string", default: '"Ask anything"', description: "Empty input placeholder." },
-      { name: "prompt", type: "string", default: '"Make a sunset over a calm ocean"', description: "Prompt typed into the ChatGPT composer." },
+      { name: "prompt", type: "string", default: '"Make a sunset over the ocean"', description: "Prompt typed into the ChatGPT composer." },
       { name: "accentColor", type: "string", default: '"#2F6FED"', description: "Voice button color before it morphs to send." },
       { name: "theme", type: '"light" | "dark"', default: '"light"', description: "Light or dark surface palette." },
       { name: "speed", type: "number", default: "1", description: "Animation speed multiplier." },
@@ -2066,7 +2066,7 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
       { name: "mediaHeight", type: "number", default: "720", description: "Pixel height `calloutTarget` was measured against." },
       { name: "title", type: "string", description: "Opening hook title." },
       { name: "subtitle", type: "string", description: "Supporting line under the hook." },
-      { name: "calloutTitle", type: "string", default: '"Spotlight the control"', description: "Headline on the spotlight callout card." },
+      { name: "calloutTitle", type: "string", default: '"Tap Render to queue the job"', description: "Headline on the spotlight callout card." },
       { name: "calloutSubtitle", type: "string", description: "Supporting line on the callout card." },
       { name: "calloutTarget", type: "SpotlightTarget", description: "Region to spotlight, in media pixels." },
       { name: "code", type: "string", description: "Code reveal content." },
@@ -5019,7 +5019,7 @@ import { DeviceMockup3D } from "@/remotion/scenes/device-mockup-3d";
       { name: "screenAspect", type: "number", description: "Screen width / height. Omit to use the image's own ratio." },
       { name: "backgroundColor", type: "string", default: '"#0a0c11"', description: "Outer backdrop." },
       { name: "glowColor", type: "string", default: '"#1c212c"', description: "Soft glow behind the device." },
-      { name: "floorColor", type: "string", default: '"#3a404c"', description: "Lit floor pool the contact shadow falls on. Keep it lighter than the backdrop." },
+      { name: "floorColor", type: "string", default: '"#434a57"', description: "Lit floor pool the contact shadow falls on. Keep it lighter than the backdrop." },
       { name: "bodyColor", type: "string", default: '"#9ba1ab"', description: "Aluminium body." },
       { name: "rimColor", type: "string", default: '"#7aa2ff"', description: "Cool rim light from the left." },
       { name: "accentColor", type: "string", default: '"#ffb27a"', description: "Warm accent light from the right." },
