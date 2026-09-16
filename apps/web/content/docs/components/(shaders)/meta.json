@@ -1,0 +1,12 @@
+{
+  "title": "Shaders",
+  "pagesIndex": "shaders",
+  "defaultOpen": false,
+  "pages": [
+    "dither-field-bg",
+    "warp-bands-bg",
+    "grain-gradient-bg",
+    "light-tunnel-bg",
+    "text-reveal-shader"
+  ]
+}

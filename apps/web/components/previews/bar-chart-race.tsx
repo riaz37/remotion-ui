@@ -17,8 +17,8 @@ const STEPS = ["Q1", "Q2", "Q3", "Q4", "Q5", "Q6"];
 
 /**
  * Samples land at frames 18, 60 and 108. Six keyframes at 18 frames each run
- * the race from frame 4 to 94 — the first sample sits mid-Q2, the second just
- * past Q4 with Motion overtaking — and the collapse at 96 carries the third.
+ * the race from frame 4 to 94: the first sample sits mid-Q2, the second just
+ * past Q4 with Motion overtaking, and the collapse at 96 carries the third.
  */
 export const BarChartRacePreview: React.FC = () => (
   <PreviewFrame lane="signals" padding={56}>

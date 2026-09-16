@@ -23,8 +23,8 @@ import { WaveText } from "@/remotion/primitives/wave-text";
 ## It never settles
 
 The wave is a function of the frame, so there is no end state to reach. The
-entrance is still there underneath — `split-text-chars` owns it, and every
-`delayInFrames` / `staggerInFrames` / `exit` prop works as usual — and the
+entrance is still there underneath (`split-text-chars` owns it, and every
+`delayInFrames` / `staggerInFrames` / `exit` prop works as usual), and the
 amplitude is scaled by each character's own arrival progress, so a character
 does not start bobbing before it has landed and the line lowers as one on the
 way out.
@@ -39,7 +39,7 @@ wave.
 
 `amplitude` is the peak lift in em, `wavelength` is how many characters one full
 wave spans, and `periodInFrames` is how long a cycle takes. `scale` and `shade`
-add depth by growing and brightening the crest — set both to `0` for a flat
+add depth by growing and brightening the crest: set both to `0` for a flat
 displacement.
 
 </ComponentPage>

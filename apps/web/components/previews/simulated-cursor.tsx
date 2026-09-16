@@ -8,7 +8,7 @@ import { PREVIEW_DEFAULTS } from "@/lib/preview-config";
 
 /**
  * The cursor needs something to click, so the preview draws a panel and routes
- * the pointer onto its controls — a bare cursor over an empty stage reads as
+ * the pointer onto its controls: a bare cursor over an empty stage reads as
  * nothing happening. Geometry is explicit so the cursor's waypoints can be
  * derived from the targets instead of eyeballed.
  */

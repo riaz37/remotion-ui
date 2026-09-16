@@ -1,6 +1,6 @@
 ---
 title: Changelog Entry
-description: A release note reading itself out — version, a rule drawing under it, then each change behind its own coloured tag.
+description: A release note reading itself out. Version, a rule drawing under it, then each change behind its own coloured tag.
 ---
 
 import { ChangelogEntryPreview } from '@/components/previews/changelog-entry';
@@ -9,7 +9,7 @@ import { ChangelogEntryPreview } from '@/components/previews/changelog-entry';
 
 The version lands first at display size, a rule draws out from the left beneath
 it, and the changes follow one at a time. Each row's tag arrives a fraction
-before its sentence, because the kind of change is what a viewer scans for — by
+before its sentence, because the kind of change is what a viewer scans for: by
 the time they read the sentence they already know whether it is an addition or a
 fix.
 
@@ -17,8 +17,8 @@ Tags are fixed width rather than sized to their label. That is what lets every
 sentence share a left edge; a column of ragged text beside ragged tags is the
 fastest way to make a changelog look unmaintained.
 
-Kinds are `added`, `fixed`, `changed` and `removed`, each with its own colour —
-green, blue, amber, red — and `kindColors` overrides any of them without you
+Kinds are `added`, `fixed`, `changed` and `removed`, each with its own colour
+(green, blue, amber, red), and `kindColors` overrides any of them without you
 having to supply the rest.
 
 The rule draws rather than fades. It reads as the header being underlined, which

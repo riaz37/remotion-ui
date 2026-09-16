@@ -10,7 +10,7 @@ import { usePreviewStage } from "./preview-stage";
 
 const [page] = groupCaptionsIntoPages(DEMO_CAPTIONS, 2200);
 
-/** Caption span plus a beat of hold — the preview outruns the demo timeline,
+/** Caption span plus a beat of hold: the preview outruns the demo timeline,
  * and without the loop the last third of it is a frozen finished line. */
 const LOOP_SECONDS = 2.6;
 

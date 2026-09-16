@@ -7,7 +7,7 @@ import { PreviewFrame } from "./preview-frame";
 /**
  * A real script face, not the generic `cursive` fallback.
  *
- * The component is deliberately font-agnostic — no primitive in the catalog
+ * The component is deliberately font-agnostic: no primitive in the catalog
  * loads a font, because doing so would force a `@remotion/google-fonts`
  * dependency on everyone who copies one file. So its default family is a
  * system script *stack*, and what that resolves to depends on the render
@@ -21,9 +21,9 @@ const { fontFamily } = loadFont("normal", {
 });
 
 /**
- * The audit samples at 15% / 50% / 90% of the window — frames 18, 60 and 108 on
- * the 120-frame default. A 9-frame stagger writes the line across frames 2–115
- * — roughly the pace a hand actually signs at — so the nib is still travelling
+ * The audit samples at 15% / 50% / 90% of the window: frames 18, 60 and 108 on
+ * the 120-frame default. A 9-frame stagger writes the line across frames 2–115,
+ * roughly the pace a hand actually signs at, so the nib is still travelling
  * at all three samples. There is no exit: a staggered fade left half a word on
  * screen at the last sample, which reads as clipped type rather than as ink.
  */

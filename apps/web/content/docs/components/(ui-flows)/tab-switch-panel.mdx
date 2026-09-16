@@ -13,13 +13,13 @@ step down, so a panel reads as one object with depth rather than as a stack of
 independent fades.
 
 Tabs share the bar width evenly. That is what lets the pill's travel be pure
-arithmetic — no text measurement, so the indicator can never drift out of
+arithmetic: no text measurement, so the indicator can never drift out of
 register with the label beneath it. The trade is that one long label squeezes
 every other tab, so keep labels to a word or two.
 
 The scene walks forward from `startIndex` to the last tab and stops; it does not
 wrap. Total run time is `firstSwitchAtSeconds + switchEverySeconds × (tabs.length - 1 - startIndex) + transitionSeconds`,
-which is the number to check before setting `holdSeconds` — a hold shorter than
+which is the number to check before setting `holdSeconds`: a hold shorter than
 that cuts the window away mid-switch.
 
 Panels cross-fade faster than they travel, on purpose: the outgoing panel is

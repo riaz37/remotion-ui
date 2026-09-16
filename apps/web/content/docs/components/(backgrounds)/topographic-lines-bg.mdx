@@ -23,7 +23,7 @@ import { TopographicLinesBg } from "@/remotion/primitives/topographic-lines-bg";
 Real contours come out of a height field by marching squares, which is far too
 expensive to run per frame. This inverts the problem. A landform is a stack of
 closed polar curves around a centre, each radius modulated by three harmonics,
-so the family is nested by construction and can never self-intersect — which is
+so the family is nested by construction and can never self-intersect, which is
 the one thing a contour map must never do.
 
 Two overlapping landforms give the crossing, merging look of a real survey
@@ -57,7 +57,7 @@ Contours travel outward, which reads as elevation rising under the camera. They
 fade in at the peak and out at the rim, so nothing appears or vanishes
 mid-frame. `speed={0}` freezes the map into a still.
 
-`lineWidth` is in pixels at any output size — the stroke is pinned with
+`lineWidth` is in pixels at any output size: the stroke is pinned with
 `vectorEffect="non-scaling-stroke"`, because the drawing space is a fixed
 160x90 box and an unpinned stroke would triple in weight between a preview and
 a 4K render.

@@ -1,6 +1,6 @@
 ---
 title: Commit Graph
-description: A branch graph that draws itself — every edge grows from its parent, and each commit pops the moment its line arrives.
+description: A branch graph that draws itself, every edge grows from its parent, and each commit pops the moment its line arrives.
 ---
 
 import { CommitGraphPreview } from '@/components/previews/commit-graph';
@@ -9,7 +9,7 @@ import { CommitGraphPreview } from '@/components/previews/commit-graph';
 
 Commits land one at a time in a window styled like `git log --graph`. Each
 edge grows from the commit it descends from, the dot pops as the line reaches
-it, and the message beside it fades up a beat later — so the eye follows the
+it, and the message beside it fades up a beat later, so the eye follows the
 rail rather than jumping ahead to the text.
 
 `parent` defaults to the previous entry, which is all a straight run needs.

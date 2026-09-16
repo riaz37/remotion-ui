@@ -8,7 +8,7 @@ import { PreviewFrame, ProductCard } from "./preview-frame";
 /**
  * A midtone plate standing in for footage. Grain needs something to modulate,
  * and it needs it to be free of furniture: the demo media stills carry their
- * own UI bars, which a card placed over them collides with — the collision the
+ * own UI bars, which a card placed over them collides with: the collision the
  * audit has already logged three times against other components.
  */
 const FOOTAGE_PLATE =
@@ -20,8 +20,8 @@ const FOOTAGE_PLATE =
  *
  * It sits over footage on `screen`, not over the near-black preview stage on
  * the component's default `overlay`. Overlay pivots around mid grey, so grain
- * composited onto #050505 changes nothing: the first cut measured 52 dB — a
- * dead preview whose component was working perfectly — and moving it onto a
+ * composited onto #050505 changes nothing: the first cut measured 52 dB (a
+ * dead preview whose component was working perfectly), and moving it onto a
  * dark-but-not-black plate only got it to 43. Screen lifts the blacks, which is
  * both what makes the grain visible here and what grain does in the shadows of
  * a real print.

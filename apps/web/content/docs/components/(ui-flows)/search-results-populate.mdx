@@ -11,7 +11,7 @@ The query types itself, an indeterminate bar runs while the index works, results
 stream in one by one, and then the list re-ranks so the best match rises to the
 top.
 
-The order of `results` is arrival order — the order the index handed them back —
+The order of `results` is arrival order (the order the index handed them back),
 and `score` decides where each one ends up. Give the highest score to something
 other than the first entry and you get the beat this component exists for: a
 fourth arrival climbing past three rows to first place. Pass them already sorted
@@ -22,6 +22,6 @@ to its ranked slot, so React does not remount a row mid-flight and the travel
 stays continuous even when two rows swap.
 
 Typing is setup here, not the subject. When the fields themselves are the story
-— focus, validation, a submit button arming — use `form-fill-sequence`.
+(focus, validation, a submit button arming), use `form-fill-sequence`.
 
 </ComponentPage>

@@ -35,7 +35,7 @@ across the wedge boundary does the same feathering, and the whole thing becomes
 one field evaluation instead of eleven blurred layers:
 
 <CodeSnippet
-  label="light-rays — the blur becomes an edge function"
+  label="light-rays: the blur becomes an edge function"
   code={`float halfWidth = width * (HALF_AT_SOURCE + HALF_GAIN * t);
 float cover = 1.0 - smoothstep(halfWidth - uBlur, halfWidth + uBlur, abs(across));`}
 />
@@ -152,9 +152,9 @@ linear falloff.
 backend repeats the same work: compile a program, set up a fullscreen quad,
 upload the source texture, draw, and clean up. We wrapped it in a
 `makeShaderEffect({ type, fragmentShader, calculateKey, setUniforms })` helper
-so each component only supplies its shader and uniforms. Keep in mind that
-`calculateKey` is how Remotion tells effect instances apart. Anything that
-changes per frame has to be part of the key.
+so each component only supplies its shader and uniforms. `calculateKey` is how
+Remotion tells effect instances apart, and anything that changes per frame has
+to be part of the key.
 
 ## The short version
 

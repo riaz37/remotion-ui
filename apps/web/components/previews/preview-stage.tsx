@@ -14,7 +14,7 @@ export type PreviewStageTokens = {
   muted: string;
   panelFill: string;
   panelBorder: string;
-  /** Highlight ink — must clear 4.5:1 against `stage`, so it differs per stage. */
+  /** Highlight ink: must clear 4.5:1 against `stage`, so it differs per stage. */
   accent: string;
 };
 

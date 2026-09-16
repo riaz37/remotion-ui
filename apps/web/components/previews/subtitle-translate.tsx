@@ -25,7 +25,7 @@ const CUES = [
 ];
 
 /**
- * Samples land at frames 18, 60 and 108 — 600ms, 2000ms and 3600ms — one per
+ * Samples land at frames 18, 60 and 108 (600ms, 2000ms and 3600ms), one per
  * cue, each with the second line still trailing the first into place.
  */
 export const SubtitleTranslatePreview: React.FC = () => (

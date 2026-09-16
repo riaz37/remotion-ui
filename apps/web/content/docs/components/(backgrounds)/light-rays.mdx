@@ -20,7 +20,7 @@ import { LightRays } from "@/remotion/primitives/light-rays";
 
 ## Where it sits
 
-Shafts, not blobs — `mesh-gradient-bg` owns blobs. And full-frame, unlike
+Shafts, not blobs: `mesh-gradient-bg` owns blobs. And full-frame, unlike
 `light-sweep-text`, which is a specular pass clipped to letterforms.
 
 Set `backgroundColor="transparent"` to lay it over footage instead of over its
@@ -36,7 +36,7 @@ avoids a symmetric seam down the middle of the fan.
 
 ## Aiming it
 
-`originX` / `originY` are percentages of the frame and are usually outside it —
+`originX` / `originY` are percentages of the frame and are usually outside it:
 the default puts the source above the top edge. `angle` points the fan, `spread`
 is its total width in degrees, and `bloom` is the halo at the source.
 
@@ -46,7 +46,7 @@ There is no entrance: every shaft sways on its own period and the fan drifts on
 a longer one. `speed` scales all of it, and `speed={0}` freezes the fan into a
 still image, which is occasionally what a poster frame wants.
 
-Keep `blur` moderate. A heavy blur swallows the sway — the first cut of this
+Keep `blur` moderate. A heavy blur swallows the sway. The first cut of this
 component moved one to two degrees under an 18px blur and measured as a still
 frame on the preview audit.
 

@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 
 /**
  * Vercel Web Analytics, production, 30 days to 2026-09-15. Hand-copied, so
- * refresh these when pitching — a sponsor will compare them to a screenshot.
+ * refresh these when pitching: a sponsor will compare them to a screenshot.
  */
 const TRAFFIC = {
   period: "Last 30 days",

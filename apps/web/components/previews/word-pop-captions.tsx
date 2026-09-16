@@ -9,7 +9,7 @@ import { PreviewFrame } from "./preview-frame";
 
 const WORDS = ["One", "word", "at", "a", "time", "alone", "on", "frame"];
 
-/** 480ms a word — fast enough to read as a cut rate, slow enough to read. */
+/** 480ms a word: fast enough to read as a cut rate, slow enough to read. */
 const CAPTIONS: Caption[] = WORDS.map((text, index) => ({
   text: ` ${text}`,
   startMs: index * 480,
@@ -21,7 +21,7 @@ const CAPTIONS: Caption[] = WORDS.map((text, index) => ({
 const [page] = groupCaptionsIntoPages(CAPTIONS, WORDS.length * 480 + 100);
 
 /**
- * Samples land at frames 18, 60 and 108 — 600ms, 2000ms and 3600ms into an
+ * Samples land at frames 18, 60 and 108 (600ms, 2000ms and 3600ms) into an
  * eight-word run of 480ms each, so each sample catches a different word part
  * way through its pop.
  */

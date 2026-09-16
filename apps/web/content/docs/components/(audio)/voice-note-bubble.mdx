@@ -18,7 +18,7 @@ import { VoiceNoteBubble } from "@/remotion/primitives/voice-note-bubble";
 ## The waveform is static
 
 Only the colour moves through it, which is how every messaging app draws this. A
-bar chart that animated its heights would be a live spectrum — a different claim
+bar chart that animated its heights would be a live spectrum: a different claim
 entirely, and one that contradicts the fact that a voice note's shape is known
 before you press play.
 
@@ -28,7 +28,7 @@ smoothly instead of stepping bar by bar.
 ## Position comes from frames
 
 `durationInFrames` drives the playhead, not audio analysis, so the bubble can
-front a note that is described rather than played — and the playhead lands on
+front a note that is described rather than played, and the playhead lands on
 the frame the edit says it should. `delayInFrames` staggers a second bubble in a
 conversation.
 

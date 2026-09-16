@@ -40,7 +40,7 @@ const Row: React.FC<{ index: number; label: string }> = ({ index, label }) => {
   );
 };
 
-/** Rows arrive in order and leave in the same order — one wave, both ways. */
+/** Rows arrive in order and leave in the same order: one wave, both ways. */
 export const StaggerChildrenPreview: React.FC = () => (
   <PreviewFrame lane="atoms">
     <div style={{ display: "grid", gap: 26, justifyItems: "center" }}>

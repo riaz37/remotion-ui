@@ -14,7 +14,7 @@ import { PreviewFrame } from "./preview-frame";
  * the lane reads as an overlay on a stream.
  *
  * The stream never settles, so every audit sample lands on different glyph
- * positions — no exit is needed here. Frames 18 / 60 / 108 each catch a
+ * positions, so no exit is needed here. Frames 18 / 60 / 108 each catch a
  * different set of reactions mid-climb.
  */
 export const ReactionBurstPreview: React.FC = () => (
@@ -24,7 +24,7 @@ export const ReactionBurstPreview: React.FC = () => (
         src={DEMO_PHOTO_SRC}
         style={{ width: "100%", height: "100%", objectFit: "cover" }}
       />
-      {/* Scrim under the lane only — the glyphs need a ground to read against. */}
+      {/* Scrim under the lane only: the glyphs need a ground to read against. */}
       <AbsoluteFill
         style={{
           background:

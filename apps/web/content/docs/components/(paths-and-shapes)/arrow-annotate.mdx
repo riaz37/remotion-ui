@@ -9,7 +9,7 @@ import { ArrowAnnotatePreview } from '@/components/previews/arrow-annotate';
 
 The shaft grows from its start and the head lands over the last quarter of the
 stroke, angled to the curve's tangent rather than to the straight line between
-the ends — so the arrow points where it is actually travelling.
+the ends, so the arrow points where it is actually travelling.
 
 The hand-drawn quality is two passes over the same curve at a sub-pixel offset,
 the way a pen doubles back on a line. It is not a wobbling path: moving the
@@ -17,7 +17,7 @@ points per frame reads as a *shaking* arrow, which is a different and much worse
 effect. Set `sketch={false}` for a single clean stroke.
 
 Endpoints are fractions of the box, so the same arrow works at any size, and
-`bow` pushes the midpoint along the line's own normal — the curve therefore
+`bow` pushes the midpoint along the line's own normal. The curve therefore
 stays proportional whatever the arrow's length or angle. Negative values bow the
 other way.
 

@@ -44,6 +44,13 @@ export const EXPORT_OVERRIDES: Record<
   "map-markers": { renderFlags: [...GL_RENDER_FLAGS] },
   "map-route": { renderFlags: [...GL_RENDER_FLAGS] },
   "transition-light-leak": { renderFlags: [...GL_RENDER_FLAGS] },
+  // Paper shader fields each take a WebGL2 context of their own.
+  "dither-field-bg": { renderFlags: [...GL_RENDER_FLAGS] },
+  "warp-bands-bg": { renderFlags: [...GL_RENDER_FLAGS] },
+  "grain-gradient-bg": { renderFlags: [...GL_RENDER_FLAGS] },
+  // First-party GLSL through lib/gpu.ts, same WebGL2 requirement.
+  "light-tunnel-bg": { renderFlags: [...GL_RENDER_FLAGS] },
+  "text-reveal-shader": { renderFlags: [...GL_RENDER_FLAGS] },
   // The digit in the slug defeats preview auto-discovery: `DeviceMockup3DPreview`
   // kebab-cases to `device-mockup3-d`, so the wrapper is named here.
   "device-mockup-3d": {
@@ -139,7 +146,7 @@ function previewNameToSlug(exportName: string) {
  *
  * Only PascalCase exports are considered. A registry file may export config
  * constants (`LIQUID_WARP_DEFAULTS`, `SHAPE_OVERSHOOT`) above the component,
- * and taking the first export blindly makes those the composition id — which
+ * and taking the first export blindly makes those the composition id, which
  * Remotion then rejects, because an id cannot contain an underscore.
  */
 function readNamedExport(filePath: string) {
@@ -197,7 +204,7 @@ function buildPreviewIndex(previewsDir: string) {
       const existing = index.get(slug);
       if (existing) {
         // Two files exporting the same preview name means one silently shadows
-        // the other here while the site imports whichever it names directly —
+        // the other here while the site imports whichever it names directly,
         // the export harness then renders a component nobody sees.
         throw new Error(
           `Duplicate preview for "${slug}": ${existing.importPath} and ${importPath} both export ${exportName}.`,

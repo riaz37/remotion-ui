@@ -226,6 +226,20 @@ Outside the 200 allocation: the first entry in a new lane for `@remotion/three` 
 
 ---
 
+## shaders — +3
+
+Outside the 200 allocation: a new lane for full-frame GPU fields. These three wrap `@paper-design/shaders-react` (Apache-2.0), which is the commodity half of the plan — fields that are not worth hand-writing, reached quickly. The distinctive half is first-party GLSL and comes after these are judged. Every entry carries `@paper-design/shaders-react` as a dependency, depends on the `paper-shader` lib, and renders with `--gl=angle`.
+
+| Slug | Tags | Tier | Intent |
+|---|---|---|---|
+| `dither-field-bg` | background | core | Two-colour ordered-dither field: a smooth pattern quantised to a pixel grid, reading as print halftone or an early bitmap display rather than a gradient. |
+| `warp-bands-bg` | background | core | Colour bands folded through noise and a swirl — smoke, ink in water, or marble depending on how hard the edges are. |
+| `grain-gradient-bg` | background | advanced | Multi-colour gradient with grain worked through it, where the grain is what stops a wide shallow ramp from banding. Distinct from `mesh-gradient-bg`, which is three drifting blobs, and from `animated-noise-grain`, which is a grain overlay with no gradient of its own. |
+
+> **Determinism:** a Paper mount runs its own `requestAnimationFrame` loop on wall time. Every wrapper passes `speed={0}`, which cancels that loop, and drives `frame` from `useCurrentFrame()` in milliseconds. The first draw is held behind `useDelayRender` because the mount initialises asynchronously and starts at the default 300x150 canvas until its ResizeObserver fires; each later frame is redrawn from a layout effect so the draw lands before paint. All of this lives in `lib/paper-shader.tsx` — wrappers never talk to the mount directly.
+
+---
+
 ## Build order
 
 Ordered by unblocking power, not lane size.

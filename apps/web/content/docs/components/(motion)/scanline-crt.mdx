@@ -18,7 +18,7 @@ import { ScanlineCrt } from "@/remotion/primitives/scanline-crt";
 ```
 
 Pass `children` to put content inside the tube, or drop it over a stack as a
-bare overlay — it paints no plate of its own either way.
+bare overlay. It paints no plate of its own either way.
 
 ## Four overlays that only work together
 
@@ -34,7 +34,7 @@ reading as random noise; the jitter is what stops the hum reading as a fade.
 
 Each scanline is a quadratic whose midpoint is pushed away from the centre of
 the tube in proportion to its distance from it, so lines near the top bow up and
-lines near the bottom bow down. That read — glass, not glass-effect — arrives
+lines near the bottom bow down. That read (glass, not glass-effect) arrives
 long before any corner shading does.
 
 Content underneath is **not** geometrically warped. Warping a live subtree needs
@@ -45,7 +45,7 @@ bowed lines plus the rounded tube face carry it.
 
 Every overlay here works by removing light: scanlines darken, the grille masks,
 the vignette shades. Over a near-black plate the whole component is invisible.
-If your tile looks empty, the tube has nothing to show — that is the first thing
+If your tile looks empty, the tube has nothing to show. That is the first thing
 to check, not `intensity`.
 
 ## Stacking

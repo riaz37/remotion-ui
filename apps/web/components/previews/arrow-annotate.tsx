@@ -13,7 +13,7 @@ const TARGET = { x: 0.7, y: 0.74 };
  *
  * The shaft draws over frames 0–48, so frame 18 is a third of the way along with
  * the label coming up and frame 60 is the landed arrow. The exit starts at frame
- * 97 so frame 108 sits halfway through it — `EASING.exit` is cubic-in, so half
+ * 97 so frame 108 sits halfway through it: `EASING.exit` is cubic-in, so half
  * the *opacity* is 0.79 of the window, not half of it. See
  * docs-internal/preview-audit-rubric.md.
  */

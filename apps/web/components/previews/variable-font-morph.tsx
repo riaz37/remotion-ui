@@ -9,8 +9,8 @@ import { PreviewFrame } from "./preview-frame";
  *
  * `font-variation-settings` is inert on a static family, so on the default
  * system stack this preview was only ever showing the component's `font-weight`
- * fallback — a two-step snap between whatever discrete weights the system font
- * ships, not the `200 → 900` glide the component is named for. Google serves
+ * fallback (a two-step snap between whatever discrete weights the system font
+ * ships), not the `200 → 900` glide the component is named for. Google serves
  * Inter as a single variable woff2 (all nine weight URLs are the same file), so
  * loading it here at module scope gives the `wght` axis somewhere continuous to
  * travel.
@@ -21,8 +21,8 @@ const { fontFamily } = loadFont("normal", {
 });
 
 /**
- * The audit samples at 15% / 50% / 90% of the window — frames 18, 60 and 108 on
- * the 120-frame default. `oscillate` keeps the weight wave travelling for the
+ * The audit samples at 15% / 50% / 90% of the window (frames 18, 60 and 108 on
+ * the 120-frame default). `oscillate` keeps the weight wave travelling for the
  * whole window. The period is 34 frames, not the 46 it started at: the samples
  * are 42 and 48 frames apart, so a 46-frame period put frames 60 and 108 back
  * on almost exactly the same phase and the two stills were visually the same

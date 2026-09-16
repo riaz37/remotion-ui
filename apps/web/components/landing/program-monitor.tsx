@@ -89,6 +89,22 @@ export function ProgramMonitor({ children }: ProgramMonitorProps) {
   /** Discrete, not continuous: flips once, when the copy has finished fading. */
   const [copyGone, setCopyGone] = useState(false);
 
+  /**
+   * The open-out is a desktop affordance. Below `lg` there is no runway, so the
+   * sticky stage is its own scroll range and `scrollYProgress` would snap 0->1
+   * on the first flick: the phosphor field would blow out over the copy and
+   * `copyGone` would kill the CLI and link tap targets. Pin progress at 0 there,
+   * exactly as reduced motion does.
+   */
+  const [opens, setOpens] = useState(false);
+  useEffect(() => {
+    const wide = window.matchMedia("(min-width: 1024px)");
+    const read = () => setOpens(wide.matches);
+    read();
+    wide.addEventListener("change", read);
+    return () => wide.removeEventListener("change", read);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end end"],
@@ -96,7 +112,7 @@ export function ProgramMonitor({ children }: ProgramMonitorProps) {
   const progress: MotionValue<number> = useTransform(
     scrollYProgress,
     [0, 1],
-    reduce ? [0, 0] : [0, 1],
+    reduce || !opens ? [0, 0] : [0, 1],
   );
 
   /**

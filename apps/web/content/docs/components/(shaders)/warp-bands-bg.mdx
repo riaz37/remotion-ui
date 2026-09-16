@@ -1,0 +1,24 @@
+---
+title: Warp Bands Background
+description: Colour bands folded through noise and a swirl, smoke, ink, or marble.
+---
+
+import { WarpBandsBgPreview } from "@/components/previews/warp-bands-bg";
+
+<ComponentPage name="warp-bands-bg" preview={WarpBandsBgPreview}>
+
+Up to ten colours laid over a base pattern, then folded by noise and a swirl.
+What it looks like is mostly `softness`: at `0` the bands stay legible ribbons,
+at `1` they melt into one continuous field of smoke or ink.
+
+`swirl` and `swirlIterations` control the folding. More passes fold the bands
+back through themselves and push it toward marble. `distortion` roughens the
+edges without folding them.
+
+Keep a dark colour in the list. The bands blend in order, and an all-bright set
+loses the separation that makes the motion readable under type.
+
+Render with `--gl=angle`. The field has no entrance and no loop point; it is the
+same motion at every point in the composition.
+
+</ComponentPage>

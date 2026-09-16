@@ -485,23 +485,45 @@ vec3 field(vec2 px) {
 
 void main() {
   vec2 frag = gl_FragCoord.xy;
+
+  // Dot pitch tracks the render height, so the screen reads the same at any
+  // output size, and never falls under a pixel and aliases.
   float cell = max(2.5, 4.8 * uResolution.y / 1080.0);
-  mat2 turn = mat2(cos(ANGLE), -sin(ANGLE), sin(ANGLE), cos(ANGLE));
-  vec2 rotated = turn * frag;
-  vec2 centre = (floor(rotated / cell) + 0.5) * cell;
-  vec2 samplePx = transpose(turn) * centre;
+
+  // The screen is a lattice, not a grid of squares: two cell-length basis
+  // vectors turned off-axis. Walking the basis gives the nearest node back in
+  // pixels directly, so nothing has to be rotated out of screen space again.
+  vec2 e0 = cell * vec2(cos(ANGLE), sin(ANGLE));
+  vec2 e1 = vec2(-e0.y, e0.x);
+  vec2 lattice = vec2(dot(frag, e0), dot(frag, e1)) / (cell * cell);
+  vec2 node = floor(lattice) + 0.5;
+  vec2 centre = node.x * e0 + node.y * e1;
 
   vec3 soft = field(frag);
-  vec3 cellInk = field(samplePx);
-  float level = clamp(dot(cellInk, LUMA), 0.0, 1.0);
+  vec3 cellInk = field(centre);
+  float tone = clamp(dot(cellInk, LUMA), 0.0, 1.0);
 
-  float radius = cell * sqrt(level / 3.14159265);
-  float dotMask = 1.0 - smoothstep(radius - 0.7, radius + 0.7, length(rotated - centre));
-  vec3 dots = cellInk * min(0.8 / max(level, 1e-3), 2.4) * dotMask;
-  float presence = smoothstep(0.02, 0.15, level) * 0.62;
-  vec3 ink = clamp(mix(soft, dots, presence), 0.0, 1.0);
+  // A screen is a threshold against a spot function, not a circle of measured
+  // area: ink lands wherever the cone standing on the node rises above the
+  // tone that cell owes. The spot falls one unit per \`reach\` pixels, so
+  // 1/reach is a one-pixel feather.
+  float reach = cell * 0.62;
+  float spot = 1.0 - length(frag - centre) / reach;
+  float aa = 1.0 / reach;
+  float inked = smoothstep(-aa, aa, spot - (1.0 - tone));
 
-  outColor = vec4(clamp(STAGE + ink * (1.0 - STAGE), 0.0, 1.0), 1.0);
+  // The screen modulates the light already there rather than reprinting it as
+  // fresh ink, so exposure is held by dividing out the mask's own mean: the
+  // spot covers pi*0.62^2*tone^2 of its cell, and whatever the screen has not
+  // bitten into stays at full soft light. Dim cells keep that soft light - a
+  // screen only asserts itself once it carries some tone.
+  float bite = 0.62 * smoothstep(0.0, 0.14, tone);
+  float coverage = clamp(1.207 * tone * tone, 0.0, 1.0);
+  float gain = 1.0 / max(1.0 - bite + bite * coverage, 1e-3);
+  vec3 ink = clamp(soft * mix(1.0, inked, bite) * gain, 0.0, 1.0);
+
+  // Light on a dark stage adds: the photographic screen op.
+  outColor = vec4(clamp(1.0 - (1.0 - STAGE) * (1.0 - ink), 0.0, 1.0), 1.0);
 }
 `;
 

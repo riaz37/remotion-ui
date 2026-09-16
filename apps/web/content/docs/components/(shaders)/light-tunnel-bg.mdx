@@ -1,0 +1,40 @@
+---
+title: Light Tunnel Background
+description: Flight down a twisting barrel of light, with a defocused vanishing point.
+---
+
+import { LightTunnelBgPreview } from "@/components/previews/light-tunnel-bg";
+
+<ComponentPage name="light-tunnel-bg" preview={LightTunnelBgPreview}>
+
+A flat field remapped onto the inside of a cylinder. Depth comes from the
+reciprocal radius, so the wall rushes past as a pixel approaches the middle of
+the frame, and the angle comes from `atan` plus a twist coupled to that depth.
+This is the one background in the lane with a vanishing point. The others move
+across a flat plane, this one travels toward something.
+
+`ribbons` is rounded to an integer and that is not a convenience. The twist is
+added before the angle wraps, so a fractional repeat count leaves a hard seam
+running down the line where `atan` changes sign. Integer counts wrap cleanly and
+the barrel has no visible join.
+
+`ringDensity` places rings evenly in `log(r)` rather than in `r`. Spaced evenly
+in `r` they bunch into a solid bright mass at the centre and disappear at the
+rim; spaced logarithmically they hold roughly the same apparent width all the
+way in, which is what keeps the folds readable instead of smearing.
+
+`defocus` is the other half of that. `1/r` is singular at the exact centre of
+the frame, and the usual fix, clamping the radius, is also the usual tell: it
+leaves a flat disc with a hard rim parked in the vanishing point. Here a
+nine-tap Gaussian disk whose radius grows as `r` falls resolves the singularity
+the way a lens does, by losing focus. Set it to `0` to see what the clamp would
+have looked like.
+
+Hue is keyed to the ribbon index rather than to the clock, so a ribbon keeps its
+colour for the whole flight. Driving hue from depth instead makes the entire
+barrel cycle through the palette as you travel, which reads as a screensaver.
+
+Render with `--gl=angle`. Motion comes from the frame only, so the same frame
+renders to identical pixels every time.
+
+</ComponentPage>

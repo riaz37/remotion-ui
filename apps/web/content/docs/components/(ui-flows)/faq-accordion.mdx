@@ -17,8 +17,8 @@ instead of as text stretching.
 
 Panel heights are estimated from each answer's own length against the measured
 content width. A headless render has no settled layout to interrogate
-mid-animation — a height read from `scrollHeight` collapses to zero on exactly
-the frames that matter — so the estimate rounds up, costing a few pixels of slack
+mid-animation. A height read from `scrollHeight` collapses to zero on exactly
+the frames that matter, so the estimate rounds up, costing a few pixels of slack
 and buying a height that is identical on every machine. Keep answers to two or
 three lines; long copy inflates that rounding.
 

@@ -7,7 +7,7 @@ import { PreviewFrame } from "./preview-frame";
 const BOX = { width: 816, height: 396 } as const;
 
 /**
- * The subject has to animate from `useCurrentFrame()` — the trail is this
+ * The subject has to animate from `useCurrentFrame()`: the trail is this
  * subtree re-rendered at earlier frames, so a statically positioned child would
  * stack every echo in one place.
  *

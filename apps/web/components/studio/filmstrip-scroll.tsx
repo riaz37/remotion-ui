@@ -11,7 +11,7 @@ import {
 
 type FilmstripScrollProps = {
   children: ReactNode;
-  /** Gap between items in px — must match flex gap on track */
+  /** Gap between items in px, must match flex gap on track */
   gap?: number;
   className?: string;
   /** Horizontal padding on scroll track (aligns first/last card with section headline) */

@@ -25,7 +25,7 @@ import { ScrambleText } from "@/remotion/primitives/scramble-text";
 
 `matrix-decode` resolves strictly left to right from one shared progress value.
 This one is built on `split-text-chars`, so the resolve follows any stagger
-order — `center`, `edges`, `random` — and a character's noise stops when *that
+order (`center`, `edges`, `random`), and a character's noise stops when *that
 character* arrives, not when the string is a given percentage decoded.
 
 ## Charsets
@@ -42,7 +42,7 @@ whose glyphs share an advance, or accept the wobble.
 
 ## Determinism
 
-Glyphs are hashed from the character index, the tick and `seed` — never
+Glyphs are hashed from the character index, the tick and `seed`, never
 sampled. `Math.random()` would resample on every render pass, so the same frame
 would scramble differently in the preview and in the render.
 

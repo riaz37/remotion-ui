@@ -23,7 +23,7 @@ const STEADY = Easing.bezier(0.45, 0, 0.55, 1);
  * The window is 110 frames, so the audit samples land on 16 / 55 / 99. The
  * shuttle runs at 1.2s = 36 frames, which puts those three on distinct phases
  * (26% / 38% / 72% across the track). 1.1s would be 33 frames and 99 is exactly
- * three of those — the 90% sample would catch the shuttle parked off the left
+ * three of those: the 90% sample would catch the shuttle parked off the left
  * edge. See docs-internal/preview-audit-rubric.md on periods aliased against
  * the sample gaps.
  */

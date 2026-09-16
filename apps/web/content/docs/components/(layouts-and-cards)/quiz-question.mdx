@@ -1,6 +1,6 @@
 ---
 title: Quiz Question
-description: A question that resolves — options arrive, one is picked, then the right answer lights while the rest step back.
+description: A question that resolves. Options arrive, one is picked, then the right answer lights while the rest step back.
 ---
 
 import { QuizQuestionPreview } from '@/components/previews/quiz-question';
@@ -13,9 +13,9 @@ design: the eye needs to have settled on a choice before it can register being
 told it was wrong, and quiz scenes that resolve in a single frame are unreadable
 at social speeds.
 
-Three states are drawn — picked, right, wrong — and correct always wins where
+Three states are drawn (picked, right, wrong), and correct always wins where
 they overlap, so `pickedIndex === correctIndex` gives you a scene where the pick
-is simply right. Pass `pickedIndex={-1}` for a reveal with no pick at all.
+is right. Pass `pickedIndex={-1}` for a reveal with no pick at all.
 
 On the reveal, every option that is neither picked nor correct steps back rather
 than changing colour. The resolution then reads as focus narrowing, which is

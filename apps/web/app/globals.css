@@ -398,10 +398,15 @@ h3 {
   The hero loop is transparent over the page light, so its poster comes in a
   dark and a light variant. Chosen in CSS from the root's theme class, so the
   right one is on screen before hydration.
+
+  Hidden with opacity rather than `display: none`, which costs twice: a
+  display-none image has no rendered frame, so Next's `img.decode()` rejects
+  with EncodingError, and it has no layout box, so srcset ignores `sizes` and
+  pulls the 3840w candidate instead of the 640w one.
 */
 :root.dark .hero-poster-light,
 :root:not(.dark) .hero-poster-dark {
-  display: none;
+  opacity: 0 !important;
 }
 
 @keyframes hero-rise {

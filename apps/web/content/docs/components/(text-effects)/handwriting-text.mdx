@@ -22,7 +22,7 @@ import { HandwritingText } from "@/remotion/primitives/handwriting-text";
 ## This takes a string; `path-draw` takes a path
 
 That is the whole distinction, and it decides which one you want. A string has
-no stroke order — nothing in a font records that `S` starts at the top right —
+no stroke order (nothing in a font records that `S` starts at the top right),
 so the ink here is revealed by a left-to-right wipe per glyph with a nib riding
 the wet edge. For a signature or a logogram, where the stroke order *is* the
 effect, give `path-draw` the actual path.

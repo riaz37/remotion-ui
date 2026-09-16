@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { siteConfig } from "@/lib/site-config";
 
-/** Docs sidebar footer — external links only; navigation lives in the page tree. */
+/** Docs sidebar footer: external links only; navigation lives in the page tree. */
 export function SidebarFooter() {
   return (
     <div className="space-y-3 border-t border-[var(--bay-border)] px-2 py-4 text-xs text-fd-muted-foreground">

@@ -21,7 +21,7 @@ const CUES = [
 ];
 
 /**
- * Samples land at frames 18, 60 and 108 — 600ms, 2000ms and 3600ms — so each
+ * Samples land at frames 18, 60 and 108 (600ms, 2000ms and 3600ms), so each
  * catches a different cue, with the previous speaker's card still dimmed
  * behind it and the live card part way through its rise.
  */

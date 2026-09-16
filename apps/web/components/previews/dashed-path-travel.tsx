@@ -5,8 +5,8 @@ import { PreviewFrame } from "./preview-frame";
 
 /**
  * The trip runs frames 4–80, so frame 18 is early on the route and frame 60 two
- * thirds along. It then holds the *completed* route for 16 frames — the frame
- * the component exists to produce, which the old timing showed for two frames —
+ * thirds along. It then holds the *completed* route for 16 frames (the frame
+ * the component exists to produce, which the old timing showed for two frames)
  * and leaves across 96–112 so frame 108 catches the marked route mid-fade
  * rather than an empty plate.
  *

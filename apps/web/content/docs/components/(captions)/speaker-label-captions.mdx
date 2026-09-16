@@ -34,16 +34,16 @@ the order they first appear.
 ## Cues
 
 Timings are in milliseconds, so a track parsed from SRT or WebVTT drops straight
-in — `parseSubtitles` already fills `speaker` from a WebVTT `<v Name>` tag.
+in: `parseSubtitles` already fills `speaker` from a WebVTT `<v Name>` tag.
 
 Between cues the last card holds rather than clearing. A card blinking out in
 every pause is more distracting than one that waits for the next line.
-`showPrevious` keeps the line before it on screen, dimmed to about a third — it
+`showPrevious` keeps the line before it on screen, dimmed to about a third; it
 is context, and matching the live line's weight would defeat both.
 
 ## Where it sits
 
 This is a track, not a frame: `talking-head-layout` handles the shot
-composition. They compose — put this over that.
+composition. They compose: put this over that.
 
 </ComponentPage>

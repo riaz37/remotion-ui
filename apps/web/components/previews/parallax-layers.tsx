@@ -58,7 +58,7 @@ const FrontPlane: React.FC = () => (
  * three points of one continuous move rather than on a loop that could alias
  * against the 42 and 48-frame sample gaps.
  *
- * Three planes with visibly different content at different depths — the point
+ * Three planes with visibly different content at different depths: the point
  * of the component is the *relative* rates, which a single plate cannot show.
  */
 export const ParallaxLayersPreview: React.FC = () => (

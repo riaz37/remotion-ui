@@ -8,13 +8,13 @@ import { TransitionChromaticAberrationWipePreview } from "@/components/previews/
 <ComponentPage name="chromatic-aberration-wipe" preview={TransitionChromaticAberrationWipePreview}>
 
 The two scenes slide across locked together while the red and blue channels
-separate against the green — an actual per-channel split, isolated with a colour
+separate against the green, an actual per-channel split, isolated with a colour
 matrix and recombined under `screen`, not a coloured shadow dropped behind the
 layer. The separation peaks in the middle of the move and is gone at both ends,
 so nothing is left tinted once the cut lands.
 
 `intensity` is the peak separation in px, `axis` swings the whole thing
-vertical, and `slide` is how far the scenes travel — leave it at `1` unless you
+vertical, and `slide` is how far the scenes travel. Leave it at `1` unless you
 want the background to show.
 
 Exports `transitionChromaticAberrationWipe()` and

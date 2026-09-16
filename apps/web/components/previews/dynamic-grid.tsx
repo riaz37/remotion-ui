@@ -9,7 +9,7 @@ import { usePreviewStage } from "./preview-stage";
  *
  * The component's defaults do not survive this render path: the audit samples
  * at `--scale 0.5`, where a 1px line is half a device pixel and Chromium drops
- * the gradient stop outright — the first fix attempt raised alpha alone and the
+ * the gradient stop outright: the first fix attempt raised alpha alone and the
  * plate still came back empty. Lines are 3px at 26% alpha on 96px cells, with
  * the plate lightened a step so the pattern reads through the vignette.
  *

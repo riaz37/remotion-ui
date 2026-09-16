@@ -16,7 +16,7 @@ one glyph.
 
 ## Modes
 
-`mode` decides what one animated unit is — `chars`, `words`, or `lines`. The
+`mode` decides what one animated unit is: `chars`, `words`, or `lines`. The
 layout is always three levels (line → word → unit) whichever mode is used, so a
 character split can never break a word across a line.
 
@@ -44,7 +44,7 @@ const { lines, lastEnterFrame } = useSplitText({
 });
 ```
 
-`lastEnterFrame` is the frame the final unit lands on — size a `<Sequence>` with
+`lastEnterFrame` is the frame the final unit lands on: size a `<Sequence>` with
 it rather than guessing.
 
 </ComponentPage>

@@ -1,6 +1,6 @@
 ---
 title: Connector Lines
-description: The edges between anchored elements, and nothing else — the primitive under a diagram.
+description: The edges between anchored elements, and nothing else, the primitive under a diagram.
 ---
 
 import { ConnectorLinesPreview } from '@/components/previews/connector-lines';
@@ -8,8 +8,8 @@ import { ConnectorLinesPreview } from '@/components/previews/connector-lines';
 <ComponentPage name="connector-lines" preview={ConnectorLinesPreview}>
 
 This draws lines between named points and leaves the boxes to you. Position your
-own nodes at the same fractional coordinates the anchors use — as the preview
-does — and the lines and the layout stay in register at any size. That is why
+own nodes at the same fractional coordinates the anchors use, as the preview
+does, and the lines and the layout stay in register at any size. That is why
 anchors are fractions rather than pixels.
 
 Three edge shapes ship. `curve` bows toward the midpoint's own normal, so the
@@ -21,7 +21,7 @@ curve and a short hop take the same time and the diagram assembles at an even
 pace. An edge naming an anchor that does not exist is dropped rather than drawn
 to the origin, which would put a line through the corner of the box.
 
-`dashed` fades its edges in rather than drawing them — a dash pattern cannot
+`dashed` fades its edges in rather than drawing them: a dash pattern cannot
 both space the line and reveal it. Use it when the lines are a relationship
 rather than a flow.
 

@@ -12,8 +12,8 @@ const ROWS = [
 
 /**
  * Samples land at frames 18, 60 and 108. Four pairs of 34-frame growths on an
- * 18-frame stagger run from frame 4 to 98 — one pair is mid-growth at the first
- * sample and the third at the second — and the exit at 96 carries the third.
+ * 18-frame stagger run from frame 4 to 98: one pair is mid-growth at the first
+ * sample and the third at the second, and the exit at 96 carries the third.
  */
 export const ComparisonBarsPreview: React.FC = () => (
   <PreviewFrame lane="signals" padding={72}>

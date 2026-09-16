@@ -10,7 +10,7 @@ import { PreviewFrame } from "./preview-frame";
 /**
  * The wrapper draws nothing of its own, so the preview supplies the subject.
  * A plate with type in it is the honest demo: it shows that an arbitrary child
- * — not a bespoke shape — is what reacts.
+ * (not a bespoke shape) is what reacts.
  */
 export const AudioReactiveScalePreview: React.FC = () => {
   const { fps } = useVideoConfig();
@@ -23,8 +23,8 @@ export const AudioReactiveScalePreview: React.FC = () => {
       <AbsoluteFill>
         {/* Doc rules 14 and 34. `premountFor` mounts the tag a second early so the
           decoder is warm before the first visible frame, and
-          `pauseWhenBuffering` — which lives on the HTML5 fallback props, the
-          path that can actually stall — holds the Player on a slow source
+          `pauseWhenBuffering`, which lives on the HTML5 fallback props (the
+          path that can actually stall), holds the Player on a slow source
           instead of running silence under a live meter. */}
         <Sequence from={0} premountFor={fps}>
           <Audio

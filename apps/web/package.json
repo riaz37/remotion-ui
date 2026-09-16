@@ -26,6 +26,7 @@
     "gen:posters": "tsx scripts/gen-posters.mts"
   },
   "dependencies": {
+    "@paper-design/shaders-react": "0.0.80",
     "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.7.0",
     "@remotion/captions": "^4.0.524",

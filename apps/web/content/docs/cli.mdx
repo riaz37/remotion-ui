@@ -58,7 +58,7 @@ New projects skip the agent skill unless you pass `--agent-skill`.
 
 ## Composition registration
 
-When a registry item carries composition metadata, `add` patches `Root.tsx` for you — it inserts the import and a `<Composition />` entry with the item's `id`, `durationInFrames`, `fps`, `width`, and `height`. If an id is already present, the file is left untouched, so re-running `add` or `update` never duplicates entries.
+When a registry item carries composition metadata, `add` patches `Root.tsx` for you: it inserts the import and a `<Composition />` entry with the item's `id`, `durationInFrames`, `fps`, `width`, and `height`. If an id is already present, the file is left untouched, so re-running `add` or `update` never duplicates entries.
 
 ## Filter the registry
 
@@ -70,7 +70,7 @@ Lanes: `atoms`, `signals`, `vectors`, `spatial`, `blocks`, `cuts`, `reels`. Tier
 
 ## Script output
 
-Pass `--json` to any command for machine-readable output — useful for agents and CI.
+Pass `--json` to any command for machine-readable output. Useful for agents and CI.
 
 <CodeSnippet label="JSON output" code={`npx remotion-ui@latest doctor --json
 npx remotion-ui@latest search -q social --json
@@ -114,7 +114,7 @@ Registry items may declare a supported Remotion range:
   "compat": { "remotion": "^4.0.0" }
 }`} />
 
-At install time, `add` reads the Remotion version from your `package.json` and warns when the range is not satisfied. The install still proceeds — the check is advisory, and it only runs at install time, not continuously. `doctor` reports your installed Remotion version alongside config and alias checks.
+At install time, `add` reads the Remotion version from your `package.json` and warns when the range is not satisfied. The install still proceeds. The check is advisory, and it only runs at install time, not continuously. `doctor` reports your installed Remotion version alongside config and alias checks.
 
 ## Component props
 

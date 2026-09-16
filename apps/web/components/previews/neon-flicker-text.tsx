@@ -4,11 +4,11 @@ import { NeonFlickerText } from "../../registry/bases/default/primitives/neon-fl
 import { PreviewFrame } from "./preview-frame";
 
 /**
- * The audit samples at 15% / 50% / 90% of the window — frames 18, 60 and 108 on
- * the 120-frame default. A 5-frame stagger keeps tubes striking until frame ~85,
+ * The audit samples at 15% / 50% / 90% of the window (frames 18, 60 and 108 on
+ * the 120-frame default). A 5-frame stagger keeps tubes striking until frame ~85,
  * so the first two samples are both mid-ignition, and the sign cuts out again
  * from frame 92 so the third catches it dying. The hum and the stutter alone
- * measured as a still tail against the audit — a settled sign is nearly a PNG,
+ * measured as a still tail against the audit: a settled sign is nearly a PNG,
  * so the preview does not end on one.
  */
 const stage = {

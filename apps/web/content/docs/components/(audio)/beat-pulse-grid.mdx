@@ -19,13 +19,13 @@ import { BeatPulseGrid } from "@/remotion/primitives/beat-pulse-grid";
 
 A grid where each cell follows the overall level is one big flashing rectangle;
 the point of a grid is that its parts can disagree. `mapping` decides how the
-spectrum is laid over the geometry — `column` runs it left to right, `row` top
+spectrum is laid over the geometry: `column` runs it left to right, `row` top
 to bottom, and `radial` maps it outward from the centre, which reads as a pulse
 travelling through the grid on the kick.
 
 ## The decaying trace
 
-Cells carry their band's peak, dimmed, under the live level — the same trick as
+Cells carry their band's peak, dimmed, under the live level: the same trick as
 a peak-hold meter. At 30fps a one-frame transient is invisible, and the trace is
 what makes the beat legible instead of a flicker.
 

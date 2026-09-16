@@ -29,7 +29,7 @@ export function RemotionPreview({
     const player = playerRef.current;
     if (!player) return;
 
-    // Browsers block unmuted autoplay — start muted, then play explicitly.
+    // Browsers block unmuted autoplay: start muted, then play explicitly.
     player.setVolume(0);
     const id = window.requestAnimationFrame(() => {
       player.play();

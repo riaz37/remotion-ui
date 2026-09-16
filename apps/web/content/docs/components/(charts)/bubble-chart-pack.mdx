@@ -24,15 +24,15 @@ import { BubbleChartPack } from "@/remotion/primitives/bubble-chart-pack";
 
 ## Area, not radius
 
-Radius scales with the square root of the value, so the area — which is what the
-eye actually compares — stays proportional to the number. Scaling radius
+Radius scales with the square root of the value, so the area (which is what the
+eye actually compares) stays proportional to the number. Scaling radius
 directly makes a bubble worth twice another look four times as big.
 
 ## The pack is deterministic
 
 Circles are placed largest first, each walking out along a spiral from the
 origin until it clears everything already placed. It is not the densest possible
-pack, but the same data always produces the same arrangement — a layout that
+pack, but the same data always produces the same arrangement. A layout that
 reshuffled between renders would make the chart untrustworthy, and density is
 worth less than that.
 

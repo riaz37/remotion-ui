@@ -1,6 +1,6 @@
 import { LogoMark } from "./logo-mark";
 
-/** Logo mark only — parent nav (Fumadocs HomeLayout/DocsLayout) wraps this in its own link. */
+/** Logo mark only; parent nav (Fumadocs HomeLayout/DocsLayout) wraps this in its own link. */
 export function SiteLogo({ className = "" }: { className?: string }) {
   return (
     <span

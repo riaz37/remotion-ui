@@ -5,7 +5,7 @@ import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, ProductCard } from "./preview-frame";
 
 /**
- * The audit samples at 15% / 50% / 90% of the window — frames 18, 60 and 108 on
+ * The audit samples at 15% / 50% / 90% of the window: frames 18, 60 and 108 on
  * the 120-frame default. Every shaft sways on its own period, and no two of
  * those periods share a beat, so the fan is in a different arrangement at all
  * three samples with no entrance to run out.

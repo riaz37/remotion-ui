@@ -7,15 +7,15 @@ import { PreviewFrame } from "./preview-frame";
 /**
  * Preview timing convention (see `text-effects-previews.tsx`).
  *
- * The audit samples at 15% / 50% / 90% of the window — frames 18, 60 and 108 on
- * the 120-frame default. A stagger left on its own defaults finishes long
+ * The audit samples at 15% / 50% / 90% of the window (frames 18, 60 and 108 on
+ * the 120-frame default). A stagger left on its own defaults finishes long
  * before frame 18 and all three samples land on settled type, which reads as a
  * still image. The stagger here runs frames 2-64 so the line is half-arrived at
  * the first sample and whole at the second, and the exit wave starts at 90 so
  * it is mid-departure at the third.
  */
 
-/** Text primitives render a bare inline `<span>` — the layout is the preview's. */
+/** Text primitives render a bare inline `<span>`: the layout is the preview's. */
 const stage = {
   display: "grid",
   placeItems: "center",

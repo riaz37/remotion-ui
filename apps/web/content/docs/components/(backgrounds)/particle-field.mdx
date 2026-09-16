@@ -30,7 +30,7 @@ this when nothing has.
 Each particle gets a `depth` and everything else follows from it: near particles
 are larger, faster, brighter and in focus, far ones are small, slow and
 defocused. That single correlation is what makes a plane of `div`s read as
-volume. Break it — same size, different speeds — and the field flattens
+volume. Break it (same size, different speeds) and the field flattens
 immediately.
 
 Depths are distributed towards the back on purpose. An even spread gives a field
@@ -48,7 +48,7 @@ clock, which keeps the field from moving as a rigid sheet.
 ## Cost
 
 `count` divs per frame, each with a radial-gradient background and a small blur.
-Seventy is comfortable at 1080p. Several hundred is not — raise `size` and drop
+Seventy is comfortable at 1080p. Several hundred is not: raise `size` and drop
 `count` instead, since a bigger particle carries the same read for less.
 
 </ComponentPage>

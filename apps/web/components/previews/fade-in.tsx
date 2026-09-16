@@ -17,7 +17,7 @@ const Card: React.FC = () => (
  * 96-frame window. `EASING_EXIT` is `Easing.in(Easing.cubic)`, so an exit that
  * ends on frame 96 is only 4% resolved at the audit's 90% sample (frame 86) and
  * that cell renders the same settled card as the 50% one. Starting it at 69
- * puts the *visual* half-fade — cubic-in solves t^3 = 0.5 at t = 0.794 — on
+ * puts the *visual* half-fade (cubic-in solves t^3 = 0.5 at t = 0.794) on
  * frame 86.5. The ghost holds the frame for the last five frames, so trading a
  * frozen tail here does not buy an empty one.
  */

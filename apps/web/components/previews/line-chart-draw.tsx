@@ -64,7 +64,7 @@ export const LineChartDrawPreview: React.FC = () => {
 
             <LineChartDraw
               points={DEMO_LINE_POINTS}
-              // Longer than the 60-frame window on purpose — see the note in
+              // Longer than the 60-frame window on purpose: see the note in
               // `preview-config`. The expo-out curve spends its visible motion
               // in the first ~40% of the stated duration, so 110 frames is what
               // keeps the line drawing until roughly 75% of the loop.

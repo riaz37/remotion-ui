@@ -13,8 +13,8 @@ import { PreviewFrame } from "./preview-frame";
  * bus captions are what make the segments mean something at 308px.
  *
  * `sensitivity` is lifted because the demo track sits around a third of full
- * scale, so the amber and pink zones — a third of the component's prop surface
- * — never lit. 1.3 is as far as it goes: at 1.8 the loud passages pinned every
+ * scale, so the amber and pink zones (a third of the component's prop surface)
+ * never lit. 1.3 is as far as it goes: at 1.8 the loud passages pinned every
  * segment, and a meter reading full scale on two of three samples is as dead as
  * one reading a tenth.
  */
@@ -106,8 +106,8 @@ export const VuMeterPreview: React.FC = () => {
       >
         {/* `premountFor` mounts the audio a second ahead of its first frame so
             the decoder is warm before the meter needs it, and
-            `pauseWhenBuffering` — which lives on the HTML5 fallback props, the
-            path that can actually stall — holds the Player on a slow source
+            `pauseWhenBuffering`, which lives on the HTML5 fallback props (the
+            path that can actually stall), holds the Player on a slow source
             instead of running silence under a live meter. */}
         <Sequence from={0} premountFor={fps}>
           <Audio

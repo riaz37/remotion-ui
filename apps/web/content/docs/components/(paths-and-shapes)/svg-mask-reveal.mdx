@@ -8,7 +8,7 @@ import { SvgMaskRevealPreview } from '@/components/previews/svg-mask-reveal';
 <ComponentPage name="svg-mask-reveal" preview={SvgMaskRevealPreview}>
 
 The shape grows from `origin` until it covers the frame, revealing whatever you
-pass as children — media, a scene, a gradient, another component.
+pass as children: media, a scene, a gradient, another component.
 
 The scale it has to reach is computed from the distance to the furthest corner,
 not from the frame's width. A shape opening from a corner has much further to
@@ -23,7 +23,7 @@ Names from `MORPH_SHAPES` work directly; custom paths should be authored on a
 
 `invert` runs the shape backwards over the content, which is how you close a
 scene with the same figure you opened it with. `bouncy` springs the growth
-instead of easing it, and `rotation` turns the shape as it opens — worth a few
+instead of easing it, and `rotation` turns the shape as it opens, worth a few
 degrees on an angular mask so the edge does not arrive parallel to the frame.
 
 </ComponentPage>

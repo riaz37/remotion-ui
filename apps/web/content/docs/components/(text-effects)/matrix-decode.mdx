@@ -10,7 +10,7 @@ import { MatrixDecodePreview } from '@/components/previews/text-effects-previews
 A resolve front sweeps the string left to right at a constant rate: everything
 behind it is the target text, everything ahead of it is a scrambled glyph, and
 the one character sitting on the front is tinted `hotColor`. A deterministic
-±2 character jitter — hashed off the character index, never `Math.random` —
+±2 character jitter (hashed off the character index, never `Math.random`)
 keeps the front from landing as a perfectly straight edge.
 
 `glyphs` is the pool the unresolved characters are drawn from. It has to be

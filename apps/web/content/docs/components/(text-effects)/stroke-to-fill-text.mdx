@@ -24,7 +24,7 @@ import { StrokeToFillText } from "@/remotion/primitives/stroke-to-fill-text";
 ## The outline is not staggered; the fill is
 
 They ran on one clock in the first cut, and a slow stagger then left the
-un-flooded half of the line completely absent — the word looked truncated
+un-flooded half of the line completely absent. The word looked truncated
 rather than outlined. The whole outline now draws once across
 `outlineInFrames`, and the stagger is spent entirely on the flood, which is the
 part the eye is meant to follow.
@@ -37,13 +37,13 @@ with a second element positioned by hand drifts by a fraction of a pixel and the
 outline starts reading as a drop shadow.
 
 The flood is a gradient mask rather than a `background-clip` trick, because a
-mask can move — and the moving edge is the effect. `direction` takes `up`,
+mask can move, and the moving edge is the effect. `direction` takes `up`,
 `down`, `left` or `right`; `edgeSoftness` is how wet that edge is.
 
 ## Weights
 
 `strokeWidth` is the outline in px and `strokeRetain` is the share of it left
-once the letter is full — keeping a little makes the fill read as ink inside a
+once the letter is full: keeping a little makes the fill read as ink inside a
 drawn letter instead of as a swap between two typefaces.
 
 </ComponentPage>

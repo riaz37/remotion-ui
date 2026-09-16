@@ -1,0 +1,26 @@
+---
+title: Grain Gradient Background
+description: A multi-colour gradient with grain worked through it.
+---
+
+import { GrainGradientBgPreview } from "@/components/previews/grain-gradient-bg";
+
+<ComponentPage name="grain-gradient-bg" preview={GrainGradientBgPreview}>
+
+A gradient in one of seven shapes (`wave`, `blob`, `ripple`, `dots`, `truchet`,
+`corners`, `sphere`), with grain mixed through the colour rather than layered
+over it.
+
+The grain is the point. A shallow ramp crossing a wide frame has only about
+fifty usable 8-bit levels and plateaus into visible bands wherever it is
+composited; noise breaks those plateaus up. Set `noise` to `0` and the banding
+comes back. Like the dither grid, it is measured in real pixels and ignores
+`scale`.
+
+Distinct from `mesh-gradient-bg`, which is three drifting blobs composited on
+the GPU, and from `animated-noise-grain`, which is a grain overlay with no
+gradient of its own.
+
+Render with `--gl=angle`.
+
+</ComponentPage>
