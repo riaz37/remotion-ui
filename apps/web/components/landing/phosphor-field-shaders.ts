@@ -177,20 +177,25 @@ void main() {
 
   // The screen modulates the light already there rather than reprinting it as
   // fresh ink, so exposure is held by dividing out the mask's own mean: the
-  // spot covers pi*0.62^2*tone^2 of its cell, and whatever the screen has not
-  // bitten into stays at full soft light. Dim cells keep that soft light - a
-  // screen only asserts itself once it carries some tone.
+  // spot covers pi*reach^2*tone^2 of its cell, and whatever the screen has not
+  // bitten into stays at full soft light. The feather prints a disc wider than
+  // its nominal radius, so the coverage term uses the effective reach measured
+  // off the loop (0.68) rather than 0.62; with the nominal figure the field
+  // renders about 15% hot. Dim cells keep their soft light - a screen only
+  // asserts itself once it carries some tone.
   float bite = 0.62 * smoothstep(0.0, 0.14, tone);
-  float coverage = clamp(1.207 * tone * tone, 0.0, 1.0);
+  float coverage = clamp(1.452 * tone * tone, 0.0, 1.0);
   float gain = 1.0 / max(1.0 - bite + bite * coverage, 1e-3);
   vec3 ink = clamp(soft * mix(1.0, inked, bite) * gain, 0.0, 1.0);
 
   // On a dark page the light adds, the photographic screen op. On paper there
-  // is nothing to add to, so the same ink is spent as shade: a multiply, with
-  // a trace of its own hue left in so the shadow stays warm rather than grey.
+  // is nothing to add to, so the same ink is spent subtractively - and a
+  // pigment takes out its own complement, not an even grey, so amber light
+  // lands as warm tan shade instead of the olive a flat multiply leaves.
   vec3 onDark = 1.0 - (1.0 - uPageDark) * (1.0 - ink);
-  float density = clamp(dot(ink, LUMA) * 1.35, 0.0, 1.0);
-  vec3 onPaper = uPagePaper * (1.0 - density * 0.55) + ink * 0.18;
+  vec3 pigment = ink / max(max(ink.r, max(ink.g, ink.b)), 1e-3);
+  float density = clamp(dot(ink, LUMA) * 1.5, 0.0, 1.0);
+  vec3 onPaper = uPagePaper * (1.0 - density * (1.0 - pigment) * 0.9);
   vec3 color = mix(onDark, onPaper, uTheme);
 
   color += (bayer4(frag) - 0.5) / 255.0;

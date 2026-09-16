@@ -514,11 +514,14 @@ void main() {
 
   // The screen modulates the light already there rather than reprinting it as
   // fresh ink, so exposure is held by dividing out the mask's own mean: the
-  // spot covers pi*0.62^2*tone^2 of its cell, and whatever the screen has not
-  // bitten into stays at full soft light. Dim cells keep that soft light - a
-  // screen only asserts itself once it carries some tone.
+  // spot covers pi*reach^2*tone^2 of its cell, and whatever the screen has not
+  // bitten into stays at full soft light. The feather prints a disc wider than
+  // its nominal radius, so the coverage term uses the effective reach measured
+  // off the loop (0.68) rather than 0.62; with the nominal figure the field
+  // renders about 15% hot. Dim cells keep their soft light - a screen only
+  // asserts itself once it carries some tone.
   float bite = 0.62 * smoothstep(0.0, 0.14, tone);
-  float coverage = clamp(1.207 * tone * tone, 0.0, 1.0);
+  float coverage = clamp(1.452 * tone * tone, 0.0, 1.0);
   float gain = 1.0 / max(1.0 - bite + bite * coverage, 1e-3);
   vec3 ink = clamp(soft * mix(1.0, inked, bite) * gain, 0.0, 1.0);
 
