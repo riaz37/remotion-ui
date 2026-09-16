@@ -5,7 +5,7 @@ import { DocsSidebarItem } from "@/components/docs/sidebar-item";
 import { SidebarFooter } from "@/components/sidebar-footer";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteLogo } from "@/components/site-logo";
-import { githubStarNavLink } from "@/lib/github-nav-link";
+import { githubStarNavLink, xNavLink } from "@/lib/github-nav-link";
 import { componentCount } from "@/lib/registry-facts";
 import { source } from "@/lib/source";
 
@@ -20,7 +20,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             title: <SiteLogo />,
             url: "/",
           }}
-          links={[githubStarNavLink]}
+          links={[xNavLink, githubStarNavLink]}
           searchToggle={{ full: { className: "whitespace-nowrap" } }}
           sidebar={{
             footer: <SidebarFooter />,

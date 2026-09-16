@@ -5,7 +5,7 @@ import { kineNavLink } from "@/components/early-access/kine-nav-link";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteLogo } from "@/components/site-logo";
 import { VisitorsThisHour } from "@/components/visitors-this-hour";
-import { githubStarNavLink } from "@/lib/github-nav-link";
+import { githubStarNavLink, xNavLink } from "@/lib/github-nav-link";
 import { getSponsorTraffic } from "@/lib/sponsor-traffic";
 import { navLinks, siteConfig } from "@/lib/site-config";
 
@@ -56,6 +56,7 @@ export default async function SponsorPage() {
           active: link.active,
         })),
         kineNavLink,
+        xNavLink,
         githubStarNavLink,
       ]}
       className="flex flex-1 flex-col"

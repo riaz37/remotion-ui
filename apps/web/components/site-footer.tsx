@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { GitHubIcon, XIcon } from "@/components/brand-icons";
 import { siteConfig } from "@/lib/site-config";
 
 export function SiteFooter() {
@@ -33,9 +34,19 @@ export function SiteFooter() {
             href={siteConfig.githubUrl}
             target="_blank"
             rel="noreferrer"
+            aria-label="RemotionUI on GitHub"
             className="transition-colors hover:text-fd-foreground"
           >
-            GitHub
+            <GitHubIcon className="size-4" />
+          </a>
+          <a
+            href={siteConfig.xUrl}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="RemotionUI on X"
+            className="transition-colors hover:text-fd-foreground"
+          >
+            <XIcon className="size-4" />
           </a>
           <a
             href={siteConfig.npmUrl}

@@ -15,6 +15,10 @@ import {
   STARS_CELEBRATION_DURATION,
   StarsCelebration,
 } from "./stars-celebration";
+import {
+  THREE_D_SHOWCASE_DURATION,
+  ThreeDShowcase,
+} from "./three-d-showcase";
 
 /**
  * Marketing clips are not registry components — nobody installs them. They live
@@ -61,6 +65,14 @@ export const MarketingRoot: React.FC = () => (
       durationInFrames={REGISTRY_LISTING_CLIP_DURATION}
       fps={30}
       width={1920}
+      height={1080}
+    />
+    <Composition
+      id="ThreeDShowcase"
+      component={ThreeDShowcase}
+      durationInFrames={THREE_D_SHOWCASE_DURATION}
+      fps={30}
+      width={1080}
       height={1080}
     />
   </>

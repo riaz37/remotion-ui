@@ -4,7 +4,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteLogo } from "@/components/site-logo";
 import { StatusSlate } from "@/components/status-slate";
 import { kineNavLink } from "@/components/early-access/kine-nav-link";
-import { githubStarNavLink } from "@/lib/github-nav-link";
+import { githubStarNavLink, xNavLink } from "@/lib/github-nav-link";
 import { navLinks } from "@/lib/site-config";
 
 export const metadata: Metadata = {
@@ -24,6 +24,7 @@ export default function NotFound() {
           active: link.active,
         })),
         kineNavLink,
+        xNavLink,
         githubStarNavLink,
       ]}
       className="flex flex-1 flex-col"

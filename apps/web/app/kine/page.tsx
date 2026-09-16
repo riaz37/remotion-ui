@@ -7,7 +7,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteLogo } from "@/components/site-logo";
 import { PerforationRule } from "@/components/studio/perforation-rule";
 import { kineNavLink } from "@/components/early-access/kine-nav-link";
-import { githubStarNavLink } from "@/lib/github-nav-link";
+import { githubStarNavLink, xNavLink } from "@/lib/github-nav-link";
 import { navLinks, siteConfig } from "@/lib/site-config";
 import { EARLY_ACCESS_SOURCES, type EarlyAccessSource } from "@/lib/early-access";
 
@@ -87,6 +87,7 @@ export default async function EarlyAccessPage({
           active: link.active,
         })),
         kineNavLink,
+        xNavLink,
         githubStarNavLink,
       ]}
       className="flex flex-1 flex-col"

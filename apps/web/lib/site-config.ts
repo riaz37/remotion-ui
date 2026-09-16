@@ -7,6 +7,7 @@ export const siteConfig = {
     "Remotion compositions and motion components. Install social clips, captions, and scenes with the CLI. Source you own, frame by frame.",
   url: "https://remotionui.com",
   githubUrl: "https://github.com/riaz37/remotion-ui",
+  xUrl: "https://x.com/remotionui",
   npmUrl: "https://www.npmjs.com/package/remotion-ui",
   docsUrl: "/docs",} as const;
 

@@ -20,6 +20,7 @@ export const siteMetadata = {
   ],
   ogImage: "/og.png",
   twitterHandle: "@riaz_exorous",
+  twitterSite: "@remotionui",
 } as const;
 
 export function softwareApplicationJsonLd() {
@@ -42,6 +43,7 @@ export function softwareApplicationJsonLd() {
       "@type": "Organization",
       name: siteConfig.name,
       url: siteConfig.url,
+      sameAs: [siteConfig.githubUrl, siteConfig.xUrl],
     },
   };
 }

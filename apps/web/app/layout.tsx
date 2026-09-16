@@ -70,6 +70,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: siteMetadata.title,
     description: siteMetadata.description,
+    site: siteMetadata.twitterSite,
     creator: siteMetadata.twitterHandle,
     images: [siteMetadata.ogImage],
   },

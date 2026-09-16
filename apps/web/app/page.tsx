@@ -9,7 +9,7 @@ import { StudioHero } from "@/components/landing/studio-hero";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteLogo } from "@/components/site-logo";
 import { kineNavLink } from "@/components/early-access/kine-nav-link";
-import { githubStarNavLink } from "@/lib/github-nav-link";
+import { githubStarNavLink, xNavLink } from "@/lib/github-nav-link";
 import { navLinks, siteConfig } from "@/lib/site-config";
 
 const title = `RemotionUI – ${siteConfig.tagline.replace(/\.$/, "")}`;
@@ -45,6 +45,7 @@ export default function HomePage() {
           active: link.active,
         })),
         kineNavLink,
+        xNavLink,
         githubStarNavLink,
       ]}
       className="flex flex-1 flex-col"

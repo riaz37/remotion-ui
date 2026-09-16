@@ -2,7 +2,7 @@ import { HomeLayout } from "fumadocs-ui/layouts/home";
 import type { ReactNode } from "react";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteLogo } from "@/components/site-logo";
-import { githubStarNavLink } from "@/lib/github-nav-link";
+import { githubStarNavLink, xNavLink } from "@/lib/github-nav-link";
 import { navLinks } from "@/lib/site-config";
 
 export default function BlogLayout({ children }: { children: ReactNode }) {
@@ -15,6 +15,7 @@ export default function BlogLayout({ children }: { children: ReactNode }) {
           url: link.url,
           active: link.active,
         })),
+        xNavLink,
         githubStarNavLink,
       ]}
       className="flex flex-1 flex-col"
