@@ -1,8 +1,16 @@
 import { Environment, Instance, Instances, Lightformer } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { ThreeCanvas } from "@remotion/three";
-import { useEffect, useLayoutEffect, useMemo } from "react";
-import { AbsoluteFill, Easing, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  AbsoluteFill,
+  Easing,
+  interpolate,
+  staticFile,
+  useCurrentFrame,
+  useDelayRender,
+  useVideoConfig,
+} from "remotion";
 import {
   AdditiveBlending,
   BackSide,
@@ -10,6 +18,8 @@ import {
   Color,
   Euler,
   Float32BufferAttribute,
+  type InstancedMesh,
+  Matrix4,
   QuadraticBezierCurve3,
   Quaternion,
   TubeGeometry,
@@ -35,6 +45,12 @@ export type GlobePoints3dProps = {
   points?: GlobePoint3D[];
   /** Arcs drawn between lat/lon pairs, revealed in order. */
   routes?: GlobeRoute3D[];
+  /**
+   * GeoJSON land polygons the dot matrix is cut from. Defaults to
+   * `staticFile("geo/land-110m.json")` — Natural Earth 1:110m, which
+   * `npx remotion-ui add globe-points-3d` does not copy for you.
+   */
+  landUrl?: string;
   /** Degrees of longitude the globe turns per second. */
   spinPerSecond?: number;
   /** Longitude facing the camera at frame 0. */
@@ -45,7 +61,7 @@ export type GlobePoints3dProps = {
   backgroundColor?: string;
   /** Ocean / sphere body color. */
   globeColor?: string;
-  /** Procedural landmass dots. */
+  /** Land dot matrix. */
   landColor?: string;
   /** City pins and their ping rings. */
   markerColor?: string;
@@ -66,8 +82,26 @@ const RADIUS = 2;
 /** Dots sit just off the surface so they never z-fight with the sphere. */
 const LAND_LIFT = 1.004;
 const RING_LIFT = 1.009;
-const LAND_SAMPLES = 3600;
+/**
+ * Points tested against the coastlines. Land is ~29% of the sphere, so this
+ * lands ~3.2k dots — dense enough that Italy and Florida survive, sparse enough
+ * that the dots stay separate and the matrix never reads as a solid skin.
+ */
+const LAND_SAMPLES = 11000;
 const STAR_COUNT = 260;
+
+/**
+ * Natural Earth 1:110m land, shipped with the site as plain GeoJSON
+ * (public domain — see `public/geo/land-110m.LICENSE.txt`). The continents are
+ * read from real geography rather than invented by a noise field: thresholded
+ * fbm makes plausible blobs, and nobody believes a globe whose Africa is not
+ * Africa.
+ *
+ * `npx remotion-ui add globe-points-3d` copies the component but **not** the
+ * data. Download https://remotionui.com/geo/land-110m.json into your `public/`,
+ * or pass your own file with `landUrl`.
+ */
+const DEFAULT_LAND_URL = "geo/land-110m.json";
 
 const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 const EASE_OUT = Easing.bezier(0.16, 1, 0.3, 1);
@@ -124,59 +158,180 @@ const alignTo = (normal: Vector3, axis: Vector3): Vec3 => {
   return [euler.x, euler.y, euler.z];
 };
 
-// ---------------------------------------------------------------------- noise
+// ----------------------------------------------------------------------- hash
 
-/**
- * Seeded value noise. The landmasses are generated rather than fetched: an
- * earth texture would mean a CDN round trip (or a large binary in the repo) on
- * every render, and this scene is an abstract data globe, not a map.
- */
+/** Seeded value hash. Used for the starfield and per-dot size jitter only. */
 const hash = (x: number, y: number, z: number) => {
   const s = Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453;
   return s - Math.floor(s);
 };
 
-const smootherstep = (t: number) => t * t * (3 - 2 * t);
+// ------------------------------------------------------------------ land data
 
-const valueNoise = (x: number, y: number, z: number) => {
-  const xi = Math.floor(x);
-  const yi = Math.floor(y);
-  const zi = Math.floor(z);
-  const xf = smootherstep(x - xi);
-  const yf = smootherstep(y - yi);
-  const zf = smootherstep(z - zi);
+/** A closed ring as flattened [lng, lat] pairs. */
+type Ring = Float64Array;
 
-  const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-
-  const corner = (dx: number, dy: number, dz: number) => hash(xi + dx, yi + dy, zi + dz);
-
-  const x00 = lerp(corner(0, 0, 0), corner(1, 0, 0), xf);
-  const x10 = lerp(corner(0, 1, 0), corner(1, 1, 0), xf);
-  const x01 = lerp(corner(0, 0, 1), corner(1, 0, 1), xf);
-  const x11 = lerp(corner(0, 1, 1), corner(1, 1, 1), xf);
-
-  return lerp(lerp(x00, x10, yf), lerp(x01, x11, yf), zf);
+type LandPolygon = {
+  /** Ring 0 is the outer boundary; any others are holes (Caspian, lakes). */
+  rings: Ring[];
+  /**
+   * minLng, minLat, maxLng, maxLat — rejects most polygons in one compare.
+   * Widened to the full band for a polygon that crosses the antimeridian,
+   * where the raw min/max would exclude the very points it contains.
+   */
+  bbox: readonly [number, number, number, number];
 };
 
-const fbm = (v: Vector3) => {
-  let sum = 0;
-  let amplitude = 0.5;
-  let frequency = 1.4;
-  for (let octave = 0; octave < 4; octave += 1) {
-    sum += amplitude * valueNoise(v.x * frequency, v.y * frequency, v.z * frequency);
-    frequency *= 2.1;
-    amplitude *= 0.5;
+type RawRing = number[][];
+
+/**
+ * Walks any GeoJSON shape down to bare polygons, so a swapped-in `landUrl` can
+ * be a FeatureCollection (what most exporters emit), a single Feature, or a
+ * naked geometry.
+ */
+const collectPolygons = (node: unknown, out: RawRing[][]): void => {
+  if (!node || typeof node !== "object") return;
+  const value = node as {
+    type?: unknown;
+    features?: unknown;
+    geometry?: unknown;
+    geometries?: unknown;
+    coordinates?: unknown;
+  };
+
+  switch (value.type) {
+    case "FeatureCollection":
+      if (Array.isArray(value.features)) {
+        for (const feature of value.features) collectPolygons(feature, out);
+      }
+      return;
+    case "Feature":
+      collectPolygons(value.geometry, out);
+      return;
+    case "GeometryCollection":
+      if (Array.isArray(value.geometries)) {
+        for (const geometry of value.geometries) collectPolygons(geometry, out);
+      }
+      return;
+    case "Polygon":
+      if (Array.isArray(value.coordinates)) out.push(value.coordinates as RawRing[]);
+      return;
+    case "MultiPolygon":
+      if (Array.isArray(value.coordinates)) {
+        for (const polygon of value.coordinates as RawRing[][]) out.push(polygon);
+      }
+      return;
+    default:
   }
-  return sum / 0.9375;
+};
+
+/** Flattens the rings into typed arrays once, so the sample loop stays cheap. */
+const compileLand = (data: unknown): LandPolygon[] => {
+  const raw: RawRing[][] = [];
+  collectPolygons(data, raw);
+
+  const polygons: LandPolygon[] = [];
+  for (const rings of raw) {
+    const compiled: Ring[] = [];
+    for (const ring of rings) {
+      // A ring needs three distinct corners plus the repeated close.
+      if (!Array.isArray(ring) || ring.length < 4) continue;
+      const flat = new Float64Array(ring.length * 2);
+      for (let i = 0; i < ring.length; i += 1) {
+        flat[i * 2] = ring[i][0];
+        flat[i * 2 + 1] = ring[i][1];
+      }
+      compiled.push(flat);
+    }
+    if (compiled.length === 0) continue;
+
+    const outer = compiled[0];
+    let minLng = Number.POSITIVE_INFINITY;
+    let minLat = Number.POSITIVE_INFINITY;
+    let maxLng = Number.NEGATIVE_INFINITY;
+    let maxLat = Number.NEGATIVE_INFINITY;
+    let wraps = false;
+    for (let i = 0; i < outer.length; i += 2) {
+      if (outer[i] < minLng) minLng = outer[i];
+      if (outer[i] > maxLng) maxLng = outer[i];
+      if (outer[i + 1] < minLat) minLat = outer[i + 1];
+      if (outer[i + 1] > maxLat) maxLat = outer[i + 1];
+      // Natural Earth leaves Eurasia in one piece, so the ring steps straight
+      // from +180 (Chukotka) to -180 and its longitude bounds mean nothing.
+      if (i > 0 && Math.abs(outer[i] - outer[i - 2]) > 180) wraps = true;
+    }
+    polygons.push({
+      rings: compiled,
+      bbox: wraps ? [-180, minLat, 180, maxLat] : [minLng, minLat, maxLng, maxLat],
+    });
+  }
+
+  return polygons;
+};
+
+/** Shortest signed longitude difference, in (-180, 180]. */
+const deltaLng = (degrees: number) => (((degrees + 180) % 360) + 360) % 360 - 180;
+
+/**
+ * Ray cast north along the sample's meridian; an odd number of crossings is
+ * inside. Every edge is measured in longitude *relative to the sample*, which
+ * puts the wrap-around seam on the far side of the globe from the point being
+ * tested. A plain east-west cast in absolute lng/lat cannot do this: Natural
+ * Earth ships Eurasia as one ring that steps across the antimeridian at
+ * Chukotka, and the naive test reported central Siberia as ocean.
+ */
+const insideRing = (ring: Ring, lng: number, lat: number): boolean => {
+  let inside = false;
+  const count = ring.length / 2;
+  for (let i = 0, j = count - 1; i < count; j = i++) {
+    const dxi = deltaLng(ring[i * 2] - lng);
+    const dxj = deltaLng(ring[j * 2] - lng);
+    // Half-open rule: a vertex exactly on the meridian counts once, not twice.
+    if (dxi > 0 === dxj > 0) continue;
+    // The edge straddles the far seam rather than the sample's meridian.
+    if (Math.abs(dxi - dxj) >= 180) continue;
+
+    const yi = ring[i * 2 + 1];
+    const yj = ring[j * 2 + 1];
+    if (yj + ((yi - yj) * -dxj) / (dxi - dxj) > lat) {
+      inside = !inside;
+    }
+  }
+  return inside;
+};
+
+/**
+ * Crossing-number test, which depends on ring *order* (outer first, then holes)
+ * and not on winding direction — GeoJSON producers disagree about winding, and
+ * a signed-area test would silently drop half the continents on a file wound
+ * the other way.
+ */
+const isLand = (polygons: LandPolygon[], lng: number, lat: number): boolean => {
+  for (const polygon of polygons) {
+    const [minLng, minLat, maxLng, maxLat] = polygon.bbox;
+    if (lng < minLng || lng > maxLng || lat < minLat || lat > maxLat) continue;
+    if (!insideRing(polygon.rings[0], lng, lat)) continue;
+
+    let inHole = false;
+    for (let r = 1; r < polygon.rings.length; r += 1) {
+      if (insideRing(polygon.rings[r], lng, lat)) {
+        inHole = true;
+        break;
+      }
+    }
+    if (!inHole) return true;
+  }
+  return false;
 };
 
 type LandDot = { position: Vec3; scale: number; phase: number };
 
 /**
- * Fibonacci sphere, thresholded by fbm so the kept dots clump into continents
- * instead of covering the ball evenly. `phase` drives the assembly sweep.
+ * Fibonacci sphere, kept only where the sample falls inside a land polygon, so
+ * the dots spell out the real coastlines at even density. `phase` drives the
+ * assembly sweep.
  */
-const buildLand = (): LandDot[] => {
+const buildLand = (polygons: LandPolygon[]): LandDot[] => {
   const golden = Math.PI * (3 - Math.sqrt(5));
   const dots: LandDot[] = [];
 
@@ -186,22 +341,182 @@ const buildLand = (): LandDot[] => {
     const theta = i * golden;
     const unit = new Vector3(Math.cos(theta) * ring, y, Math.sin(theta) * ring);
 
-    // Slight northern bias: most of the default cities sit in the northern
-    // mid-latitudes and land under them reads better than open water.
-    const bias = 0.05 * Math.exp(-(((y - 0.55) / 0.5) ** 2));
-    if (fbm(unit) < 0.49 - bias) continue;
+    // Inverse of toVector(): x = cosφ·sinλ, y = sinφ, z = cosφ·cosλ. Sharing
+    // that convention is what puts the New York pin on North America.
+    const lat = Math.asin(Math.min(1, Math.max(-1, unit.y))) / DEG;
+    const lng = Math.atan2(unit.x, unit.z) / DEG;
+    if (!isLand(polygons, lng, lat)) continue;
 
     dots.push({
       position: [unit.x * RADIUS * LAND_LIFT, unit.y * RADIUS * LAND_LIFT, unit.z * RADIUS * LAND_LIFT],
       // Small and even: larger dots read as loose bubbles stuck to the ball
       // rather than a dot-matrix landmass.
-      scale: 0.013 + hash(unit.x, unit.z, unit.y) * 0.006,
+      scale: 0.014 + hash(unit.x, unit.z, unit.y) * 0.005,
       // Sweeps pole to pole, so the globe knits itself together top-down.
       phase: (1 - y) / 2,
     });
   }
 
   return dots;
+};
+
+type LandState = {
+  polygons: LandPolygon[] | null;
+  release: () => void;
+};
+
+/**
+ * Fetched by hand behind delayRender rather than through a suspending loader:
+ * a suspended frame can be captured before the data exists and the render exits
+ * 0 on a bare blue ball.
+ *
+ * The hold is released by `<LandReady>` inside the canvas, not on load — in a
+ * render ThreeCanvas only draws when the frame changes, so dots that land after
+ * that draw would never appear in the captured frame.
+ */
+const useLandPolygons = (url: string): LandState => {
+  const [polygons, setPolygons] = useState<LandPolygon[] | null>(null);
+  const { delayRender, continueRender, cancelRender } = useDelayRender();
+  /**
+   * Seeded in a useState initialiser, which runs during the first render pass.
+   * A handle created in the effect below instead registers *after* frame 0 has
+   * been captured: the render still exits 0 and the clip opens on a bare blue
+   * ball with the dots arriving a few frames in.
+   */
+  const [handle] = useState(() => delayRender(`Loading land polygons: ${url}`));
+  const released = useRef(false);
+
+  const release = useCallback(() => {
+    if (released.current) return;
+    released.current = true;
+    continueRender(handle);
+  }, [continueRender, handle]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    let active = true;
+
+    fetch(url, { signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        const data: unknown = await response.json();
+        const compiled = compileLand(data);
+        if (compiled.length === 0) {
+          throw new Error("no Polygon or MultiPolygon geometry in the file");
+        }
+        if (active) {
+          setPolygons(compiled);
+        }
+      })
+      .catch((error: unknown) => {
+        if (!active) return;
+        const reason = error instanceof Error ? error.message : String(error);
+        cancelRender(
+          new Error(
+            `GlobePoints3d: could not load land polygons from "${url}" (${reason}). ` +
+              `Put a GeoJSON land file in your public/ folder — download ` +
+              `https://remotionui.com/geo/land-110m.json (Natural Earth 1:110m, public domain) — ` +
+              `and pass landUrl={staticFile("geo/land-110m.json")}.`,
+          ),
+        );
+      });
+
+    return () => {
+      active = false;
+      controller.abort();
+      release();
+    };
+  }, [url, cancelRender, release]);
+
+  return { polygons, release };
+};
+
+/**
+ * Inside the canvas, and mounted last: draws the dots, then continues the
+ * render. During a render ThreeCanvas only draws when the frame changes, so
+ * without this extra draw the polygons would arrive after frame 0 had already
+ * been captured.
+ */
+const LandReady: React.FC<{ ready: boolean; onReady: () => void }> = ({ ready, onReady }) => {
+  const advance = useThree((state) => state.advance);
+
+  useEffect(() => {
+    if (!ready) return;
+    advance(performance.now());
+    onReady();
+  }, [ready, advance, onReady]);
+
+  return null;
+};
+
+/**
+ * One InstancedMesh whose matrices are written in a layout effect.
+ *
+ * Not drei's `<Instances>`, which composes its matrices inside `useFrame` and
+ * whose `<Instance>` children register with the parent through a state update.
+ * On the delayed first frame the extra draw above happens before that state has
+ * landed, so the instance buffer is still empty: frame 0 captured a bare blue
+ * ball while every later frame was correct. A probe mesh under the same
+ * `land.length > 0` condition drew fine on that frame, which is what pinned the
+ * fault on the instance buffer rather than on the hold or the capture.
+ *
+ * Writing the matrices here also drops ~3,000 React elements per frame, and
+ * keeps the motion a pure function of the frame — no `useFrame` in the loop.
+ */
+const LandDots: React.FC<{ dots: LandDot[]; assemble: number; color: string }> = ({
+  dots,
+  assemble,
+  color,
+}) => {
+  const mesh = useRef<InstancedMesh | null>(null);
+
+  useLayoutEffect(() => {
+    const target = mesh.current;
+    if (!target) return;
+
+    const matrix = new Matrix4();
+    const position = new Vector3();
+    const quaternion = new Quaternion();
+    const scale = new Vector3();
+
+    for (let i = 0; i < dots.length; i += 1) {
+      const dot = dots[i];
+      const reveal = clamp01((assemble - dot.phase) / 0.22);
+      // A dot that has not arrived yet is scaled to zero rather than removed,
+      // so the instance count — and the buffer behind it — never changes size.
+      // Overshoot on arrival, so dots pop rather than fade in.
+      const size = reveal <= 0 ? 0 : dot.scale * interpolate(reveal, [0, 0.7, 1], [0, 1.5, 1]);
+      position.set(dot.position[0], dot.position[1], dot.position[2]);
+      scale.setScalar(size);
+      target.setMatrixAt(i, matrix.compose(position, quaternion, scale));
+    }
+
+    target.count = dots.length;
+    target.instanceMatrix.needsUpdate = true;
+  }, [dots, assemble]);
+
+  if (dots.length === 0) return null;
+
+  return (
+    <instancedMesh
+      ref={mesh}
+      args={[undefined, undefined, dots.length]}
+      // The dots ring the whole globe, so the mesh's bounding sphere is the
+      // globe itself and per-instance culling would be wrong anyway.
+      frustumCulled={false}
+    >
+      <sphereGeometry args={[1, 6, 6]} />
+      <meshStandardMaterial
+        color={color}
+        roughness={0.85}
+        metalness={0}
+        emissive={color}
+        emissiveIntensity={0.22}
+      />
+    </instancedMesh>
+  );
 };
 
 const buildStars = (): Float32Array => {
@@ -343,8 +658,10 @@ const useShot = () => {
 
   const drift = interpolate(frame, [0, last], [0, 1], clamp);
   const settle = interpolate(frame, [0, last * 0.45], [0, 1], { ...clamp, easing: EASE_OUT });
-  // Runs past 1 so the trailing dots finish their own reveal ramp.
-  const assemble = interpolate(frame, [0, last * 0.3], [0, 1.35], { ...clamp, easing: IN_OUT });
+  // Starts part-built and runs past 1 so the trailing dots finish their own
+  // reveal ramp. From 0 the first frame was a bare blue ball — the frame a
+  // poster, a tile and the docs still are all taken from.
+  const assemble = interpolate(frame, [0, last * 0.3], [0.6, 1.35], { ...clamp, easing: IN_OUT });
 
   return {
     frame,
@@ -354,7 +671,7 @@ const useShot = () => {
     markerStart: last * 0.15,
     arcStart: last * 0.1,
     // Far enough back that the limb never touches the top and bottom edges.
-    camera: [0, interpolate(settle, [0, 1], [2.9, 0.65]), 10.2 - settle * 1.0 - drift * 0.5] as Vec3,
+    camera: [0, interpolate(settle, [0, 1], [2.9, 0.65]), 9.3 - settle * 1.0 - drift * 0.5] as Vec3,
   };
 };
 
@@ -363,6 +680,7 @@ const useShot = () => {
 export const GlobePoints3d: React.FC<GlobePoints3dProps> = ({
   points = DEFAULT_POINTS,
   routes = DEFAULT_ROUTES,
+  landUrl,
   spinPerSecond = 15,
   startLongitude = -30,
   tilt = 20,
@@ -378,7 +696,8 @@ export const GlobePoints3d: React.FC<GlobePoints3dProps> = ({
   const { width, height } = useVideoConfig();
   const shot = useShot();
 
-  const land = useMemo(() => buildLand(), []);
+  const { polygons, release } = useLandPolygons(landUrl ?? staticFile(DEFAULT_LAND_URL));
+  const land = useMemo(() => (polygons ? buildLand(polygons) : []), [polygons]);
   const stars = useMemo(() => buildStars(), []);
   const starGeometry = useMemo(() => {
     const geometry = new BufferGeometry();
@@ -457,28 +776,7 @@ export const GlobePoints3d: React.FC<GlobePoints3dProps> = ({
               <meshStandardMaterial color={globeColor} roughness={0.62} metalness={0.15} envMapIntensity={0.8} />
             </mesh>
 
-            <Instances limit={land.length} range={land.length}>
-              <sphereGeometry args={[1, 6, 6]} />
-              <meshStandardMaterial
-                color={landColor}
-                roughness={0.85}
-                metalness={0}
-                emissive={landColor}
-                emissiveIntensity={0.22}
-              />
-              {land.map((dot, index) => {
-                const reveal = clamp01((shot.assemble - dot.phase) / 0.22);
-                if (reveal <= 0) return null;
-                return (
-                  <Instance
-                    key={index}
-                    position={dot.position}
-                    // Overshoot on arrival, so dots pop rather than fade in.
-                    scale={dot.scale * interpolate(reveal, [0, 0.7, 1], [0, 1.5, 1])}
-                  />
-                );
-              })}
-            </Instances>
+            <LandDots dots={land} assemble={shot.assemble} color={landColor} />
 
             {/* Pins */}
             <Instances limit={markers.length} range={markers.length}>
@@ -570,6 +868,9 @@ export const GlobePoints3d: React.FC<GlobePoints3dProps> = ({
             />
           </mesh>
         </group>
+
+        {/* Last child on purpose — see the note on LandReady. */}
+        <LandReady ready={land.length > 0} onReady={release} />
       </ThreeCanvas>
     </AbsoluteFill>
   );

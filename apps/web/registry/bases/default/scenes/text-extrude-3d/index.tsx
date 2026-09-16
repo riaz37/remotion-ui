@@ -355,12 +355,14 @@ const useShot = () => {
     drift,
     pull,
     camera: [
-      interpolate(pull, [0, 1], [-1.55, 0.1]) + drift * 0.6,
-      interpolate(pull, [0, 1], [-0.5, 0.6]) + drift * 0.18,
-      interpolate(pull, [0, 1], [3.6, 7.5]) + drift * 1,
+      // Close enough to read as a raking hero shot, but never so close that the
+      // line is cropped: frame 0 is the poster, the tile and the docs still.
+      interpolate(pull, [0, 1], [-0.5, 0.1]) + drift * 0.6,
+      interpolate(pull, [0, 1], [-0.28, 0.6]) + drift * 0.18,
+      interpolate(pull, [0, 1], [6.6, 7.5]) + drift * 1,
     ] as Vec3,
-    target: [interpolate(pull, [0, 1], [-0.85, 0]), interpolate(pull, [0, 1], [-0.08, 0.02]), 0] as Vec3,
-    yaw: interpolate(pull, [0, 1], [0.3, 0.05]) - drift * 0.22,
+    target: [interpolate(pull, [0, 1], [-0.18, 0]), interpolate(pull, [0, 1], [-0.06, 0.02]), 0] as Vec3,
+    yaw: interpolate(pull, [0, 1], [0.24, 0.05]) - drift * 0.22,
   };
 };
 
@@ -372,14 +374,14 @@ const useLetterRise = (count: number) => {
   // The whole line is up by ~45% of the window, leaving the pull-back to carry
   // the second half. Long strings tighten the stagger rather than overrun it.
   const riseWindow = Math.max(12, durationInFrames * 0.45);
-  const stagger = count > 1 ? Math.min(5, (riseWindow * 0.55) / (count - 1)) : 0;
+  const stagger = count > 1 ? Math.min(3.5, (riseWindow * 0.55) / (count - 1)) : 0;
 
   return (index: number) => {
     const progress = spring({
       // The head start matters: a spring is 0 on its first frame, so starting
       // the line at frame 0 would make frame 0 an empty plate — the frame a
       // poster, a thumbnail or a still export is taken from.
-      frame: frame + 6 - index * stagger,
+      frame: frame + 14 - index * stagger,
       fps,
       config: { damping: 15, stiffness: 110, mass: 0.9 },
     });

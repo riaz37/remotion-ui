@@ -1,13 +1,21 @@
 ---
 title: Text Extrude 3d
-description: Extruded 3D headline with a lit bevel: the letters rise and settle as the camera pulls back across them. Install with npx remotion-ui@latest add text-extrude-3d.
+description: "Extruded 3D headline with a lit bevel: the letters rise and settle as the camera pulls back across them. Install with npx remotion-ui@latest add text-extrude-3d."
 ---
 
 import { TextExtrude3dPreview } from '@/components/previews/text-extrude-3d';
 
-<ComponentPage name="text-extrude-3d" preview={TextExtrude3dPreview} durationInFrames={120}>
+<ComponentPage name="text-extrude-3d" preview={TextExtrude3dPreview} durationInFrames={150}>
 
 Extruded 3D headline with a lit bevel: the letters rise and settle as the camera pulls back across them. Distinct from stroke-to-fill-text and the other atoms, which are flat SVG or DOM type with no real depth or lighting.
+
+## Install the typeface
+
+The scene extrudes real glyphs, so it needs a three.js typeface JSON. `add text-extrude-3d`
+copies the component but **not** the font — download
+[geist-bold.typeface.json](https://remotionui.com/fonts/geist-bold.typeface.json) (Geist, SIL OFL 1.1)
+into your `public/fonts/`, or convert your own face with
+[facetype.js](https://gero3.github.io/facetype.js/) and point `fontUrl` at it.
 
 ## Usage
 
@@ -15,6 +23,9 @@ Extruded 3D headline with a lit bevel: the letters rise and settle as the camera
 import { TextExtrude3d } from "@/remotion/scenes/text-extrude-3d";
 
 <TextExtrude3d />
+
+// Your own face:
+<TextExtrude3d text="LAUNCH" fontUrl={staticFile("fonts/my-brand.typeface.json")} />
 ```
 
 </ComponentPage>

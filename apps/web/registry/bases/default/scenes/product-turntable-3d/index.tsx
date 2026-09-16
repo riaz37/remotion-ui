@@ -36,7 +36,11 @@ export type ProductTurntable3dProps = {
   fitHeight?: number;
   /** Turns the product makes across the whole clip. */
   revolutions?: number;
-  /** Where the turn starts, in radians. Use it to choose which face opens the shot. */
+  /**
+   * Where the turn starts, in radians. Use it to choose which face opens the
+   * shot. The default puts the built-in label's lockup at camera on frame 0 —
+   * and, at one revolution, on the last frame too.
+   */
   startAngle?: number;
   /** Outer backdrop color. */
   backgroundColor?: string;
@@ -449,11 +453,13 @@ const Platter: React.FC<{ color: string }> = ({ color }) => (
   <group>
     <mesh position={[0, -0.075, 0]}>
       <cylinderGeometry args={[1.85, 1.9, 0.15, 96]} />
+      {/* Brushed, not mirror: at metalness 0.9 the platter top reflected only
+          the dark surround and read as a black disc with floating grooves. */}
       <meshPhysicalMaterial
         color={color}
-        metalness={0.9}
-        roughness={0.34}
-        envMapIntensity={1.2}
+        metalness={0.45}
+        roughness={0.46}
+        envMapIntensity={1.6}
         clearcoat={0.5}
         clearcoatRoughness={0.4}
       />
@@ -523,7 +529,7 @@ export const ProductTurntable3d: React.FC<ProductTurntable3dProps> = ({
   src,
   fitHeight = 2,
   revolutions = 1,
-  startAngle = -0.45,
+  startAngle = 2.69,
   backgroundColor = "#090b10",
   glowColor = "#1b2130",
   floorColor = "#465063",
@@ -541,7 +547,7 @@ export const ProductTurntable3d: React.FC<ProductTurntable3dProps> = ({
   // interpolate below yields NaN transforms and a silently empty frame.
   const safeFit = Number.isFinite(fitHeight) && fitHeight > 0 ? fitHeight : 2;
   const safeRevolutions = Number.isFinite(revolutions) ? revolutions : 1;
-  const safeStart = Number.isFinite(startAngle) ? startAngle : -0.45;
+  const safeStart = Number.isFinite(startAngle) ? startAngle : 2.69;
   const shot = useShot(safeRevolutions, safeStart);
 
   return (

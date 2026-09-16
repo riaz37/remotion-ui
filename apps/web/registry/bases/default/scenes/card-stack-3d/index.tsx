@@ -221,8 +221,11 @@ const TURN = Easing.inOut(Easing.cubic);
 const SPREAD_X = 1.12;
 const SPREAD_Y = 0.1;
 const SPREAD_Z = 0.62;
-/** Near edge-on: the deck reads as a stack of slabs before it turns. */
-const EDGE_ON = -1.18;
+/**
+ * Raked, not edge-on. At -1.18 the mid-turn frames were razor-thin slivers with
+ * no face visible at all, and the shot read as broken rather than as a deck.
+ */
+const EDGE_ON = -0.72;
 
 type CardPose = { position: Vec3; rotation: Vec3 };
 
@@ -253,7 +256,7 @@ const useShot = (count: number) => {
       ...clamp,
       easing: SETTLE,
     });
-    const turnFrom = fanFrom + fanDuration * 0.45;
+    const turnFrom = fanFrom + fanDuration * 0.3;
     const turn = interpolate(frame, [turnFrom, turnFrom + turnDuration], [0, 1], {
       ...clamp,
       easing: TURN,
@@ -284,9 +287,11 @@ const useShot = (count: number) => {
     deckYaw: interpolate(drift, [0, 1], [-0.42, 0.06]),
     deckLift: interpolate(frame, [0, Math.min(40, last)], [0, 1], { ...clamp, easing: SETTLE }),
     camera: [
-      interpolate(push, [0, 1], [2.6, -0.35]) - drift * 0.25,
-      interpolate(push, [0, 1], [2.4, 1.6]),
-      interpolate(push, [0, 1], [7.9, 6.9]) - drift * 0.3,
+      // Opens closer and lower: from 7.9 the un-fanned pile was a thumbnail in
+      // the middle of an empty plate on frame 0.
+      interpolate(push, [0, 1], [1.3, -0.35]) - drift * 0.25,
+      interpolate(push, [0, 1], [1.75, 1.6]),
+      interpolate(push, [0, 1], [5.2, 6.9]) - drift * 0.3,
     ] as Vec3,
     target: [0, DECK_Y + drift * 0.05, 0] as Vec3,
   };
