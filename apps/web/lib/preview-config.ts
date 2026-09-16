@@ -275,6 +275,12 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "transition-slide": { durationInFrames: 120 },
   "transition-wipe": { durationInFrames: 120 },
   "transition-clock-wipe": { durationInFrames: 120 },
+  /* 150 frames, matching device-mockup-3d: a 3D shot needs the longer window for
+     its 15/50/90% audit samples to land on three visibly different camera states. */
+  "product-turntable-3d": { durationInFrames: 150 },
+  "text-extrude-3d": { durationInFrames: 150 },
+  "card-stack-3d": { durationInFrames: 150 },
+  "globe-points-3d": { durationInFrames: 150 },
 };
 
 export function previewMeta(slug: string): Required<PreviewMeta> {

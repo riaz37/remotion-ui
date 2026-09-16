@@ -1,0 +1,34 @@
+---
+title: Globe Points 3d
+description: Lit sphere with instanced city markers and arcs rising between them, turning slowly under a rim light. Install with npx remotion-ui@latest add globe-points-3d.
+---
+
+import { GlobePoints3dPreview } from '@/components/previews/globe-points-3d';
+
+<ComponentPage name="globe-points-3d" preview={GlobePoints3dPreview} durationInFrames={150}>
+
+Lit sphere with instanced city markers and arcs rising between them, turning slowly under a rim light. The real-3D counterpart to the flat globe-arc projection, with genuine occlusion as markers pass behind the horizon.
+
+## Install the map data
+
+The dot matrix is cut from real coastlines, so it needs a GeoJSON land file.
+`add globe-points-3d` copies the component but **not** the data — download
+[land-110m.json](https://remotionui.com/geo/land-110m.json) (Natural Earth 1:110m,
+public domain, 75 KB) into your `public/geo/`, or point `landUrl` at any GeoJSON
+FeatureCollection, Feature or `MultiPolygon` of land in lng/lat degrees.
+
+Without it the render stops with an actionable error rather than quietly
+drawing a bare blue ball.
+
+## Usage
+
+```tsx
+import { GlobePoints3d } from "@/remotion/scenes/globe-points-3d";
+
+<GlobePoints3d />
+
+// Your own polygons:
+<GlobePoints3d landUrl={staticFile("geo/my-land.json")} />
+```
+
+</ComponentPage>

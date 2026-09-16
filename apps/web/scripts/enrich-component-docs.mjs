@@ -33,8 +33,12 @@ function parseFrontmatter(content) {
   const match = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
   if (!match) return null;
   const body = match[2].trim();
-  const title = match[1].match(/^title:\s*(.+)$/m)?.[1]?.trim();
-  const description = match[1].match(/^description:\s*(.+)$/m)?.[1]?.trim();
+  const unquote = (value) =>
+    value?.replace(/^(['"])([\s\S]*)\1$/, "$2");
+  const title = unquote(match[1].match(/^title:\s*(.+)$/m)?.[1]?.trim());
+  const description = unquote(
+    match[1].match(/^description:\s*(.+)$/m)?.[1]?.trim(),
+  );
   return { title, description, body };
 }
 
@@ -78,8 +82,8 @@ function enrichFile(dir, slug) {
     extractProse(parsed.body) || parsed.description || "";
 
   let content = `---
-title: ${parsed.title}
-description: ${parsed.description ?? parsed.title}
+title: ${JSON.stringify(parsed.title)}
+description: ${JSON.stringify(parsed.description ?? parsed.title)}
 ---
 
 `;

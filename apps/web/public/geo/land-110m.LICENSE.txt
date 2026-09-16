@@ -1,0 +1,57 @@
+land-110m.json — Natural Earth 1:110m land polygons
+===================================================
+
+What this file is
+-----------------
+A plain GeoJSON FeatureCollection holding a single MultiPolygon of the world's
+land, in spherical coordinates (decimal degrees, lng/lat). It is used by the
+`globe-points-3d` scene to decide which dots of its Fibonacci sphere sit on
+land, so the continents are the real ones.
+
+Provenance
+----------
+Source data: Natural Earth, "Admin 0 — countries", 1:110m small scale,
+             version 4.1.0 (https://www.naturalearthdata.com/).
+Redistribution: world-atlas@2.0.2 `land-110m.json`
+             (https://github.com/topojson/world-atlas), which merges the
+             country boundaries into a single land topology.
+
+Derivation: the upstream TopoJSON was arc-decoded to GeoJSON and its
+coordinates rounded to 1/100 of a degree (~1 km, finer than the 1:110m source
+resolves). 125 polygons, holes preserved, ring winding as published.
+
+One edit beyond that: upstream closes the Antarctic ring along the ±180 seam,
+so in planar lng/lat the polygon has no southern edge and every point below
+85.61°S tests as ocean — a bald cap at the pole. The ring is closed around the
+pole instead ((180,-90) → (-180,-90)), which is how well-formed GeoJSON ships
+Antarctica. Verified against d3.geoContains over 20,000 points: 2 disagreements,
+both within 0.5° of a coastline (planar vs great-circle edges).
+
+Licenses
+--------
+Natural Earth data is in the PUBLIC DOMAIN. From naturalearthdata.com/about/terms-of-use:
+
+    All versions of Natural Earth raster + vector map data found on this
+    website are in the public domain. You may use the maps in any manner,
+    including modifying the content and design, electronic dissemination, and
+    offset printing. The primary authors, Tom Patterson and Nathaniel Vaughn
+    Kelso, and all other contributors renounce all financial claim to the maps
+    and invite you to use them for personal, educational, and commercial
+    purposes. No permission is needed to use Natural Earth. Crediting the
+    authors is unnecessary.
+
+The world-atlas redistribution is licensed ISC:
+
+    Copyright 2013-2019 Michael Bostock
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted, provided that the above
+    copyright notice and this permission notice appear in all copies.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+    WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+    MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+    SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
+    OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+    CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.

@@ -238,6 +238,10 @@ const PREVIEWS: Record<string, PreviewLoader> = {
   "text-reveal-shader": () => import("./previews/text-reveal-shader").then((m) => ({ default: m.TextRevealShaderPreview })),
   "warp-bands-bg": () => import("./previews/warp-bands-bg").then((m) => ({ default: m.WarpBandsBgPreview })),
   "grain-gradient-bg": () => import("./previews/grain-gradient-bg").then((m) => ({ default: m.GrainGradientBgPreview })),
+  "product-turntable-3d": () => import("./previews/product-turntable-3d").then((m) => ({ default: m.ProductTurntable3dPreview })),
+  "text-extrude-3d": () => import("./previews/text-extrude-3d").then((m) => ({ default: m.TextExtrude3dPreview })),
+  "card-stack-3d": () => import("./previews/card-stack-3d").then((m) => ({ default: m.CardStack3dPreview })),
+  "globe-points-3d": () => import("./previews/globe-points-3d").then((m) => ({ default: m.GlobePoints3dPreview })),
 };
 
 /**

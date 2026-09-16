@@ -5133,6 +5133,58 @@ import { DeviceMockup3D } from "@/remotion/scenes/device-mockup-3d";
     note: "The type is rasterised once to an alpha texture and handed to a fragment shader as its source, which is what buys the refraction: a CSS or SVG mask can uncover letterforms but cannot bend them through a moving film, having no access to the pixels either side of its edge. The reveal threshold is perturbed by two crossed sines at unrelated periods so the edge reads as a wet meniscus rather than a wipe. bandWidth and settle are where the taste lives. Distinct from masked-slide-reveal (hard-edged mask over type) and light-sweep-text (specular pass over already-visible glyphs). Render with --gl=angle.",
     related: ["masked-slide-reveal", "light-sweep-text", "grain-gradient-bg"],
   },
+  "product-turntable-3d": {
+    category: "scene",
+    usage: `import { ProductTurntable3d } from "@/remotion/scenes/product-turntable-3d";
+
+<ProductTurntable3d />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "text-extrude-3d": {
+    category: "scene",
+    usage: `import { TextExtrude3d } from "@/remotion/scenes/text-extrude-3d";
+
+<TextExtrude3d />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "card-stack-3d": {
+    category: "scene",
+    usage: `import { CardStack3d } from "@/remotion/scenes/card-stack-3d";
+
+<CardStack3d />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
+  "globe-points-3d": {
+    category: "scene",
+    usage: `import { GlobePoints3d } from "@/remotion/scenes/globe-points-3d";
+
+<GlobePoints3d />`,
+    // No `schema` fields: component-reference.test.ts reserves JSON-Schema prop
+    // fragments for FLAGSHIP_COMPONENTS, and a scaffold has not earned that.
+    // Add them by hand when the component is finished and promoted.
+    props: [
+      { name: "delayInFrames", type: "number", default: "0", description: "Frames to wait before this starts." },
+      { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
+    ],
+  },
 };
 
 export function getComponentReference(name: string): ComponentReference | undefined {

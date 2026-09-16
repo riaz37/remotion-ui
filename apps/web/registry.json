@@ -156,7 +156,7 @@
     {
       "name": "motion-primitive",
       "type": "registry:lib",
-      "description": "Enter/exit motion contract shared by the animation primitives \u2014 opacity leads, exits are shorter, and a bounded Sequence times the exit itself",
+      "description": "Enter/exit motion contract shared by the animation primitives — opacity leads, exits are shorter, and a bounded Sequence times the exit itself",
       "dependencies": [
         "remotion"
       ],
@@ -323,7 +323,7 @@
     {
       "name": "blur-in",
       "type": "registry:ui",
-      "description": "Resolve out of a defocus \u2014 blur clears before the move lands",
+      "description": "Resolve out of a defocus — blur clears before the move lands",
       "dependencies": [
         "remotion"
       ],
@@ -4449,6 +4449,82 @@
         {
           "path": "registry/bases/default/primitives/grain-gradient-bg.tsx",
           "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "product-turntable-3d",
+      "type": "registry:block",
+      "description": "A product on a studio turntable: the model turns a full revolution under a soft key and rim while the camera holds, with a contact shadow anchoring it to the floor",
+      "dependencies": [
+        "remotion",
+        "@remotion/three",
+        "three",
+        "@react-three/fiber",
+        "@react-three/drei"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/product-turntable-3d/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "text-extrude-3d",
+      "type": "registry:block",
+      "description": "Extruded 3D headline with a lit bevel: the letters rise and settle as the camera pulls back across them",
+      "dependencies": [
+        "remotion",
+        "@remotion/three",
+        "three",
+        "@react-three/fiber",
+        "@react-three/drei"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/text-extrude-3d/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "card-stack-3d",
+      "type": "registry:block",
+      "description": "A stack of physical cards fanning out in depth, each with real thickness and an edge highlight, turning to face the camera",
+      "dependencies": [
+        "remotion",
+        "@remotion/three",
+        "three",
+        "@react-three/fiber",
+        "@react-three/drei"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/card-stack-3d/index.tsx",
+          "type": "registry:block"
+        }
+      ]
+    },
+    {
+      "name": "globe-points-3d",
+      "type": "registry:block",
+      "description": "Lit sphere with instanced city markers and arcs rising between them, turning slowly under a rim light",
+      "dependencies": [
+        "remotion",
+        "@remotion/three",
+        "three",
+        "@react-three/fiber",
+        "@react-three/drei"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/globe-points-3d/index.tsx",
+          "type": "registry:block"
         }
       ]
     }
