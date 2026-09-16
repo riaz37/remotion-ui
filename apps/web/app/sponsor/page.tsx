@@ -4,12 +4,17 @@ import { EarlyAccessForm } from "@/components/early-access/early-access-form";
 import { kineNavLink } from "@/components/early-access/kine-nav-link";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteLogo } from "@/components/site-logo";
+import { VisitorsThisHour } from "@/components/visitors-this-hour";
 import { githubStarNavLink } from "@/lib/github-nav-link";
+import { getSponsorTraffic } from "@/lib/sponsor-traffic";
 import { navLinks, siteConfig } from "@/lib/site-config";
 
 const title = "Sponsor";
 const description =
   "Sponsor RemotionUI: one placement on every component page, seen by developers building videos with React and Remotion.";
+
+// Matches the visitors-this-hour fetch; the 30-day stats keep their own hourly cache.
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title,
@@ -21,19 +26,6 @@ export const metadata: Metadata = {
     url: `${siteConfig.url}/sponsor`,
   },
   alternates: { canonical: `${siteConfig.url}/sponsor` },
-};
-
-/**
- * Vercel Web Analytics, production, 30 days to 2026-09-15. Hand-copied, so
- * refresh these when pitching: a sponsor will compare them to a screenshot.
- */
-const TRAFFIC = {
-  period: "Last 30 days",
-  stats: [
-    { label: "Visitors", value: "2,187" },
-    { label: "Page views", value: "25,886" },
-    { label: "Pages per visit", value: "~12" },
-  ],
 };
 
 const OFFER = [
@@ -51,7 +43,9 @@ const OFFER = [
   },
 ];
 
-export default function SponsorPage() {
+export default async function SponsorPage() {
+  const traffic = await getSponsorTraffic();
+
   return (
     <HomeLayout
       nav={{ title: <SiteLogo />, url: "/" }}
@@ -79,8 +73,12 @@ export default function SponsorPage() {
             Sponsorship keeps it free and keeps new components shipping.
           </p>
 
-          <dl className="mt-12 grid max-w-[720px] gap-px overflow-hidden rounded-sm border border-[var(--bay-border)] bg-[var(--bay-border)] sm:grid-cols-3">
-            {TRAFFIC.stats.map((stat) => (
+          <div className="mt-12">
+            <VisitorsThisHour />
+          </div>
+
+          <dl className="mt-4 grid max-w-[720px] gap-px overflow-hidden rounded-sm border border-[var(--bay-border)] bg-[var(--bay-border)] sm:grid-cols-3">
+            {traffic.stats.map((stat) => (
               <div key={stat.label} className="bg-[var(--bay-bg)] p-6">
                 <dt className="text-mono-xs uppercase text-fd-muted-foreground">
                   {stat.label}
@@ -90,7 +88,8 @@ export default function SponsorPage() {
             ))}
           </dl>
           <p className="mt-3 text-xs text-fd-muted-foreground">
-            {TRAFFIC.period}, from Vercel Web Analytics.
+            Last 30 days, from Vercel Web Analytics
+            {traffic.live ? ", updated hourly." : "."}
           </p>
         </div>
       </section>
