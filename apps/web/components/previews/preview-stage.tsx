@@ -72,6 +72,18 @@ export const PREVIEW_RADIUS = {
  */
 export const PREVIEW_TRACKING = "-0.02em";
 
+/**
+ * Warm/teal glow over a near-black wash, shared by the audio and line-chart
+ * previews. Five files carried this literal string with two glow strengths;
+ * `strong` matches what audio-pulse and audio-reactive-scale already used.
+ */
+export const ambientGlowBackground = (
+  strength: "soft" | "strong" = "soft",
+): string => {
+  const [warm, teal] = strength === "strong" ? [0.16, 0.1] : [0.14, 0.09];
+  return `radial-gradient(circle at 18% 18%, rgba(232,184,109,${warm}) 0%, transparent 46%), radial-gradient(circle at 82% 64%, rgba(45,212,191,${teal}) 0%, transparent 52%), linear-gradient(to bottom, #050510 0%, #080810 100%)`;
+};
+
 const PreviewStageContext = createContext<PreviewStageTokens>(DARK_STAGE);
 
 export const usePreviewStage = (): PreviewStageTokens =>

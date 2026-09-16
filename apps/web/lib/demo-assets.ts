@@ -45,6 +45,11 @@ export const DEMO_COPY = {
       "Compositions that wire the full story",
     ],
   },
+  /** Showcase's midpoint is a feature-list beat — own copy so the two tiles differ. */
+  showcaseFeatures: {
+    title: "Ship a launch video today",
+    items: ["Pick a composition", "Swap in your copy", "Render from the CLI"],
+  },
   creatorHook: {
     eyebrow: "Creator insight",
     headline: "Make the first second count",

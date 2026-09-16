@@ -5,6 +5,7 @@ import { LineChartDraw } from "../../registry/bases/default/primitives/line-char
 import { DEMO_LINE_POINTS, DEMO_PALETTE } from "@/lib/demo-assets";
 import { scaleFont } from "@/remotion/lib/layout";
 import { PreviewFrame } from "./preview-frame";
+import { ambientGlowBackground } from "./preview-stage";
 
 /**
  * The primitive draws at an explicit size, so the wrapper hands it the real
@@ -19,8 +20,7 @@ export const LineChartDrawPreview: React.FC = () => {
       <AbsoluteFill>
         <AbsoluteFill
           style={{
-            background:
-              "radial-gradient(circle at 18% 18%, rgba(232,184,109,0.14) 0%, transparent 46%), radial-gradient(circle at 82% 64%, rgba(45,212,191,0.09) 0%, transparent 52%), linear-gradient(to bottom, #050510 0%, #080810 100%)",
+            background: ambientGlowBackground(),
           }}
         />
         <AbsoluteFill

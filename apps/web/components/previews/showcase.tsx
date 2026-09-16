@@ -7,7 +7,8 @@ export const ShowcasePreview: React.FC = () => (
   <Showcase
     title={DEMO_COPY.productLaunch.title}
     subtitle={DEMO_COPY.productLaunch.subtitle}
-    featureTitle={DEMO_COPY.productLaunch.featureTitle}
+    featureTitle={DEMO_COPY.showcaseFeatures.title}
+    featureItems={[...DEMO_COPY.showcaseFeatures.items]}
     statValue={DEMO_COPY.dataStory.statValue}
     statLabel={DEMO_COPY.dataStory.statLabel}
     ctaLabel={DEMO_COPY.endCard.ctaLabel}
