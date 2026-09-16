@@ -92,7 +92,9 @@ STUDIO-DESIGN.md
 # Local marketing/launch assets
 launch-screenshots/
 scripts/render-social-assets.mjs
-docs-internal/expansion-handoff.html
+
+# Internal handoff notes, specs, and audits (not for public repo)
+docs-internal/
 
 # Misc
 *.tgz
