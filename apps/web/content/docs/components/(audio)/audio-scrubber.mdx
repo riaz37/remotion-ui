@@ -21,7 +21,7 @@ import { AudioScrubber } from "@/remotion/primitives/audio-scrubber";
 ## Position comes from frames
 
 Not from audio analysis. The playhead lands exactly on the frame the edit says
-it should, rather than wherever a detector thinks the audio is — and the
+it should, rather than wherever a detector thinks the audio is, and the
 scrubber can front a clip that is only being described.
 
 ## The waveform is static
@@ -36,7 +36,7 @@ off for a baseline-anchored bar chart.
 
 ## Marks
 
-`marks` places rules at frame positions with optional labels — chapter points,
+`marks` places rules at frame positions with optional labels: chapter points,
 quotes, the cut you are about to make. They sit under the playhead, so the
 playhead is never hidden behind one.
 

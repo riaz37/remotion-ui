@@ -10,7 +10,7 @@ import { PreviewFrame } from "./preview-frame";
  *
  * Two stacked gradients were placeholder-grade for a component whose entire
  * premise is furniture over a live feed, and the product stills in
- * `lib/demo-assets` are dashboard cards — a scorebug over a KPI screen reads
+ * `lib/demo-assets` are dashboard cards: a scorebug over a KPI screen reads
  * as two unrelated demos in one frame.
  */
 const BroadcastBackdrop: React.FC = () => (
@@ -120,12 +120,12 @@ const BroadcastBackdrop: React.FC = () => (
 /**
  * The clock runs the whole window and three baskets land at 0.45s, 1.85s and
  * 3.35s, so every one of the audit's samples (frames 18 / 60 / 108 of 120)
- * sits inside a `flashFor` window — the flash is the component's signature
+ * sits inside a `flashFor` window: the flash is the component's signature
  * beat and it used to decay to zero in the gaps between samples.
  *
  * `holdSeconds={3.28}` puts frame 108 mid-exit: the exit curve is
  * `Easing.in(Easing.cubic)`, so the sample wants `0.9·window/fps − 0.79·exitFor`,
- * not the linear `− exitFor/2`. `scale={1.8}` is framing, not motion — at the
+ * not the linear `− exitFor/2`. `scale={1.8}` is framing, not motion: at the
  * default broadcast size the bug covered 4.5% of the tile.
  * See docs-internal/preview-audit-rubric.md.
  */

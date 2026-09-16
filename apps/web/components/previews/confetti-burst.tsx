@@ -9,7 +9,7 @@ import { DEMO_COPY } from "@/lib/demo-assets";
  * 96-frame window (matched in `lib/preview-config.ts` and the MDX page), so the
  * samples land on frames 14, 48 and 86.
  *
- * The origin sits below the card, not on the kicker line — at the enter sample
+ * The origin sits below the card, not on the kicker line: at the enter sample
  * the burst is still bunched at its origin, and on the kicker that bunch printed
  * straight over the word. `gravity` is far under the 680 default because the
  * default clears a 540px frame in about a second and a half, which left the 90%

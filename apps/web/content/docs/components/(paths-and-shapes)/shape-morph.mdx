@@ -9,10 +9,10 @@ import { ShapeMorphPreview } from '@/components/previews/shape-morph';
 
 Give it a chain of shapes and it travels through them on one ramp. Names come
 from the `MORPH_SHAPES` presets, and anything else is treated as a raw `d`
-string — so a logo can sit in the chain beside a circle.
+string, so a logo can sit in the chain beside a circle.
 
 The chain is prepared once and evaluated per frame. Preparation is the expensive
-half — parsing, winding alignment, box fitting — and it depends on nothing but
+half (parsing, winding alignment, box fitting), and it depends on nothing but
 the `d` strings, so doing it inside the render would re-parse every path thirty
 times a second for strings that never change. That is what `prepareMorph` in
 `lib/path-morph.ts` exists for, and it is shared with `blob-morph` and the
@@ -27,7 +27,7 @@ it, a symmetrical pair like square-to-diamond can look like a still image at the
 midpoint. `loop` closes the ring back to the first shape so a looping driver has
 no seam.
 
-Shapes morph cleanly when they reduce to a similar number of curves — the
+Shapes morph cleanly when they reduce to a similar number of curves: the
 presets are all authored as four-curve closed paths for exactly that reason. A
 detailed logo morphing into a circle will always fold somewhere.
 

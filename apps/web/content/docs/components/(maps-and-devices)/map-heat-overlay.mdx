@@ -15,11 +15,11 @@ as accumulating instead of being there from the first frame at low alpha.
 Like every MapLibre primitive here, the paint holds the frame open with its own
 `delayRender`. Layers are added a commit after the map reports ready, and
 without the hold the overlay drops out of whichever frame the browser captures
-first — reliably the first sample of a still run, which then shows a bare
+first, reliably the first sample of a still run, which then shows a bare
 basemap and looks like a broken component.
 
 Two settings decide whether this reads as data or as a smear. `radius` is in
-screen pixels, so it ramps with zoom — otherwise the same overlay means
+screen pixels, so it ramps with zoom. Otherwise the same overlay means
 different things at different camera heights. And it wants to stay small:
 roughly 12–24 for a few hundred points. Too large and every point merges into
 one saturated blob with no density left to read.

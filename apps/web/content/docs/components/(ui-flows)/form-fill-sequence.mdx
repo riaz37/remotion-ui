@@ -12,14 +12,14 @@ before focus moves on. The submit button stays disabled until the last field has
 validated, so the ending reads as a consequence of the form rather than a
 separate flourish.
 
-Field timings are not fixed constants — each one is derived from its own value
+Field timings are not fixed constants: each one is derived from its own value
 length and `charsPerSecond`, so a long email visibly takes longer to enter than
 a short name and the whole sequence lengthens when you pass more fields. Budget
 roughly `value.length / charsPerSecond + 0.26s` per field when you are fitting
 this into a cut.
 
 `accentColor` is the focus ring and the armed button; `validColor` is the tick
-and the settled border. They are separate props on purpose — collapsing them
+and the settled border. They are separate props on purpose: collapsing them
 into one colour makes "this field has focus" and "this field passed"
 indistinguishable at a glance.
 

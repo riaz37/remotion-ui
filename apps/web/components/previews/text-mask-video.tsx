@@ -5,8 +5,8 @@ import { TextMaskVideo } from "../../registry/bases/default/primitives/text-mask
 import { PreviewFrame } from "./preview-frame";
 
 /**
- * The audit samples at 15% / 50% / 90% of the window — frames 18, 60 and 108 on
- * the 120-frame default. The wipe runs frames 2–46 for the first sample, the
+ * The audit samples at 15% / 50% / 90% of the window (frames 18, 60 and 108 on
+ * the 120-frame default). The wipe runs frames 2–46 for the first sample, the
  * footage keeps drifting behind the letters for the second, and the wipe
  * unwinds from frame 96 for the third. Not earlier: opacity is gone 70% of the
  * way through an exit, and an exit at 88 left frame 108 completely blank.

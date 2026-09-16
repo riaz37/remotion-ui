@@ -1,0 +1,31 @@
+---
+title: Dither Field Background
+description: A two-colour ordered-dither field, quantised to a pixel grid.
+---
+
+import { DitherFieldBgPreview } from "@/components/previews/dither-field-bg";
+
+<ComponentPage name="dither-field-bg" preview={DitherFieldBgPreview}>
+
+A smooth pattern pushed through a dither matrix, so it resolves into two colours
+on a pixel grid rather than a gradient. It reads as print halftone or an early
+bitmap display, and it is the one background here that holds an edge: the grid
+gives type something to sit against.
+
+`shape` picks the pattern underneath and `pattern` picks the threshold matrix:
+the Bayer sizes are ordered and regular, `random` is white noise and reads as
+film grain.
+
+The shapes split in two. `simplex`, `warp`, `dots` and `wave` tile and fill the
+frame at any scale, use these for a background. `ripple`, `swirl` and `sphere`
+are bounded shapes with an edge, so below `scale={1}` they sit as an object in
+an empty field rather than covering it.
+
+`pixelSize` is measured in real pixels and deliberately ignores `scale`, so
+zooming moves the pattern underneath a grid that stays put. Raise it for a
+coarser, more obviously digital field; at `1` the dither almost disappears.
+
+Render with `--gl=angle`. Motion comes from the frame only, so the same frame
+renders to identical pixels every time.
+
+</ComponentPage>

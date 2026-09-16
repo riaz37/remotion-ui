@@ -21,7 +21,7 @@ const sub = DEMO_COPY.tutorial.calloutSubtitle;
 
 /**
  * The marquee measures its own type to derive a loop period, so it needs a real
- * font — see `PerspectiveMarqueePreview` below.
+ * font: see `PerspectiveMarqueePreview` below.
  */
 const marqueeFont = loadMarqueeFont("normal", {
   weights: ["600"],
@@ -51,7 +51,7 @@ const maskedSlideGhostStyle = {
 /**
  * Preview timing convention for this file.
  *
- * The audit samples every preview at 15% / 50% / 90% of its window — on the
+ * The audit samples every preview at 15% / 50% / 90% of its window: on the
  * default 120-frame window that is frames 18, 60 and 108. A text effect left on
  * its own short default starts at frame 0 and is finished well before frame 18,
  * so all three samples land on resolved type and the tile reads as a still
@@ -67,7 +67,7 @@ const ENTER_SAMPLE_FRAME = 18;
  * two thirds of the loop settled. The window is 48 frames (in `preview-config`)
  * and the entrance starts on frame 4, which puts the motion across roughly
  * 8-70% of the loop and the rest at the end, where remocn's pattern 5 puts it.
- * This one deliberately does not use `ENTER_SAMPLE_FRAME` — that constant is
+ * This one deliberately does not use `ENTER_SAMPLE_FRAME`: that constant is
  * calibrated against the 120-frame default window.
  */
 export const BlurFocusInPreview = () => (
@@ -128,11 +128,11 @@ export const MaskedSlideRevealPreview = () => (
  * The one preview in this file that does not run on the 120-frame window, so it
  * does not use `ENTER_SAMPLE_FRAME`. `springSmooth` is already at 0.90 halfway
  * through its own duration, so no delay inside a 120-frame window puts the 50%
- * and 90% samples on different states — both caught settled type (a pixel-
+ * and 90% samples on different states: both caught settled type (a pixel-
  * identical pair). `preview-config` gives this slug a 72-frame window instead,
  * which samples frames 10 / 36 / 64; the entrance is stretched to 92 frames and
  * started 10 frames before the window so those land at spring progress
- * 0.50 / 0.90 / 0.99 — half-tracked and blurred, closing, settled.
+ * 0.50 / 0.90 / 0.99: half-tracked and blurred, closing, settled.
  *
  * Short copy, not the 25-character `sample` the rest of the file uses. The span
  * no longer wraps, and the widest state of a tracking entrance is its first
@@ -162,7 +162,7 @@ export const TrackingInPreview = () => (
  *   moved and at 90% it had already left. A specular sweep travels at constant
  *   speed anyway, so this one runs linear.
  * - The gradient is 2.2× the line and travels from 120% to -20%, which puts the
- *   *peak* of the shine on the glyphs only across the middle 60% of the sweep —
+ *   *peak* of the shine on the glyphs only across the middle 60% of the sweep;
  *   the outer fifth at each end is the band clearing the text. Widening the band
  *   does not change that, so the window is not the fix: the preview runs the
  *   sweep across frames -20→155 so that the audit's frames 18, 60 and 108 land
@@ -171,7 +171,7 @@ export const TrackingInPreview = () => (
  *   which is what makes the highlight read at a 308px tile.
  *
  * Result: the shine lights the left third at frame 18, the middle at 60 and the
- * right third at 108. The base is lifted off the `#71717a` default as well —
+ * right third at 108. The base is lifted off the `#71717a` default as well:
  * unlit grey type at that value on the `#050505` stage is barely there at a
  * 308px tile.
  */
@@ -196,7 +196,7 @@ export const LightSweepTextPreview = () => (
  * with a 5-frame column stagger, so the reel settles left to right: frame 18
  * catches the left columns spinning while the right ones still show the old
  * number, frame 60 catches the tail of the roll, and frame 108 holds the landed
- * value — which is the pose the component is *for*.
+ * value, which is the pose the component is *for*.
  */
 export const SlotRollPreview = () => (
   <PreviewFrame lane="atoms" padding={72}>
@@ -256,7 +256,7 @@ export const RgbGlitchTextPreview = () => (
  * One marquee on an empty stage reads as an unstyled div, and a single row can
  * only ever show one `direction` and one `fade`. Three rows at different sizes
  * and speeds fill the frame, run both ways, and put the hard-edged row directly
- * under a faded one — which is the only way the fade is legible in a still.
+ * under a faded one, which is the only way the fade is legible in a still.
  *
  * The rows run edge to edge with no frame padding on purpose: a padded marquee
  * fades out short of the frame, so the effect it is meant to demonstrate lands
@@ -320,14 +320,14 @@ export const InfiniteMarqueePreview = () => (
 );
 
 /**
- * A floor marquee lives in the lower third — that is the geometry, not a bug —
+ * A floor marquee lives in the lower third (that is the geometry, not a bug),
  * so the preview is a *scene* that uses it: the camera comes up (`floorTilt`
  * 62 instead of 70) and a title block occupies the air above the horizon that
  * was previously an empty black plate.
  *
  * `lineWidth={2}` is load-bearing. The horizon and the floor grid are 1px by
  * default, which is half a device pixel at the audit's 0.5 scale and a third of
- * one in a 308px tile — Chromium drops them outright, and the finding that "the
+ * one in a 308px tile: Chromium drops them outright, and the finding that "the
  * horizon line is empty black" was exactly that.
  */
 export const PerspectiveMarqueePreview = () => {
@@ -337,7 +337,7 @@ export const PerspectiveMarqueePreview = () => {
   // memo runs once: if it runs while the family is still the fallback, the
   // period is wrong for the whole clip and the scroll speed silently stops
   // matching the stated `speed`. Hold the frame until the face is actually
-  // swapped in, and only mount the marquee after — so the memo's first (and
+  // swapped in, and only mount the marquee after, so the memo's first (and
   // only) run measures Inter, not system-ui.
   const [handle] = useState(() => delayRender("Loading marquee font"));
   const [fontReady, setFontReady] = useState(false);
@@ -373,7 +373,7 @@ export const PerspectiveMarqueePreview = () => {
         alignItems: "center",
         justifyContent: "flex-start",
         // The horizon sits at 26% of the frame (140px of 540). The title block
-        // ends above it — a full-width rule through the middle of a headline
+        // ends above it: a full-width rule through the middle of a headline
         // reads as a clipping bug.
         paddingTop: 22,
         pointerEvents: "none",
@@ -408,5 +408,5 @@ export const PerspectiveMarqueePreview = () => {
   );
 };
 
-/* StrikethroughReplacePreview lives in ./strikethrough-replace — it needs a
+/* StrikethroughReplacePreview lives in ./strikethrough-replace: it needs a
  * composed stage rather than one centred line. */

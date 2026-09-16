@@ -55,14 +55,14 @@ Every RemotionUI component is also published to the shadcn registry under the `@
 The shadcn CLI resolves registry dependencies recursively and writes files using the aliases in your `components.json`. Where a component declares a `target` path, your own alias configuration takes priority.
 
 <Callout type="warn">
-  The shadcn path does not register compositions in `Root.tsx` — that is a `remotion-ui add` feature. Add the `<Composition />` entry yourself when installing a full composition this way.
+  The shadcn path does not register compositions in `Root.tsx`. That is a `remotion-ui add` feature. Add the `<Composition />` entry yourself when installing a full composition this way.
 </Callout>
 
 ## What `add` does for you
 
 - Installs the component source plus every registry dependency it pulls in, recursively.
 - Installs npm dependencies with your detected package manager.
-- Registers compositions in `Root.tsx` automatically — components that ship composition metadata get their `<Composition />` entry and import added for you. Already-registered ids are left alone, so re-running `add` is safe.
+- Registers compositions in `Root.tsx` automatically. Components that ship composition metadata get their `<Composition />` entry and import added for you. Already-registered ids are left alone, so re-running `add` is safe.
 - Warns when a component declares a Remotion range your project does not satisfy.
 
 ## Agent skill
@@ -81,4 +81,4 @@ New projects do **not** install the skill unless you pass `--agent-skill`.
 - [Authoring scenes](/docs/guides/authoring-scenes): layout patterns for multi-element scenes
 - [Components](/docs/components): browse all motion building blocks
 
-If RemotionUI saves you time, [star the repo on GitHub](https://github.com/riaz37/remotion-ui) — it helps a lot.
+If RemotionUI saves you time, [star the repo on GitHub](https://github.com/riaz37/remotion-ui). It helps a lot.

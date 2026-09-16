@@ -1,0 +1,12 @@
+---
+title: "Shaders"
+description: "Full-frame GPU fields, evaluated per pixel and driven by the frame number."
+---
+
+Shader components paint the whole frame on the GPU: the value of every pixel is computed from the frame number, so there is no entrance to run out and no loop point to land on. They suit backgrounds and ambient layers under type.
+
+Each one is deterministic by construction. The underlying shader library animates itself off a wall clock, which would make a render sample a different moment on every run; these wrappers stop that clock and set the time from `useCurrentFrame()` instead. Render them with `--gl=angle`.
+
+A live preview costs one WebGL context, so pages mount them on hover rather than all at once.
+
+<CategoryGrid category="shaders" />

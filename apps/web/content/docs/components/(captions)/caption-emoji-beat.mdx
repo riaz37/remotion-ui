@@ -25,14 +25,14 @@ import { CaptionEmojiBeat } from "@/remotion/primitives/caption-emoji-beat";
 
 Each stamp lands on a frame you give it rather than on an audio envelope read at
 render time. The beats of a track are known when the edit is cut, and a
-detector — even a good one — drifts against the music it is supposed to be
+detector, even a good one, drifts against the music it is supposed to be
 hitting. If you have beat times in seconds, multiply by `fps` and pass frames.
 
 ## The wobble decays
 
 A stamp arrives with overshoot, swings once, then releases. The swing is keyed
 to its own landing rather than to the clock, so every emoji wobbles by the same
-amount whenever it arrives, and it decays to nothing — a held frame is still,
+amount whenever it arrives, and it decays to nothing: a held frame is still,
 and only arrivals move.
 
 `holdInFrames` is how long a stamp stays at full size before the release, which

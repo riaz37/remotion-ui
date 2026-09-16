@@ -9,7 +9,7 @@ import { TypewriterPreview } from '@/components/previews/typewriter';
 
 Types a string out under a live caret.
 
-The caret holds solid while keys are landing and only blinks once it rests — a caret that blinks mid-word looks like a loading state, not typing. The full block is measured up front, so a wrapping line does not shunt everything under it down a row mid-sentence.
+The caret holds solid while keys are landing and only blinks once it rests. A caret that blinks mid-word looks like a loading state, not typing. The full block is measured up front, so a wrapping line does not shunt everything under it down a row mid-sentence.
 
 Use `[pause:0.5]` inside `text` to hold at any point. `humanize` varies the key rhythm, `respectPunctuation` rests on sentence punctuation, and `loop` types, holds, deletes and repeats.
 

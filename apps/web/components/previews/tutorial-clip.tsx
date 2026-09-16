@@ -6,7 +6,7 @@ import { DEMO_APP_PORTRAIT_SRC, DEMO_COPY } from "@/lib/demo-assets";
 
 /**
  * Copy here is the video's copy, not notes to whoever fills the template in.
- * The callout used to read "Name the key action" — an instruction to the
+ * The callout used to read "Name the key action", an instruction to the
  * author, printed on screen as if it were the script.
  */
 export const TutorialClipPreview: React.FC = () => (

@@ -6,7 +6,7 @@ import { ScenePreviewPlate } from "./scene-preview-plate";
 /**
  * Seven rows rather than the default eleven: the panel sizes itself from the
  * row count, so a shorter tree fills ~75% of the frame width and lands the
- * filenames at 24px on the 960 stage — readable at a 308px tile, which eleven
+ * filenames at 24px on the 960 stage: readable at a 308px tile, which eleven
  * rows never were.
  *
  * `holdSeconds={3.27}` = 0.9 × 120 / 30 − 0.79 × 0.42, the exit-easing-corrected

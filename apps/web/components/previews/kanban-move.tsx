@@ -4,7 +4,7 @@ import { KanbanMove } from "../../registry/bases/default/scenes/kanban-move";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
 /**
- * Cards deal in through 0.7s, then moves fire at 0.95s and 1.72s — frame 18
+ * Cards deal in through 0.7s, then moves fire at 0.95s and 1.72s: frame 18
  * catches the deal, frame 60 (2.0s) the second card mid-arc, and
  * `holdSeconds={3.27}` puts frame 108 mid-exit. See
  * docs-internal/preview-audit-rubric.md.

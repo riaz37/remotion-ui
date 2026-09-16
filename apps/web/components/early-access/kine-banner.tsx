@@ -8,7 +8,7 @@ const STORAGE_KEY = "remotionui:kine-banner-2026-09";
 /**
  * Sits above the nav on the homepage only. Dismissal persists in
  * localStorage, so a visitor who closes it won't see it again on this
- * device. Deliberately not fumadocs' `Banner` — its FOUC-prevention `<script>`
+ * device. Deliberately not fumadocs' `Banner`, since its FOUC-prevention `<script>`
  * triggers a "scripts never execute on client render" dev warning, which we
  * don't need since this banner doesn't shift page layout.
  */
@@ -34,7 +34,7 @@ export function KineBanner() {
           New
         </span>
         <span>
-          Kine turns your localhost into a demo video — early access is open
+          Kine turns your localhost into a demo video. Early access is open
         </span>
         <span className="underline decoration-fd-muted-foreground/40 underline-offset-4 transition-colors group-hover:decoration-fd-foreground">
           Join the waitlist →

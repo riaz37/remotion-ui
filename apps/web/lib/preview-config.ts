@@ -3,7 +3,7 @@
  *
  * Kept free of component imports so build scripts can read it without pulling
  * in React. `atlas-mini-preview.tsx` merges it with the component map, and the
- * still audit renders against the same numbers — otherwise the audit judges a
+ * still audit renders against the same numbers, otherwise the audit judges a
  * different composition size than the one users actually see.
  */
 export type PreviewMeta = {
@@ -25,12 +25,12 @@ export const PREVIEW_DEFAULTS = {
 const VERTICAL = { width: 1080, height: 1920 } as const;
 
 /**
- * Composition previews must run their full length — the scene rebuilds
+ * Composition previews must run their full length: the scene rebuilds
  * lengthened several of them, and a short window cuts the clip off before its
  * end card, which reads as a broken composition rather than a trimmed preview.
  */
 export const PREVIEW_META: Record<string, PreviewMeta> = {
-  /* Atoms: enter, hold, then leave inside the window — the exit is part of
+  /* Atoms: enter, hold, then leave inside the window: the exit is part of
    * what the primitive does, so the preview has to be long enough to show it. */
   "fade-in": { durationInFrames: 96 },
   "fade-out": { durationInFrames: 96 },
@@ -46,7 +46,7 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "marker-highlight": { durationInFrames: 110 },
   /* These three carried their window on the `ComponentPage` prop in MDX rather
    * than here, so the docs player ran one length and the atlas tile and the
-   * still audit ran the 120-frame default — which put both of their late
+   * still audit ran the 120-frame default, which put both of their late
    * samples past the end of the motion and read as a frozen tail. The number
    * lives here now; the MDX override is gone. Each lands its last beat at
    * 0.80 x window. */
@@ -58,7 +58,7 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
    * window was, and every sample after the first showed the same chart. */
   "line-chart-draw": { durationInFrames: 60 },
   /* Enter-only, and `springSmooth` is 90% closed halfway through its own
-   * duration — over the 120-frame default the 50% and 90% samples were the same
+   * duration: over the 120-frame default the 50% and 90% samples were the same
    * settled line. 72 frames puts the samples at 10 / 36 / 64 against a 76-frame
    * entrance, so all three catch it moving. */
   "tracking-in": { durationInFrames: 72 },
@@ -68,20 +68,20 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   /* The demo transcript runs 5.6s. The window covers it end to end so the
    * 90% sample lands on the last cue rather than on an empty track. */
   "srt-caption-track": { durationInFrames: 170 },
-  /* Enter staggers in over frames 8-90, then a staggered exit from 90 — so the
+  /* Enter staggers in over frames 8-90, then a staggered exit from 90, so the
    * 15% / 50% / 90% samples catch arrival, hold and departure. */
   "split-text-chars": { durationInFrames: 120 },
   "audiogram-bars": { durationInFrames: 120 },
   "audiogram-scene": { durationInFrames: 150 },
   /* 120, not 150. The preview loops the caption track every 63 frames, and on a
-   * 150-frame window the 50% and 90% samples are 60 frames apart — very nearly
-   * one whole loop — so the two cells came back at the same phase of the same
+   * 150-frame window the 50% and 90% samples are 60 frames apart, very nearly
+   * one whole loop, so the two cells came back at the same phase of the same
    * sentence (39 dB) while the preview was in fact moving the whole time. */
   "caption-scene": { durationInFrames: 120 },
   "auto-fit-title": { durationInFrames: 130 },
   "b-roll-stack": { durationInFrames: 165 },
   /* Scenes that now take a `holdSeconds` exit. The window is sized so the exit
-   * straddles the audit's 90% sample rather than finishing before it — an exit
+   * straddles the audit's 90% sample rather than finishing before it: an exit
    * that lands early trades a frozen tail for an empty one, which is worse.
    * window ≈ (holdSeconds + exitFor / 2) * fps / 0.9 */
   "callout-spotlight": { durationInFrames: 120 },
@@ -144,7 +144,7 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "simulated-cursor": { durationInFrames: 72 },
   "tutorial-clip": { durationInFrames: 248, ...VERTICAL },
   /* Transitions. `transition-previews.tsx` sizes its two scenes from this
-   * number and the 18-frame overlap — 69 + 69 - 18 = 120 — so the pair fills
+   * number and the 18-frame overlap (69 + 69 - 18 = 120), so the pair fills
    * the window exactly and the cut lands on the audit's 50% sample. Pinned
    * rather than left to the default because a change to `PREVIEW_DEFAULTS`
    * would silently move every cut off the sample and read as a dead preview. */
@@ -203,7 +203,7 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "subtitle-translate": { durationInFrames: 120 },
   "waveform-bars-radial": { durationInFrames: 120 },
   /* 100, not 120: over a 120-frame window the 15% and 90% samples sit exactly
-   * 90 frames apart, which is the demo loop's own repeat — the two stills came
+   * 90 frames apart, which is the demo loop's own repeat, the two stills came
    * back byte-identical. 100 samples frames 15 / 50 / 90, so no pair lands on
    * the same phase of the track. */
   "vu-meter": { durationInFrames: 100 },
@@ -245,10 +245,21 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "multi-device-lineup": { durationInFrames: 120 },
   /* 3D: set-down + lid open, then turn and push. The shot is paced for 5s. */
   "device-mockup-3d": { durationInFrames: 150 },
+  /* Shaders: continuous fields with no entrance and no loop point, so the
+   * default window is only a viewing length: the 15/50/90% audit samples land
+   * on three different arrangements whatever it is set to. */
+  "dither-field-bg": { durationInFrames: 120 },
+  "warp-bands-bg": { durationInFrames: 120 },
+  "grain-gradient-bg": { durationInFrames: 120 },
+  "light-tunnel-bg": { durationInFrames: 120 },
+  /* Unlike the other fields in the lane this one has an entrance: the sweep
+   * runs to frame 78, so the window has to outlast it or the audit never sees
+   * the settled interior. */
+  "text-reveal-shader": { durationInFrames: 120 },
   /* The two marquees scroll continuously and never loop back to their start
    * inside a short window, so their docs players run unlooped for a full track
    * period instead of cutting mid-scroll. The number lived on the `ComponentPage`
-   * prop in MDX, which the atlas tile and the still audit do not read — they ran
+   * prop in MDX, which the atlas tile and the still audit do not read: they ran
    * the 120-frame default while the docs player ran 60s. It lives here now. */
   "infinite-marquee": { durationInFrames: 1800 },
   "perspective-marquee": { durationInFrames: 1800 },

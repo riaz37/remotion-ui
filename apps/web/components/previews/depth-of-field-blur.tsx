@@ -58,12 +58,12 @@ const NearPlane: React.FC = () => (
  *
  * The rack is timed so each sample lands on a *plane*, not between two. It
  * starts at frame 24 and runs 66 frames, which puts the focus on depth 1 at
- * frame 18, on 0.4 at frame 60 and on 0 at frame 108 — the card's depth is 0.4
+ * frame 18, on 0.4 at frame 60 and on 0 at frame 108: the card's depth is 0.4
  * for exactly that reason. The first cut racked evenly across the window and
  * the middle sample caught the lens between planes, so the tile's most-seen
  * frame was one where nothing was sharp.
  *
- * Three planes at three depths and three places in the frame — a rack focus is
+ * Three planes at three depths and three places in the frame: a rack focus is
  * only visible as a relationship between planes.
  */
 export const DepthOfFieldBlurPreview: React.FC = () => (

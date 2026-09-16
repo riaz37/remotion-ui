@@ -25,13 +25,13 @@ fast part of the travel, and hangs round at the apex where it is slowest.
 `pulse` is the same deform without the travel, for a logo or an icon that needs
 weight in place.
 
-`impact` fires once, for something landing into a layout — pair it with an
+`impact` fires once, for something landing into a layout. Pair it with an
 entrance primitive, which owns the arrival, and let this own the landing.
 
 ## Volume preservation
 
 `scaleX` is the reciprocal square root of `scaleY`, which keeps
-`scaleX² × scaleY` constant — the volume of a body of revolution, and the same
+`scaleX² × scaleY` constant, the volume of a body of revolution, and the same
 rule an animator draws by. Squashing one axis without widening the other is the
 single thing that makes a deform read as a scale bug rather than as rubber,
 because the eye tracks area.

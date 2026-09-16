@@ -7,7 +7,7 @@ import { PreviewFrame, ProductCard } from "./preview-frame";
 /**
  * Samples land at frames 18, 60 and 108. A near particle crosses the frame in
  * about six seconds here, so it travels roughly a quarter of the frame between
- * adjacent samples — the field is unmistakably in a different arrangement at
+ * adjacent samples, so the field is unmistakably in a different arrangement at
  * each one, with no entrance to run out of.
  */
 export const ParticleFieldPreview: React.FC = () => (

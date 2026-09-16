@@ -33,7 +33,7 @@ const CUES = [
 ];
 
 /**
- * Samples land at frames 18, 60 and 108 — 600ms, 2000ms and 3600ms — three
+ * Samples land at frames 18, 60 and 108 (600ms, 2000ms and 3600ms), three
  * different active lines, and the page is still gliding toward each of them
  * because the settle runs 16 frames after every cue starts.
  */

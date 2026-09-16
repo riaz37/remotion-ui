@@ -19,7 +19,7 @@ import { MotionTrail } from "@/remotion/primitives/motion-trail";
 
 ## The trick
 
-An echo is not a copy of the element's *position* — it is the element itself,
+An echo is not a copy of the element's *position*, it is the element itself,
 rendered at an earlier frame. `<Sequence from={n}>` shifts the frame its
 children see by `-n`, so an echo at `from={gap * i}` renders exactly what the
 subject looked like `gap * i` frames ago.
@@ -39,7 +39,7 @@ echo stacks in one place. This is the one way to hold it wrong.
 
 `count` echoes render the subtree `count + 1` times per frame. Keep the subject
 small, and prefer a wider `gapInFrames` over a higher `count` when the trail
-needs length — a longer gap stretches the trail for free, where a higher count
+needs length: a longer gap stretches the trail for free, where a higher count
 buys smoothness at full price.
 
 ## Behaviour at the start

@@ -117,15 +117,14 @@ export function PhosphorField({ progress, className }: PhosphorFieldProps) {
       gl.bindFramebuffer(gl.FRAMEBUFFER, null);
       gl.useProgram(screen);
       gl.uniform2f(screenUniform("uResolution"), width, height);
-      gl.uniform1f(screenUniform("uTime"), elapsed);
       gl.uniform1f(screenUniform("uProgress"), p);
       gl.uniform1f(screenUniform("uPixelRatio"), pixelRatio);
-      gl.uniform1f(screenUniform("uLightMode"), lightMode);
-      gl.uniform3fv(screenUniform("uDarkBackground"), BACKGROUND.dark);
-      gl.uniform3fv(screenUniform("uLightBackground"), BACKGROUND.light);
+      gl.uniform1f(screenUniform("uTheme"), lightMode);
+      gl.uniform3fv(screenUniform("uPageDark"), BACKGROUND.dark);
+      gl.uniform3fv(screenUniform("uPagePaper"), BACKGROUND.light);
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, scene);
-      gl.uniform1i(screenUniform("uScene"), 0);
+      gl.uniform1i(screenUniform("uField"), 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     };
 

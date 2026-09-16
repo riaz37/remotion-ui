@@ -1,4 +1,4 @@
-/** RemotionUI mark — offset frames + phosphor play (source you own). */
+/** RemotionUI mark: offset frames + phosphor play (source you own). */
 export function LogoMark({ className = "size-8" }: { className?: string }) {
   return (
     <svg

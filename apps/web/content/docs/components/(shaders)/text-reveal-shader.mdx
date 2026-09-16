@@ -1,0 +1,49 @@
+---
+title: Text Reveal Shader
+description: Words condensing out of light into liquid chrome.
+---
+
+import { TextRevealShaderPreview } from "@/components/previews/text-reveal-shader";
+
+<ComponentPage name="text-reveal-shader" preview={TextRevealShaderPreview}>
+
+The copy is rasterised once to an alpha texture and handed to a fragment shader
+as its source, so the shader reads glyph coverage and generates everything else
+per pixel. That is what buys the refraction: a CSS or SVG mask can uncover
+letterforms but cannot bend them through a moving film, because it has no access
+to the pixels either side of the edge it is drawing.
+
+The reveal is a diagonal sweep whose threshold is perturbed by two crossed
+sines, one running in x and one in y at unrelated periods. One sine alone gives
+a wavy line that still reads as a machine wipe; crossing two breaks the repeat
+and the edge reads as a wet meniscus pulling across the letters. `wobble` sets
+how hard they bend it, and `0` gives a straight wipe.
+
+Two values carry the look, and they are where to spend time tuning:
+
+`bandWidth` is the width of a narrow exponential band pinned to the edge. Inside
+it the glyph is refracted, with the displacement taken from differences between
+channels of the iridescent field, so the offset follows whatever the film is
+doing locally rather than pushing in a fixed direction, and the three channels
+are sampled at decreasing strength to disperse the edge into colour. Widen it
+and the effect becomes a general blur; narrow it and it reads as a clean
+chromatic rim.
+
+`settle` is how long after the edge has passed the glyph interior takes to relax
+from the live iridescent field to flat silver. This is what makes the words read
+as condensing out of light rather than as light-coloured type being uncovered.
+Set it high and the letters never stop shimmering; set it near zero and they
+snap to chrome the instant the edge clears them.
+
+`delay` and `duration` are in frames. The face is worth pinning explicitly via
+`fontFamily`: the glyphs become a texture, so an unpinned system stack resolves
+differently on a dev machine and a render worker.
+
+Distinct from `masked-slide-reveal`, which slides a hard-edged mask over type,
+and from `light-sweep-text`, which passes a specular highlight across glyphs
+that are already fully visible.
+
+Render with `--gl=angle`. Motion comes from the frame only, so the same frame
+renders to identical pixels every time.
+
+</ComponentPage>

@@ -9,7 +9,7 @@ import { TransitionClockWipePreview } from "@/components/previews/transition-pre
 
 `width` and `height` are optional: the presentation reads the composition size
 itself. Previously every caller had to reach for `useVideoConfig()` before it
-could build a transition config — including in places where hooks are not
+could build a transition config, including in places where hooks are not
 available. Pass them explicitly only to sweep a different radius than the frame.
 
 ```tsx

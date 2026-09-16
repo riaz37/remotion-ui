@@ -23,7 +23,7 @@ const Card: React.FC = () => (
  * travelling card crosses the axis its ghost sits on, so the two headlines
  * landed line-for-line on the same baseline at both the enter and the exit
  * sample and two of the three tile frames were illegible. The mask made it
- * worse, not better — the ghost sits outside the mask, so the clip that is
+ * worse, not better: the ghost sits outside the mask, so the clip that is
  * supposed to hide the travelling copy did nothing about it.
  *
  * A dashed outline of the landing box carries the same information (where the
@@ -49,8 +49,8 @@ const LandingBox: React.FC = () => {
  * Window is 96 frames, so the audit samples land on frames 14, 48 and 86.
  *
  * The exit is pinned rather than derived from the window: under `mask` the
- * travel is all `SlideUp` has — the mask branch deliberately leaves opacity
- * alone — and the default 60% exit travel on a 21-frame exit moved the card by
+ * travel is all `SlideUp` has (the mask branch deliberately leaves opacity
+ * alone), and the default 60% exit travel on a 21-frame exit moved the card by
  * only 8% of its height by frame 86, so the hold and exit samples were nearly
  * the same picture. A full-distance exit over frames 66-96 has the card a third
  * of the way back down its mask at the exit sample.

@@ -3,7 +3,7 @@ import Link from "next/link";
 /**
  * The one nav item that is not documentation. It carries a status pill because
  * "Kine" alone does not tell a first-time visitor that the thing is not
- * shipped yet — and the pill, not the label, is what earns the click.
+ * shipped yet, and the pill, not the label, is what earns the click.
  */
 export const kineNavLink = {
   type: "custom" as const,

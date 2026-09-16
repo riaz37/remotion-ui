@@ -1,6 +1,6 @@
 ---
 title: Why your Remotion render doesn't match the preview
-description: Five ways a Remotion composition can look perfect in the Studio and come out wrong in the MP4 — and how we caught all of them by auditing 109 previews frame by frame.
+description: Five ways a Remotion composition can look perfect in the Studio and come out wrong in the MP4, and how we caught all of them by auditing 109 previews frame by frame.
 date: 2026-08-16
 author: RemotionUI
 tags: ["remotion", "rendering", "debugging"]
@@ -9,7 +9,7 @@ tags: ["remotion", "rendering", "debugging"]
 Remotion's Studio is a browser tab running your composition on a timeline. A render
 is a headless browser stepping through the same composition one frame at a time,
 screenshotting each one. Those two things are close enough that you stop thinking
-about the difference — until a client asks why the logo is missing from the first
+about the difference. Then a client asks why the logo is missing from the first
 second of the export.
 
 We found five distinct ways that gap opens up while auditing every preview in the
@@ -22,8 +22,8 @@ production at some point. None of them were visible in the Studio.
 This is the big one, and it is almost always the answer.
 
 The renderer captures a frame as soon as React has committed. If anything paints
-*after* that commit — a map tile, a font, an image decode, a canvas draw scheduled in
-an effect — the renderer does not know to wait. In the Studio you never notice,
+*after* that commit (a map tile, a font, an image decode, a canvas draw scheduled
+in an effect), the renderer does not know to wait. In the Studio you never notice,
 because you sit on frame 0 for several seconds while you look at it, and by the time
 you press play everything has settled.
 
@@ -31,20 +31,20 @@ Our `map-markers` component added its MapLibre layers one commit after the map
 reported ready, with no `delayRender` around the paint:
 
 <CodeSnippet
-  label="Wrong — the renderer may screenshot before the markers exist"
+  label="Wrong: the renderer may screenshot before the markers exist"
   code={`useEffect(() => {
   if (!map) return;
   applyMarkerReveal(map, markers, progress);
 }, [map, markers, progress]);`}
 />
 
-The markers dropped out of whichever frame the browser happened to capture first —
-which, in a batch still run, was reliably the *first* sample of the composition. The
+The markers dropped out of whichever frame the browser happened to capture first.
+In a batch still run, that was reliably the *first* sample of the composition. The
 enter frame was a bare basemap. The fix is to hold the frame open until the map goes
 idle:
 
 <CodeSnippet
-  label="Right — hold the frame until the map is idle"
+  label="Right: hold the frame until the map is idle"
   code={`useEffect(() => {
   if (!map) return;
   const handle = delayRender("map-markers paint");
@@ -76,7 +76,7 @@ themselves, a preview config table, and the `durationInFrames` in each docs page
 Nothing checked that they agreed.
 
 When a scene rebuild lengthened five compositions, the other two copies stayed
-stale — so `showcase`, `tutorial-clip`, `podcast-clip`, `social-clip` and
+stale, so `showcase`, `tutorial-clip`, `podcast-clip`, `social-clip` and
 `creator-reel` all stopped mid-scene and never reached their end card. Renders came
 out looking like the component was broken, when the component was fine and the number
 next to it was wrong.
@@ -91,7 +91,7 @@ The cheap check: render, then look at the last frame. It must be the end card.
 
 ## 4. Entrances that finish before anyone sees them
 
-Not a bug in the renderer, but the same class of problem — the thing you verified is
+Not a bug in the renderer, but the same class of problem: the thing you verified is
 not the thing that ships.
 
 Most components that read as "dead" in our audit were animating correctly. They just
@@ -126,7 +126,7 @@ resolved before you touch the component.**
 Catching this class of thing by eye does not scale past a handful of compositions.
 What worked for us:
 
-Render three stills per composition — at 15%, 50% and 90% of its duration — into one
+Render three stills per composition (at 15%, 50% and 90% of its duration) into one
 directory, from a single bundle and a single browser instance. For 109 compositions
 that is about twelve minutes. Then tile them into contact sheets and look at the
 sheets, not the files.

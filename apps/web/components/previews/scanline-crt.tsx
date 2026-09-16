@@ -34,8 +34,8 @@ const TestCard: React.FC = () => (
 
 /**
  * The tube is showing a test card, not the dark preview stage. Every overlay
- * here works by *removing* light — scanlines darken, the grille masks, the
- * vignette shades — so over a near-black plate the component is invisible and
+ * here works by *removing* light: scanlines darken, the grille masks, the
+ * vignette shades, so over a near-black plate the component is invisible and
  * the tile shows an empty card. The first cut of this preview did exactly that.
  *
  * The refresh bar rolls in 70 frames, which puts it at 26%, 86% and 54% down

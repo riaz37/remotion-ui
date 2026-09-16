@@ -1,6 +1,6 @@
 ---
 title: Comparison Table
-description: A feature matrix that fills in the way you read it — row by row, label first, each column's verdict a fraction behind the last.
+description: A feature matrix that fills in the way you read it. Row by row, label first, each column's verdict a fraction behind the last.
 ---
 
 import { ComparisonTablePreview } from '@/components/previews/comparison-table';
@@ -9,7 +9,7 @@ import { ComparisonTablePreview } from '@/components/previews/comparison-table';
 
 Rows wipe in one at a time. Inside a row the label lands first and the cells
 follow at 0.07s intervals, so the eye tracks left to right across the row
-instead of taking it as a block — the same order a viewer would read it in
+instead of taking it as a block, the same order a viewer would read it in
 anyway.
 
 Cells take three forms. `true` draws a tick, `false` draws a cross, and a string
@@ -20,7 +20,7 @@ whereas a drawing one is sharp from its first frame.
 
 `highlightColumn` lights the tier you want picked. It is one band sitting behind
 the grid, not a background on each cell, so the rows can never disagree about
-where its edges are — and `highlightLabel` pins the chip that explains it beside
+where its edges are, and `highlightLabel` pins the chip that explains it beside
 the title.
 
 Six rows and three columns is a comfortable ceiling at 1080p; past that, the

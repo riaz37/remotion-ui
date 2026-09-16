@@ -15,7 +15,7 @@ import { usePreviewStage } from "./preview-stage";
  * audit's PSNR comparisons compare two different typefaces.
  *
  * Loading here rather than inside each preview keeps the dependency on the
- * docs surface — the registry primitives stay font-agnostic on purpose, so
+ * docs surface: the registry primitives stay font-agnostic on purpose, so
  * copying one file never drags `@remotion/google-fonts` along with it.
  */
 const { fontFamily: uiFontFamily } = loadInter("normal", {
@@ -40,6 +40,7 @@ type PreviewLane =
   | "vectors"
   | "spatial"
   | "3d"
+  | "shaders"
   | "cuts"
   | "blocks"
   | "reels";
@@ -54,7 +55,7 @@ export const previewTextStyle: CSSProperties = {
   letterSpacing: 0,
 };
 
-/** Full-frame scene root — neutral studio stage. */
+/** Full-frame scene root: neutral studio stage. */
 export const PreviewFrame: React.FC<{
   children: ReactNode;
   lane?: PreviewLane;

@@ -8,8 +8,8 @@ import { DataFlowPipesPreview } from '@/components/previews/data-flow-pipes';
 <ComponentPage name="data-flow-pipes" preview={DataFlowPipesPreview}>
 
 Stages come up in dependency order, the pipes draw between them, and a stream of
-payloads travels hop by hop — lighting each stage as it lands, ticking that
-stage's tally, and filling its progress line — until the last stage drains and
+payloads travels hop by hop (lighting each stage as it lands, ticking that
+stage's tally, and filling its progress line) until the last stage drains and
 checks off.
 
 `stages` takes two to five `{ label, detail }` entries, `packets` sets how many

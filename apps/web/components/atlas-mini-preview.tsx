@@ -232,6 +232,11 @@ const PREVIEWS: Record<string, PreviewLoader> = {
   "globe-arc": () => import("./previews/globe-arc").then((m) => ({ default: m.GlobeArcPreview })),
   "multi-device-lineup": () => import("./previews/multi-device-lineup").then((m) => ({ default: m.MultiDeviceLineupPreview })),
   "device-mockup-3d": () => import("./previews/device-mockup-3d").then((m) => ({ default: m.DeviceMockup3DPreview })),
+  "dither-field-bg": () => import("./previews/dither-field-bg").then((m) => ({ default: m.DitherFieldBgPreview })),
+  "light-tunnel-bg": () => import("./previews/light-tunnel-bg").then((m) => ({ default: m.LightTunnelBgPreview })),
+  "text-reveal-shader": () => import("./previews/text-reveal-shader").then((m) => ({ default: m.TextRevealShaderPreview })),
+  "warp-bands-bg": () => import("./previews/warp-bands-bg").then((m) => ({ default: m.WarpBandsBgPreview })),
+  "grain-gradient-bg": () => import("./previews/grain-gradient-bg").then((m) => ({ default: m.GrainGradientBgPreview })),
 };
 
 export function AtlasMiniPreview({

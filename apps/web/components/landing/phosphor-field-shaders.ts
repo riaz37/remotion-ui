@@ -118,50 +118,82 @@ void main() {
 export const SCREEN_SHADER = `#version 300 es
 precision highp float;
 
-uniform sampler2D uScene;
+uniform sampler2D uField;
 uniform vec2 uResolution;
-uniform float uTime;
 uniform float uProgress;
 uniform float uPixelRatio;
-uniform float uLightMode;
-uniform vec3 uDarkBackground;
-uniform vec3 uLightBackground;
+uniform float uTheme;
+uniform vec3 uPageDark;
+uniform vec3 uPagePaper;
 out vec4 outColor;
 
 const vec3 LUMA = vec3(0.2126, 0.7152, 0.0722);
 const float ANGLE = 0.52;
 
-float grain(vec2 p, float frame) {
-  p += 5.588238 * mod(frame, 64.0);
-  return fract(52.9829189 * fract(0.06711056 * p.x + 0.00583715 * p.y));
+/** The 2x2 ordered matrix [[0,2],[3,1]], as a closed form. */
+float ordered2(vec2 q) {
+  return mod(2.0 * q.x + 3.0 * q.y, 4.0);
+}
+
+/**
+ * 4x4 Bayer threshold in 0..1, built by the usual recursion: the coarse 2x2
+ * picks the quadrant, the fine 2x2 orders within it. One LSB of this breaks
+ * the banding a smooth gradient shows on an 8-bit canvas, and unlike a noise
+ * dither it is fixed to the pixel grid, so it cannot shimmer between frames.
+ */
+float bayer4(vec2 p) {
+  vec2 q = mod(floor(p), 4.0);
+  return (4.0 * ordered2(floor(q * 0.5)) + ordered2(mod(q, 2.0))) / 16.0;
 }
 
 void main() {
   vec2 frag = gl_FragCoord.xy;
-  // Dots coarsen slightly as the lights go down.
-  float cell = max(3.0, 4.8 * uPixelRatio * (1.0 + uProgress * 0.5));
-  mat2 turn = mat2(cos(ANGLE), -sin(ANGLE), sin(ANGLE), cos(ANGLE));
-  vec2 rotated = turn * frag;
-  vec2 centre = (floor(rotated / cell) + 0.5) * cell;
-  vec2 samplePx = transpose(turn) * centre;
 
-  vec3 soft = texture(uScene, frag / uResolution).rgb;
-  vec3 cellInk = texture(uScene, clamp(samplePx / uResolution, 0.0, 1.0)).rgb;
-  float level = clamp(dot(cellInk, LUMA), 0.0, 1.0);
+  // Dot pitch in CSS pixels, coarsening as the lights go down, floored so it
+  // never drops under a device pixel and aliases.
+  float cell = max(3.0, 4.8 * (1.0 + uProgress * 0.5) * uPixelRatio);
 
-  float radius = cell * sqrt(level / 3.14159265);
-  float aa = 0.7 * uPixelRatio;
-  float dotMask = 1.0 - smoothstep(radius - aa, radius + aa, length(rotated - centre));
-  vec3 dots = cellInk * min(0.8 / max(level, 1e-3), 2.4) * dotMask;
-  float presence = smoothstep(0.02, 0.15, level) * 0.62;
-  vec3 ink = clamp(mix(soft, dots, presence), 0.0, 1.0);
+  // The screen is a lattice, not a grid of squares: two cell-length basis
+  // vectors turned off-axis. Walking the basis gives the nearest node back in
+  // pixels directly, so nothing has to be rotated out of screen space again.
+  vec2 e0 = cell * vec2(cos(ANGLE), sin(ANGLE));
+  vec2 e1 = vec2(-e0.y, e0.x);
+  vec2 lattice = vec2(dot(frag, e0), dot(frag, e1)) / (cell * cell);
+  vec2 node = floor(lattice) + 0.5;
+  vec2 centre = node.x * e0 + node.y * e1;
 
-  vec3 dark = uDarkBackground + ink * (1.0 - uDarkBackground);
-  float strength = max(ink.r, max(ink.g, ink.b));
-  vec3 light = uLightBackground * (1.0 - strength * 0.88) + ink * 0.8;
-  vec3 color = mix(dark, light, uLightMode);
+  vec3 soft = texture(uField, frag / uResolution).rgb;
+  vec3 cellInk = texture(uField, clamp(centre / uResolution, 0.0, 1.0)).rgb;
+  float tone = clamp(dot(cellInk, LUMA), 0.0, 1.0);
 
-  color += (grain(frag, floor(uTime * 24.0)) - 0.5) / 255.0;
+  // A screen is a threshold against a spot function, not a circle of measured
+  // area: ink lands wherever the cone standing on the node rises above the
+  // tone that cell owes. The spot falls one unit per reach pixels, so 1/reach
+  // is a one-pixel feather.
+  float reach = cell * 0.62;
+  float spot = 1.0 - length(frag - centre) / reach;
+  float aa = 1.0 / reach;
+  float inked = smoothstep(-aa, aa, spot - (1.0 - tone));
+
+  // The screen modulates the light already there rather than reprinting it as
+  // fresh ink, so exposure is held by dividing out the mask's own mean: the
+  // spot covers pi*0.62^2*tone^2 of its cell, and whatever the screen has not
+  // bitten into stays at full soft light. Dim cells keep that soft light - a
+  // screen only asserts itself once it carries some tone.
+  float bite = 0.62 * smoothstep(0.0, 0.14, tone);
+  float coverage = clamp(1.207 * tone * tone, 0.0, 1.0);
+  float gain = 1.0 / max(1.0 - bite + bite * coverage, 1e-3);
+  vec3 ink = clamp(soft * mix(1.0, inked, bite) * gain, 0.0, 1.0);
+
+  // On a dark page the light adds, the photographic screen op. On paper there
+  // is nothing to add to, so the same ink is spent as shade: a multiply, with
+  // a trace of its own hue left in so the shadow stays warm rather than grey.
+  vec3 onDark = 1.0 - (1.0 - uPageDark) * (1.0 - ink);
+  float density = clamp(dot(ink, LUMA) * 1.35, 0.0, 1.0);
+  vec3 onPaper = uPagePaper * (1.0 - density * 0.55) + ink * 0.18;
+  vec3 color = mix(onDark, onPaper, uTheme);
+
+  color += (bayer4(frag) - 0.5) / 255.0;
   outColor = vec4(clamp(color, 0.0, 1.0), 1.0);
 }
 `;

@@ -20,7 +20,7 @@ import { AuroraBg } from "@/remotion/primitives/aurora-bg";
 
 ## Where it sits
 
-Ribbons, not blobs — `mesh-gradient-bg` owns blobs, and the difference is
+Ribbons, not blobs: `mesh-gradient-bg` owns blobs, and the difference is
 structural rather than stylistic. A blob is a radial gradient that moves; a
 ribbon is a tapered path whose *shape* is recomputed every frame. If what you
 want is colour that drifts, use the gradient. If you want something that folds,
@@ -47,7 +47,7 @@ the blur, so the rays stay crisp while the folds stay soft.
 ## Keep the blur down
 
 `blur` is the prop that decides whether this reads as curtains or as blobs.
-Much above 20 and the fold structure is gone — the first cut of this component
+Much above 20 and the fold structure is gone. The first cut of this component
 ran at 34 and the preview was indistinguishable from a mesh gradient.
 
 ## Motion

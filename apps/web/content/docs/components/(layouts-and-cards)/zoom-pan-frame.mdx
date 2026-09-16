@@ -7,8 +7,8 @@ import { ZoomPanFramePreview } from '@/components/previews/zoom-pan-frame';
 
 <ComponentPage name="zoom-pan-frame" preview={ZoomPanFramePreview}>
 
-`from` and `to` are focal points — `{ x, y, scale }` with `x`/`y` in 0–1 across
-the frame — so the framing lands on the subject at whatever size the composition
+`from` and `to` are focal points: `{ x, y, scale }` with `x`/`y` in 0–1 across
+the frame, so the framing lands on the subject at whatever size the composition
 is, instead of guessing pixel offsets per aspect.
 
 The move spans the composition minus a short settle by default, which is what

@@ -24,7 +24,7 @@ import { LiquidTextMorph } from "@/remotion/primitives/liquid-text-morph";
 Both words are drawn at once inside an SVG blur-plus-alpha-threshold, so
 letterforms that come near each other fuse into one blob and split apart again.
 Real glyph outline interpolation needs matched node counts between two arbitrary
-letters — `A` and `s` do not have them — and produces tearing where this
+letters (`A` and `s` do not have them) and produces tearing where this
 produces surface tension. Use `shape-morph` when the two shapes are paths you
 control.
 
@@ -43,7 +43,7 @@ midpoint and the threshold turns them into an unreadable puddle.
 One cycle is `holdInFrames + morphInFrames`. `loop` is on by default and the
 last word morphs back into the first; turn it off and the final word is held.
 Both words run through `split-text-chars` with a frame override, so the stagger
-semantics are the same as everywhere else — it is fitted to the longest word so
+semantics are the same as everywhere else: it is fitted to the longest word so
 a wide stagger cannot leave the last letter half-formed when the hold begins.
 
 </ComponentPage>

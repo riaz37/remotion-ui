@@ -14,8 +14,8 @@ const STEPS = [
 
 /**
  * Samples land at frames 18, 60 and 108. Six bars of 22 frames on a 15-frame
- * stagger build from frame 4 to 101 — the bridge is one step in at the first
- * sample and four at the second — and the exit at 96 overlaps the last of it.
+ * stagger build from frame 4 to 101: the bridge is one step in at the first
+ * sample and four at the second, and the exit at 96 overlaps the last of it.
  */
 export const WaterfallChartPreview: React.FC = () => (
   <PreviewFrame lane="signals" padding={72}>

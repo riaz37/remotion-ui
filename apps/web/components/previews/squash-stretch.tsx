@@ -16,7 +16,7 @@ const Ball: React.FC = () => (
 );
 
 /**
- * A 27-frame bounce, chosen so that frame 108 — the audit's last sample — is
+ * A 27-frame bounce, chosen so that frame 108 (the audit's last sample) is
  * exactly a contact frame. The first cut ran at 33 and put all three samples
  * mid-flight: the numbers were healthy and the squash, which is the entire
  * point of the component, was never in a still. The other two samples land at

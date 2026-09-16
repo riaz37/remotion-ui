@@ -11,7 +11,7 @@ The incoming scene is revealed through a `cols` × `rows` mask whose cells light
 up in turn, with the outgoing scene holding whole underneath so the gaps between
 cells always show the old frame rather than the background.
 
-`order` picks where the fill starts — an edge, the diagonal, or the centre —
+`order` picks where the fill starts (an edge, the diagonal, or the centre),
 and `stagger` sets how far the cells spread apart in time: `0` pops them all at
 once, `1` spreads them across the whole window. `shape: "dot"` grows each cell
 as a point instead of filling it as a block.

@@ -21,7 +21,7 @@ const SUPPRESSED_PREFIXES = ["/kine", "/docs"];
 /**
  * A Supabase-Select-style corner card: persistent (not an exit trap), a real
  * clip of the product instead of decoration, one outbound CTA. Replaces
- * ExitIntentPrompt — running both a corner card and an exit modal asks twice.
+ * ExitIntentPrompt: running both a corner card and an exit modal asks twice.
  */
 export function KineCornerPromo() {
   const pathname = usePathname();

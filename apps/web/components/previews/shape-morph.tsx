@@ -21,7 +21,7 @@ const EXIT_FOR = 22;
 
 /**
  * Names the shape the chain is currently on, so the tile reads as a morph
- * chain rather than an orange blob. Uses the component's own ramp — the
+ * chain rather than an orange blob. Uses the component's own ramp: the
  * editorial curve holds near the first shape far longer than a linear read of
  * the frame would suggest.
  */

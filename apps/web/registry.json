@@ -4347,6 +4347,110 @@
           "type": "registry:block"
         }
       ]
+    },
+    {
+      "name": "paper-shader",
+      "type": "registry:lib",
+      "description": "Deterministic frame driver and first-draw gate for Paper shader fields",
+      "dependencies": [
+        "remotion",
+        "@paper-design/shaders-react"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/bases/default/lib/paper-shader.tsx",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "light-tunnel-bg",
+      "type": "registry:ui",
+      "description": "Flight down a twisting barrel of light with a defocused vanishing point",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "gpu"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/light-tunnel-bg.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "text-reveal-shader",
+      "type": "registry:ui",
+      "description": "Words condensing out of light into liquid chrome",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "gpu"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/text-reveal-shader.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "dither-field-bg",
+      "type": "registry:ui",
+      "description": "Two-colour ordered-dither field quantised to a pixel grid",
+      "dependencies": [
+        "remotion",
+        "@paper-design/shaders-react"
+      ],
+      "registryDependencies": [
+        "paper-shader"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/dither-field-bg.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "warp-bands-bg",
+      "type": "registry:ui",
+      "description": "Colour bands folded through noise and a swirl",
+      "dependencies": [
+        "remotion",
+        "@paper-design/shaders-react"
+      ],
+      "registryDependencies": [
+        "paper-shader"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/warp-bands-bg.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "grain-gradient-bg",
+      "type": "registry:ui",
+      "description": "Multi-colour gradient with grain worked through it",
+      "dependencies": [
+        "remotion",
+        "@paper-design/shaders-react"
+      ],
+      "registryDependencies": [
+        "paper-shader"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/grain-gradient-bg.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

@@ -1,6 +1,6 @@
 ---
 title: Team Grid
-description: A team arriving person by person — the avatar springs up first, the name and role follow it into place.
+description: A team arriving person by person. The avatar springs up first, the name and role follow it into place.
 ---
 
 import { TeamGridPreview } from '@/components/previews/team-grid';
@@ -17,7 +17,7 @@ The stagger runs in reading order rather than by row or column. A grid of any
 width then feels like a list being read out, where a row-by-row wipe feels like
 a slide transition applied to people.
 
-Initials are derived from the name — first letters of the first two words —
+Initials are derived from the name, first letters of the first two words,
 which is right for most Latin names and wrong for enough others that
 `initials` is worth passing by hand when it matters. Avatar colours cycle
 through `avatarColors` by index, so a longer team keeps varying without you

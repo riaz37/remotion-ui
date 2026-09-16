@@ -5,7 +5,7 @@ import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame, ProductCard } from "./preview-frame";
 
 /**
- * The audit samples at 15% / 50% / 90% — frames 18, 60 and 108 on the 120-frame
+ * The audit samples at 15% / 50% / 90%: frames 18, 60 and 108 on the 120-frame
  * default. Every curtain folds on a 2.3s clock beaten against a 1.1s one, so no
  * fold returns to a shape it has already held inside the window and all three
  * samples catch a different sky. There is no entrance to run out of.

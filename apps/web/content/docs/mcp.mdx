@@ -5,7 +5,7 @@ description: Expose the RemotionUI registry to agents as MCP tools.
 
 `remotion-ui-mcp` is a [Model Context Protocol](https://modelcontextprotocol.io) server that exposes the RemotionUI registry as agent-callable tools over stdio. It reuses the CLI's registry client, so results match `remotion-ui search`, `view`, and `add` exactly.
 
-Use it when your agent should *discover* components on its own. For installing them, the agent still runs the CLI — the server returns the command, it does not write files.
+Use it when your agent should *discover* components on its own. For installing them, the agent still runs the CLI. The server returns the command, it does not write files.
 
 ## Tools
 
@@ -13,7 +13,7 @@ Use it when your agent should *discover* components on its own. For installing t
 |------|-------|---------|
 | `list-components` | `registryUrl?` | The full registry index |
 | `search-components` | `query?`, `lane?`, `tier?`, `registryUrl?` | Matching index entries |
-| `get-component-detail` | `name`, `preset?`, `registryUrl?` | The full registry item — files, dependencies, `composition`, `compat` |
+| `get-component-detail` | `name`, `preset?`, `registryUrl?` | The full registry item: files, dependencies, `composition`, `compat` |
 | `get-install-command` | `name` | `npx remotion-ui@latest add <name>` |
 
 Lanes: `atoms`, `signals`, `vectors`, `spatial`, `blocks`, `cuts`, `reels`. Tiers: `core`, `advanced`.
@@ -22,7 +22,7 @@ Failures come back as `isError` results carrying the same `{ code, message }` en
 
 ## Install
 
-The server is published to npm — no checkout required.
+The server is published to npm, no checkout required.
 
 <CodeSnippet label="Run" code={`npx remotion-ui-mcp`} />
 
@@ -51,13 +51,13 @@ Working on the server itself, or pinning to unreleased changes:
 cd remotion-ui && pnpm install
 pnpm --filter remotion-ui-mcp build`} />
 
-That produces `packages/remotion-ui-mcp/dist/index.js` — point `command: "node"` at it instead.
+That produces `packages/remotion-ui-mcp/dist/index.js`. Point `command: "node"` at it instead.
 
 ## Agent workflow with MCP
 
 1. `search-components` or `list-components` to find a fit.
 2. `get-component-detail` to read files, dependencies, and composition metadata.
 3. `get-install-command`, then run it with the CLI.
-4. Import from local source paths — never from the `remotion-ui` npm package.
+4. Import from local source paths, never from the `remotion-ui` npm package.
 
 The [agent skill](/docs/installation#agent-skill) encodes the same workflow for agents that do not speak MCP. See [AI Usage](/docs/ai) for the plain HTTP endpoints (`/llms.txt`, `/ai/components.json`).

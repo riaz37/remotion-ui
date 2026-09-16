@@ -9,7 +9,7 @@ import { RoadmapLanesPreview } from '@/components/previews/roadmap-lanes';
 
 Lanes fill one after another. Items in a `done` lane land already ticked, items
 in a `showProgress` lane land empty and then fill to their own `progress` value,
-and items in a `dashed` lane arrive outlined and unlit — three states that are
+and items in a `dashed` lane arrive outlined and unlit: three states that are
 readable in a still frame, not just in motion.
 
 The fill starts *after* the pill has landed, and takes longer than the arrival
@@ -18,7 +18,7 @@ letting the pill settle first turns the progress into a second beat the eye can
 follow, and the percentage counting up beside it has somewhere to land.
 
 Lane appearance is driven by flags rather than by lane name, so the three
-defaults — Shipped, Building, Planned — are a starting point, not a contract.
+defaults (Shipped, Building, Planned) are a starting point, not a contract.
 A "Blocked" lane is `dashed` with a red `color`; a "Next up" lane is
 `showProgress` with low values.
 

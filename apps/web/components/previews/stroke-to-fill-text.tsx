@@ -5,10 +5,10 @@ import { DEMO_COPY } from "@/lib/demo-assets";
 import { PreviewFrame } from "./preview-frame";
 
 /**
- * The audit samples at 15% / 50% / 90% of the window — frames 18, 60 and 108 on
- * the 120-frame default. The flood is deliberately slow: a 5-frame stagger
+ * The audit samples at 15% / 50% / 90% of the window (frames 18, 60 and 108 on
+ * the 120-frame default). The flood is deliberately slow: a 5-frame stagger
  * carries it across the line from frame 2 to frame 121, so all three samples
- * catch a different letter mid-fill. There is no exit here on purpose — the
+ * catch a different letter mid-fill. There is no exit here on purpose: the
  * entrance itself is still running at the last sample.
  */
 const stage = {

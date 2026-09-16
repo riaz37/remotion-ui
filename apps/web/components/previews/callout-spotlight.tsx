@@ -4,7 +4,7 @@ import { CalloutSpotlight } from "../../registry/bases/default/scenes/callout-sp
 import { DEMO_MEDIA_PLAIN_SRC } from "@/lib/demo-assets";
 import { ScenePreviewPlate } from "./scene-preview-plate";
 
-/** Target highlights the product card on the demo still — callout sits in the right column. */
+/** Target highlights the product card on the demo still: callout sits in the right column. */
 export const CalloutSpotlightPreview: React.FC = () => (
   <ScenePreviewPlate direct>
     <CalloutSpotlight

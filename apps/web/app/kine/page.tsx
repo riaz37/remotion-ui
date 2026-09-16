@@ -51,7 +51,7 @@ const STAGES = [
   {
     step: "01",
     title: "Point it at your app",
-    body: "One command against localhost. A scripted browser session walks the flow you name — your UI, your seed data, nothing leaves the machine.",
+    body: "One command against localhost. A scripted browser session walks the flow you name: your UI, your seed data, nothing leaves the machine.",
   },
   {
     step: "02",
@@ -133,7 +133,7 @@ export default async function EarlyAccessPage({
           ) : (
             <>
               <p className="mt-9 max-w-[52ch] text-sm leading-relaxed text-fd-muted-foreground">
-                The macOS download isn&apos;t public yet — join the list and
+                The macOS download isn&apos;t public yet. Join the list and
                 we&apos;ll email you the moment it is.
               </p>
               <EarlyAccessForm
@@ -213,7 +213,7 @@ const FAQ = [
   {
     question: "Do I need to know Remotion to use Kine?",
     answer:
-      "No. The output is a normal Remotion project, so knowing it helps if you want to hand-edit a scene — but the default path is one command in, one MP4 out.",
+      "No. The output is a normal Remotion project, so knowing it helps if you want to hand-edit a scene, but the default path is one command in, one MP4 out.",
   },
   {
     question: "Does my app or data leave my machine?",

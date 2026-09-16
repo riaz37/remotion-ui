@@ -17,8 +17,8 @@ export const AudiogramScenePreview: React.FC = () => {
     <ScenePreviewPlate>
       {/* Doc rules 14 and 34. `premountFor` mounts the tag a second early so the
         decoder is warm before the first visible frame, and
-        `pauseWhenBuffering` — which lives on the HTML5 fallback props, the
-        path that can actually stall — holds the Player on a slow source
+        `pauseWhenBuffering`, which lives on the HTML5 fallback props (the
+        path that can actually stall), holds the Player on a slow source
         instead of running silence under a live meter. */}
       <Sequence from={0} premountFor={fps}>
         <Audio

@@ -42,7 +42,7 @@ function Frame({ slug, index }: { slug: string; index: number }) {
   const name = displayName(slug);
   // Every tile is one 16:9 frame, the way a contact sheet prints one strip
   // size. A 9:16 composition given its own taller tile makes its grid row
-  // twice as tall as its neighbours, which leaves the rest of that row blank —
+  // twice as tall as its neighbours, which leaves the rest of that row blank:
   // a worse artifact than pillarboxing the vertical inside a uniform frame.
   const aspectRatio = "16 / 9";
 

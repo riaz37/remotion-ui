@@ -10,7 +10,7 @@ import { SrtCaptionTrackPreview } from '@/components/previews/srt-caption-track'
 Renders a caption track directly from an SRT or WebVTT file.
 
 This is a utility, not a look. Every caption style in the registry takes a
-`TikTokPage`, which until now had to be hand-authored — so the styles could only
+`TikTokPage`, which until now had to be hand-authored, so the styles could only
 be demoed against a handful of fake words. This turns a real transcript into
 those pages and sequences them.
 
@@ -33,10 +33,10 @@ more, so a word-highlight style fed raw cues has nothing to highlight.
 
 `wordTiming="distribute"` (the default) spreads each cue's span across its words
 weighted by length, which tracks a read closely enough for a highlight to follow
-it. `wordTiming="cue"` keeps each cue as one token instead — honest, but only
+it. `wordTiming="cue"` keeps each cue as one token instead: honest, but only
 useful for styles that show a whole line at once.
 
-If real word timestamps are available — from Whisper, for instance — pass them
+If real word timestamps are available (from Whisper, for instance), pass them
 through `captions` and no distribution happens.
 
 ## Loading

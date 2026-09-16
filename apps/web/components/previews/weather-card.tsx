@@ -6,7 +6,7 @@ import { ScenePreviewPlate } from "./scene-preview-plate";
 /**
  * The iconography alone does not carry the tail: the forecast glyphs render a
  * few pixels tall, so a turning sun and a falling drop are sub-pixel at tile
- * size and the 50% / 90% samples measured 36.6 dB apart — effectively one
+ * size and the 50% / 90% samples measured 36.6 dB apart, effectively one
  * image. The card now leaves. `holdSeconds` follows the measured recipe for the
  * cubic exit easing, 0.9 * 120 / 30 - 0.79 * 0.42 = 3.27, which puts the 90%
  * sample mid-exit rather than on a frozen plate.

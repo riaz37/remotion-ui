@@ -18,7 +18,7 @@ import { VuMeter } from "@/remotion/primitives/vu-meter";
 ## Level, not spectrum
 
 `audiogram-bars` and `waveform-bars-radial` show *what* the frequencies are
-doing. This shows only how loud it is — the reading an engineer actually
+doing. This shows only how loud it is: the reading an engineer actually
 watches, and the one that still works at 40px wide in the corner of a frame.
 
 ## Peak hold
@@ -34,7 +34,7 @@ would differ between a preview scrub and a full render.
 ## Two channels
 
 The second channel is weighted toward the upper half of the spectrum. It is not
-a real stereo split — the analysis is mono — but it is what stops a pair from
+a real stereo split (the analysis is mono), but it is what stops a pair from
 looking like one meter drawn twice. Pass `channels={1}` when honesty matters
 more than the look.
 

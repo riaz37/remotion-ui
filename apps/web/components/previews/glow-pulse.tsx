@@ -28,7 +28,7 @@ const CtaPill: React.FC = () => (
 /**
  * A 33-frame beat, not the component's 36-frame default: the audit's samples
  * are 42 and 48 frames apart, and at 33 they land at 0.55, 0.82 and 0.27 of the
- * cycle — the tail of a beat, the quiet floor, and the top of the next one.
+ * cycle: the tail of a beat, the quiet floor, and the top of the next one.
  * Three different glow levels rather than three readings of the same one.
  */
 export const GlowPulsePreview: React.FC = () => (

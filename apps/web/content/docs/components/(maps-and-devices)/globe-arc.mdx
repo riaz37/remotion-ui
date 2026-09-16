@@ -7,8 +7,8 @@ import { GlobeArcPreview } from '@/components/previews/globe-arc';
 
 <ComponentPage name="globe-arc" preview={GlobeArcPreview}>
 
-The globe is projected arithmetically — orthographic, the way a sphere looks
-from far away — rather than drawn from map tiles. There is no network
+The globe is projected arithmetically (orthographic, the way a sphere looks
+from far away) rather than drawn from map tiles. There is no network
 dependency and no `delayRender`: every frame is a pure function of its own
 number, which is what a render farm wants and what a spinning globe made of
 tiles cannot give you.
@@ -23,7 +23,7 @@ Each route draws in turn, with a head dot riding the line while it grows. The
 origin's label exists from the first frame and the destination's only once the
 arc has landed, so a label never precedes its route.
 
-`spinPerSecond` and `tilt` set the camera. Keep the spin slow — 10 to 20 degrees
+`spinPerSecond` and `tilt` set the camera. Keep the spin slow: 10 to 20 degrees
 a second reads as a globe; faster reads as a loading spinner.
 
 For real geography with coastlines and place names, use `map-flight`, which

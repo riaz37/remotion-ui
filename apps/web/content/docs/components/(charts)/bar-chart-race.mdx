@@ -24,7 +24,7 @@ import { BarChartRace } from "@/remotion/primitives/bar-chart-race";
 
 ## Data shape
 
-Raw time series, one value per keyframe, interpolated at render — not
+Raw time series, one value per keyframe, interpolated at render, not
 pre-computed rankings. `framesPerStep` sets how long the clock takes to travel
 between two keyframes, so the whole race runs for `framesPerStep × (steps − 1)`.
 `steps` supplies the running caption.
@@ -43,7 +43,7 @@ millions.
 
 ## Where it sits
 
-`animated-bar-chart` is the static counterpart — one fixed ranking revealed with
+`animated-bar-chart` is the static counterpart: one fixed ranking revealed with
 a value axis. Use that when the order never changes.
 
 `visibleRows` bounds the board; series ranked below it fade out instead of

@@ -43,7 +43,7 @@ const Hub: React.FC = () => (
 
 /**
  * A 70-frame revolution. Four evenly spaced satellites would repeat every
- * quarter turn — 17.5 frames — which is the number the audit's 42 and 48-frame
+ * quarter turn (17.5 frames), which is the number the audit's 42 and 48-frame
  * gaps would have to miss, so the satellites carry different labels. Naming
  * them removes the rotational symmetry entirely and the three samples cannot
  * read as the same frame.

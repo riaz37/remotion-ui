@@ -49,7 +49,7 @@ const ResponsiveScreen: React.FC = () => (
  * Devices land 6 frames apart from frame 4, so the last of them starts at 16
  * and the 15% sample (frame 18) already has all three on screen at three
  * different heights. A wider stagger left the frame holding one phone beside
- * two device-shaped holes — flex reserves the width of an `opacity: 0` child,
+ * two device-shaped holes: flex reserves the width of an `opacity: 0` child,
  * so the lineup reads as broken rather than as arriving.
  *
  * The exit runs 96–112. `EASING.exit` is `Easing.in(Easing.cubic)`, so the 90%

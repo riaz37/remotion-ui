@@ -5,7 +5,7 @@ import { PreviewFrame } from "./preview-frame";
 
 /**
  * `delayInFrames={15}` puts frame 18 three frames into a very stiff landing
- * spring — the seal still oversized and mid-descent with the shockwave already
+ * spring: the seal still oversized and mid-descent with the shockwave already
  * outside it, which is the pose the component exists for. The spring settles in
  * about six frames, so a frame either side of this loses one or the other.
  * Frame 60 is the settled seal, and

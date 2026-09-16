@@ -9,12 +9,12 @@ import { SplitScreenPreview } from '@/components/previews/split-screen';
 
 The two panels arrive from opposite edges and meet at the divider, their labels
 land, and with `wipeAtSeconds` set the divider travels back to the left edge,
-wiping the left panel away and leaving the right one whole — the move a
+wiping the left panel away and leaving the right one whole: the move a
 comparison is for. The left label leaves with the panel it names.
 
 The right panel sits underneath, so the wipe uncovers it rather than sliding it.
 `split` sets where the divider rests beforehand, and `holdSeconds` takes the
-whole comparison off screen — omit it inside a `TransitionSeries`, where the
+whole comparison off screen. Omit it inside a `TransitionSeries`, where the
 transition covers the tail.
 
 Pass video sources and the panels play; the scene sets `pauseWhenBuffering` on

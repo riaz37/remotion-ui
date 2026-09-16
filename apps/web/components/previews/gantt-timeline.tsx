@@ -16,8 +16,8 @@ const TASKS = [
 
 /**
  * Samples land at frames 18, 60 and 108. Six bars of 26 frames on a 13-frame
- * stagger wipe from frame 10 to 101 — one row is running at the first sample
- * and four at the second — and the top-down exit at 96 covers the third.
+ * stagger wipe from frame 10 to 101: one row is running at the first sample
+ * and four at the second, and the top-down exit at 96 covers the third.
  */
 export const GanttTimelinePreview: React.FC = () => (
   <PreviewFrame lane="signals" padding={72}>

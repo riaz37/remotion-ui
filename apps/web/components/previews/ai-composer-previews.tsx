@@ -25,13 +25,13 @@ export const ChatGptPreview = () => (
 );
 
 /**
- * The audit samples at 15% / 50% / 90% of the window — frames 18, 60 and 108 on
+ * The audit samples at 15% / 50% / 90% of the window: frames 18, 60 and 108 on
  * the 120-frame default.
  *
- * - **18** — the empty composer under the greeting, placeholder still showing.
- * - **60** — mid-prompt. The default prompt is 27 characters at
+ * - **18**: the empty composer under the greeting, placeholder still showing.
+ * - **60**: mid-prompt. The default prompt is 27 characters at
  *   `AI_TYPING_CPS = 22`, so typing runs frames 42→79.
- * - **108** — sent. `sendBeatAt` presses the button at frame ~89 and the prompt
+ * - **108**: sent. `sendBeatAt` presses the button at frame ~89 and the prompt
  *   rises into the thread with the reply dots pulsing under it.
  *
  * The 55-character prompt this shipped with typed frames 42→117 and the loop

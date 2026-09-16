@@ -20,7 +20,7 @@ import { GlowPulse } from "@/remotion/primitives/glow-pulse";
 ## Why it is a wrapper
 
 The glow is a `drop-shadow` filter, not a `box-shadow`, so it follows the alpha
-of whatever it wraps — a pill, a ring, a piece of type, an SVG mark — instead of
+of whatever it wraps (a pill, a ring, a piece of type, an SVG mark) instead of
 the bounding box. That is the entire reason this is a component and not a class:
 a box-shadow on a circular badge glows in a square.
 

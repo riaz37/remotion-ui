@@ -9,7 +9,7 @@ import { TransitionBlurRevealPreview } from "@/components/previews/transition-bl
 
 The incoming scene resolves out of `maxBlur` under a slight scale settle while
 the outgoing one softens and gives up its opacity. Both are perfectly sharp
-outside the overlap — the blur exists only for the frames the cut is running.
+outside the overlap: the blur exists only for the frames the cut is running.
 
 Set `shouldBlurOutExitingScene` to `false` to hold the outgoing scene sharp
 underneath and let the new one resolve on top of it. `scaleBy` controls the

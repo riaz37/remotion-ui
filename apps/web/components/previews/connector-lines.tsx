@@ -15,7 +15,7 @@ const ANCHORS = [
 
 /**
  * The nodes are the preview's own, positioned at the same fractional anchors
- * the lines use — which is the point of the primitive: it draws the edges and
+ * the lines use, which is the point of the primitive: it draws the edges and
  * leaves the boxes to you.
  *
  * Four edges draw 14 frames apart, so the last lands on frame 68 and frames

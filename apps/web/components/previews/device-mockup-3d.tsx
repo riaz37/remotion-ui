@@ -10,7 +10,7 @@ import { PreviewFrame } from "./preview-frame";
  * locally rather than over the network the registry default uses.
  *
  * Audit samples on the 150-frame window: 22 (lid half open, still settling),
- * 75 (mid-turn) and 135 (pushed in, still drifting) — three different shots.
+ * 75 (mid-turn) and 135 (pushed in, still drifting): three different shots.
  */
 export const DeviceMockup3DPreview: React.FC = () => (
   <PreviewFrame lane="3d" padding={0}>

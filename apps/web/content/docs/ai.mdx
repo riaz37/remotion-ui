@@ -43,14 +43,14 @@ import { LowerThird } from "@/remotion/scenes/lower-third";`} />
 - [`/llms.txt`](/llms.txt): short agent entry point
 - [`/llms-full.txt`](/llms-full.txt): full usage guide for LLMs
 - [`/ai/components.json`](/ai/components.json): component discovery index
-- `/ai/components/<name>.json`: per-component detail — props (`name`, `type`, `required`, `default`, `description`), usage snippets, install command, import path, and related components
+- `/ai/components/<name>.json`: per-component detail: props (`name`, `type`, `required`, `default`, `description`), usage snippets, install command, import path, and related components
 - [`/ai/remotionui-agent.md`](/ai/remotionui-agent.md): reusable agent prompt
-- `/llms.mdx/docs/<path>`: any docs page as raw Markdown — the **Copy page for AI** button at the top of each page copies exactly this
+- `/llms.mdx/docs/<path>`: any docs page as raw Markdown. The **Copy page for AI** button at the top of each page copies exactly this
 
 ## Agent-native tooling
 
 - `npx remotion-ui init --agent-skill` installs a Claude Code skill into the project at `.claude/skills/remotionui-agent/SKILL.md`, covering the CLI workflow and animation rules above.
-- Every CLI command supports `--json` for structured output and structured `{code, message}` errors — safe for agents to parse instead of scraping stdout.
+- Every CLI command supports `--json` for structured output and structured `{code, message}` errors, safe for agents to parse instead of scraping stdout.
 - `remotion-ui-mcp` is an MCP server exposing the registry as agent tools (`list-components`, `search-components`, `get-component-detail`, `get-install-command`) over stdio, for MCP-capable agents. See [MCP Server](/docs/mcp) for install and config.
 - Registry items may declare `compat.remotion`; `add` warns on a mismatch with the installed Remotion version. See [Remotion version compatibility](/docs/cli#remotion-version-compatibility).
 

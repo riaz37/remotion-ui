@@ -7,7 +7,7 @@ import { usePreviewStage } from "./preview-stage";
 
 /**
  * Beat plan against the 110-frame window. The whole demo used to be over by
- * frame 51 — under half the loop — so the audit's 50% and 90% samples were the
+ * frame 51 (under half the loop), so the audit's 50% and 90% samples were the
  * same finished card. The flagship stroke now runs to frame 56 and the three
  * variants draw one after another behind it, the last landing on frame 94
  * (85% of the window), which is the "finish late, then rest" shape rather than

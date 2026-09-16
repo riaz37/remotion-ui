@@ -20,5 +20,5 @@ export const earlyAccessCopy = {
     "One email the moment your spot opens. Nothing before that, and we never share the list.",
   modalTitle: "Before you go: want Kine early?",
   modalLead:
-    "Kine films your own app and cuts it into a demo video. We're opening a small first round — leave an email and we'll tell you when your spot is ready.",
+    "Kine films your own app and cuts it into a demo video. We're opening a small first round. Leave an email and we'll tell you when your spot is ready.",
 } as const;

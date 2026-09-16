@@ -1,6 +1,6 @@
 /**
  * The launch film: one real run of the desktop app, told in the frames it
- * actually produced — brief, run, a real video of a real site, pick one
+ * actually produced: brief, run, a real video of a real site, pick one
  * element, say what to change, the change lands with the file and lines it
  * touched.
  *

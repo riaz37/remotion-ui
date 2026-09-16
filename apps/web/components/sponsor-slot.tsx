@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 /**
- * The one sponsor placement, at the foot of every component page — the pages
+ * The one sponsor placement, at the foot of every component page: the pages
  * that carry most of the site's views. Shows the open slot until a sponsor
  * signs; swap the body for their logo then, not a second slot beside it.
  */

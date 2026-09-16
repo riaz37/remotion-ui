@@ -56,7 +56,7 @@ type TransitionConfig = {
 
 /**
  * `firstScene` / `secondScene` exist for presentations whose *midpoint* is the
- * one frame with nothing to show — a card flip is edge-on exactly halfway
+ * one frame with nothing to show: a card flip is edge-on exactly halfway
  * through, so centring the cut on frame 60 parks the audit's 50% sample on a
  * bare backdrop. Moving the cut earlier keeps the pair filling the window
  * (`first + second - TRANSITION_FRAMES` must equal the composition length)
@@ -92,8 +92,8 @@ function TransitionSeriesPreview({
  * An overlay does *not* shorten the series the way a transition does, so the
  * light-leak preview cannot reuse `SCENE_DURATION`: 69 + 69 = 138 against a
  * 120-frame composition truncated Scene two and moved the cut to frame 69,
- * where the audit's 18 / 60 / 108 samples straddle it and the flare — the whole
- * component — appeared in none of them.
+ * where the audit's 18 / 60 / 108 samples straddle it, and the flare (the whole
+ * component) appeared in none of them.
  *
  * Two scenes, no overlap: 60 + 60 = 120, so the cut is exactly frame 60. The
  * overlay is centred on the cut by `TransitionSeries` itself
