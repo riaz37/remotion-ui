@@ -15,7 +15,7 @@ export type MeshGradientBgProps = {
   intensity?: number;
 };
 
-const DEFAULT_COLORS: [string, string, string] = ["#e8b86d", "#2dd4bf", "#f472b6"];
+const DEFAULT_COLORS: [string, string, string] = ["#e8b86d", "#e07a5f", "#c2557a"];
 
 type BlobConfig = {
   x: number;
@@ -133,7 +133,7 @@ const meshBlobs = makeShaderEffect<MeshBlobsParams>({
 });
 
 export const MeshGradientBg: React.FC<MeshGradientBgProps> = ({
-  backgroundColor = "#080810",
+  backgroundColor = "#050505",
   colors = DEFAULT_COLORS,
   intensity = 1,
 }) => {

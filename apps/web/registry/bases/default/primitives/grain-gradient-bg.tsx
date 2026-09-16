@@ -30,7 +30,7 @@ export type GrainGradientBgProps = {
   speed?: number;
 };
 
-const DEFAULT_COLORS = ["#7aa2ff", "#c084fc", "#ffb27a"];
+const DEFAULT_COLORS = ["#e4ac59", "#e07a5f", "#f0c98a"];
 
 /**
  * A multi-color gradient with grain worked through it. The grain is the point:
@@ -41,7 +41,7 @@ const DEFAULT_COLORS = ["#7aa2ff", "#c084fc", "#ffb27a"];
  * Renders with `--gl=angle`.
  */
 export const GrainGradientBg: React.FC<GrainGradientBgProps> = ({
-  backgroundColor = "#05070c",
+  backgroundColor = "#050505",
   colors = DEFAULT_COLORS,
   shape = "wave",
   softness = 0.6,

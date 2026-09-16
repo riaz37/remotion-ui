@@ -29,7 +29,7 @@ export type WarpBandsBgProps = {
   speed?: number;
 };
 
-const DEFAULT_COLORS = ["#0b0d13", "#7aa2ff", "#0b0d13", "#c084fc"];
+const DEFAULT_COLORS = ["#0b0a08", "#e4ac59", "#0b0a08", "#c2557a"];
 
 /**
  * Color bands folded through noise and a swirl — smoke, ink in water, marble,

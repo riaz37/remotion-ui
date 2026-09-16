@@ -220,9 +220,9 @@ const lightTunnel = makeShaderEffect<LightTunnelParams>({
 });
 
 const DEFAULT_COLORS: [string, string, string] = [
-  "#7aa2ff",
-  "#c084fc",
-  "#5eead4",
+  "#e4ac59",
+  "#e07a5f",
+  "#c2557a",
 ];
 
 /**
@@ -236,7 +236,7 @@ const DEFAULT_COLORS: [string, string, string] = [
  * Renders with `--gl=angle`.
  */
 export const LightTunnelBg: React.FC<LightTunnelBgProps> = ({
-  backgroundColor = "#05070c",
+  backgroundColor = "#050505",
   colors = DEFAULT_COLORS,
   ribbons = 12,
   twist = 0.22,

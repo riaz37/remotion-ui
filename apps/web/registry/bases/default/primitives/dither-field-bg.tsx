@@ -39,8 +39,8 @@ export type DitherFieldBgProps = {
  * Renders with `--gl=angle`.
  */
 export const DitherFieldBg: React.FC<DitherFieldBgProps> = ({
-  backgroundColor = "#05070c",
-  inkColor = "#7aa2ff",
+  backgroundColor = "#070605",
+  inkColor = "#e4ac59",
   // `simplex`, `warp`, `dots` and `wave` are pattern shapes: they tile and fill
   // the frame at any size. `ripple`, `swirl` and `sphere` are object shapes with
   // a bounded edge, so at a scale below 1 they sit as a shape in an empty field

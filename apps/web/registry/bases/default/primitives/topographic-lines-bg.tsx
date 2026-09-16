@@ -110,7 +110,7 @@ function contourPath(
  * which is the convention that makes a real map legible.
  */
 export const TopographicLinesBg: React.FC<TopographicLinesBgProps> = ({
-  backgroundColor = "#07080e",
+  backgroundColor = "#050505",
   lineColor = "rgba(232,184,109,0.5)",
   indexColor = "rgba(232,184,109,0.95)",
   peaks = DEFAULT_PEAKS,

@@ -161,8 +161,8 @@ function ribbonPath(
  * the entrance.
  */
 export const AuroraBg: React.FC<AuroraBgProps> = ({
-  backgroundColor = "#05070f",
-  colors = ["#4cd6a6", "#4f9cf9", "#a273ff"],
+  backgroundColor = "#050505",
+  colors = ["#e4ac59", "#e07a5f", "#c2557a"],
   ribbonCount = 4,
   amplitude = 9,
   thickness = 15,
@@ -183,7 +183,7 @@ export const AuroraBg: React.FC<AuroraBgProps> = ({
   const uid = useId().replace(/:/g, "");
   const time = (frame / fps) * speed;
 
-  const palette = colors.length > 0 ? colors : ["#4cd6a6"];
+  const palette = colors.length > 0 ? colors : ["#e4ac59"];
   /* Five ribbons is 8 seeded hashes and a path string each, and none of it
    * moves with the frame — only the transform that carries them does. Keyed on
    * the joined palette rather than on `colors`, since a caller passing an array

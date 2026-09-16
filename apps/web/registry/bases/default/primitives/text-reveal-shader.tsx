@@ -351,9 +351,9 @@ function rasterize(
  */
 export const TextRevealShader: React.FC<TextRevealShaderProps> = ({
   text = "LIQUID\nCHROME",
-  backgroundColor = "#05070c",
-  colors = ["#7aa2ff", "#f0abfc"],
-  silverColor = "#ced3dd",
+  backgroundColor = "#050505",
+  colors = ["#e4ac59", "#f0abc0"],
+  silverColor = "#ded8cf",
   angle = 34,
   delay = 0,
   duration = 78,

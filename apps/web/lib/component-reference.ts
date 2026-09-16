@@ -2325,8 +2325,8 @@ import { transitionFade } from "@/remotion/primitives/transition-fade";
 
 <MeshGradientBg />`,
     props: [
-      { name: "backgroundColor", type: "string", default: '"#080810"', description: "Stage color." },
-      { name: "colors", type: "[string, string, string]", default: '["#e8b86d", "#2dd4bf", "#f472b6"]', description: "Blob accent colors: solid hex, screen-blended over the stage." },
+      { name: "backgroundColor", type: "string", default: '"#050505"', description: "Stage color." },
+      { name: "colors", type: "[string, string, string]", default: '["#e8b86d", "#e07a5f", "#c2557a"]', description: "Blob accent colors: solid hex, screen-blended over the stage." },
       { name: "intensity", type: "number", default: "1", description: "Drift amplitude multiplier." },
     ],
     related: ["dynamic-grid"],
@@ -3002,8 +3002,8 @@ import { TextMaskVideo } from "@/remotion/primitives/text-mask-video";
   <YourScene />
 </AbsoluteFill>`,
     props: [
-      { name: "backgroundColor", type: "string", default: '"#05070f"', description: "Plate behind the curtains. `transparent` layers them over footage." },
-      { name: "colors", type: "string[]", default: '["#4cd6a6", "#4f9cf9", "#a273ff"]', description: "Curtain colours, cycled." },
+      { name: "backgroundColor", type: "string", default: '"#050505"', description: "Plate behind the curtains. `transparent` layers them over footage." },
+      { name: "colors", type: "string[]", default: '["#e4ac59", "#e07a5f", "#c2557a"]', description: "Curtain colours, cycled." },
       { name: "ribbonCount", type: "number", default: "4", description: "How many curtains." },
       { name: "amplitude", type: "number", default: "9", description: "Vertical travel of a fold, in percent of the frame." },
       { name: "thickness", type: "number", default: "15", description: "Curtain height at its thickest point, in percent." },
@@ -3053,7 +3053,7 @@ import { TextMaskVideo } from "@/remotion/primitives/text-mask-video";
   <YourScene />
 </AbsoluteFill>`,
     props: [
-      { name: "backgroundColor", type: "string", default: '"#07080e"', description: "Plate behind the contours. `transparent` layers them over footage." },
+      { name: "backgroundColor", type: "string", default: '"#050505"', description: "Plate behind the contours. `transparent` layers them over footage." },
       { name: "lineColor", type: "string", default: '"rgba(232,184,109,0.5)"', description: "Contour colour." },
       { name: "indexColor", type: "string", default: '"rgba(232,184,109,0.95)"', description: "Colour of the heavier index contour." },
       { name: "peaks", type: "TopographicPeak[]", default: "two peaks", description: "Landforms: `{ x, y, size, roughness }` in percent. One peak reads as a target; two read as terrain." },
@@ -5035,8 +5035,8 @@ import { DeviceMockup3D } from "@/remotion/scenes/device-mockup-3d";
 // Render with --gl=angle
 <DitherFieldBg shape="warp" pattern="4x4" />`,
     props: [
-      { name: "backgroundColor", type: "string", default: '"#05070c"', description: "The unlit half of the two-tone field." },
-      { name: "inkColor", type: "string", default: '"#7aa2ff"', description: "The lit half. The field only ever holds these two colors." },
+      { name: "backgroundColor", type: "string", default: '"#070605"', description: "The unlit half of the two-tone field." },
+      { name: "inkColor", type: "string", default: '"#e4ac59"', description: "The lit half. The field only ever holds these two colors." },
       { name: "shape", type: '"simplex" | "warp" | "dots" | "wave" | "ripple" | "swirl" | "sphere"', default: '"warp"', description: "Pattern the dither is sampled from before the grid quantises it. simplex, warp, dots and wave fill the frame; ripple, swirl and sphere are bounded shapes." },
       { name: "pattern", type: '"random" | "2x2" | "4x4" | "8x8"', default: '"4x4"', description: "Threshold matrix. Bayer sizes are ordered; random reads as film grain." },
       { name: "pixelSize", type: "number", default: "2", description: "Size of one dither cell in pixels, 0.5–20. Larger reads more retro." },
@@ -5053,7 +5053,7 @@ import { DeviceMockup3D } from "@/remotion/scenes/device-mockup-3d";
 // Render with --gl=angle
 <WarpBandsBg softness={1} swirl={0.8} />`,
     props: [
-      { name: "colors", type: "string[]", default: '["#0b0d13", "#7aa2ff", "#0b0d13", "#c084fc"]', description: "Up to 10 colors, blended in order. Keep a dark one to hold the bands apart." },
+      { name: "colors", type: "string[]", default: '["#0b0a08", "#e4ac59", "#0b0a08", "#c2557a"]', description: "Up to 10 colors, blended in order. Keep a dark one to hold the bands apart." },
       { name: "pattern", type: '"checks" | "stripes" | "edge"', default: '"checks"', description: "Base pattern the bands are laid over before distortion." },
       { name: "proportion", type: "number", default: "0.45", description: "Where one color gives way to the next, 0–1." },
       { name: "softness", type: "number", default: "1", description: "Edge hardness, 0 = hard band, 1 = full gradient. Changes its character most." },
@@ -5075,8 +5075,8 @@ import { DeviceMockup3D } from "@/remotion/scenes/device-mockup-3d";
 // Render with --gl=angle
 <GrainGradientBg shape="wave" noise={0.35} />`,
     props: [
-      { name: "backgroundColor", type: "string", default: '"#05070c"', description: "Stage the shape sits on." },
-      { name: "colors", type: "string[]", default: '["#7aa2ff", "#c084fc", "#ffb27a"]', description: "Up to 7 colors, blended across the shape." },
+      { name: "backgroundColor", type: "string", default: '"#050505"', description: "Stage the shape sits on." },
+      { name: "colors", type: "string[]", default: '["#e4ac59", "#e07a5f", "#f0c98a"]', description: "Up to 7 colors, blended across the shape." },
       { name: "shape", type: '"wave" | "dots" | "truchet" | "corners" | "ripple" | "blob" | "sphere"', default: '"wave"', description: "The form the gradient takes. Each is a different field, not a preset." },
       { name: "softness", type: "number", default: "0.6", description: "Edge hardness between colors, 0 = posterised, 1 = smooth." },
       { name: "intensity", type: "number", default: "0.45", description: "Distortion between the color bands, 0–1." },
@@ -5094,8 +5094,8 @@ import { DeviceMockup3D } from "@/remotion/scenes/device-mockup-3d";
 // Render with --gl=angle
 <LightTunnelBg ribbons={14} twist={0.16} />`,
     props: [
-      { name: "backgroundColor", type: "string", default: '"#05070c"', description: "Plate behind the tunnel, and the colour the far centre falls off to." },
-      { name: "colors", type: "[string, string, string]", default: '["#7aa2ff", "#c084fc", "#5eead4"]', description: "Three ribbon tints, distributed around the barrel by ribbon index." },
+      { name: "backgroundColor", type: "string", default: '"#050505"', description: "Plate behind the tunnel, and the colour the far centre falls off to." },
+      { name: "colors", type: "[string, string, string]", default: '["#e4ac59", "#e07a5f", "#c2557a"]', description: "Three ribbon tints, distributed around the barrel by ribbon index." },
       { name: "ribbons", type: "number", default: "14", description: "How many ribbons run down the barrel. Rounded to an integer: a fractional count leaves a seam where the angle wraps." },
       { name: "twist", type: "number", default: "0.16", description: "How hard the barrel twists with depth. 0 gives straight ribbons." },
       { name: "ringDensity", type: "number", default: "1.6", description: "Rings per unit of log-depth. Higher packs the folds tighter." },
@@ -5114,9 +5114,9 @@ import { DeviceMockup3D } from "@/remotion/scenes/device-mockup-3d";
 <TextRevealShader text={"LIQUID\\nCHROME"} bandWidth={0.022} settle={0.16} />`,
     props: [
       { name: "text", type: "string", default: '"LIQUID\\nCHROME"', description: "Copy to reveal. Newlines start a new line; the block stays centred." },
-      { name: "backgroundColor", type: "string", default: '"#05070c"', description: "Plate behind the words." },
-      { name: "colors", type: "[string, string]", default: '["#7aa2ff", "#f0abfc"]', description: "The two ends of the iridescent film the words condense out of." },
-      { name: "silverColor", type: "string", default: '"#ced3dd"', description: "Colour the glyph interior settles to once the edge has passed." },
+      { name: "backgroundColor", type: "string", default: '"#050505"', description: "Plate behind the words." },
+      { name: "colors", type: "[string, string]", default: '["#e4ac59", "#f0abc0"]', description: "The two ends of the iridescent film the words condense out of." },
+      { name: "silverColor", type: "string", default: '"#ded8cf"', description: "Colour the glyph interior settles to once the edge has passed." },
       { name: "angle", type: "number", default: "34", description: "Direction of the sweep, in degrees. 0 sweeps left to right." },
       { name: "delay", type: "number", default: "0", description: "Frame the reveal starts on." },
       { name: "duration", type: "number", default: "78", description: "How many frames the sweep takes to cross the frame." },
