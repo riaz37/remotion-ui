@@ -56,11 +56,11 @@ export type TextRevealShaderProps = {
  * side, and the whole look hangs off two uses of it:
  *
  * - `exp(-|d| / bandWidth)` is a narrow band that peaks hard at the edge and
- *   decays fast either side. Inside it the glyph is refracted — the
- *   displacement is taken from *differences between channels* of the
- *   iridescent field, so the offset is whatever the film is doing locally
- *   rather than a fixed direction, and the three channels are sampled at
- *   decreasing strength to disperse the edge.
+ *   decays fast either side. Inside it the glyph is refracted. The
+ *   displacement follows the *slope of the film's optical thickness*, the way
+ *   a real film bends what is under it, so the offset is whatever the surface
+ *   is doing locally rather than a fixed direction, and the three channels are
+ *   sampled at decreasing strength to disperse the edge.
  * - `smoothstep(0, settle, d)` is the settle curve. The interior starts as the
  *   live iridescent field and relaxes into flat silver behind the edge, which
  *   is what makes the words read as condensing out of light rather than as
@@ -87,10 +87,20 @@ uniform vec3 uColorA;
 uniform vec3 uColorB;
 uniform vec3 uSilver;
 
+const vec3 LUMA = vec3(0.299, 0.587, 0.114);
+
+/**
+ * Step used for the central difference that reads the film's slope, in uv.
+ * The film's fastest term turns over about every 0.09 uv, so this samples it
+ * roughly twenty times per cycle: fine enough to follow the surface, coarse
+ * enough that the difference is not swallowed by float noise.
+ */
+const float FILM_STEP = 0.0045;
+
 /**
  * A thin-film style field. Three sines at unrelated periods per channel, so the
- * channels drift apart and their differences — which is what the refraction
- * reads — never collapse to zero across the frame.
+ * channels drift apart and the field never flattens into a region with no
+ * slope for the refraction to read.
  */
 vec3 film(vec2 uv) {
   float a = sin(uv.x * 9.1 + uTime * 0.7) + sin(uv.y * 6.7 - uTime * 0.5);
@@ -103,6 +113,15 @@ vec3 film(vec2 uv) {
   // Lifted well clear of black: this is the light the words come out of, and a
   // field that reaches zero leaves dead holes inside the glyphs.
   return tint * (0.55 + 0.45 * mixer);
+}
+
+/**
+ * Optical thickness of the film at a point. The refraction reads its slope, so
+ * the only property that matters is that it varies smoothly; luma is used
+ * because it already tracks how much film is stacked up at that pixel.
+ */
+float thickness(vec2 uv) {
+  return dot(film(uv), LUMA);
 }
 
 void main() {
@@ -131,9 +150,21 @@ void main() {
   // Narrow exponential band pinned to the edge.
   float band = exp(-abs(d) / max(uBandWidth, 1e-4));
 
-  // Displacement from differences between channels of the field, so the glyph
-  // bends with whatever the film is doing locally.
-  vec2 disp = vec2(field.r - field.b, field.g - field.r) * uRefraction * band;
+  // Displacement down the slope of the film's thickness, taken as a central
+  // difference either side of the pixel. A film bends what is under it toward
+  // where it is thinning, so this is the direction the glyph should move, and
+  // it comes from the surface rather than from any one pair of channels.
+  //
+  // The gradient is reduced to a direction: dividing by its own magnitude
+  // means a slack part of the film displaces as far as a busy one, so the
+  // band reads as an even thickness of glass rather than beating in and out
+  // with the sines. The epsilon in that divide keeps the near-flat points,
+  // where the direction is meaningless, from snapping to a random unit vector.
+  vec2 slope = vec2(
+    thickness(uv + vec2(FILM_STEP, 0.0)) - thickness(uv - vec2(FILM_STEP, 0.0)),
+    thickness(uv + vec2(0.0, FILM_STEP)) - thickness(uv - vec2(0.0, FILM_STEP))
+  );
+  vec2 disp = slope / (length(slope) + 0.02) * uRefraction * band;
 
   // Channels sampled at decreasing displacement to disperse the refracted edge.
   float mr = texture(uSource, vec2(uv.x, 1.0 - uv.y) + disp * 1.0).a;
@@ -159,7 +190,7 @@ void main() {
   // and a 20% swing the last forty frames moved by under one level per step,
   // which is a parked component however alive the maths looks on paper.
   vec3 sheen = film(uv + vec2(uTime * 0.13, uTime * -0.075));
-  float filmLuma = dot(sheen, vec3(0.299, 0.587, 0.114));
+  float filmLuma = dot(sheen, LUMA);
   vec3 silver = uSilver * (0.62 + 0.38 * filmLuma);
 
   float settled = smoothstep(0.0, max(uSettle, 1e-4), d);
