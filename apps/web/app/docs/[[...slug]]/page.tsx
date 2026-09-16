@@ -38,9 +38,14 @@ export default async function Page(props: {
       : null;
   // Check the raw MDX: `markdown` has its JSX stripped.
   const rawMdx = componentName ? await page.data.getText("raw") : "";
+  // Deduped by url: a page that authors its own `## Usage` heading in the MDX
+  // gets it from fumadocs *and* from getComponentPageToc, and two entries with
+  // the same anchor are two React children with the same key.
   const toc =
     componentName && rawMdx.includes("<ComponentPage")
-      ? [...page.data.toc, ...getComponentPageToc(componentName)]
+      ? [...page.data.toc, ...getComponentPageToc(componentName)].filter(
+          (entry, index, all) => all.findIndex((other) => other.url === entry.url) === index,
+        )
       : page.data.toc;
 
   return (

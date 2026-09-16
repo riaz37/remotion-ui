@@ -60,6 +60,14 @@ const LANE_DRIVE: Record<Lane, string> = {
  * generator a list of duplicates.
  */
 function parseSpec(): SpecEntry[] {
+  if (!existsSync(SPEC)) {
+    throw new Error(
+      `Spec not found: ${SPEC}\n\n` +
+        "docs-internal/ is deliberately untracked, so a fresh clone never carries " +
+        "the spec this generator reads. Restore expansion-200-spec.md at that path " +
+        "to run gen:component.",
+    );
+  }
   const text = readFileSync(SPEC, "utf8");
   const stop = text.indexOf("## Rejected");
   const body = stop === -1 ? text : text.slice(0, stop);
@@ -287,8 +295,8 @@ ${body}
 function mdxSource(e: SpecEntry): string {
   const Name = pascal(e.slug);
   return `---
-title: ${title(e.slug)}
-description: ${firstSentence(e.intent)}. Install with npx remotion-ui@latest add ${e.slug}.
+title: ${JSON.stringify(title(e.slug))}
+description: ${JSON.stringify(`${firstSentence(e.intent)}. Install with npx remotion-ui@latest add ${e.slug}.`)}
 ---
 
 import { ${Name}Preview } from '@/components/previews/${e.slug}';
