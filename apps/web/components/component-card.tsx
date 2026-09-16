@@ -25,6 +25,7 @@ export function ComponentCard({
 }: ComponentCardProps) {
   const meta = getAtlasMeta(slug);
   const resolvedLane = lane ?? meta?.lane;
+  const isNew = meta?.tags?.includes("new") ?? false;
 
   if (!resolvedLane) {
     return (
@@ -47,6 +48,7 @@ export function ComponentCard({
       url={url}
       lane={resolvedLane}
       durationFrames={durationFrames}
+      isNew={isNew}
       command={cliAddCommand(slug)}
       className={className}
       thumbnail={

@@ -386,17 +386,17 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   "globe-arc": { lane: "spatial", drive: "spatial", tier: "advanced" },
   "multi-device-lineup": { lane: "spatial", drive: "spatial", tier: "advanced" },
   // 3D
-  "device-mockup-3d": { lane: "3d", drive: "time", tier: "advanced", tags: ["device"] },
+  "device-mockup-3d": { lane: "3d", drive: "time", tier: "advanced", tags: ["device", "new"] },
   // Shaders
   "dither-field-bg": { lane: "shaders", drive: "time", tier: "core", tags: ["background"] },
   "warp-bands-bg": { lane: "shaders", drive: "time", tier: "core", tags: ["background"] },
   "grain-gradient-bg": { lane: "shaders", drive: "time", tier: "advanced", tags: ["background"] },
   "light-tunnel-bg": { lane: "shaders", drive: "time", tier: "advanced", tags: ["background"] },
   "text-reveal-shader": { lane: "shaders", drive: "time", tier: "advanced", tags: ["text"] },
-  "product-turntable-3d": { lane: "3d", drive: "time", tier: "advanced" },
-  "text-extrude-3d": { lane: "3d", drive: "time", tier: "advanced" },
-  "card-stack-3d": { lane: "3d", drive: "time", tier: "advanced" },
-  "globe-points-3d": { lane: "3d", drive: "time", tier: "advanced" },
+  "product-turntable-3d": { lane: "3d", drive: "time", tier: "advanced", tags: ["new"] },
+  "text-extrude-3d": { lane: "3d", drive: "time", tier: "advanced", tags: ["new"] },
+  "card-stack-3d": { lane: "3d", drive: "time", tier: "advanced", tags: ["new"] },
+  "globe-points-3d": { lane: "3d", drive: "time", tier: "advanced", tags: ["new"] },
 };
 
 export function getAtlasMeta(name: string): AtlasMeta | undefined {
