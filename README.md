@@ -90,6 +90,21 @@ Every command speaks `--json`. There's also an [agent index](https://remotionui.
 | **Shaders** | 5 | Full-frame GPU fields, evaluated per pixel |
 | **3D** | 1 | WebGL scenes via `@remotion/three` |
 
+Six of them, actually moving:
+
+<table>
+<tr>
+<td align="center" width="33%"><img src="https://raw.githubusercontent.com/riaz37/remotion-ui/main/.github/assets/tiles/aurora-bg.webp" width="260" alt="Aurora ribbons folding across two overlapping timing beats" /><br /><sub><b>aurora-bg</b> · Primitives</sub></td>
+<td align="center" width="33%"><img src="https://raw.githubusercontent.com/riaz37/remotion-ui/main/.github/assets/tiles/bar-chart-race.webp" width="260" alt="Ranked bars racing and reordering" /><br /><sub><b>bar-chart-race</b> · Data &amp; media</sub></td>
+<td align="center" width="33%"><img src="https://raw.githubusercontent.com/riaz37/remotion-ui/main/.github/assets/tiles/kanban-move.webp" width="260" alt="A card moving between kanban columns" /><br /><sub><b>kanban-move</b> · Scenes</sub></td>
+</tr>
+<tr>
+<td align="center" width="33%"><img src="https://raw.githubusercontent.com/riaz37/remotion-ui/main/.github/assets/tiles/device-mockup-3d.webp" width="260" alt="A laptop mockup rotating in 3D" /><br /><sub><b>device-mockup-3d</b> · 3D</sub></td>
+<td align="center" width="33%"><img src="https://raw.githubusercontent.com/riaz37/remotion-ui/main/.github/assets/tiles/split-text-chars.webp" width="260" alt="A headline resolving character by character" /><br /><sub><b>split-text-chars</b> · Primitives</sub></td>
+<td align="center" width="33%"><img src="https://raw.githubusercontent.com/riaz37/remotion-ui/main/.github/assets/tiles/commit-graph.webp" width="260" alt="A git commit graph drawing itself" /><br /><sub><b>commit-graph</b> · Scenes</sub></td>
+</tr>
+</table>
+
 [Browse the full catalog →](https://remotionui.com/docs/components/browse)
 
 ## Why it holds up under render

@@ -23,7 +23,8 @@
     "scan:legibility": "tsx scripts/scan-legibility.mts",
     "gen:component": "tsx scripts/gen-component.mts",
     "gen:prop-schemas": "tsx scripts/gen-prop-schemas.mts",
-    "gen:posters": "tsx scripts/gen-posters.mts"
+    "gen:posters": "tsx scripts/gen-posters.mts",
+    "gen:readme-tiles": "tsx scripts/gen-readme-tiles.mts"
   },
   "dependencies": {
     "@paper-design/shaders-react": "0.0.80",
