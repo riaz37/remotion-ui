@@ -40,8 +40,15 @@ const { fontFamily: monoFamily } = loadMonoFont("normal", {
 });
 
 /**
- * 1400x788 is 2x the README's 700x394 display box, and 788 keeps both axes even
- * so the intermediate render has no chroma-subsampling edge case.
+ * 1400 wide is exactly 2x the README's `width="700"` box, which is the whole
+ * point: the previous hero was authored at 700 and every HiDPI reader saw it
+ * upscaled and soft. Rendering at 2x and letting the browser downscale is what
+ * makes the type crisp.
+ *
+ * 560 tall (a 2.5:1 banner, displayed 700x280) rather than the old 16:9. The
+ * content is one wide row — identity on the left, tile grid on the right — so
+ * on a 16:9 canvas it floated in ~240px of dead space top and bottom and read
+ * as a small band. Both axes stay even.
  *
  * 25fps is not the repo's usual 30: animated WebP frame delays are whole
  * milliseconds, and 25fps is exactly 40ms. At 30fps the delay rounds to 33ms
@@ -52,17 +59,34 @@ const { fontFamily: monoFamily } = loadMonoFont("normal", {
 export const README_HERO_FPS = 25;
 export const README_HERO_DURATION = 100;
 export const README_HERO_WIDTH = 1400;
-export const README_HERO_HEIGHT = 788;
+export const README_HERO_HEIGHT = 560;
 
 /**
  * Half a loop. The flip wave crosses the grid once per half-cycle, so it
  * crosses twice per loop and every tile toggles A -> B -> A.
  */
 const HALF_CYCLE = README_HERO_DURATION / 2;
-/** Frames between one tile starting its flip and the next. */
-const TILE_STAGGER = 5;
-/** Length of a single tile's flip. Must satisfy 5*STAGGER + FLIP < HALF_CYCLE. */
-const FLIP_FRAMES = 16;
+/**
+ * Frames between one tile starting its flip and the next, and how long a single
+ * flip lasts.
+ *
+ * These two are not free parameters. The invariant is
+ * `(TILES - 1) * TILE_STAGGER + FLIP_FRAMES === HALF_CYCLE`, and it has to be
+ * an equality, not a `<=`:
+ *
+ * - Go over, and the last tile's flip is still running when `local` wraps to 0,
+ *   so it gets cut off mid-flip and snaps.
+ * - Go under, and the tail of every half-cycle has no tile in motion at all.
+ *   The first cut of this asset used 5/16, which left 9 dead frames; `img2webp`
+ *   dutifully deduped them into a single page with a 360ms delay, i.e. a 0.36s
+ *   freeze twice per loop. Dead frames are invisible in a frame-by-frame review
+ *   and very visible when the thing is actually playing.
+ *
+ * At 6/20 the six tiles' flip windows tile the half-cycle end to end, three
+ * overlap at any moment, and no frame is ever static.
+ */
+const TILE_STAGGER = 6;
+const FLIP_FRAMES = 20;
 /** Cursor blink period. 100 / 25 = 4 whole cycles per loop. */
 const BLINK_PERIOD = 25;
 const BLINK_ON_FRAMES = 13;
@@ -86,7 +110,9 @@ const MARK = {
 
 const GRID = {
   originX: 712,
-  originY: 241,
+  // (560 - (2*140 + 25)) / 2, rounded. Keeps the grid optically centred on the
+  // same axis as the identity column, which centres itself via flexbox.
+  originY: 128,
   tileWidth: 188,
   tileHeight: 140,
   gap: 25,
@@ -421,7 +447,6 @@ const IdentityColumn: React.FC = () => {
           marginTop: 34,
           display: "flex",
           alignItems: "center",
-          gap: 10,
           padding: "14px 20px",
           backgroundColor: COLOR.tile,
           border: `2px solid ${COLOR.border}`,
@@ -433,12 +458,19 @@ const IdentityColumn: React.FC = () => {
           whiteSpace: "nowrap",
         }}
       >
-        <span style={{ color: COLOR.text }}>npx remotion-ui@latest add </span>
-        <span style={{ color: COLOR.accent, marginLeft: -10 }}>social-clip</span>
+        {/* `whiteSpace: pre` because the space before the argument is load-bearing
+            and JSX would otherwise collapse the trailing one. An earlier cut used
+            a flex `gap` for that space and a negative margin to cancel it on the
+            cursor, which rendered as "addsocial-clip". */}
+        <span style={{ color: COLOR.text, whiteSpace: "pre" }}>
+          {"npx remotion-ui@latest init "}
+        </span>
+        <span style={{ color: COLOR.accent }}>my-video</span>
         <span
           style={{
             width: 11,
             height: 24,
+            marginLeft: 8,
             backgroundColor: COLOR.accent,
             opacity: cursorVisible ? 1 : 0,
           }}
