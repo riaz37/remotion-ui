@@ -11,6 +11,7 @@ type ClipCardProps = {
   command?: string;
   thumbnail: ReactNode;
   className?: string;
+  isNew?: boolean;
 };
 
 export function ClipCard({
@@ -21,6 +22,7 @@ export function ClipCard({
   command,
   thumbnail,
   className = "",
+  isNew = false,
 }: ClipCardProps) {
   const displayName = name.replace(/-/g, " ");
 
@@ -44,6 +46,13 @@ export function ClipCard({
           <p className="truncate text-sm font-semibold capitalize text-fd-foreground">
             {displayName}
           </p>
+          {isNew ? (
+            // Same phosphor chip the docs sidebar uses, so "new" reads the
+            // same wherever a component is listed.
+            <span className="shrink-0 rounded-sm border border-[var(--bay-phosphor)]/40 px-1.5 py-px font-[family-name:var(--font-mono)] text-[0.625rem] uppercase leading-4 tracking-wide text-[var(--bay-phosphor)]">
+              New
+            </span>
+          ) : null}
           {durationFrames ? (
             <span className="text-mono-xs shrink-0 text-fd-muted-foreground">
               {durationFrames}f
