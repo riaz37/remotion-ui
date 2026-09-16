@@ -4328,6 +4328,25 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "device-mockup-3d",
+      "type": "registry:block",
+      "description": "Laptop product shot in real 3D: lid opens, then a turn and push-in over a lit floor",
+      "dependencies": [
+        "remotion",
+        "@remotion/three",
+        "three",
+        "@react-three/fiber",
+        "@react-three/drei"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/bases/default/scenes/device-mockup-3d/index.tsx",
+          "type": "registry:block"
+        }
+      ]
     }
   ]
 }

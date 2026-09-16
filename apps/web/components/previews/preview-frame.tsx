@@ -39,6 +39,7 @@ type PreviewLane =
   | "signals"
   | "vectors"
   | "spatial"
+  | "3d"
   | "cuts"
   | "blocks"
   | "reels";

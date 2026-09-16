@@ -243,6 +243,8 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "map-heat-overlay": { durationInFrames: 120 },
   "globe-arc": { durationInFrames: 120 },
   "multi-device-lineup": { durationInFrames: 120 },
+  /* 3D: set-down + lid open, then turn and push. The shot is paced for 5s. */
+  "device-mockup-3d": { durationInFrames: 150 },
   /* The two marquees scroll continuously and never loop back to their start
    * inside a short window, so their docs players run unlooped for a full track
    * period instead of cutting mid-scroll. The number lived on the `ComponentPage`

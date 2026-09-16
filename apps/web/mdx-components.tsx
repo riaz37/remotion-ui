@@ -13,6 +13,10 @@ import { InitCommand, InstallCommand, RenderCommand, SearchCommand, CommandRail 
 import { ShowcaseVideo } from "@/components/showcase-video";
 
 export function getMDXComponents(components?: MDXComponents): MDXComponents {
+  // Asserted, not inferred: @react-three/fiber (the 3d registry lane) adds
+  // `light`, `mesh`, … to the global JSX.IntrinsicElements, and mdx/types maps
+  // every intrinsic element to a component type — `light` comes out as
+  // Component<never>, which no longer satisfies MDXComponents' index signature.
   return {
     ...defaultMdxComponents,
     pre: (props) => <DocsCodeBlock {...props} />,
@@ -31,5 +35,5 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     CommandRail,
     ShowcaseVideo,
     ...components,
-  };
+  } as MDXComponents;
 }

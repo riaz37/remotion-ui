@@ -214,6 +214,18 @@ Weights shifted after dedup: spatial collapsed from +8 to +3 because `device-moc
 
 ---
 
+## 3d — +1
+
+Outside the 200 allocation: the first entry in a new lane for `@remotion/three` scenes. Every 3D entry carries `@remotion/three`, `three`, `@react-three/fiber` and `@react-three/drei` as dependencies and renders with `--gl=angle`.
+
+| Slug | Tier | Intent |
+|---|---|---|
+| `device-mockup-3d` | advanced | Laptop product shot in real 3D: the lid opens, then the camera turns and pushes in over a lit floor. Not a fork of `device-mockup-zoom` — that one is a CSS mockup with staged UI; this one is a lit WebGL model with glass reflections and a contact shadow. |
+
+> **Determinism:** all motion from `useCurrentFrame()` — no r3f `useFrame` animation, no clock-driven drei helpers (`Float`, `Sparkles`, …). Textures load by hand behind `useDelayRender`, not drei `useTexture`. `<Environment>` is built from `<Lightformer>` children; presets fetch HDRIs from a CDN.
+
+---
+
 ## Build order
 
 Ordered by unblocking power, not lane size.
