@@ -1,10 +1,14 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { ProgramMonitor } from "@/components/landing/program-monitor";
+import { ScratchLine } from "@/components/landing/scratch-line";
 import { CompactCommandRail } from "@/components/studio/command-rail";
 import { componentCount } from "@/lib/registry-facts";
 
-const HERO_INSTALL = "npx remotion-ui@latest add social-clip";
+// `add` reads remotion-ui.json and errors without it, so the hero leads with
+// the command that works from an empty directory. `init --existing` is the
+// docs entry point, for people who already have a Remotion project.
+const HERO_INSTALL = "npx remotion-ui@latest init my-video";
 
 /** Stagger position for the arrival cascade, read by `.hero-rise` in CSS. */
 const rise = (index: number) => ({ "--rise-index": index }) as CSSProperties;
@@ -29,7 +33,10 @@ export function StudioHero() {
           style={rise(0)}
         >
           Production-ready motion
-          <span className="block text-[var(--bay-muted)]">for Remotion.</span>
+          {/* The words stay in the DOM for reading order, search and LCP; the
+              strokes that render them are decorative and aria-hidden. */}
+          <span className="sr-only"> for Remotion.</span>
+          <ScratchLine />
         </h1>
 
         <p

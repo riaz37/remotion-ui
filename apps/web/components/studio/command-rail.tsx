@@ -98,7 +98,7 @@ export function CompactCommandRail({
         <span className="text-[var(--bay-phosphor)]">$ </span>
         {command}
       </code>
-      <CopyButton text={command} />
+      <CopyButton text={command} iconOnly />
     </div>
   );
 }

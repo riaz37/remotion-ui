@@ -436,6 +436,46 @@ h3 {
   }
 }
 
+/* ---------------------------------------------------------------------------
+   Scratched headline (landing hero)
+
+   Line two of the hero is not type. It is 22 hand-printed centerline strokes,
+   the way a china marker marks monitor glass, drawn in writing order and then
+   boiled — the wobble a drawn line has when a hand redraws it every frame.
+
+   The strokes ship complete in the server HTML for the same reason .hero-rise
+   is CSS: the headline has to paint without waiting on hydration. ScratchLine
+   adds the draw-on and the boil once it mounts, and skips both under reduced
+   motion, which leaves exactly what the server sent.
+--------------------------------------------------------------------------- */
+.scratch-line {
+  display: block;
+  width: min(100%, 26rem);
+  height: auto;
+  margin-inline: auto;
+  margin-top: 0.1em;
+}
+
+.scratch-stroke {
+  fill: none;
+  /* Inherited from the headline, so the line is never dark on the dark stage. */
+  stroke: currentColor;
+  /* 2.4 and not heavier: above ~3 the bowls of o, e and R close into blobs. */
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* The scraped groove: the second edge an emulsion scratch throws. */
+.scratch-groove {
+  fill: none;
+  stroke: var(--bay-phosphor);
+  stroke-width: 3.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.25;
+}
+
 @keyframes queue-panel-in {
   from {
     opacity: 0;
@@ -464,6 +504,125 @@ h3 {
 
   .motion-border:hover {
     border-color: var(--bay-border-strong);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Copy button
+
+   The hero rail runs this icon-only, which takes away the word that used to
+   report the result. So the click reports it instead: the copy mark rotates
+   out, a check draws itself in writing order — the same gesture as the
+   scratched headline — and a phosphor ring blooms off the button edge.
+
+   Every state is driven by [data-status] on the button, so the animation is
+   CSS and the component stays a thin client leaf.
+--------------------------------------------------------------------------- */
+.copy-btn {
+  position: relative;
+  isolation: isolate;
+}
+
+/* One cell, both marks stacked: the swap can never shift the rail. */
+.copy-btn-icons {
+  display: grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* The press itself, so the button answers the finger before the clipboard. */
+.copy-btn:active .copy-btn-icons {
+  transform: scale(0.86);
+}
+
+.copy-btn-icon {
+  grid-area: 1 / 1;
+  transition:
+    opacity 180ms ease-out,
+    transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.copy-btn-icon-check {
+  opacity: 0;
+  transform: scale(0.4) rotate(12deg);
+  color: var(--bay-phosphor);
+}
+
+.copy-btn[data-status="copied"] .copy-btn-icon-copy {
+  opacity: 0;
+  transform: scale(0.4) rotate(-18deg);
+}
+
+.copy-btn[data-status="copied"] .copy-btn-icon-check {
+  opacity: 1;
+  transform: none;
+}
+
+/* 24 clears the path's ~22.6 user units, so the tick starts fully retracted. */
+.copy-btn-check-path {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+}
+
+.copy-btn[data-status="copied"] .copy-btn-check-path {
+  animation: copy-check-draw 320ms cubic-bezier(0.16, 1, 0.3, 1) 70ms both;
+}
+
+@keyframes copy-check-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.copy-btn-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid var(--bay-phosphor);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.copy-btn[data-status="copied"] .copy-btn-ring {
+  animation: copy-bloom 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes copy-bloom {
+  from {
+    opacity: 0.55;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+}
+
+/* A denied clipboard is not a success; the mark must not read as one. */
+.copy-btn[data-status="error"] .copy-btn-icon-copy {
+  color: var(--bay-warning, #f4a261);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .copy-btn-icons,
+  .copy-btn-icon {
+    transition: none;
+  }
+
+  .copy-btn:active .copy-btn-icons {
+    transform: none;
+  }
+
+  .copy-btn[data-status="copied"] .copy-btn-ring {
+    animation: none;
+  }
+
+  /* Swap still has to land, it just arrives instead of drawing. */
+  .copy-btn[data-status="copied"] .copy-btn-check-path {
+    animation: none;
+    stroke-dashoffset: 0;
   }
 }
 
