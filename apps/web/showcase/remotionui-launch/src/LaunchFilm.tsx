@@ -17,7 +17,7 @@ import { EndCard, impactShake } from "./overlay/EndCard";
 import { Soundtrack } from "./audio/Soundtrack";
 
 /**
- * RemotionUILaunch: the 34 s launch film. See SPEC.md and timeline.ts.
+ * RemotionUILaunch: the 34 s launch film. Timing lives in timeline.ts.
  *
  * Back to front: the dot-grid world backdrop; the world (captures, terminal,
  * file fan, wall, montage card) under one camera with analytic motion blur;
