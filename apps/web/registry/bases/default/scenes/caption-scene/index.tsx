@@ -35,6 +35,16 @@ export type CaptionSceneMode =
   | "karaoke-scale"
   | "karaoke-underline";
 
+/**
+ * How the caption sits on the footage:
+ * - `shadow` — bare text with a drop shadow, the standard broadcast/YouTube
+ *   lower-third treatment. Nothing behind the words but the video itself.
+ * - `boxed` — a solid line-hugging background behind each page, the
+ *   Reels/YouTube auto-caption convention. Use this over very busy or
+ *   low-contrast footage where a shadow alone will not hold up.
+ */
+export type CaptionSceneStyle = "shadow" | "boxed";
+
 export type CaptionSceneProps = {
   captions: Caption[];
   combineTokensWithinMilliseconds?: number;
@@ -43,7 +53,8 @@ export type CaptionSceneProps = {
   backgroundColor?: string;
   placement?: CaptionPlacement;
   mode?: CaptionSceneMode;
-  label?: string;
+  /** Defaults to `"shadow"` — a direct-on-footage caption, no card. */
+  style?: CaptionSceneStyle;
   /**
    * How long this scene actually plays for. Pass the enclosing `Sequence`'s
    * `durationInFrames` when the scene is nested inside one (it is shorter
@@ -55,17 +66,13 @@ export type CaptionSceneProps = {
 
 const COLORS = {
   active: "#ff6b00",
-  ink: "#111111",
-  paper: "#f5f4f2",
-  plate: "rgba(245, 244, 242, 0.92)",
-  plateDark: "rgba(17, 17, 17, 0.78)",
-  border: "rgba(17, 17, 17, 0.12)",
-  muted: "rgba(17, 17, 17, 0.52)",
+  boxBackground: "rgba(9, 9, 11, 0.72)",
 } as const;
 
 type CaptionPageProps = {
   page: ReturnType<typeof groupCaptionsIntoPages>[number];
   mode: CaptionSceneMode;
+  style: CaptionSceneStyle;
   activeColor: string;
   inactiveColor: string;
   fontSize: number;
@@ -73,12 +80,12 @@ type CaptionPageProps = {
   captionZoneWidth: number;
   safeArea: SafeAreaPadding;
   bottomSlot: number;
-  label: string;
 };
 
 function CaptionPage({
   page,
   mode,
+  style,
   activeColor,
   inactiveColor,
   fontSize,
@@ -86,7 +93,6 @@ function CaptionPage({
   captionZoneWidth,
   safeArea,
   bottomSlot,
-  label,
 }: CaptionPageProps) {
   const frame = useCurrentFrame();
   const { fps, width } = useVideoConfig();
@@ -95,15 +101,9 @@ function CaptionPage({
     extrapolateRight: "clamp",
     easing: EASING.enter,
   });
-  const pageProgress = interpolate(
-    frame,
-    [0, Math.max(1, (page.durationMs / 1000) * fps)],
-    [0, 1],
-    {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    },
-  );
+
+  const boxed = style === "boxed";
+  const karaokeInactive = boxed ? "rgba(255,255,255,0.44)" : inactiveColor;
 
   const content =
     mode === "karaoke-scale" ? (
@@ -111,20 +111,22 @@ function CaptionPage({
         page={page}
         frame={frame}
         activeColor={activeColor}
-        completedColor={inactiveColor}
-        inactiveColor="rgba(255,255,255,0.44)"
+        completedColor={boxed ? inactiveColor : "#ffffff"}
+        inactiveColor={karaokeInactive}
         fontSize={fontSize}
         mode="scale"
+        shadow={!boxed}
       />
     ) : mode === "karaoke-underline" ? (
       <KaraokeCaptions
         page={page}
         frame={frame}
         activeColor={activeColor}
-        completedColor={inactiveColor}
-        inactiveColor="rgba(255,255,255,0.44)"
+        completedColor={boxed ? inactiveColor : "#ffffff"}
+        inactiveColor={karaokeInactive}
         fontSize={fontSize}
         mode="underline"
+        shadow={!boxed}
       />
     ) : (
       <CaptionHighlight
@@ -134,82 +136,32 @@ function CaptionPage({
         inactiveColor={inactiveColor}
         fontSize={fontSize}
         textAlign={placement === "center" ? "center" : "left"}
+        shadow={!boxed}
       />
     );
 
-  const platePaddingY = scaleFont(18, width);
-  const platePaddingX = scaleFont(24, width);
-  const progressHeight = Math.max(3, scaleFont(3, width));
-  const labelSize = Math.max(12, scaleFont(14, width));
+  const centered = placement === "center";
+  const boxPaddingY = scaleFont(14, width);
+  const boxPaddingX = scaleFont(22, width);
 
-  const plate = (
+  const body = boxed ? (
     <div
       style={{
         width: "100%",
         maxWidth: captionZoneWidth,
-        border: `1px solid rgba(255,255,255,0.18)`,
-        borderRadius: scaleFont(10, width),
-        background: COLORS.plateDark,
-        color: inactiveColor,
-        overflow: "hidden",
-        boxShadow: "0 18px 50px rgba(0, 0, 0, 0.26)",
+        borderRadius: scaleFont(8, width),
+        background: COLORS.boxBackground,
+        padding: `${boxPaddingY}px ${boxPaddingX}px`,
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: scaleFont(10, width),
-          padding: `${platePaddingY}px ${platePaddingX}px ${scaleFont(10, width)}px`,
-        }}
-      >
-        <div
-          style={{
-            width: scaleFont(7, width),
-            height: scaleFont(7, width),
-            borderRadius: 999,
-            background: activeColor,
-          }}
-        />
-        <div
-          style={{
-            color: "rgba(255,255,255,0.64)",
-            fontSize: labelSize,
-            fontWeight: 700,
-            lineHeight: 1,
-          }}
-        >
-          {label}
-        </div>
-      </div>
-      <div
-        style={{
-          padding: `0 ${platePaddingX}px ${platePaddingY}px`,
-        }}
-      >
-        {content}
-      </div>
-      <div
-        style={{
-          height: progressHeight,
-          background: "rgba(255,255,255,0.14)",
-        }}
-      >
-        <div
-          style={{
-            width: `${pageProgress * 100}%`,
-            height: "100%",
-            background: activeColor,
-          }}
-        />
-      </div>
+      {content}
     </div>
+  ) : (
+    <div style={{ width: "100%", maxWidth: captionZoneWidth }}>{content}</div>
   );
 
-  const centered = placement === "center";
-
   // Content lives in a flex slot inside the safe area — never raw top/left offsets,
-  // so long copy pushes the plate instead of overflowing the frame.
+  // so long copy pushes the box instead of overflowing the frame.
   return (
     <AbsoluteFill
       style={{
@@ -231,23 +183,16 @@ function CaptionPage({
           translate: interpolate(
             frame,
             [0, DURATION.fast],
-            ["0px 14px", "0px 0px"],
+            ["0px 10px", "0px 0px"],
             {
               extrapolateLeft: "clamp",
               extrapolateRight: "clamp",
               easing: EASING.enter,
             },
           ),
-          // Second beat: the plate settles slightly after it rises.
-          scale: interpolate(frame, [0, DURATION.normal], [0.972, 1], {
-            extrapolateLeft: "clamp",
-            extrapolateRight: "clamp",
-            easing: EASING.enter,
-            output: "perceptual-scale",
-          }),
         }}
       >
-        {plate}
+        {body}
       </div>
     </AbsoluteFill>
   );
@@ -261,7 +206,7 @@ export const CaptionScene: React.FC<CaptionSceneProps> = ({
   backgroundColor = "transparent",
   placement = "lower-third",
   mode = "highlight",
-  label = "Caption",
+  style = "shadow",
   durationInFrames,
 }) => {
   const config = useVideoConfig();
@@ -286,7 +231,7 @@ export const CaptionScene: React.FC<CaptionSceneProps> = ({
 
   const captionZoneWidth = Math.min(
     width - safeArea.paddingLeft - safeArea.paddingRight,
-    Math.round(width * (placement === "center" ? 0.74 : 0.82)),
+    Math.round(width * (placement === "center" ? 0.74 : 0.86)),
   );
 
   // The last page's own `getPageSequenceTiming` duration is bounded by its
@@ -329,6 +274,7 @@ export const CaptionScene: React.FC<CaptionSceneProps> = ({
         <CaptionPage
           page={page}
           mode={mode}
+          style={style}
           activeColor={activeColor}
           inactiveColor={inactiveColor}
           fontSize={fontSize}
@@ -336,24 +282,29 @@ export const CaptionScene: React.FC<CaptionSceneProps> = ({
           captionZoneWidth={captionZoneWidth}
           safeArea={safeArea}
           bottomSlot={bottomSlot}
-          label={label}
         />
       </Sequence>
     );
   });
 
+  // A shadow-only caption over a bright, low-contrast frame (a white product
+  // screen, a sky) can still lose the text — the scrim buys a guaranteed
+  // contrast floor without putting a card behind every word. Skipped for
+  // `boxed`, which already carries its own background.
+  const showScrim = style === "shadow" && placement === "lower-third";
+
   return (
     <AbsoluteFill style={{ backgroundColor, fontFamily }}>
-      {placement === "lower-third" ? (
+      {showScrim ? (
         <div
           style={{
             position: "absolute",
             right: 0,
             bottom: 0,
             left: 0,
-            height: "46%",
+            height: "40%",
             background:
-              "linear-gradient(to top, rgba(0,0,0,0.72), rgba(0,0,0,0))",
+              "linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0))",
             pointerEvents: "none",
           }}
         />

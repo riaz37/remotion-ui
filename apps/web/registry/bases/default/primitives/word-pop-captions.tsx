@@ -111,6 +111,12 @@ export const WordPopCaptions: React.FC<WordPopCaptionsProps> = ({
           WebkitTextStroke:
             strokeWidth > 0 ? `${strokeWidth}px ${strokeColor}` : undefined,
           paintOrder: "stroke fill",
+          // Without a stroke, flat color over live footage has no guaranteed
+          // contrast — the shadow is the fallback legibility treatment.
+          textShadow:
+            strokeWidth > 0
+              ? undefined
+              : "0 1px 2px rgba(0,0,0,0.55), 0 6px 18px rgba(0,0,0,0.45)",
         }}
       >
         {word}

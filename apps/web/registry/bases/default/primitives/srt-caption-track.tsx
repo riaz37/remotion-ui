@@ -64,6 +64,8 @@ export type SrtCaptionTrackProps = {
   inactiveColor?: string;
   fontSize?: number;
   textAlign?: "left" | "center";
+  /** Drop shadow for legibility over real footage. Defaults to `true`. */
+  shadow?: boolean;
   style?: CSSProperties;
   className?: string;
 };
@@ -81,6 +83,7 @@ export const SrtCaptionTrack: React.FC<SrtCaptionTrackProps> = ({
   inactiveColor = "#ffffff",
   fontSize,
   textAlign = "center",
+  shadow = true,
   style,
   className,
 }) => {
@@ -173,6 +176,7 @@ export const SrtCaptionTrack: React.FC<SrtCaptionTrackProps> = ({
                 inactiveColor={inactiveColor}
                 fontSize={fontSize}
                 textAlign={textAlign}
+                shadow={shadow}
               />
             )}
           </Sequence>

@@ -29,6 +29,12 @@ export type KaraokeCaptionsProps = {
   /** Underline track behind the wipe. Defaults to `inactiveColor`. */
   trackColor?: string;
   /**
+   * Drop shadow behind every word, tuned for light text over busy real
+   * footage. Set `false` to render flat when the caller already controls
+   * contrast (a solid background, an overlay scrim).
+   */
+  shadow?: boolean;
+  /**
    * Optional frame override.
    * Pass a parent `frame` when using inside `<Sequence from={...}>`.
    */
@@ -36,6 +42,10 @@ export type KaraokeCaptionsProps = {
 };
 
 const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
+
+/** Legible over live-action video without flattening the text like a stroke would. */
+const READABILITY_SHADOW =
+  "0 1px 2px rgba(0,0,0,0.55), 0 6px 18px rgba(0,0,0,0.45)";
 
 /**
  * Caption tokens carry their own leading space. It has to sit outside the
@@ -57,6 +67,7 @@ export const KaraokeCaptions: React.FC<KaraokeCaptionsProps> = ({
   mode = "underline",
   emphasisScale = EMPHASIS.subtle,
   trackColor,
+  shadow = true,
   frame: frameOverride,
 }) => {
   const localFrame = useCurrentFrame();
@@ -78,6 +89,7 @@ export const KaraokeCaptions: React.FC<KaraokeCaptionsProps> = ({
         lineHeight: 1.18,
         textAlign: "center",
         whiteSpace: "pre-wrap",
+        textShadow: shadow ? READABILITY_SHADOW : undefined,
       }}
     >
       {page.tokens.map((token) => {

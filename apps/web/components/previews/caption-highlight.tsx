@@ -35,6 +35,7 @@ export const CaptionHighlightPreview: React.FC = () => {
             inactiveColor={tokens.ink}
             fontSize={scaleFont(62, width)}
             textAlign="center"
+            shadow={false}
           />
         </AbsoluteFill>
       </Loop>

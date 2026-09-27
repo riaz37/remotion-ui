@@ -25,11 +25,21 @@ export type CaptionHighlightProps = {
   /** Peak scale of the active word. Defaults to `EMPHASIS.subtle`. */
   emphasisScale?: number;
   /**
+   * Drop shadow behind every word, tuned for light text over busy real
+   * footage. Set `false` to render flat when the caller already controls
+   * contrast (a solid background, an overlay scrim).
+   */
+  shadow?: boolean;
+  /**
    * Optional frame override.
    * Pass a parent `frame` when using inside `<Sequence from={...}>`.
    */
   frame?: number;
 };
+
+/** Legible over live-action video without flattening the text like a stroke would. */
+const READABILITY_SHADOW =
+  "0 1px 2px rgba(0,0,0,0.55), 0 6px 18px rgba(0,0,0,0.45)";
 
 const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
 
@@ -53,6 +63,7 @@ export const CaptionHighlight: React.FC<CaptionHighlightProps> = ({
   textAlign = "center",
   lineHeight = 1.12,
   emphasisScale = EMPHASIS.subtle,
+  shadow = true,
   frame: frameOverride,
 }) => {
   const localFrame = useCurrentFrame();
@@ -74,6 +85,7 @@ export const CaptionHighlight: React.FC<CaptionHighlightProps> = ({
         lineHeight,
         textAlign,
         whiteSpace: "pre-wrap",
+        textShadow: shadow ? READABILITY_SHADOW : undefined,
       }}
     >
       {page.tokens.map((token) => {

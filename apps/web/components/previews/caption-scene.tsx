@@ -20,17 +20,17 @@ export const CaptionScenePreview: React.FC = () => {
 
   return (
     // Captions are an overlay: showing them over demo footage is the actual
-    // use case, and it proves the lower-third scrim does its job. This still
-    // carries its own copy at the top, so nothing collides with the plate.
+    // use case, and it proves the shadow/scrim treatment reads directly on
+    // real video with no card underneath it.
     <ScenePreviewPlate mediaSrc={DEMO_MEDIA_ALT_SRC}>
       <Loop durationInFrames={Math.round(LOOP_SECONDS * fps)}>
         <CaptionScene
           captions={DEMO_CAPTIONS}
           placement="lower-third"
           mode="highlight"
+          style="shadow"
           activeColor={DEMO_PALETTE.phosphor}
           backgroundColor="transparent"
-          label="Source audio"
         />
       </Loop>
     </ScenePreviewPlate>

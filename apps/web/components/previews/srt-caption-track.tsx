@@ -26,6 +26,7 @@ export const SrtCaptionTrackPreview: React.FC = () => {
           inactiveColor={tokens.ink}
           fontSize={scaleFont(58, width)}
           textAlign="center"
+          shadow={false}
         />
       </AbsoluteFill>
     </PreviewFrame>

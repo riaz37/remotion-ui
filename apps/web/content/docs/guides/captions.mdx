@@ -32,6 +32,29 @@ For a complete 9:16 template:
 
 `CaptionScene` supports `mode`: `highlight`, `karaoke-scale`, or `karaoke-underline`. Flagship compositions default to `karaoke-scale` for social-ready motion.
 
+## Using captions over real footage
+
+These are overlays meant to sit directly on top of your video — there is no
+card or background behind the text by default. Two things matter for that to
+stay legible:
+
+- **Contrast, not decoration.** `CaptionScene` defaults to `style="shadow"`:
+  a drop shadow on the text plus a light bottom scrim on `lower-third`
+  placement, tuned to hold up on live-action footage without putting a
+  visible box in the frame. If your footage is unusually busy or
+  low-contrast (screen recordings with white backgrounds, bright skies),
+  switch to `style="boxed"`, which adds a solid line-hugging background —
+  the same convention YouTube and Instagram use for auto-captions.
+- **Safe area, not raw offsets.** Placement always resolves through the
+  shared safe-area insets (`getSafeAreaPadding`), so captions never sit
+  under a platform's UI chrome (TikTok's reply bar, Reels' caption zone) at
+  the edges of the frame. Don't override `top`/`left` positioning manually —
+  pass `placement="lower-third"` or `placement="center"` instead.
+
+The individual primitives (`CaptionHighlight`, `KaraokeCaptions`,
+`WordPopCaptions`) carry the same `shadow` legibility default when used on
+their own outside of `CaptionScene`.
+
 ## Example
 
 <CodeSnippet label="Example" code={`import { CaptionScene } from "@/remotion/scenes/caption-scene";
@@ -40,7 +63,7 @@ import type { Caption } from "@remotion/captions";
 <CaptionScene
   captions={captions}
   mode="karaoke-scale"
-  pagesPerScene={1}
+  style="shadow"
 />;`} />
 
 See [caption-scene](/docs/components/caption-scene) for the full API and [social-clip](/docs/components/social-clip) for a full template composition.

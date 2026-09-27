@@ -37,6 +37,7 @@ export const KaraokeCaptionsPreview: React.FC = () => {
             inactiveColor={tokens.muted}
             trackColor={tokens.panelBorder}
             fontSize={scaleFont(62, width)}
+            shadow={false}
           />
         </AbsoluteFill>
       </Loop>
