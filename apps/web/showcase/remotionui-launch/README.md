@@ -2,7 +2,7 @@
 
 A 34-second product film (1920×1080, 30 fps) built with Remotion and RemotionUI components. Watch it at [remotionui.com/showcase](https://remotionui.com/showcase).
 
-This folder is the full source: camera rig, timeline, sound cue sheet and scenes. `SPEC.md` documents every beat.
+This folder is the full source: camera rig, timeline, sound cue sheet and scenes.
 
 ## Assets are not included
 
