@@ -10,7 +10,6 @@ import { InstallationSteps } from "@/components/docs/installation-steps";
 import { ComponentsHub } from "@/components/docs/components-hub";
 import { CategoryGrid } from "@/components/docs/category-grid";
 import { InitCommand, InstallCommand, RenderCommand, SearchCommand, CommandRail } from "@/components/install-command";
-import { ShowcaseVideo } from "@/components/showcase-video";
 
 export function getMDXComponents(components?: MDXComponents): MDXComponents {
   // Asserted, not inferred: @react-three/fiber (the 3d registry lane) adds
@@ -33,7 +32,6 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     SearchCommand,
     CodeSnippet,
     CommandRail,
-    ShowcaseVideo,
     ...components,
   } as MDXComponents;
 }

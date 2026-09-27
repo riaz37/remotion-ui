@@ -51,6 +51,12 @@ scripts/render-marketing-demo.sh
 exports/
 apps/web/public/showcases/*.mp4
 
+# Showcase film build inputs (captures, synthesized audio, tiles): local only,
+# never pushed or deployed. They stay in public/ because Remotion reads one
+# public dir and the films also load shared assets from it.
+apps/web/public/remotionui-launch/
+apps/web/public/supabase-demo/
+
 
 # Testing
 coverage/

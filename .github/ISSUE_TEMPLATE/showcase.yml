@@ -1,0 +1,67 @@
+name: Showcase submission
+description: Submit a video you made with RemotionUI for remotionui.com/showcase
+title: "[Showcase]: "
+labels: ["showcase"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing your work. We review every submission and add approved videos to the showcase page.
+        Videos should use at least one RemotionUI component and must not impersonate a brand you don't represent (label unofficial demos as such).
+
+  - type: input
+    id: title
+    attributes:
+      label: Title
+      placeholder: Acme launch video
+    validations:
+      required: true
+
+  - type: input
+    id: video
+    attributes:
+      label: Video link
+      description: A public URL (YouTube, X, Vimeo, your site, or a direct MP4).
+      placeholder: https://
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: One or two sentences on what the video shows and how it was made.
+    validations:
+      required: true
+
+  - type: input
+    id: components
+    attributes:
+      label: RemotionUI components used
+      description: Registry names, comma separated.
+      placeholder: hero-loop, simulated-cursor, word-pop-captions
+    validations:
+      required: true
+
+  - type: input
+    id: author
+    attributes:
+      label: Credit as
+      description: Name and optional link (X, GitHub, or website) to show on the card.
+      placeholder: Jane Doe, https://x.com/janedoe
+    validations:
+      required: true
+
+  - type: input
+    id: source
+    attributes:
+      label: Source code (optional)
+      placeholder: https://github.com/...
+
+  - type: checkboxes
+    id: rights
+    attributes:
+      label: Permission
+      options:
+        - label: I made this video (or have the rights to it) and agree to it being shown on remotionui.com.
+          required: true
