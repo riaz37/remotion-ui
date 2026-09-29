@@ -85,8 +85,8 @@ Warm reference, every sampled frame. Last run 2026-09-30.
 | hamburger-arrow | 66.58 | 1 | 0.001% |
 | lottie-logo-1 | 53.77 | 0.9999 | 0.01% |
 | lottie-logo-2 | 43.94 | 0.9997 | 0.088% |
-| offset-path | 43.66 | 0.9996 | 0.091% |
-| offset-path-animated | 31.95 | 0.9979 | 0.581% |
+| offset-path | 59.68 | 1 | 0.01% |
+| offset-path-animated | 52.53 | 1 | 0.045% |
 | pucker-bloat | 59.90 | 1 | 0.009% |
 | pucker-bloat-animated | 41.90 | 0.9998 | 0.093% |
 | remapping | 65.92 | 1 | 0.002% |
@@ -106,6 +106,3 @@ Warm reference, every sampled frame. Last run 2026-09-30.
 
 ¹ Frame 0 only, where the reference itself is wrong: lottie-web bug 2 above.
 Every other sampled frame of `zig-zag-animated` scores ≥ 58.76 dB.
-
-`offset-path-animated` is an open import-ae defect: large inward offsets on
-sharp corners leave loops in `shape-ops`' `offsetPath`.

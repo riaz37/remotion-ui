@@ -16,9 +16,10 @@ import {
   transformMatrix,
   trim,
   zigZag,
-  zigZagPath,
   type RenderNode,
 } from "../registry/bases/default/lib/lottie-shapes";
+import { zigZagPath } from "../registry/bases/default/lib/shape-ops";
+import { lottieOffsetPath } from "../registry/bases/default/lib/lottie-offset";
 import { layerWorldMatrix, nullLayer, precompFrame, precompLayer, shapeLayer, spatial } from "../registry/bases/default/lib/ae-import";
 
 const ctx = { frame: 0, fps: 30 };
@@ -138,6 +139,38 @@ describe("lottie-shapes", () => {
     const ridged = zigZagPath(square, 10, 3, false);
     expect(ridged.segments.length).toBe(4 * 4 + 1);
     expect(evaluateContents([rect({ size: [100, 100] }), zigZag({ size: 0, ridges: 3 }), fill({ color: "#000" })], ctx)).toHaveLength(1);
+  });
+
+  it("spaces zig-zag ridges evenly along edges whose handles sit on their vertices", () => {
+    // lottie-web rectangles carry zero-length handles; ridges must still fall at
+    // 1/4, 2/4, 3/4 of each edge (lottie-web linearises those handles first).
+    const square = rectPath([0, 0], [100, 100], 0, "clockwise");
+    expect(square.segments[0].c1).toEqual(square.segments[0].p0);
+    const zz = zigZagPath(square, 10, 3, false);
+    // Right edge runs from (50, -50) down to (50, 50): ridge k sits at y = -50 + 25k.
+    const ridgeYs = zz.segments.slice(1, 4).map((s) => Math.round(s.p0.y * 1000) / 1000 + 0);
+    expect(ridgeYs).toEqual([-25, 0, 25]);
+  });
+
+  it("offsets paths the way lottie-web does", () => {
+    const square = rectPath([0, 0], [100, 100], 0, "clockwise");
+    const bounds = (p: ReturnType<typeof lottieOffsetPath>) => {
+      const xs = p.segments.flatMap((s) => [s.p0.x, s.p1.x]);
+      const ys = p.segments.flatMap((s) => [s.p0.y, s.p1.y]);
+      return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)].map((v) => Math.round(v * 1000) / 1000);
+    };
+    // Outward with miter joins: the square grows by the amount on every side.
+    expect(bounds(lottieOffsetPath(square, 10, 1, 4))).toEqual([-60, -60, 60, 60]);
+    // Inward: neighbouring edges cross and are cut back to a sharp corner.
+    expect(bounds(lottieOffsetPath(square, -10, 1, 4))).toEqual([-40, -40, 40, 40]);
+    // Round joins bridge each outer corner with lottie-web's arc (one extra segment per corner).
+    const round = lottieOffsetPath(square, 10, 2, 4);
+    expect(round.segments.length).toBeGreaterThan(square.segments.length);
+    expect(pathLength(round)).toBeGreaterThan(pathLength(square));
+    // An open line is outlined out and back: a closed-looking band two sides wide.
+    const line = { closed: false, segments: [rectPath([0, 0], [100, 0], 0, "clockwise").segments[0]] };
+    expect(lottieOffsetPath(line, 5, 3, 4).segments.length).toBeGreaterThan(1);
+    expect(lottieOffsetPath(square, 0, 1, 4)).toBe(square);
   });
 
   it("blends path keyframes through ae-motion easing", () => {

@@ -14,11 +14,12 @@ import {
   type Vec2,
 } from "./ae-motion";
 import { toD, type BezierPath, type Pt, type Segment } from "./bezier-path";
-import { applyOperator, offsetPath, transformPath, type ShapeItem as OpItem } from "./shape-ops";
-import { ellipsePath, rectPath, starPath, zigZagPath, type Direction } from "./lottie-geometry";
+import { applyOperator, transformPath, zigZagPath, type ShapeItem as OpItem } from "./shape-ops";
+import { lottieOffsetPath, type LineJoinCode } from "./lottie-offset";
+import { ellipsePath, rectPath, starPath, type Direction } from "./lottie-geometry";
 import { resolvePaint, type ResolvedPaint } from "./lottie-paint";
 
-export { ellipsePath, rectPath, starPath, zigZagPath, type Direction } from "./lottie-geometry";
+export { ellipsePath, rectPath, starPath, type Direction } from "./lottie-geometry";
 export { resolveColor, resolveGradientStops, resolvePaint, type ResolvedGradient, type ResolvedPaint } from "./lottie-paint";
 
 /**
@@ -318,8 +319,8 @@ function hexToUnit(hex: string): [number, number, number] {
 
 /**
  * The matrix of a Transform group — anchor, scale, skew, rotation, position,
- * in AE's order. lottie-web measures the skew axis the other way round from
- * `ae-motion`'s `layerMatrix`, so it is negated here to match its playback.
+ * in AE's order (`ae-motion`'s `layerMatrix`, whose skew axis follows
+ * lottie-web's sign).
  */
 export function transformMatrix(transform: ContentTransform | undefined, ctx: EvalContext): Mat2D {
   if (!transform) return [1, 0, 0, 1, 0, 0];
@@ -329,7 +330,7 @@ export function transformMatrix(transform: ContentTransform | undefined, ctx: Ev
     scale: vec(transform.scale, [1, 1], ctx),
     rotation: num(transform.rotation, 0, ctx),
     skew: num(transform.skew, 0, ctx),
-    skewAxis: -num(transform.skewAxis, 0, ctx),
+    skewAxis: num(transform.skewAxis, 0, ctx),
   });
 }
 
@@ -477,7 +478,7 @@ function trimModifier(item: TrimItem, ctx: EvalContext): Modifier {
   };
 }
 
-const JOIN_BY_NAME: Record<LineJoin, "miter" | "round" | "bevel"> = { miter: "miter", round: "round", bevel: "bevel" };
+const JOIN_CODE: Record<LineJoin, LineJoinCode> = { miter: 1, round: 2, bevel: 3 };
 
 function modifierFor(item: TrimItem | OffsetPathItem | ZigZagItem | PuckerBloatItem, ctx: EvalContext): Modifier {
   switch (item.type) {
@@ -485,8 +486,9 @@ function modifierFor(item: TrimItem | OffsetPathItem | ZigZagItem | PuckerBloatI
       return trimModifier(item, ctx);
     case "offset-path": {
       const amount = num(item.amount, 0, ctx);
-      const join = JOIN_BY_NAME[item.lineJoin ?? "miter"];
-      return (shapes) => shapes.map((paths) => paths.map((p) => offsetPath(p, amount, join, item.miterLimit ?? 4)));
+      const join = JOIN_CODE[item.lineJoin ?? "miter"];
+      // lottie-web's own offsetter (see lottie-offset.ts), so imports match their preview.
+      return (shapes) => shapes.map((paths) => paths.map((p) => lottieOffsetPath(p, amount, join, item.miterLimit ?? 4)));
     }
     case "zig-zag": {
       const size = num(item.size, 0, ctx);
