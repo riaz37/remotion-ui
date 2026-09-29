@@ -45,7 +45,8 @@ Attribution: "Lottie Docs" by LottieFiles and contributors.
 | `trim-path.json` | `trim_path.json` |
 | `offset-path-animated.json` | derived from `offset-path.json` (amount keyframed) |
 | `pucker-bloat-animated.json` | derived from `pucker_bloat.json` (amount keyframed) |
-| `zig-zag-animated.json` | derived from `zig-zag.json` (size keyframed, 3 ridges) |
+| `zig-zag-animated.json` | derived from `zig-zag.json` (size keyframed, 3 smooth ridges) |
+| `zig-zag-ridges.json` | derived from `zig-zag.json` (5 corner ridges, size 12) |
 
 Note: the lottie-docs originals set static modifier values for the docs
 playground, so they only prove static geometry; the derived files cover the

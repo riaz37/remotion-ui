@@ -24,6 +24,7 @@ import TrimPathsJson from "../fixtures/trim-paths.json";
 import TrimWrapAroundJson from "../fixtures/trim-wrap-around.json";
 import ZigZagJson from "../fixtures/zig-zag.json";
 import ZigZagAnimatedJson from "../fixtures/zig-zag-animated.json";
+import ZigZagRidgesJson from "../fixtures/zig-zag-ridges.json";
 import { AndroidWaveImport } from "../generated/android-wave";
 import { BouncyBallImport } from "../generated/bouncy-ball";
 import { CheckSwitchImport } from "../generated/check-switch";
@@ -49,6 +50,7 @@ import { TrimPathsImport } from "../generated/trim-paths";
 import { TrimWrapAroundImport } from "../generated/trim-wrap-around";
 import { ZigZagImport } from "../generated/zig-zag";
 import { ZigZagAnimatedImport } from "../generated/zig-zag-animated";
+import { ZigZagRidgesImport } from "../generated/zig-zag-ridges";
 
 export const FIXTURES = [
   { slug: "android-wave", json: AndroidWaveJson, Generated: AndroidWaveImport, fps: 60, width: 400, height: 400, durationInFrames: 123 },
@@ -76,4 +78,5 @@ export const FIXTURES = [
   { slug: "trim-wrap-around", json: TrimWrapAroundJson, Generated: TrimWrapAroundImport, fps: 25, width: 100, height: 100, durationInFrames: 29 },
   { slug: "zig-zag", json: ZigZagJson, Generated: ZigZagImport, fps: 60, width: 512, height: 512, durationInFrames: 180 },
   { slug: "zig-zag-animated", json: ZigZagAnimatedJson, Generated: ZigZagAnimatedImport, fps: 60, width: 512, height: 512, durationInFrames: 180 },
+  { slug: "zig-zag-ridges", json: ZigZagRidgesJson, Generated: ZigZagRidgesImport, fps: 60, width: 512, height: 512, durationInFrames: 180 },
 ] as const;

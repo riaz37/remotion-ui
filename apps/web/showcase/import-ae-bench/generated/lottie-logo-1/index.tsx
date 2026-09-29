@@ -1265,7 +1265,7 @@ const oBLayer = shapeLayer({
     anchor: [196.791, 266.504],
     position: spatial([
       { frame: 31, value: [-62.792, 73.057], interpolation: "linear" },
-      { frame: 35.257, value: [-53.792, 7.557], easeOut: { speed: 337.0813, influence: 0.167 } },
+      { frame: 35.257, value: [-53.792, 7.557], easeOut: { speed: 350.6249, influence: 0.167 } },
       {
         frame: 44,
         value: [-33.667, -72.818],
@@ -1331,7 +1331,7 @@ const oYLayer = shapeLayer({
     anchor: [196.791, 266.504],
     position: spatial([
       { frame: 31, value: [-62.792, 73.057], interpolation: "linear" },
-      { frame: 35.257, value: [-53.792, 7.557], easeOut: { speed: 337.0813, influence: 0.167 } },
+      { frame: 35.257, value: [-53.792, 7.557], easeOut: { speed: 350.6249, influence: 0.167 } },
       {
         frame: 44,
         value: [-33.667, -72.818],

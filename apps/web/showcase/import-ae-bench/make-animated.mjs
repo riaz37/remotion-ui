@@ -47,6 +47,13 @@ derive("zig-zag.json", "zig-zag-animated.json", "zz", (item) => {
   item.r = { a: 0, k: 3 };
 });
 
+// Ridges between vertices, corner points: the original uses 0 ridges, smooth.
+derive("zig-zag.json", "zig-zag-ridges.json", "zz", (item) => {
+  item.s = { a: 0, k: 12 };
+  item.r = { a: 0, k: 5 };
+  item.pt = { a: 0, k: 1 };
+});
+
 // lottie-android's Repeater.json stacks two repeaters, which lottie-web draws
 // differently from AE's rule; a single-repeater variant isolates the animated
 // offset / anchor / rotation maths so it can be scored against lottie-web.

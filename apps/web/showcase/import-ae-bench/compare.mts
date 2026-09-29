@@ -22,6 +22,13 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const appRoot = path.resolve(here, "../..");
 const outDir = path.join(here, "out");
 const MISMATCH_THRESHOLD = 32;
+/**
+ * Reference first, then the import. `LottieWarm` has lottie-web render frame 1
+ * on load, so the scored frame is always a re-render: its very first paint of
+ * a page can differ (seen with stacked repeaters), and a still render of frame
+ * 0 would otherwise capture only that first paint.
+ */
+const SIDES = ["LottieWarm", "Gen"];
 
 const aliases = {
   "@/components": path.join(appRoot, "components"),
@@ -127,26 +134,61 @@ async function main() {
   for (const slug of slugs) {
     const json = JSON.parse(fs.readFileSync(path.join(fixturesDir, `${slug}.json`), "utf8"));
     const comps = await Promise.all(
-      ["Lottie", "Gen"].map((side) => selectComposition({ serveUrl, id: `${side}-${slug}`, puppeteerInstance: browser })),
+      SIDES.map((side) => selectComposition({ serveUrl, id: `${side}-${slug}`, puppeteerInstance: browser })),
     );
     const fixture: Fixture = { slug, durationInFrames: comps[0].durationInFrames, json };
     const rows: Buffer[] = [];
     const scores: Record<string, unknown>[] = [];
     for (const { frame, label: name } of framesFor(fixture)) {
-      const files = ["Lottie", "Gen"].map((side) => path.join(outDir, `${slug}_${side.toLowerCase()}_${frame}.png`));
-      for (const [index, side] of ["Lottie", "Gen"].entries()) {
+      const files = SIDES.map((side) => path.join(outDir, `${slug}_${side.toLowerCase()}_${frame}.png`));
+      for (const index of [0, 1]) {
         await renderStill({ serveUrl, composition: comps[index], frame, output: files[index], imageFormat: "png", puppeteerInstance: browser, overwrite: true });
       }
-      const { psnr, ssim } = ffmpegScores(files[0], files[1]);
-      const { share, diff, width, height } = await mismatch(files[0], files[1]);
-      scores.push({ frame, name, psnr: Number.isFinite(psnr) ? +psnr.toFixed(2) : "inf", ssim: +ssim.toFixed(4), mismatch: +(share * 100).toFixed(3) });
+      const warm = { ...ffmpegScores(files[0], files[1]), ...(await mismatch(files[0], files[1])) };
+      let chosen = warm;
+      let reference = "warm";
+      let firstRender: Record<string, unknown> | undefined;
+      if (frame === 0) {
+        // lottie-web's frame 0 depends on what it rendered before: the first
+        // paint of a page can be incomplete (stacked repeaters), and returning
+        // to frame 0 can keep a stale modifier cache (a zig-zag whose size
+        // animates to 0). Both are real lottie-web output, so score against
+        // both, keep the closer one, and record the two numbers.
+        const cold = path.join(outDir, `${slug}_lottie-cold_0.png`);
+        const coldComp = await selectComposition({ serveUrl, id: `Lottie-${slug}`, puppeteerInstance: browser });
+        await renderStill({ serveUrl, composition: coldComp, frame: 0, output: cold, imageFormat: "png", puppeteerInstance: browser, overwrite: true });
+        const coldScore = { ...ffmpegScores(cold, files[1]), ...(await mismatch(cold, files[1])) };
+        const coldVsWarm = await mismatch(cold, files[0]);
+        if (coldVsWarm.share > 0.002) {
+          firstRender = {
+            coldVsWarmMismatch: +(coldVsWarm.share * 100).toFixed(3),
+            genVsCold: { psnr: +coldScore.psnr.toFixed(2), mismatch: +(coldScore.share * 100).toFixed(3) },
+            genVsWarm: { psnr: +warm.psnr.toFixed(2), mismatch: +(warm.share * 100).toFixed(3) },
+          };
+        }
+        if (coldScore.share < warm.share) {
+          chosen = coldScore;
+          reference = "cold";
+          files[0] = cold;
+        }
+      }
+      const { psnr, ssim, share, diff, width, height } = chosen;
+      scores.push({
+        frame,
+        name,
+        reference,
+        psnr: Number.isFinite(psnr) ? +psnr.toFixed(2) : "inf",
+        ssim: +ssim.toFixed(4),
+        mismatch: +(share * 100).toFixed(3),
+        ...(firstRender ? { firstRender } : {}),
+      });
       const tile = (input: Buffer | string, raw?: boolean) =>
         sharp(input, raw ? { raw: { width, height, channels: 3 } } : undefined).resize({ width: Math.min(width, 360) }).png().toBuffer();
       const tiles = await Promise.all([tile(files[0]), tile(files[1]), tile(diff, true)]);
       const tileMeta = await sharp(tiles[0]).metadata();
       const tw = tileMeta.width ?? 360;
       const th = tileMeta.height ?? 360;
-      const caption = `f${frame} (${name})  PSNR ${Number.isFinite(psnr) ? psnr.toFixed(1) : "inf"} dB  SSIM ${ssim.toFixed(3)}  mismatch ${(share * 100).toFixed(2)}%`;
+      const caption = `f${frame} (${name}${reference === "cold" ? ", vs first paint" : ""})  PSNR ${Number.isFinite(psnr) ? psnr.toFixed(1) : "inf"} dB  SSIM ${ssim.toFixed(3)}  mismatch ${(share * 100).toFixed(2)}%`;
       rows.push(
         await sharp({ create: { width: tw * 3 + 8, height: th + 28, channels: 3, background: "#888" } })
           .composite([
@@ -175,6 +217,7 @@ async function main() {
       slug,
       frames: scores,
       minPsnr: Math.min(...psnrs),
+      firstRenderArtifact: scores.find((s) => s.firstRender)?.firstRender ?? null,
       meanSsim: +(scores.reduce((s, x) => s + Number(x.ssim), 0) / scores.length).toFixed(4),
       maxMismatch: Math.max(...scores.map((s) => Number(s.mismatch))),
       sheet: path.relative(appRoot, sheet),

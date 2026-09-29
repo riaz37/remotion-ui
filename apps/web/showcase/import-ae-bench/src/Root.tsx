@@ -28,7 +28,22 @@ const Playback = ({ slug }: { slug: string }) => (
   </AbsoluteFill>
 );
 
-const Generated = ({ slug }: { slug: string }) => {
+/**
+ * Diagnostic: lottie-web's very first render of a page can differ from a later
+ * render of the same frame. This variant renders frame 1 on load, so every
+ * frame, frame 0 included, is a re-render.
+ */
+const PlaybackWarm = ({ slug }: { slug: string }) => (
+  <AbsoluteFill style={{ backgroundColor: background(slug) }}>
+    <Lottie
+      animationData={bySlug.get(slug)!.json as unknown as LottieAnimationData}
+      style={{ width: "100%", height: "100%" }}
+      onAnimationLoaded={(animation) => animation.goToAndStop(1, true)}
+    />
+  </AbsoluteFill>
+);
+
+const Generated =({ slug }: { slug: string }) => {
   const Component: ComponentType = bySlug.get(slug)!.Generated;
   return (
     <AbsoluteFill style={{ backgroundColor: background(slug) }}>
@@ -44,6 +59,18 @@ export const Root = () => (
         key={`lottie-${f.slug}`}
         id={`Lottie-${f.slug}`}
         component={Playback}
+        defaultProps={{ slug: f.slug }}
+        durationInFrames={f.durationInFrames}
+        fps={f.fps}
+        width={f.width}
+        height={f.height}
+      />
+    ))}
+    {FIXTURES.map((f) => (
+      <Composition
+        key={`warm-${f.slug}`}
+        id={`LottieWarm-${f.slug}`}
+        component={PlaybackWarm}
         defaultProps={{ slug: f.slug }}
         durationInFrames={f.durationInFrames}
         fps={f.fps}
