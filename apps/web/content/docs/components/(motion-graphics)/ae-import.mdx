@@ -1,0 +1,105 @@
+---
+title: "Import from After Effects"
+description: "remotion-ui import-ae converts a Bodymovin / Lottie JSON export into editable Remotion TSX built on ae-motion: named layer components, keyframes as data, and a composition with the right size, fps and length."
+new: true
+---
+
+`@remotion/lottie` plays a Lottie file back. `import-ae` turns it into **source**: React components you can read, edit, parametrize and retime, built on the [`ae-motion`](/docs/components/ae-motion) primitives. Keyframes become `ae-motion` tracks with AE's own speed/influence easing, layers become named components, and nothing runs `lottie-web` at render time.
+
+```bash
+npx remotion-ui@latest import-ae hero.json
+```
+
+Inside a RemotionUI project this writes `src/compositions/hero/index.tsx` (plus one file per precomp), registers the composition in `Root.tsx` with the export's width, height, fps and duration, and installs the `ae-import` runtime (which pulls in `ae-motion`, `bezier-path` and `shape-ops`).
+
+| Flag | Effect |
+|------|--------|
+| `-o, --out <dir>` | Output directory. Default: `<compositions alias>/<name>`, or `./<name>` outside a project. |
+| `-n, --name <Name>` | Component and composition id (PascalCase). Default: the export's name, else the file name. |
+| `--skip-unsupported` | Generate even when the file uses unsupported features. They are listed at the top of the generated file and printed. |
+| `-f, --force` | Overwrite files from an earlier import. |
+| `--no-register` | Leave `Root.tsx` alone. |
+| `--no-install` | Do not install the `ae-import` runtime. |
+| `--json` | Machine-readable result, including every finding with its JSON path. |
+
+## What you get
+
+From the lottie-docs bouncing ball, lightly abridged:
+
+```tsx
+/** "Layer" — shape layer, frames 0–120. */
+const layerLayer = shapeLayer({
+  name: "Layer",
+  inPoint: 0,
+  outPoint: 120,
+  contents: [
+    group(
+      "Ellipse Group",
+      [ellipse({ position: [204, 169], size: [153, 153] }), fill({ color: "#b53046" })],
+      {
+        anchor: [204, 169],
+        position: [
+          { frame: 0, value: [235, 106], easeOut: { speed: 0, influence: 0.333 } },
+          { frame: 60, value: [265, 441], easeIn: { speed: 0, influence: 0.001 } },
+          { frame: 120, value: [235, 106], easeIn: { speed: 0, influence: 0.333 } },
+        ],
+      },
+    ),
+  ],
+});
+
+export const Layer = () => <AeLayer layer={layerLayer} />;
+
+export const BouncyBall = () => (
+  <AeComposition width={512} height={512} fps={60}>
+    <Layer />
+  </AeComposition>
+);
+```
+
+- **Keyframes are data.** Frames are composition frames; `speed` is units per second and `influence` 0–1, exactly what AE's Keyframe Velocity dialog shows. Scale is a factor (`1` = 100%) and opacity 0–1. Change a key, re-render.
+- **Layers are components**, listed bottom of the AE timeline first, so later children draw on top. Reorder, wrap or delete them like any JSX.
+- **Parenting is a reference**: `parent: rigLayer`. Null layers are plain data.
+- **Every value is `Animatable`**: swap a track for a number or an expression `({ frame, time, fps }) => value` to parametrize it from props.
+
+## Supported
+
+| Area | Imported |
+|------|----------|
+| Layers | Shape, solid, null, precomp (clipped to its size, as lottie-web does) |
+| Timing | In/out points, precomp start time, time stretch, time remap, the export's first frame (`ip`) |
+| Transform | Anchor, position (spatial bézier paths, separate dimensions), scale, rotation, opacity, skew, parenting |
+| Shapes | Group, path (incl. animated paths), rectangle, ellipse, star, polygon |
+| Styles | Fill, stroke (caps, joins, miter limit, dashes), gradient fill and stroke (linear, radial with highlight, opacity stops) |
+| Modifiers | Trim Paths (simultaneous and individual, offset, wrap-around), Repeater, Offset Paths, Zig Zag, Pucker & Bloat |
+| Easing | Bézier (exact speed/influence mapping), linear, hold, per-dimension curves (split into separate tracks) |
+
+Stacking follows AE and lottie-web: a style paints every path above it in its group, nested groups included; a modifier reshapes every path above it, and every style drawing that path sees the result; a repeater copies everything above it, styles included.
+
+## Not supported — fails loudly
+
+By default `import-ae` refuses to write anything when the file uses a feature it cannot carry over, and prints each one with the layer, group and JSON path. `--skip-unsupported` generates the rest and lists what was left out in the generated file's header.
+
+- Text layers, image / video / footage layers, cameras, lights, audio (an unsupported layer is kept as a null so layers parented to it still move)
+- Masks, track mattes (the matte source is kept but hidden), layer effects, blend modes
+- Expressions (the pre-expression value is used)
+- 3D layers and auto-orient
+- Round Corners, Merge Paths, Twist
+- Wiggle Paths: Bodymovin does not export it, so there is nothing to import. Add `shape-ops`' `wiggle` operator by hand.
+
+Hidden layers and hidden items import with `hidden: true`, so you can switch them back on.
+
+## Fidelity
+
+Measured by rendering each fixture with `@remotion/lottie` and with the generated TSX at the same frames (first, a keyframe, both quarters, middle, last), then scoring PSNR, SSIM and the share of pixels differing by more than 32/255. The bench, 25 fixtures from Airbnb's lottie-android tests (Apache-2.0) and the lottie-docs examples (CC BY 4.0), lives in `apps/web/showcase/import-ae-bench`.
+
+- 22 of 25 fixtures match lottie-web at **≥ 41.9 dB minimum PSNR** and **≤ 0.17% mismatched pixels** on every sampled frame, including Airbnb's Lottie logo animations. The remaining difference is anti-aliasing along edges.
+- An animated Offset Paths fixture scores 32 dB: large inward offsets on sharp corners draw stray spikes (see below).
+- The two repeater fixtures with animated offsets differ by design, see below.
+
+## Known differences
+
+- **Repeaters with styles below them.** When a repeater's fill or stroke sits below the repeater and its offset is non-zero, lottie-web also draws the original, un-repeated shape. `import-ae` draws exactly `copies` instances, as AE does. Two repeaters stacked in one group also diverge from lottie-web for the same reason.
+- **Repeater position and rotation** combine the way lottie-web does (position steps do not curl with rotation).
+- **Offset Paths** uses `shape-ops`' offsetter. Outward offsets and small insets match; a large inward offset on a sharp corner (e.g. −20 px on a star) leaves self-intersection loops that draw as spikes, and round joins are slightly tighter than lottie-web's.
+- Colours floor to 0–255 and gradient offsets round to whole percents, both as lottie-web does.

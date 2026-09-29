@@ -10,6 +10,7 @@
     "slit-scan",
     "ik-rig",
     "track-matte",
-    "follow-through"
+    "follow-through",
+    "ae-import"
   ]
 }
