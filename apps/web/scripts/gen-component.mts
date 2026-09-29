@@ -4,10 +4,16 @@
  *   pnpm gen:component <slug> [--kind primitive|block] [--dry-run] [--force]
  *   pnpm gen:component --lane cuts            # every unbuilt slug in a lane
  *   pnpm gen:component --list                 # what the spec still owes
+ *   pnpm gen:component my-slug --lane motion --tier core --tags text --intent "One line."
  *
- * The slug's lane, tags, tier and one-line intent come from the expansion spec
- * (docs-internal/expansion-200-spec.md) so the spec stays the single source of
- * truth and this script never invents metadata.
+ * The slug's lane, tags, tier and one-line intent come from a spec, so the spec
+ * stays the single source of truth and this script never invents metadata.
+ * Two spec files are read and merged:
+ *   - registry/component-spec.md (committed; always present)
+ *   - docs-internal/expansion-200-spec.md (untracked; optional, read if present)
+ * A slug in neither can still be scaffolded by passing its metadata inline with
+ * --lane/--tier/--tags/--intent, so a fresh clone is never blocked on a file it
+ * cannot have.
  *
  * Every write is idempotent: a registration point that already mentions the slug
  * is left alone and reported as `skip`. Re-running after a hand-edit is safe.
@@ -23,7 +29,10 @@ import { fileURLToPath } from "node:url";
 
 const WEB = join(dirname(fileURLToPath(import.meta.url)), "..");
 const REPO = join(WEB, "..", "..");
-const SPEC = join(REPO, "docs-internal", "expansion-200-spec.md");
+/** Committed spec — lives with the registry, so every clone has it. */
+const COMMITTED_SPEC = join(WEB, "registry", "component-spec.md");
+/** The original expansion spec. Untracked; merged in only when present. */
+const EXPANSION_SPEC = join(REPO, "docs-internal", "expansion-200-spec.md");
 
 type Lane =
   | "atoms"
@@ -71,16 +80,20 @@ const LANE_DRIVE: Record<Lane, string> = {
  * generator a list of duplicates.
  */
 function parseSpec(): SpecEntry[] {
-  if (!existsSync(SPEC)) {
-    throw new Error(
-      `Spec not found: ${SPEC}\n\n` +
-        "docs-internal/ is deliberately untracked, so a fresh clone never carries " +
-        "the spec this generator reads. Restore expansion-200-spec.md at that path " +
-        "to run gen:component.",
-    );
+  const files = [COMMITTED_SPEC, EXPANSION_SPEC].filter((file) => existsSync(file));
+  const bySlug = new Map<string, SpecEntry>();
+  for (const file of files) {
+    for (const entry of parseSpecFile(readFileSync(file, "utf8"))) {
+      // The committed spec wins: it is the one kept current with the registry.
+      if (!bySlug.has(entry.slug)) bySlug.set(entry.slug, entry);
+    }
   }
-  const text = readFileSync(SPEC, "utf8");
-  const stop = text.indexOf("## Rejected");
+  return [...bySlug.values()];
+}
+
+function parseSpecFile(text: string): SpecEntry[] {
+  // Only a real heading ends the parse — prose that mentions it must not.
+  const stop = text.search(/^## Rejected\b/m);
   const body = stop === -1 ? text : text.slice(0, stop);
   const lines = body.split("\n");
 
@@ -312,7 +325,7 @@ description: ${JSON.stringify(`${firstSentence(e.intent)}. Install with npx remo
 
 import { ${Name}Preview } from '@/components/previews/${e.slug}';
 
-<ComponentPage name="${e.slug}" preview={${Name}Preview} durationInFrames={120}>
+<ComponentPage name="${e.slug}" preview={${Name}Preview}>
 
 ${e.intent}
 
@@ -353,7 +366,9 @@ function generate(e: SpecEntry, kindOverride: Kind | undefined, force: boolean) 
       type: kind === "block" ? "registry:block" : "registry:ui",
       description: firstSentence(e.intent),
       dependencies: ["remotion"],
-      registryDependencies: ["layout"],
+      // Real dependencies are filled in with the implementation; a placeholder
+      // here would ship to installers as a lie.
+      registryDependencies: [],
       files: [{ path: filePath, type: kind === "block" ? "registry:block" : "registry:ui" }],
     });
     if (!DRY) writeFileSync(registryPath, JSON.stringify(registry, null, 2) + "\n");
@@ -425,7 +440,31 @@ const kindArg = argv.includes("--kind")
   ? (argv[argv.indexOf("--kind") + 1] as Kind)
   : undefined;
 const laneArg = argv.includes("--lane") ? (argv[argv.indexOf("--lane") + 1] as Lane) : undefined;
-const slugs = argv.filter((a) => !a.startsWith("--") && a !== kindArg && a !== laneArg);
+/** Flags that take a value; their values are never slugs. */
+const VALUE_FLAGS = new Set(["--kind", "--lane", "--tier", "--tags", "--intent"]);
+const slugs = argv.filter((a, i) => !a.startsWith("--") && !VALUE_FLAGS.has(argv[i - 1] ?? ""));
+
+/**
+ * Metadata passed on the command line, for a slug no spec file lists yet.
+ * `--lane` doubles as the lane filter when no slugs are given, so it only
+ * counts as inline metadata alongside an explicit slug and an intent.
+ */
+function inlineEntry(args: string[]): Omit<SpecEntry, "slug"> | null {
+  const value = (flag: string) => (args.includes(flag) ? args[args.indexOf(flag) + 1] : undefined);
+  const lane = value("--lane") as Lane | undefined;
+  const intent = value("--intent");
+  if (!lane || !intent) return null;
+  if (!(lane in LANE_DRIVE)) {
+    console.error(`Unknown lane "${lane}". Known lanes: ${Object.keys(LANE_DRIVE).join(", ")}`);
+    process.exit(1);
+  }
+  return {
+    lane,
+    tier: value("--tier") === "advanced" ? "advanced" : "core",
+    tags: (value("--tags") ?? "").split(",").map((t) => t.trim()).filter(Boolean),
+    intent,
+  };
+}
 
 const spec = parseSpec();
 const built = new Set(
@@ -447,15 +486,18 @@ if (argv.includes("--list")) {
 }
 
 let targets: SpecEntry[];
-if (laneArg) {
+if (laneArg && slugs.length === 0) {
   targets = spec.filter((e) => e.lane === laneArg && !built.has(e.slug));
 } else if (slugs.length) {
+  const inline = inlineEntry(argv);
   targets = slugs.map((s) => {
-    const found = spec.find((e) => e.slug === s);
+    const found = spec.find((e) => e.slug === s) ?? (inline ? { ...inline, slug: s } : undefined);
     if (!found) {
       console.error(
         `\n"${s}" is not in the spec.\n` +
-          `Add it to ${rel(SPEC)} first — the spec is the source of truth, and the\n` +
+          `Add it to ${rel(COMMITTED_SPEC)} first — the spec is the source of truth, and the\n` +
+          `Rejected table there exists so duplicates do not get rebuilt. Or pass its metadata\n` +
+          `inline: --lane <lane> --tier core|advanced --tags a,b --intent "One sentence."\n\n` +
           `Rejected table there exists so duplicates do not get rebuilt.\n`,
       );
       process.exit(1);
