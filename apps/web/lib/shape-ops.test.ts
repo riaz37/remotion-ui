@@ -229,6 +229,34 @@ describe("path operators", () => {
     dy.forEach((y) => expect(y).toBeCloseTo(dy[0], 6));
   });
 
+  it("transform scale accepts a scalar or a non-uniform [sx, sy], animated or not", () => {
+    const [uniform] = run([square], [{ op: "transform", scale: 2 }]);
+    expect(uniform.path.segments[1].p0).toMatchObject({ x: 200, y: 0 });
+    const [wide] = run([square], [{ op: "transform", scale: [2, 0.5] }]);
+    expect(wide.path.segments[2].p0.x).toBeCloseTo(200);
+    expect(wide.path.segments[2].p0.y).toBeCloseTo(50);
+    const [keyed] = run(
+      [square],
+      [{ op: "transform", scale: [{ frame: 0, value: [1, 1] }, { frame: 10, value: [3, 1] }] }],
+      5,
+    );
+    expect(keyed.path.segments[2].p0.x).toBeCloseTo(200);
+    expect(keyed.path.segments[2].p0.y).toBeCloseTo(100);
+  });
+
+  it("transform applies skew with the shared layer convention", () => {
+    const [skewed] = run([square], [{ op: "transform", skew: 45 }]);
+    // Skew 45 about the x axis shears x by -tan(45) * y.
+    expect(skewed.path.segments[2].p0.x).toBeCloseTo(0);
+    expect(skewed.path.segments[2].p0.y).toBeCloseTo(100);
+  });
+
+  it("repeater scale can be non-uniform", () => {
+    const items = run([square], [{ op: "repeater", copies: 2, position: [0, 0], scale: [2, 1], composite: "above" }]);
+    expect(items[1].path.segments[1].p0.x).toBeCloseTo(200);
+    expect(items[1].path.segments[2].p0.y).toBeCloseTo(100);
+  });
+
   it("reports unknown operators clearly", () => {
     expect(() => run([line], [{ op: "nope" } as unknown as ShapeOperator])).toThrow(/unknown operator/);
   });

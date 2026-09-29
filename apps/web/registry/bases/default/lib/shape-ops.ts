@@ -40,6 +40,8 @@ import { fitPolyline } from "./curve-fit";
 
 type A = Animatable<number>;
 type AV = Animatable<Vec2>;
+/** A scale: one factor for both axes, or `[sx, sy]`. Either may be animated. */
+type AS = Animatable<number> | Animatable<Vec2>;
 
 export type ShapeSource =
   | { type: "path"; d: string }
@@ -78,8 +80,8 @@ export type RepeaterOp = {
   anchor?: AV;
   /** Step between copies. */
   position?: AV;
-  /** Scale factor per copy; compounds. */
-  scale?: A;
+  /** Scale per copy — a factor or `[sx, sy]`; compounds. */
+  scale?: AS;
   /** Degrees per copy; compounds. */
   rotation?: A;
   startOpacity?: A;
@@ -136,8 +138,13 @@ export type TransformOp = {
   op: "transform";
   anchor?: AV;
   position?: AV;
-  scale?: A;
+  /** A factor, or `[sx, sy]` for non-uniform scale. */
+  scale?: AS;
   rotation?: A;
+  /** Degrees of shear, as a shape group's Transform has in AE. */
+  skew?: A;
+  /** Degrees; the axis the shear runs along (lottie-web's sign). */
+  skewAxis?: A;
   opacity?: A;
 };
 
@@ -167,6 +174,12 @@ const num = (value: A | undefined, fallback: number, ctx: Ctx): number =>
 
 const vec = (value: AV | undefined, fallback: Vec2, ctx: Ctx): Vec2 =>
   value === undefined ? fallback : resolveAnimatable(value, ctx.frame, { fps: ctx.fps });
+
+/** A scale resolved for one frame: a factor stays a factor, a pair stays a pair. */
+const scaleOf = (value: AS | undefined, ctx: Ctx): number | Vec2 =>
+  value === undefined
+    ? 1
+    : (resolveAnimatable(value as Animatable<number | Vec2>, ctx.frame, { fps: ctx.fps }) as number | Vec2);
 
 // ------------------------------------------------------------------ shapes
 
@@ -392,7 +405,7 @@ function applyRepeater(items: ShapeItem[], op: RepeaterOp, ctx: Ctx): ShapeItem[
   const step = {
     anchor: vec(op.anchor, [0, 0], ctx),
     position: vec(op.position, [100, 0], ctx),
-    scale: num(op.scale, 1, ctx),
+    scale: scaleOf(op.scale, ctx),
     rotation: num(op.rotation, 0, ctx),
   };
 
@@ -785,8 +798,10 @@ function applyTransform(items: ShapeItem[], op: TransformOp, ctx: Ctx): ShapeIte
   const matrix = layerMatrix({
     anchor: vec(op.anchor, [0, 0], ctx),
     position: vec(op.position, [0, 0], ctx),
-    scale: num(op.scale, 1, ctx),
+    scale: scaleOf(op.scale, ctx),
     rotation: num(op.rotation, 0, ctx),
+    skew: num(op.skew, 0, ctx),
+    skewAxis: num(op.skewAxis, 0, ctx),
   });
   const opacity = num(op.opacity, 1, ctx);
   return items.map((item) => ({
