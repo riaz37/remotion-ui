@@ -568,22 +568,75 @@ function segmentIntersection(a: Pt, b: Pt, c: Pt, d: Pt): Pt | null {
   return { x: a.x + rx * t, y: a.y + ry * t };
 }
 
+function polygonArea(points: readonly Pt[]): number {
+  let area = 0;
+  for (let i = 0; i < points.length; i += 1) {
+    const a = points[i];
+    const b = points[(i + 1) % points.length];
+    area += a.x * b.y - b.x * a.y;
+  }
+  return area / 2;
+}
+
 /**
- * An inward offset pushes the samples near a concave corner (or around a
- * curve tighter than the offset) past each other, so the line doubles back
- * and ties a small loop — a swallowtail. Each loop is local, so every segment
- * is tested against the next `window` segments and, where they cross, the
- * points between are replaced by the crossing.
+ * Offsetting ties loops wherever the offset distance exceeds the local
+ * radius: swallowtails at concave corners on the way out, and long ones at
+ * acute tips on the way in. Every such loop winds the *opposite* way to the
+ * path — that is what makes it an artefact rather than part of the shape —
+ * so each crossing's loop is removed only if its winding is inverted. A loop
+ * that winds the same way is a genuine island (an inset that pinches a shape
+ * in two) and is left alone.
+ *
+ * Every segment pair is tested, with a bounding-box reject: a windowed search
+ * missed the long loops at acute tips (a star inset by 20px kept all five).
  */
-function removeLocalLoops(points: readonly Pt[], window: number): Pt[] {
-  const out = [...points];
-  for (let i = 0; i < out.length - 3; i += 1) {
-    const limit = Math.min(out.length - 1, i + window);
-    for (let j = limit - 1; j >= i + 2; j -= 1) {
-      const hit = segmentIntersection(out[i], out[i + 1], out[j], out[j + 1]);
-      if (hit) {
-        out.splice(i + 1, j - i, hit);
-        break;
+function removeInvertedLoops(points: readonly Pt[], closed: boolean): Pt[] {
+  let out = [...points];
+  const orientation = Math.sign(polygonArea(out)) || 1;
+  let restarted = true;
+  let guard = 0;
+  while (restarted && guard < 256) {
+    restarted = false;
+    guard += 1;
+    const n = out.length;
+    const segments = closed ? n : n - 1;
+    outer: for (let i = 0; i < segments; i += 1) {
+      const a = out[i];
+      const b = out[(i + 1) % n];
+      const minX = Math.min(a.x, b.x);
+      const maxX = Math.max(a.x, b.x);
+      const minY = Math.min(a.y, b.y);
+      const maxY = Math.max(a.y, b.y);
+      for (let j = i + 2; j < segments; j += 1) {
+        if (closed && i === 0 && j === n - 1) continue;
+        const c = out[j];
+        const d = out[(j + 1) % n];
+        if (Math.max(c.x, d.x) < minX || Math.min(c.x, d.x) > maxX) continue;
+        if (Math.max(c.y, d.y) < minY || Math.min(c.y, d.y) > maxY) continue;
+        const hit = segmentIntersection(a, b, c, d);
+        if (!hit) continue;
+        // Collinear back-and-forth loops (square corners) have zero area, and
+        // floating-point noise must not give them a winding to hide behind.
+        const isArtefact = (loop: Pt[]) => {
+          const area = polygonArea(loop);
+          return Math.abs(area) < 0.5 || Math.sign(area) !== orientation;
+        };
+        const inner = [hit, ...out.slice(i + 1, j + 1)];
+        if (isArtefact(inner)) {
+          out = [...out.slice(0, i + 1), hit, ...out.slice(j + 1)];
+          restarted = true;
+          break outer;
+        }
+        // On a closed path the loop may be the other side of the crossing —
+        // the one that runs across the seam where the point list starts.
+        if (closed) {
+          const across = [hit, ...out.slice(j + 1), ...out.slice(0, i + 1)];
+          if (isArtefact(across)) {
+            out = inner;
+            restarted = true;
+            break outer;
+          }
+        }
       }
     }
   }
@@ -641,10 +694,9 @@ export function offsetPath(
     emit({ x: p.x + n1.x * d, y: p.y + n1.y * d });
     emit({ x: p.x + n2.x * d, y: p.y + n2.y * d });
   }
-  const window = Math.ceil((Math.abs(d) * 2) / FLATTEN_SPACING) + 6;
   // Offsetting is exact on dense points; fitting brings the result back to a
   // few real bézier curves, and corner detection keeps miters and bevels sharp.
-  return fitPolyline(removeLocalLoops(out, window), path.closed);
+  return fitPolyline(removeInvertedLoops(out, path.closed), path.closed);
 }
 
 function applyOffset(items: ShapeItem[], op: OffsetOp, ctx: Ctx): ShapeItem[] {

@@ -63,6 +63,33 @@ describe("offset paths output", () => {
     for (const p of samples(out)) expect(Math.abs(Math.hypot(p.x, p.y) - 120)).toBeLessThan(0.6);
   });
 
+  it("insets an acute star without leaving self-intersection loops", () => {
+    // Regression: the windowed loop removal missed the long swallowtails an
+    // inward offset ties at a star's acute tips (reported by import-ae).
+    const [star] = evaluateShapeStack({
+      shapes: [{ type: "star", points: 5, outerRadius: 100, innerRadius: 40 }],
+      frame: 0,
+    });
+    const inset = offsetPath(star.path, -20);
+    const poly = samples(inset, 12);
+    const crossings: string[] = [];
+    for (let i = 0; i < poly.length; i += 1) {
+      for (let j = i + 2; j < poly.length; j += 1) {
+        if (i === 0 && j === poly.length - 1) continue;
+        const [a, b, c, d] = [poly[i], poly[(i + 1) % poly.length], poly[j], poly[(j + 1) % poly.length]];
+        const den = (b.x - a.x) * (d.y - c.y) - (b.y - a.y) * (d.x - c.x);
+        if (Math.abs(den) < 1e-12) continue;
+        const t = ((c.x - a.x) * (d.y - c.y) - (c.y - a.y) * (d.x - c.x)) / den;
+        const u = ((c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x)) / den;
+        if (t > 1e-6 && t < 1 - 1e-6 && u > 1e-6 && u < 1 - 1e-6) crossings.push(`${i}x${j}`);
+      }
+    }
+    expect(crossings).toEqual([]);
+    // Every point of the inset sits (about) 20px inside the star's outline.
+    const outline = samples(star.path, 24);
+    for (const p of poly) expect(distanceToPolyline(p, outline, true)).toBeGreaterThan(19);
+  });
+
   it("falls back to a bevel when a corner exceeds the miter limit, as in AE", () => {
     // A 20-degree spike: its miter would reach 1/sin(10deg) = 5.8x the offset.
     const [spike] = parseD("M0 0 L200 35 L0 70 Z");
