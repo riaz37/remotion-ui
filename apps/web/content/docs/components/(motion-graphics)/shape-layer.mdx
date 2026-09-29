@@ -8,7 +8,7 @@ import { ShapeLayerPreview } from '@/components/previews/shape-layer';
 
 <ComponentPage name="shape-layer" preview={ShapeLayerPreview}>
 
-Shapes at the top, then an operator stack that runs top to bottom, each operator reading what the ones above it produced. Order is the feature: a Trim Paths **below** a Repeater treats every copy as one line and draws through them in turn, and the same Trim **above** it draws every copy at once. The preview is one star and four operators; the faint layer underneath is the same stack without the trim.
+Shapes at the top, then an operator stack that runs top to bottom, each operator reading what the ones above it produced. Order is the feature: a Trim Paths **below** a Repeater treats every copy as one line and draws through them in turn, and the same Trim **above** it draws every copy at once. The preview is three layers built from one shared stack: behind, a rounded pentagon through Offset Paths with ten looping copies ripples contour lines out past the frame; in the middle, the star through Pucker & Bloat and a compounding Repeater; in front, the same nest with the Trim below the Repeater, drawing one spiral of light through all 22 copies.
 
 | Operator | What it does |
 |----------|--------------|

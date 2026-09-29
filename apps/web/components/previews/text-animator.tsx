@@ -37,7 +37,7 @@ const ANIMATORS: TextAnimatorLayer[] = [
   },
   {
     basedOn: "characters-excluding-spaces",
-    properties: { position: [0, 26], rotation: 28 },
+    properties: { position: [0, 30], rotation: 14 },
     selectors: [
       { shape: "smooth", start: 0, end: 0.4, offset: TREMOR_BAND },
       {

@@ -8,13 +8,15 @@ import { TextAnimatorPreview } from '@/components/previews/text-animator';
 
 <ComponentPage name="text-animator" preview={TextAnimatorPreview}>
 
-An animator declares what selected glyphs should become — lower, blurred, rotated, recoloured — and a selector decides how much of that each glyph gets. You animate the **selector**, usually its offset, so one keyframe pair moves a whole line. The preview has no per-glyph keyframes at all: a Smooth range passes through as a wave, a randomised Square range defocuses glyphs in a shuffled order, and a selector-less animator breathes the tracking.
+An animator declares what selected glyphs should become — lower, blurred, rotated, recoloured — and a selector decides how much of that each glyph gets. You animate the **selector**, usually its offset, so one keyframe pair moves a whole line. The preview has no per-glyph keyframes at all. Four animators overlap in time: a Smooth range passes through as a wave; a Smooth range **intersected** with a Wiggly selector makes a tremor that only exists inside a travelling window; a line-basis range breathes the second line's tracking; and a word-basis Triangle range leans whole words forward in turn.
 
 **Selectors.** `range`: `start` / `end` / `offset` (0–1, or unit indices with `units: "index"`), `shape` (`square`, `ramp-up`, `ramp-down`, `triangle`, `round`, `smooth`), `easeHigh` / `easeLow`, `smoothness`, `randomizeOrder` + `seed`, `amount`, and a combine `mode` (`add`, `subtract`, `intersect`, `min`, `max`, `difference`). `wiggly`: `minAmount` / `maxAmount`, `wigglesPerSecond`, `correlation`, phases and `seed`. Ramps are one-sided as in AE, so a sweeping offset reveals a line and leaves it revealed.
 
 **Properties** apply in proportion to the selection: `position`, `scale`, `rotation`, `skew`, `opacity`, `blur`, `tracking`, `fill` and `characterOffset`. `basedOn` picks the unit: characters (spaces count), characters excluding spaces, words or lines. `anchorGrouping` pivots scale and rotation on each glyph, its word, its line or the whole block.
 
-**Layout is measured.** The component waits for the font, measures each word by its prefixes (so kerning survives), wraps without ever splitting a word, and shrinks the type only when a single word cannot fit. Animated tracking pushes real neighbours and re-centres the line.
+**Layout is measured.** The component waits for the font, measures each word by its prefixes (so kerning survives), wraps without ever splitting a word, and shrinks the type only when a single word cannot fit. Animated tracking pushes real neighbours and re-centres the line. Pass `waitForFont={waitUntilDone}` from `loadFont()` so measurement waits for exactly your face; without it the component waits up to 1.5s for a loaded face of the primary family.
+
+**Long blocks stay cheap.** Glyphs no animator is touching render as plain per-word text, and blurred glyphs share one filter per line and half-pixel blur step. On a 2,500-glyph block the component costs ~2ms per frame over plain text, down from ~27ms.
 
 ## Usage
 
