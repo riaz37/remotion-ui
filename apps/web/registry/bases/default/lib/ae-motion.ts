@@ -38,6 +38,13 @@ export type Keyframe<V extends KeyValue = number> = {
   easeOut?: TemporalEase;
   /** Interpolation leaving this key. Default `bezier`. */
   interpolation?: KeyInterpolation;
+  /**
+   * Spatial tangent arriving at this key, relative to its value — AE's
+   * incoming handle on a motion path. Vector tracks only.
+   */
+  spatialIn?: readonly number[];
+  /** Spatial tangent leaving this key, relative to its value. */
+  spatialOut?: readonly number[];
 };
 
 export type KeyframeTrack<V extends KeyValue = number> = readonly Keyframe<V>[];
@@ -198,10 +205,107 @@ export function easeToCubicBezier<V extends KeyValue>(
 }
 
 /**
+ * A spatial bézier between two vector keys, with an arc-length table so the
+ * temporal ease can drive *distance along the path* — AE's speed graph. The
+ * table is cached per outgoing key object; sorted tracks keep the originals.
+ */
+type SpatialCurve = {
+  length: number;
+  /** Point at a share (0–1) of the arc length. */
+  at: (share: number) => number[];
+  /** Unit direction of travel at a share of the arc length. */
+  direction: (share: number) => number[];
+};
+
+const SPATIAL_STEPS = 48;
+const spatialCache = new WeakMap<object, { to: object; curve: SpatialCurve | null }>();
+
+function hasTangent(t: readonly number[] | undefined): boolean {
+  return !!t && t.some((v) => v !== 0);
+}
+
+function spatialCurve(from: Keyframe<KeyValue>, to: Keyframe<KeyValue>): SpatialCurve | null {
+  const cached = spatialCache.get(from);
+  if (cached && cached.to === to) return cached.curve;
+  const a = toArray(from.value);
+  const b = toArray(to.value);
+  let curve: SpatialCurve | null = null;
+  if (a.length > 1 && (hasTangent(from.spatialOut) || hasTangent(to.spatialIn))) {
+    const c1 = a.map((v, i) => v + (from.spatialOut?.[i] ?? 0));
+    const c2 = b.map((v, i) => v + (to.spatialIn?.[i] ?? 0));
+    const point = (u: number) => {
+      const m = 1 - u;
+      return a.map(
+        (v, i) => m * m * m * v + 3 * m * m * u * c1[i] + 3 * m * u * u * c2[i] + u * u * u * b[i],
+      );
+    };
+    const slope = (u: number) => {
+      const m = 1 - u;
+      return a.map(
+        (v, i) => 3 * m * m * (c1[i] - v) + 6 * m * u * (c2[i] - c1[i]) + 3 * u * u * (b[i] - c2[i]),
+      );
+    };
+    const table = [0];
+    let previous = point(0);
+    for (let k = 1; k <= SPATIAL_STEPS; k += 1) {
+      const next = point(k / SPATIAL_STEPS);
+      table.push(table[k - 1] + magnitude(next.map((v, i) => v - previous[i])));
+      previous = next;
+    }
+    const length = table[SPATIAL_STEPS];
+    const paramAt = (share: number) => {
+      const target = clamp(share, 0, 1) * length;
+      let k = 1;
+      while (k < SPATIAL_STEPS && table[k] < target) k += 1;
+      const span = table[k] - table[k - 1];
+      return (k - 1 + (span === 0 ? 0 : (target - table[k - 1]) / span)) / SPATIAL_STEPS;
+    };
+    const unitOf = (v: number[]) => {
+      const l = magnitude(v);
+      return l === 0 ? b.map((x, i) => x - a[i]) : v.map((x) => x / l);
+    };
+    curve = {
+      length,
+      at: (share) => point(paramAt(share)),
+      direction: (share) => unitOf(slope(paramAt(share))),
+    };
+  }
+  spatialCache.set(from, { to, curve });
+  return curve;
+}
+
+/**
+ * Share of the way through a segment at `frame`: time share for linear, the
+ * eased share of distance for bézier (vectors), 0/1 for hold. Scalars do not
+ * use this — they are solved on their own value graph.
+ */
+function segmentShare(
+  from: Keyframe<KeyValue>,
+  to: Keyframe<KeyValue>,
+  frame: number,
+  fps: number,
+  distance: number,
+): number {
+  const duration = to.frame - from.frame;
+  const x = duration <= 0 ? 1 : (frame - from.frame) / duration;
+  const mode = from.interpolation ?? "bezier";
+  if (mode === "hold") return x >= 1 ? 1 : 0;
+  if (mode === "linear" || distance === 0) return clamp(x, 0, 1);
+  const outInfluence = influenceOf(from.easeOut);
+  const inInfluence = influenceOf(to.easeIn);
+  const u = solveBezierX(outInfluence, 1 - inInfluence, x);
+  const average = distance / (duration / fps);
+  const outRatio = from.easeOut ? from.easeOut.speed / average : 1;
+  const inRatio = to.easeIn ? to.easeIn.speed / average : 1;
+  return cubic(outRatio * outInfluence, 1 - inRatio * inInfluence, u);
+}
+
+/**
  * One segment in value space. Scalars are solved on their own value graph, so
  * a key pair with equal values can still overshoot (the speed handles lift the
- * curve). Vectors travel a straight spatial path at the eased rate, like a
- * position property with linear spatial interpolation.
+ * curve). Vectors travel their spatial path — a straight line, or the bézier
+ * the keys' spatial tangents describe — at the eased rate, with speed measured
+ * along the path, exactly as AE's speed graph does for position.
  */
 function evaluateSegment(
   from: Keyframe<KeyValue>,
@@ -215,15 +319,13 @@ function evaluateSegment(
   const x = duration <= 0 ? 1 : (frame - from.frame) / duration;
   const mode = from.interpolation ?? "bezier";
 
-  if (mode === "hold") return x >= 1 ? b : a;
-  if (mode === "linear") return a.map((v, i) => v + (b[i] - v) * x);
-
-  const outInfluence = influenceOf(from.easeOut);
-  const inInfluence = influenceOf(to.easeIn);
-  const u = solveBezierX(outInfluence, 1 - inInfluence, x);
-  const seconds = duration / fps;
-
   if (a.length === 1) {
+    if (mode === "hold") return x >= 1 ? b : a;
+    if (mode === "linear") return [a[0] + (b[0] - a[0]) * x];
+    const outInfluence = influenceOf(from.easeOut);
+    const inInfluence = influenceOf(to.easeIn);
+    const u = solveBezierX(outInfluence, 1 - inInfluence, x);
+    const seconds = duration / fps;
     const delta = b[0] - a[0];
     const outSpeed = from.easeOut ? from.easeOut.speed : delta / seconds;
     const inSpeed = to.easeIn ? to.easeIn.speed : delta / seconds;
@@ -235,13 +337,12 @@ function evaluateSegment(
     ];
   }
 
-  const delta = magnitude(b.map((v, i) => v - a[i]));
-  if (delta === 0) return a;
-  const average = delta / seconds;
-  const outRatio = from.easeOut ? from.easeOut.speed / average : 1;
-  const inRatio = to.easeIn ? to.easeIn.speed / average : 1;
-  const progress = cubic(outRatio * outInfluence, 1 - inRatio * inInfluence, u);
-  return a.map((v, i) => v + (b[i] - v) * progress);
+  const curve = spatialCurve(from, to);
+  const distance = curve ? curve.length : magnitude(b.map((v, i) => v - a[i]));
+  if (distance === 0 && mode !== "hold") return a;
+  const share = segmentShare(from, to, frame, fps, distance);
+  if (curve) return curve.at(share);
+  return a.map((v, i) => v + (b[i] - v) * share);
 }
 
 function assertTrack(track: KeyframeTrack<KeyValue>): void {
@@ -431,6 +532,34 @@ export function velocityAtFrame(
   const ahead = sampleRaw(track, frame + h, options);
   const behind = sampleRaw(track, frame - h, options);
   return ahead.map((v, i) => ((v - behind[i]) / (2 * h)) * fps);
+}
+
+/**
+ * AE's Auto-Orient Along Path: heading in degrees (0 = +x, clockwise on
+ * screen) of a 2D track at a frame. Read from the path's geometry rather than
+ * from velocity, so it holds its direction through an ease that stops dead
+ * and before the first / after the last key, where velocity is zero.
+ */
+export function orientAtFrame(
+  track: KeyframeTrack<KeyValue>,
+  frame: number,
+  options: TrackOptions = {},
+): number {
+  const keys = sorted(track);
+  if (keys.length < 2 || toArray(keys[0].value).length < 2) return 0;
+  const fps = options.fps ?? DEFAULT_FPS;
+  const clamped = clamp(frame, keys[0].frame, keys[keys.length - 1].frame);
+  let index = 0;
+  while (index < keys.length - 2 && clamped >= keys[index + 1].frame) index += 1;
+  const from = keys[index];
+  const to = keys[index + 1];
+  const a = toArray(from.value);
+  const b = toArray(to.value);
+  const curve = spatialCurve(from, to);
+  const distance = curve ? curve.length : magnitude(b.map((v, i) => v - a[i]));
+  const share = segmentShare(from, to, clamped, fps, distance);
+  const direction = curve ? curve.direction(share) : b.map((v, i) => v - a[i]);
+  return (Math.atan2(direction[1], direction[0]) * 180) / Math.PI;
 }
 
 function isTrack(value: unknown): value is KeyframeTrack<KeyValue> {

@@ -11,6 +11,7 @@ import {
   multiply,
   noise1,
   noise3,
+  orientAtFrame,
   resolveAnimatable,
   resolveParenting,
   sampleTrack,
@@ -290,5 +291,61 @@ describe("transforms and parenting", () => {
 
   it("exposes the easy-ease constant", () => {
     expect(EASY_EASE.speed).toBe(0);
+  });
+});
+
+describe("spatial bézier handles", () => {
+  // An arc from (0,0) to (100,100), symmetric about its own midpoint.
+  const arc: Keyframe<Vec2>[] = [
+    { frame: 0, value: [0, 0], spatialOut: [55, 0], interpolation: "linear" },
+    { frame: 30, value: [100, 100], spatialIn: [0, -55] },
+  ];
+
+  it("travels the curve, not the chord", () => {
+    const [x, y] = sampleTrack(arc, 15);
+    expect(x).toBeCloseTo(70.6, 0);
+    expect(y).toBeCloseTo(29.4, 0);
+    expect(sampleTrack(arc, 0)).toEqual([0, 0]);
+    expect(sampleTrack(arc, 30)).toEqual([100, 100]);
+  });
+
+  it("moves at constant speed along the curve under linear timing", () => {
+    const steps = Array.from({ length: 30 }, (_, f) => {
+      const [x0, y0] = sampleTrack(arc, f);
+      const [x1, y1] = sampleTrack(arc, f + 1);
+      return Math.hypot(x1 - x0, y1 - y0);
+    });
+    const mean = steps.reduce((a, b) => a + b, 0) / steps.length;
+    steps.forEach((step) => expect(Math.abs(step - mean) / mean).toBeLessThan(0.02));
+  });
+
+  it("measures easing along the path", () => {
+    const eased = arc.map((key) => ({ ...key, interpolation: undefined, easeIn: EASY_EASE, easeOut: EASY_EASE }));
+    const early = sampleTrack(eased, 3);
+    const late = sampleTrack(eased, 27);
+    // Symmetric curve + symmetric ease: early and late mirror each other.
+    expect(early[0] + late[1]).toBeCloseTo(100, 1);
+    expect(Math.hypot(early[0], early[1])).toBeLessThan(10);
+  });
+
+  it("auto-orients along the path and holds through ease stops", () => {
+    const eased = arc.map((key) => ({ ...key, easeIn: EASY_EASE, easeOut: EASY_EASE }));
+    close(orientAtFrame(eased, 0), 0, 2);
+    close(orientAtFrame(eased, 30), 90, 2);
+    close(orientAtFrame(eased, 15), 45, 1);
+    close(orientAtFrame(eased, -20), 0, 2);
+    close(orientAtFrame(eased, 99), 90, 2);
+  });
+
+  it("orients straight segments along their chord", () => {
+    close(orientAtFrame([easyEase<Vec2>(0, [0, 0]), easyEase<Vec2>(10, [0, 100])], 5), 90);
+  });
+
+  it("ignores zero tangents", () => {
+    const flat: Keyframe<Vec2>[] = [
+      { frame: 0, value: [0, 0], spatialOut: [0, 0], interpolation: "linear" },
+      { frame: 10, value: [100, 0] },
+    ];
+    close(sampleTrack(flat, 5)[0], 50);
   });
 });
