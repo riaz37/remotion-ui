@@ -166,3 +166,56 @@ export function layoutGlyphs({
     glyphs,
   };
 }
+
+/** A stretch of consecutive glyphs on one line that can be drawn as plain text. */
+export type GlyphRun = {
+  lineIndex: number;
+  /** First glyph index in the run. */
+  start: number;
+  /** One past the last glyph index. */
+  end: number;
+  /** The run's text, with one space at each word gap it crosses. */
+  text: string;
+};
+
+/**
+ * Group glyphs that need no individual treatment into runs, so a renderer
+ * can draw each run as one text span instead of one transformed element per
+ * glyph.
+ *
+ * Runs stop at word gaps by default. Inside a word, glyph x comes from the
+ * browser's own measurement of that word's prefixes, so a run and a lone
+ * glyph land on the same pixels and a glyph can leave or rejoin a run without
+ * moving. Across a line, word-gap measurements each round to Chrome's 1/64px
+ * layout unit and drift up to ~0.75px by the line end — so `crossWords` is
+ * opt-in, for text that never switches glyphs between the two paths.
+ */
+export function plainRuns(
+  layout: GlyphLayout,
+  isPlain: (index: number) => boolean,
+  { crossWords = false }: { crossWords?: boolean } = {},
+): GlyphRun[] {
+  const runs: GlyphRun[] = [];
+  for (const line of layout.lines) {
+    /** Index in `runs` of the run still accepting glyphs, or -1. */
+    let open = -1;
+    let previousWord = -1;
+    for (const glyph of line.glyphs) {
+      if (!isPlain(glyph.index)) {
+        open = -1;
+        continue;
+      }
+      const run = open === -1 ? undefined : runs[open];
+      const sameWord = glyph.wordIndex === previousWord;
+      if (run && run.end === glyph.index && (crossWords || sameWord)) {
+        const gap = glyph.wordIndex !== previousWord ? " " : "";
+        runs[open] = { ...run, end: glyph.index + 1, text: run.text + gap + glyph.char };
+      } else {
+        runs.push({ lineIndex: line.index, start: glyph.index, end: glyph.index + 1, text: glyph.char });
+        open = runs.length - 1;
+      }
+      previousWord = glyph.wordIndex;
+    }
+  }
+  return runs;
+}

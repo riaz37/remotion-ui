@@ -1,4 +1,6 @@
-import { cubicBezierAt, noise3, resolveAnimatable, type Animatable } from "./ae-motion";
+import { interpolateColors } from "remotion";
+import { cubicBezierAt, noise3, resolveAnimatable, type Animatable, type Vec2 } from "./ae-motion";
+import type { GlyphLayout } from "./glyph-layout";
 import { staggerRanks } from "./text-split";
 
 /**
@@ -258,4 +260,136 @@ export function indexGlyphs(
       lines: lines.length,
     },
   };
+}
+
+// ------------------------------------------------------------------ animators
+
+/**
+ * Targets an animator pushes selected glyphs toward. A glyph with selection 1
+ * gets the full value; 0.4 gets 40% of the way; 0 is untouched.
+ */
+export type AnimatorProperties = {
+  /** Pixel offset. */
+  position?: Animatable<Vec2>;
+  /** Scale factor at full selection (1 = unchanged). */
+  scale?: Animatable<number>;
+  /** Degrees. */
+  rotation?: Animatable<number>;
+  /** Degrees of horizontal shear. */
+  skew?: Animatable<number>;
+  /** Opacity at full selection, 0–1. */
+  opacity?: Animatable<number>;
+  /** Gaussian blur in pixels. */
+  blur?: Animatable<number>;
+  /** Extra space after each glyph, in pixels. Pushes the rest of the line. */
+  tracking?: Animatable<number>;
+  /** Fill colour at full selection. */
+  fill?: string;
+  /** Shifts letters and digits through their alphabet (AE's Character Offset). */
+  characterOffset?: Animatable<number>;
+};
+
+export type TextAnimatorLayer = {
+  properties: AnimatorProperties;
+  /** Combined top to bottom by each selector's mode. None selects everything. */
+  selectors?: TextSelector[];
+  /** What one selector unit is. */
+  basedOn?: SelectorBasis;
+};
+
+/** Where one glyph ends up after every animator has had its say. */
+export type GlyphState = {
+  dx: number;
+  dy: number;
+  scale: number;
+  rotation: number;
+  skew: number;
+  opacity: number;
+  blur: number;
+  tracking: number;
+  color: string;
+  charShift: number;
+};
+
+const indexCache = new WeakMap<GlyphLayout, ReturnType<typeof indexGlyphs>>();
+
+/** Selector indices depend only on the layout, so they are built once per layout. */
+function glyphIndex(layout: GlyphLayout): ReturnType<typeof indexGlyphs> {
+  const cached = indexCache.get(layout);
+  if (cached) return cached;
+  const built = indexGlyphs(
+    layout.lines.map((line) => line.words.map((word) => word.glyphs.map((glyph) => glyph.char))),
+  );
+  indexCache.set(layout, built);
+  return built;
+}
+
+/**
+ * Every glyph's state for one frame. Animators apply in order: positions,
+ * rotations, skews, blurs and tracking add; scales and opacities multiply;
+ * fills blend from the colour so far toward the animator's fill.
+ *
+ * Built for long blocks: glyphs an animator does not select are shared, not
+ * copied, and colour is only interpolated where a fill is actually partial.
+ */
+export function computeGlyphStates(
+  layout: GlyphLayout,
+  animators: readonly TextAnimatorLayer[],
+  baseColor: string,
+  ctx: SelectorContext,
+): GlyphState[] {
+  const { glyphs: index, totals } = glyphIndex(layout);
+  const neutral: GlyphState = {
+    dx: 0,
+    dy: 0,
+    scale: 1,
+    rotation: 0,
+    skew: 0,
+    opacity: 1,
+    blur: 0,
+    tracking: 0,
+    color: baseColor,
+    charShift: 0,
+  };
+  const states: GlyphState[] = layout.glyphs.map(() => neutral);
+  const resolve = <V extends number | Vec2>(value: Animatable<V> | undefined, fallback: V): V =>
+    value === undefined ? fallback : resolveAnimatable(value, ctx.frame, { fps: ctx.fps });
+
+  for (const animator of animators) {
+    const basis = animator.basedOn ?? "characters";
+    const selection = evaluateSelectors(animator.selectors ?? [], totals[basis], ctx);
+    const p = animator.properties;
+    const [px, py] = resolve(p.position, [0, 0] as Vec2);
+    const scale = resolve(p.scale, 1);
+    const rotation = resolve(p.rotation, 0);
+    const skew = resolve(p.skew, 0);
+    const opacity = resolve(p.opacity, 1);
+    const blur = resolve(p.blur, 0);
+    const tracking = resolve(p.tracking, 0);
+    const shift = resolve(p.characterOffset, 0);
+
+    for (let i = 0; i < states.length; i += 1) {
+      const amount = selection[index[i][basis]] ?? 0;
+      if (amount === 0) continue;
+      const state = states[i];
+      const colorAmount = Math.min(1, Math.max(0, amount));
+      let color = state.color;
+      if (p.fill && colorAmount > 0) {
+        color = colorAmount >= 1 ? p.fill : interpolateColors(colorAmount, [0, 1], [state.color, p.fill]);
+      }
+      states[i] = {
+        dx: state.dx + px * amount,
+        dy: state.dy + py * amount,
+        scale: state.scale * (1 + (scale - 1) * amount),
+        rotation: state.rotation + rotation * amount,
+        skew: state.skew + skew * amount,
+        opacity: state.opacity * Math.min(1, Math.max(0, 1 + (opacity - 1) * amount)),
+        blur: state.blur + blur * amount,
+        tracking: state.tracking + tracking * amount,
+        color,
+        charShift: state.charShift + Math.round(shift * amount),
+      };
+    }
+  }
+  return states;
 }

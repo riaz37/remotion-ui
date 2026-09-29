@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { layoutGlyphs, type MeasureFn } from "../registry/bases/default/lib/glyph-layout";
+import { layoutGlyphs, plainRuns, type MeasureFn } from "../registry/bases/default/lib/glyph-layout";
 import {
   easeSelection,
   evaluateSelectors,
@@ -181,6 +181,25 @@ describe("glyph layout", () => {
     const kerned: MeasureFn = (text, size) => mono(text, size) - (text.includes("AV") ? 2 : 0);
     const layout = layoutGlyphs({ text: "AVA", fontSize: 10, maxWidth: 999, measure: kerned });
     expect(layout.glyphs.map((g) => g.x)).toEqual([0, 5, 8]);
+  });
+
+  it("groups plain glyphs into per-line runs with word gaps restored", () => {
+    const layout = layoutGlyphs({ text: "ab cd\nef", fontSize: 10, maxWidth: 999, measure: mono });
+    // By default a run is one word, so glyph and run positions agree exactly.
+    expect(plainRuns(layout, () => true).map((r) => [r.lineIndex, r.start, r.end, r.text])).toEqual([
+      [0, 0, 2, "ab"],
+      [0, 2, 4, "cd"],
+      [1, 4, 6, "ef"],
+    ]);
+    const all = plainRuns(layout, () => true, { crossWords: true });
+    expect(all.map((r) => [r.lineIndex, r.start, r.end, r.text])).toEqual([
+      [0, 0, 4, "ab cd"],
+      [1, 4, 6, "ef"],
+    ]);
+    // An animated glyph splits the run around itself.
+    const split = plainRuns(layout, (i) => i !== 2, { crossWords: true });
+    expect(split.map((r) => r.text)).toEqual(["ab", "d", "ef"]);
+    expect(plainRuns(layout, () => false)).toEqual([]);
   });
 
   it("rejects nonsense sizes", () => {
