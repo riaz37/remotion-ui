@@ -14,6 +14,13 @@ export type TwoBoneOptions = {
   stretch?: boolean;
   /** Largest stretch factor. */
   maxStretch?: number;
+  /**
+   * Soft IK: the share of the chain's reach (0–1) over which the limb eases
+   * into full extension instead of locking straight. Without it the joint
+   * angle's velocity goes to infinity as the target reaches the limit — the
+   * visible "knee pop". 0 is the hard law-of-cosines solve.
+   */
+  softness?: number;
 };
 
 export type TwoBoneSolution = {
@@ -37,16 +44,31 @@ const DEG = 180 / Math.PI;
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
 /**
+ * Soft reach (Andy Nicholas' soft IK): distances inside the hard zone pass
+ * through; past it they approach the full length exponentially, with matching
+ * slope at the join, so the end effector decelerates into full extension
+ * rather than slamming into it.
+ */
+export function softReach(distance: number, length: number, softness: number): number {
+  const soft = clamp(softness, 0, 1) * length;
+  if (soft <= 1e-9) return Math.min(distance, length);
+  const hard = length - soft;
+  if (distance <= hard) return distance;
+  return hard + soft * (1 - Math.exp(-(distance - hard) / soft));
+}
+
+/**
  * Law-of-cosines two-bone IK. Out-of-reach targets either stretch the chain
  * (up to `maxStretch`) or leave it pointing straight at the target; targets
  * closer than the bones can fold are pushed out to the nearest reachable
- * distance so the joint never flips through the root.
+ * distance so the joint never flips through the root. `softness` rounds off
+ * the approach to full extension so the joint never pops straight.
  */
 export function solveTwoBone(
   root: Vec2,
   target: Vec2,
   lengths: readonly [number, number],
-  { bend = 1, stretch = false, maxStretch = 1.5 }: TwoBoneOptions = {},
+  { bend = 1, stretch = false, maxStretch = 1.5, softness = 0 }: TwoBoneOptions = {},
 ): TwoBoneSolution {
   const [a0, b0] = lengths;
   if (!(a0 > 0) || !(b0 > 0)) throw new Error("rig: bone lengths must be positive.");
@@ -55,11 +77,21 @@ export function solveTwoBone(
   const distance = Math.hypot(dx, dy);
   const heading = distance > 1e-9 ? Math.atan2(dy, dx) : 0;
 
+  // Soft IK shortens the distance the chain aims for; stretch then lengthens
+  // the bones by exactly the shortfall, so a soft, stretchy limb still lands.
+  const cap = Math.max(1, maxStretch);
   let factor = 1;
-  if (stretch && distance > a0 + b0) factor = Math.min(distance / (a0 + b0), Math.max(1, maxStretch));
+  let wanted = distance;
+  if (softness > 0) {
+    const aimed = softReach(distance, a0 + b0, softness);
+    if (stretch && aimed > 1e-9) factor = Math.min(distance / aimed, cap);
+    wanted = aimed * factor;
+  } else if (stretch && distance > a0 + b0) {
+    factor = Math.min(distance / (a0 + b0), cap);
+  }
   const a = a0 * factor;
   const b = b0 * factor;
-  const reach = clamp(distance, Math.abs(a - b) + 1e-6, a + b - 1e-9);
+  const reach = clamp(wanted, Math.abs(a - b) + 1e-6, a + b - 1e-9);
   const cosRoot = clamp((a * a + reach * reach - b * b) / (2 * a * reach), -1, 1);
   const upper = heading + bend * Math.acos(cosRoot);
   const joint: Vec2 = [root[0] + Math.cos(upper) * a, root[1] + Math.sin(upper) * a];
