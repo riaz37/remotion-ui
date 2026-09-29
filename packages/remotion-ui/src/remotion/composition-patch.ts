@@ -13,6 +13,7 @@ export type CompositionMeta = {
 export async function patchRootTsx(
   rootPath: string,
   meta: CompositionMeta,
+  { log = console.log }: { log?: (line: string) => void } = {},
 ): Promise<void> {
   if (!(await fs.pathExists(rootPath))) {
     throw new Error(`Root file not found: ${rootPath}`);
@@ -21,7 +22,7 @@ export async function patchRootTsx(
   const content = await fs.readFile(rootPath, "utf-8");
 
   if (content.includes(`id="${meta.id}"`) || content.includes(`id={'${meta.id}'}`)) {
-    console.log(`  · Composition "${meta.id}" already registered in Root.tsx`);
+    log(`  · Composition "${meta.id}" already registered in Root.tsx`);
     return;
   }
 
@@ -76,7 +77,7 @@ export async function patchRootTsx(
   }
 
   await fs.writeFile(rootPath, updated, "utf-8");
-  console.log(`  ✓ Registered composition "${meta.id}" in Root.tsx`);
+  log(`  ✓ Registered composition "${meta.id}" in Root.tsx`);
 }
 
 function findLastImportIndex(content: string): number {

@@ -88,6 +88,28 @@ function rootImportPath(cwd: string, rootFile: string, outDir: string, compositi
   return relative.startsWith(".") ? relative : `./${relative}`;
 }
 
+/**
+ * Install the runtime through `add`. When the registry does not have it (a
+ * registry deployed before `ae-import` existed, or offline), say what was
+ * already written and how to finish, instead of a bare fetch error.
+ */
+async function installRuntime(cwd: string, registryUrl: string | undefined, json: boolean, written: string[]): Promise<void> {
+  try {
+    await addCommand([RUNTIME_ITEM], { cwd, registryUrl, showStarPrompt: false, silent: json });
+  } catch (error) {
+    if (!(error instanceof RemotionUiError) || !["REGISTRY_ITEM_NOT_FOUND", "REGISTRY_FETCH_FAILED"].includes(error.code)) {
+      throw error;
+    }
+    throw new RemotionUiError(
+      error.code,
+      `The generated files were written (${written.join(", ")}), but the "${RUNTIME_ITEM}" runtime could not be installed ` +
+        `from ${registryUrl ?? "the default registry"}: ${error.message}\n` +
+        `Point at a registry that has it with --registry-url <url or path to public/r>, ` +
+        `or re-run with --no-install (and --force) and add the runtime yourself with "npx remotion-ui add ${RUNTIME_ITEM}" once it is published.`,
+    );
+  }
+}
+
 function printReport(parsed: ParsedAnimation, log: (line: string) => void): void {
   const info = formatIssues(parsed.issues, "info");
   if (info.length > 0) log(`\nNotes (${info.length}):\n${info.join("\n")}`);
@@ -147,10 +169,11 @@ export async function importAeCommand(file: string, options: ImportAeOptions = {
     if (config && options.register !== false) {
       const rootFile = path.resolve(cwd, config.remotion.root);
       if (await fs.pathExists(rootFile)) {
-        await patchRootTsx(rootFile, {
-          ...composition,
-          importPath: rootImportPath(cwd, rootFile, outDir, config.aliases.compositions),
-        });
+        await patchRootTsx(
+          rootFile,
+          { ...composition, importPath: rootImportPath(cwd, rootFile, outDir, config.aliases.compositions) },
+          { log },
+        );
         registered = true;
       } else {
         log(`  · ${config.remotion.root} not found; register the composition yourself (see the exported config).`);
@@ -163,7 +186,7 @@ export async function importAeCommand(file: string, options: ImportAeOptions = {
       if (await fs.pathExists(runtimeFile)) runtimeInstalled = true;
       else {
         log(`\nInstalling the ${RUNTIME_ITEM} runtime…`);
-        await addCommand([RUNTIME_ITEM], { cwd, registryUrl: options.registryUrl, showStarPrompt: false, json });
+        await installRuntime(cwd, options.registryUrl, json, targets.map((t) => path.relative(cwd, t)));
         runtimeInstalled = true;
       }
     } else if (!config && !json) {

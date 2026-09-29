@@ -26,6 +26,8 @@ export type AddOptions = {
   yes?: boolean;
   showStarPrompt?: boolean;
   json?: boolean;
+  /** Print nothing on stdout: for callers that own it (e.g. `import-ae --json`). */
+  silent?: boolean;
 };
 
 export async function addCommand(
@@ -33,6 +35,8 @@ export async function addCommand(
   options: AddOptions = {},
 ): Promise<void> {
   const json = options.json ?? false;
+  const silent = options.silent ?? false;
+  const quiet = json || silent;
 
   try {
     const names = components;
@@ -62,7 +66,7 @@ export async function addCommand(
         dependencies,
         skipped,
         overwrite: options.yes ?? false,
-        json,
+        json: quiet,
         installedRemotionVersion,
       });
     }
@@ -70,16 +74,18 @@ export async function addCommand(
     if (dependencies.size > 0) {
       const pm = await detectPackageManager(cwd);
       const { command, args } = getInstallCommand(pm, [...dependencies]);
-      if (!json) {
+      if (!quiet) {
         console.log(`Installing dependencies: ${[...dependencies].join(", ")}`);
       }
       execFileSync(command, args, {
         cwd,
-        stdio: json ? "pipe" : "inherit",
+        stdio: quiet ? "pipe" : "inherit",
       });
     }
 
-    if (json) {
+    if (silent) {
+      // The caller reports.
+    } else if (json) {
       console.log(
         JSON.stringify({
           ok: true,
@@ -104,7 +110,7 @@ export async function addCommand(
       }
     }
   } catch (error) {
-    if (json) {
+    if (json && !silent) {
       console.log(JSON.stringify(toErrorJson(error)));
     }
     throw error;
@@ -168,10 +174,15 @@ async function installComponent(
 
   if (item.composition && isCompositionItem(item.files)) {
     const rootPath = path.resolve(ctx.cwd, ctx.config.remotion.root);
-    await patchRootTsx(rootPath, {
-      ...item.composition,
-      importPath: item.composition.importPath ?? `@/compositions/${name}/index`,
-    });
+    await patchRootTsx(
+      rootPath,
+      {
+        ...item.composition,
+        importPath: item.composition.importPath ?? `@/compositions/${name}/index`,
+      },
+      // In JSON mode stdout carries one JSON document and nothing else.
+      ctx.json ? { log: () => {} } : undefined,
+    );
   }
 
   for (const dep of item.dependencies ?? []) {

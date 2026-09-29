@@ -84,6 +84,41 @@ describe("importAeCommand", () => {
     await expect(importAeCommand("bad.json", { cwd: tempDir })).rejects.toMatchObject({ code: "LOTTIE_INVALID" });
   });
 
+  it("--json prints exactly one JSON document on stdout, even while registering and installing", async () => {
+    const registry = await fs.mkdtemp(path.join(os.tmpdir(), "remotion-ui-import-ae-registry-"));
+    try {
+      await fs.outputJson(path.join(registry, "presets/default/ae-import.json"), {
+        name: "ae-import",
+        type: "registry:lib",
+        dependencies: [],
+        registryDependencies: [],
+        files: [{ path: "registry/bases/default/lib/ae-import.tsx", type: "registry:lib", content: "export {};\n" }],
+      });
+      const log = vi.mocked(console.log);
+      log.mockClear();
+      await importAeCommand("bouncy-ball.json", { cwd: tempDir, json: true, registryUrl: registry });
+      const stdout = log.mock.calls.map((args) => args.join(" ")).join("\n");
+      expect(log).toHaveBeenCalledTimes(1);
+      const parsed = JSON.parse(stdout);
+      expect(parsed).toMatchObject({ ok: true, registered: true, runtimeInstalled: true, composition: { id: "BouncyBall" } });
+      expect(await fs.pathExists(path.join(tempDir, "src/remotion/lib/ae-import.tsx"))).toBe(true);
+    } finally {
+      await fs.remove(registry);
+    }
+  });
+
+  it("points at --registry-url / --no-install when the registry has no ae-import runtime", async () => {
+    const registryWithoutRuntime = path.resolve(here, "../../test/fixtures/registry");
+    const error = await importAeCommand("bouncy-ball.json", { cwd: tempDir, registryUrl: registryWithoutRuntime }).catch((e: unknown) => e);
+    expect(error).toMatchObject({ code: "REGISTRY_ITEM_NOT_FOUND" });
+    const message = (error as Error).message;
+    expect(message).toContain("--registry-url");
+    expect(message).toContain("--no-install");
+    expect(message).toContain(path.join("src", "compositions", "bouncy-ball", "index.tsx"));
+    // The import itself is not lost.
+    expect(await fs.pathExists(path.join(tempDir, "src/compositions/bouncy-ball/index.tsx"))).toBe(true);
+  });
+
   it("works outside a RemotionUI project, writing next to the cwd", async () => {
     const bare = await fs.mkdtemp(path.join(os.tmpdir(), "remotion-ui-import-ae-bare-"));
     try {
