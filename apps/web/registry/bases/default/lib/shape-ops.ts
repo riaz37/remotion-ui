@@ -118,8 +118,11 @@ export type WiggleOp = {
 export type ZigZagOp = {
   op: "zigzag";
   size: A;
-  /** Bends between each pair of vertices. */
-  ridges?: number;
+  /**
+   * Extra points per segment. The original vertices move too, alternating
+   * sides with the ridges, so 0 ridges still zig-zags the vertices (AE).
+   */
+  ridges?: A;
   points?: "corner" | "smooth";
 };
 
@@ -466,26 +469,90 @@ function subdivide(path: BezierPath, perSegment: number): Sample[] {
   return out;
 }
 
+type ZigPoint = { at: Pt; out: Pt; in: Pt };
+
+/**
+ * Zig Zag as AE and lottie-web draw it. Every original vertex moves along the
+ * normal of the line through its neighbours, and `ridges` extra points sit at
+ * even parameter steps along each segment, moving along the curve's normal;
+ * the side alternates point by point across vertices and ridges alike, so
+ * even 0 ridges zig-zags the vertices themselves. `smooth` gives each point
+ * tangent handles a (2 * (ridges + 1))th of the neighbouring span.
+ */
+export function zigZagPath(path: BezierPath, size: number, ridges: number, smooth: boolean): BezierPath {
+  if (path.segments.length === 0 || size === 0) return path;
+  const vertices = path.segments.map((s) => s.p0);
+  if (!path.closed) vertices.push(path.segments[path.segments.length - 1].p1);
+  const n = vertices.length;
+  const span = 2 * (ridges + 1);
+  const points: ZigPoint[] = [];
+
+  const place = (point: Pt, normal: Pt, tangent: Pt, side: number, outLength: number, inLength: number) => {
+    const at = { x: point.x + normal.x * side * size, y: point.y + normal.y * side * size };
+    points.push({
+      at,
+      out: { x: at.x + tangent.x * outLength, y: at.y + tangent.y * outLength },
+      in: { x: at.x - tangent.x * inLength, y: at.y - tangent.y * inLength },
+    });
+  };
+  const direction = (x: number, y: number): Pt => {
+    const l = Math.hypot(x, y);
+    return l < 1e-9 ? { x: 1, y: 0 } : { x: x / l, y: y / l };
+  };
+
+  const vertex = (index: number, side: number) => {
+    const point = vertices[index % n];
+    const prev = vertices[(index - 1 + n) % n];
+    const next = vertices[(index + 1) % n];
+    // Neighbours coincide at the ends of a two-point open path; fall back to
+    // the path's own direction there.
+    let t = direction(next.x - prev.x, next.y - prev.y);
+    if (Math.hypot(next.x - prev.x, next.y - prev.y) < 1e-9) {
+      const other = index === 0 ? vertices[1] : vertices[n - 2];
+      t = index === 0 ? direction(other.x - point.x, other.y - point.y) : direction(point.x - other.x, point.y - other.y);
+    }
+    const normal = { x: t.y, y: -t.x };
+    const toNext = smooth ? Math.hypot(next.x - point.x, next.y - point.y) : 0;
+    const toPrev = smooth ? Math.hypot(point.x - prev.x, point.y - prev.y) : 0;
+    place(point, normal, t, side, toNext / span, toPrev / span);
+  };
+
+  let side = -1;
+  vertex(0, side);
+  const count = path.closed ? n : n - 1;
+  for (let k = 0; k < count; k += 1) {
+    const segment = path.segments[k];
+    const chord = smooth ? Math.hypot(segment.p1.x - segment.p0.x, segment.p1.y - segment.p0.y) / span : 0;
+    for (let r = 0; r < ridges; r += 1) {
+      side = -side;
+      const u = (r + 1) / (ridges + 1);
+      const t = tangentAt(segment, u);
+      place(pointAt(segment, u), { x: t.y, y: -t.x }, t, side, chord, chord);
+    }
+    side = -side;
+    // On a closed path this places vertex 0 a second time, on whichever side
+    // the alternation has reached — as lottie-web does, so an odd point count
+    // shows the same seam it shows in AE.
+    vertex(k + 1, side);
+  }
+
+  const segments: Segment[] = [];
+  const total = points.length;
+  const links = path.closed ? total : total - 1;
+  for (let i = 0; i < links; i += 1) {
+    const a = points[i];
+    const b = points[(i + 1) % total];
+    segments.push({ p0: a.at, c1: a.out, c2: b.in, p1: b.at });
+  }
+  return { segments, closed: path.closed };
+}
+
 function applyZigZag(items: ShapeItem[], op: ZigZagOp, ctx: Ctx): ShapeItem[] {
   const size = num(op.size, 10, ctx);
-  const ridges = Math.max(0, Math.round(op.ridges ?? 5));
-  if (size === 0 || ridges === 0) return items;
-  return items.map((item) => {
-    // Vertices stay put; the bends sit between them and alternate sides —
-    // one ridge on a line is a single peak, as in AE.
-    const samples = subdivide(item.path, ridges + 1);
-    const points = samples.map((p, i) => {
-      const local = i % (ridges + 1);
-      if (local === 0 || i === samples.length - 1 && !item.path.closed) return { x: p.x, y: p.y };
-      const side = (Math.floor(i / (ridges + 1)) * ridges + local) % 2 === 1 ? 1 : -1;
-      return { x: p.x + p.normal.x * size * side, y: p.y + p.normal.y * size * side };
-    });
-    const path =
-      (op.points ?? "corner") === "smooth"
-        ? smoothThrough(points, item.path.closed)
-        : polylineThrough(points, item.path.closed);
-    return { ...item, path };
-  });
+  const ridges = Math.max(0, Math.round(num(op.ridges, 5, ctx)));
+  if (size === 0) return items;
+  const smooth = (op.points ?? "corner") === "smooth";
+  return items.map((item) => ({ ...item, path: zigZagPath(item.path, size, ridges, smooth) }));
 }
 
 function applyWiggle(items: ShapeItem[], op: WiggleOp, ctx: Ctx): ShapeItem[] {

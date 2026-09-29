@@ -184,12 +184,36 @@ describe("path operators", () => {
     expect(items.map((item) => [item.copy, item.copies])).toEqual([[0, 3], [1, 3], [2, 3]]);
   });
 
-  it("zig-zag adds alternating ridges and keeps the vertices", () => {
+  it("zig-zag moves the vertices too, so 0 ridges still zig-zags (AE / lottie-web)", () => {
+    const [zig] = run([line], [{ op: "zigzag", size: 10, ridges: 0 }]);
+    expect(zig.path.segments).toHaveLength(1);
+    const { p0, p1 } = zig.path.segments[0];
+    expect(Math.abs(p0.y)).toBeCloseTo(10);
+    expect(Math.abs(p1.y)).toBeCloseTo(10);
+    expect(Math.sign(p0.y)).toBe(-Math.sign(p1.y));
+  });
+
+  it("zig-zag alternates sides across vertices and ridges alike", () => {
     const [zig] = run([line], [{ op: "zigzag", size: 10, ridges: 4 }]);
-    expect(zig.path.segments).toHaveLength(5);
-    expect(zig.path.segments[0].p0.y).toBeCloseTo(0);
-    expect(Math.abs(zig.path.segments[0].p1.y)).toBeCloseTo(10);
-    expect(Math.sign(zig.path.segments[0].p1.y)).toBe(-Math.sign(zig.path.segments[1].p1.y));
+    const points = [zig.path.segments[0].p0, ...zig.path.segments.map((s) => s.p1)];
+    expect(points).toHaveLength(6);
+    points.forEach((p) => expect(Math.abs(p.y)).toBeCloseTo(10));
+    points.slice(1).forEach((p, i) => expect(Math.sign(p.y)).toBe(-Math.sign(points[i].y)));
+    // Ridges sit at even parameter steps between the vertices.
+    expect(points[1].x).toBeCloseTo(20);
+  });
+
+  it("zig-zag closes a square back onto its first point when the count is even", () => {
+    const [zig] = run([square], [{ op: "zigzag", size: 5, ridges: 1 }]);
+    const last = zig.path.segments[zig.path.segments.length - 1];
+    expect(Math.hypot(last.p1.x - zig.path.segments[0].p0.x, last.p1.y - zig.path.segments[0].p0.y)).toBeLessThan(1e-9);
+  });
+
+  it("smooth zig-zag gives points tangent handles", () => {
+    const [zig] = run([line], [{ op: "zigzag", size: 10, ridges: 1, points: "smooth" }]);
+    const s = zig.path.segments[0];
+    expect(s.c1.x - s.p0.x).toBeGreaterThan(1);
+    expect(s.c1.y).toBeCloseTo(s.p0.y);
   });
 
   it("wiggle paths is deterministic and moves over time", () => {
