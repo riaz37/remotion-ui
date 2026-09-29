@@ -1,6 +1,6 @@
 ---
 title: "IK Rig"
-description: "Two-bone inverse kinematics with rubber-hose limbs, bend direction and stretch, driven by null and target positions from keyframe tracks. Install with npx remotion-ui@latest add ik-rig."
+description: "A lit, shadowed two-bone IK arm that reaches for any target or plots SVG strokes with a pen, laying ink exactly where the solved hand is. Install with npx remotion-ui@latest add ik-rig."
 new: true
 ---
 
@@ -8,32 +8,39 @@ import { IkRigPreview } from '@/components/previews/ik-rig';
 
 <ComponentPage name="ik-rig" preview={IkRigPreview}>
 
-Character rigging in the manner of Duik for After Effects. You animate a few **null objects** — hips, hands, a lamp's head — and the limbs between them solve themselves. Nulls are `Animatable` (static, keyframed with [`ae-motion`](/docs/components/ae-motion), or expressions) and can be **parented**, so moving a body carries its shoulders and hips.
+A two-bone inverse-kinematics arm built like a SCARA plotter. Move the **hand** and the elbow solves itself. The solve is closed-form law of cosines on every frame, so it has no drift or jitter and gives the same result in any render order.
 
-- **`bones`** limbs are two segments solved with the law of cosines. `bend` picks the side the joint folds to, and `stretch` lets the bones lengthen to reach a target that is too far away instead of stopping short.
-- **`hose`** limbs are rubber hose: one arc of constant length. Bring the ends together and the hose curls rather than shrinking — the 1930s cartoon look.
+- **Reach.** Pass a `target` and the hand follows it. The target can be a fixed point, an [`ae-motion`](/docs/components/ae-motion) keyframe track, or an expression (another rig's hand, a cursor, a product shot's hotspot).
+- **Plot.** Pass `plot={{ d }}` and the arm draws the SVG strokes with a pen, laying ink exactly under the solved hand. The pen moves the way a plotter's motion controller drives it. It cruises with ramped acceleration and brakes to a stop in every cusp. Between strokes it lifts, travels with a little anticipation and overshoot, settles, and drops with a small rebound.
+- **Mechanics.** `bend` fixes the side the elbow folds to, so it can never flip mid-shot. `softness` is soft IK: the arm eases into full extension instead of popping straight when a target runs away from it. `base` is animatable, so the arm can ride a rail, a vehicle or a character.
 
-The preview is a desk lamp that pays attention: the orb floats on a keyframed path with spatial bézier handles; the lamp's head chases a spring-lagged copy of it from [`follow-through`](/docs/components/follow-through), so it lags and overshoots; a bones arm solves the elbow; the base is a parent null that shuffles toward the orb, and its rubber-hose power cord flexes as it moves. Draw anything else — heads, shades, light — from the solved positions in `renderUnder` and `renderOver`.
+The built-in arm is lit from `lightAngle`. Each link's bevel and specular edge are re-shaded from its heading every frame, and every part casts a blurred shadow whose offset grows with its height. The pen's own shadow separates from the nib as it lifts. Pass `renderArm` to draw your own arm from the solved pose.
+
+The preview is the whole API at work. A rail-mounted plotter signs "motion" in one continuous cursive stroke, flicks into an underline, crosses the t and dots the i. The base rides the rail on an expression that trails the pen, and the camera frames a blend of the word and the rig's centroid, read from `solveIkPose`.
 
 ## Usage
 
 ```tsx
 import { IkRig } from "@/remotion/primitives/ik-rig";
 
+// Draw a logo stroke, then park.
 <IkRig
-  nulls={{
-    body: { position: ({ time }) => [480, 260 + Math.sin(time * 6) * 8] },
-    hip: { parent: "body", position: [0, 60] },
-    foot: { position: ({ time }) => [480 + Math.sin(time * 3) * 70, 460] },
-    shoulder: { parent: "body", position: [0, -40] },
-    hand: { position: [620, 200] },
+  base={[640, 480]}
+  lengths={[220, 200]}
+  plot={{
+    d: "M300 260 C380 160 520 360 600 240 M320 320 L580 320",
+    speed: 600,          // px/s with the pen down
+    startFrame: -30,     // open mid-drawing on frame 0
+    park: [700, 300],
   }}
-  limbs={[
-    { from: "hip", to: "foot", style: "hose", length: 190, bend: 1, thickness: 16 },
-    { from: "shoulder", to: "hand", style: "bones", length: [110, 100], bend: -1, jointRadius: 8 },
-  ]}
-  renderOver={({ nulls }) => <circle cx={nulls.body[0]} cy={nulls.body[1]} r={50} fill="#e8b86d" />}
 />
+
+// Reach for a moving target.
+<IkRig base={[480, 470]} target={({ time }) => [480 + Math.sin(time * 2) * 180, 220]} />
 ```
+
+Every subpath (every `M`) in `plot.d` is one pen-down stroke, drawn in document order. Keep the strokes inside the arm's reach, which is between `|a − b|` and `a + b` from the base. Out of reach, the hand stops short, the ink no longer meets the nib, and `pose.reached` is `false`.
+
+To drive other things off the rig, call `solveIkPose()` for the pose, or `planPlot` / `penAt` / `inkAt` from `lib/pen-plot` for the pen, at any frame. The preview's camera and rail do exactly this.
 
 </ComponentPage>

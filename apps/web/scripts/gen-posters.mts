@@ -77,6 +77,9 @@ const POSTER_FRAME_OVERRIDES: Record<string, number> = {
   "handwriting-text": 0.99,
   // Frame 108 is a settled word, not a mid-melt blob.
   "liquid-text-morph": 0.9,
+  // At 50% the plotter is mid-reach with the t not yet crossed ("molion");
+  // the end frame is the finished, underlined word with the arm at rest.
+  "ik-rig": 0.99,
 };
 
 const CARD_LONG_EDGE = 640;

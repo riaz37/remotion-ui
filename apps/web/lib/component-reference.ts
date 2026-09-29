@@ -5314,25 +5314,40 @@ import { easyEase } from "@/remotion/lib/ae-motion";
     category: "primitive",
     usage: `import { IkRig } from "@/remotion/primitives/ik-rig";
 
+// A plotter: the arm draws the strokes, ink lands exactly under the solved hand.
 <IkRig
-  nulls={{
-    hip: { position: [480, 300] },
-    foot: { position: ({ time }) => [480 + Math.sin(time * 4) * 60, 460] },
-  }}
-  limbs={[{ from: "hip", to: "foot", style: "hose", length: 200, bend: 1 }]}
-/>`,
+  base={[640, 480]}
+  lengths={[220, 200]}
+  plot={{ d: "M300 260 C380 160 520 360 600 240", speed: 600, park: [700, 300] }}
+/>
+
+// A reach: point the hand at anything — a keyframed track, an expression, another rig's hand.
+<IkRig base={[480, 470]} target={({ time }) => [480 + Math.sin(time * 2) * 180, 220]} />`,
     props: [
-      { name: "nulls", type: "Record<string, IkNull>", required: true, description: "Null objects: { position, rotation?, parent? } — Animatable and parentable." },
-      { name: "limbs", type: "IkLimb[]", required: true, description: "{ from, to, style: hose|bones, length, bend, stretch, thickness, color, jointRadius }." },
+      { name: "base", type: "Animatable<[number, number]>", required: true, description: "Shoulder position. Animate it to mount the arm on a rail, a vehicle or a body." },
+      { name: "lengths", type: "readonly [number, number]", default: "[220, 200]", description: "Upper arm and forearm length, px." },
+      { name: "target", type: "Animatable<[number, number]>", description: "What the hand reaches for: static, keyframed or an expression. Ignored when plot is set." },
+      { name: "plot", type: "IkPlot", description: "{ d, speed?, travelSpeed?, ramp?, cornerAngle?, liftFrames?, minTravelFrames?, overshoot?, startFrame?, home?, park? } — strokes the hand draws with a pen. Each subpath is one pen-down stroke." },
+      { name: "bend", type: "1 | -1", default: "1", description: "Side the elbow folds to. Fixed for the shot, so the elbow never flips." },
+      { name: "softness", type: "number", default: "0.08", description: "Soft IK: share of the reach over which the arm eases into full extension instead of popping straight." },
+      { name: "thickness", type: "number", default: "34", description: "Upper-arm width, px; the rest of the arm is proportioned from it." },
+      { name: "armColor", type: "string", default: '"#80848f"', description: "Anodised body colour; lit and shaded per frame from lightAngle." },
+      { name: "accentColor", type: "string", default: '"#2dd4bf"', description: "Status light on the pen head; bright while the pen is down." },
+      { name: "inkColor", type: "string", default: '"#e8b86d"', description: "Ink and the hot glow at the nib." },
+      { name: "inkWidth", type: "number", default: "4", description: "Ink stroke width, px." },
+      { name: "glow", type: "number", default: "0.6", description: "Bloom on the ink, 0–1. 0 draws flat ink." },
+      { name: "lightAngle", type: "number", default: "-125", description: "Direction the key light comes from, degrees in screen space (-90 = from above)." },
+      { name: "shadow", type: "number", default: "0.55", description: "Cast-shadow opacity. Shadow offset grows with each part's height and with pen lift." },
+      { name: "cable", type: "boolean", default: "true", description: "Slack service cable from base to elbow (a constant-length rubber hose)." },
+      { name: "renderArm", type: "(pose: IkPose) => ReactNode", description: "Replaces the built-in arm with your own SVG, drawn from the solved pose." },
+      { name: "renderUnder", type: "(pose: IkPose) => ReactNode", description: "SVG under the ink — paper, beds, rails." },
+      { name: "renderOver", type: "(pose: IkPose) => ReactNode", description: "SVG over everything." },
       { name: "width", type: "number", default: "960", description: "SVG width in px." },
       { name: "height", type: "number", default: "540", description: "SVG height in px." },
-      { name: "renderUnder", type: "(rig: SolvedRig) => ReactNode", description: "SVG drawn under the limbs, from solved positions." },
-      { name: "renderOver", type: "(rig: SolvedRig) => ReactNode", description: "SVG drawn over the limbs — heads, hands, props." },
-      { name: "color", type: "string", default: '"#f4f4f5"', description: "Default limb colour." },
       { name: "frame", type: "number", description: "Render this frame instead of the current one." },
     ],
-    note: "Hoses keep their length and bow as the ends meet; bones use law-of-cosines IK with optional stretch. solveRig() is exported for rigs drawn elsewhere.",
-    related: ["follow-through", "path-draw"],
+    note: "Closed-form law-of-cosines solve every frame: no drift, no jitter, same result in any render order. Plots must stay inside the arm's reach (|a − b| to a + b from the base); out of reach, the hand stops short and pose.reached is false. solveIkPose() and lib/pen-plot's planPlot/penAt/inkAt are exported for cameras or props driven off the rig.",
+    related: ["follow-through", "path-draw", "handwriting-text"],
   },
   "track-matte": {
     category: "primitive",

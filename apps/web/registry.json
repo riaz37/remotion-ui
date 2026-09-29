@@ -4727,7 +4727,7 @@
     {
       "name": "rig",
       "type": "registry:lib",
-      "description": "Duik-style rig maths: law-of-cosines two-bone IK with bend and stretch, and constant-length rubber-hose arcs",
+      "description": "Rig maths: law-of-cosines two-bone IK with bend, stretch and soft IK (no knee pop at full reach), and constant-length rubber-hose arcs",
       "dependencies": [],
       "registryDependencies": [
         "ae-motion"
@@ -4735,6 +4735,22 @@
       "files": [
         {
           "path": "registry/bases/default/lib/rig.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "pen-plot",
+      "type": "registry:lib",
+      "description": "Pen-plotter motion planning: SVG strokes to a pen position per frame, with cosine-ramped speed, full stops in cusps, lifts, and anticipating pen-up moves",
+      "dependencies": [],
+      "registryDependencies": [
+        "ae-motion",
+        "bezier-path"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/lib/pen-plot.ts",
           "type": "registry:lib"
         }
       ]
@@ -4787,13 +4803,14 @@
     {
       "name": "ik-rig",
       "type": "registry:ui",
-      "description": "Two-bone inverse kinematics with rubber-hose limbs, bend direction and stretch, driven by null and target positions from keyframe tracks",
+      "description": "A lit, shadowed two-bone IK arm that reaches for any target or plots SVG strokes with a pen, laying ink exactly where the solved hand is; soft IK, fixed bend, animatable base",
       "dependencies": [
         "remotion"
       ],
       "registryDependencies": [
         "ae-motion",
-        "rig"
+        "rig",
+        "pen-plot"
       ],
       "files": [
         {

@@ -406,7 +406,7 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   "text-animator": { lane: "motion", drive: "time", tier: "advanced", tags: ["text"] },
   "effector-field": { lane: "motion", drive: "time", tier: "advanced", tags: ["mograph"] },
   "slit-scan": { lane: "motion", drive: "time", tier: "advanced", tags: ["time"] },
-  "ik-rig": { lane: "motion", drive: "time", tier: "advanced", tags: ["rigging"] },
+  "ik-rig": { lane: "motion", drive: "time", tier: "advanced", tags: ["rigging", "plotter"] },
   "track-matte": { lane: "motion", drive: "time", tier: "advanced", tags: ["matte", "masking"] },
   "follow-through": { lane: "motion", drive: "time", tier: "advanced", tags: ["secondary-motion"] },
 };

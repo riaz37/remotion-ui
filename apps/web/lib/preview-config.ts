@@ -285,7 +285,9 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "text-animator": { durationInFrames: 150 },
   "effector-field": { durationInFrames: 150 },
   "slit-scan": { durationInFrames: 150 },
-  "ik-rig": { durationInFrames: 150 },
+  /* The plotter plan settles on frame 231; 21 more frames hold the finished word
+     while the camera finishes its push (lib/ik-rig.test.ts pins the gap). */
+  "ik-rig": { durationInFrames: 252 },
   "track-matte": { durationInFrames: 150 },
   "follow-through": { durationInFrames: 150 },
 };
