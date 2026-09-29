@@ -484,6 +484,11 @@ function subdivide(path: BezierPath, perSegment: number): Sample[] {
 
 type ZigPoint = { at: Pt; out: Pt; in: Pt };
 
+/** lottie-web's point equality: relative, so it holds at any coordinate scale. */
+const nearlyEqual = (a: number, b: number) => Math.abs(a - b) * 100000 <= Math.min(Math.abs(a), Math.abs(b));
+const samePoint = (a: Pt, b: Pt) => nearlyEqual(a.x, b.x) && nearlyEqual(a.y, b.y);
+const lerpPoint = (a: Pt, b: Pt, t: number): Pt => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t });
+
 /**
  * Zig Zag as AE and lottie-web draw it. Every original vertex moves along the
  * normal of the line through its neighbours, and `ridges` extra points sit at
@@ -534,7 +539,16 @@ export function zigZagPath(path: BezierPath, size: number, ridges: number, smoot
   vertex(0, side);
   const count = path.closed ? n : n - 1;
   for (let k = 0; k < count; k += 1) {
-    const segment = path.segments[k];
+    // A handle sitting on its vertex has no direction and would bunch the
+    // ridges toward the middle of a straight edge (a cubic with zero-length
+    // handles runs 3u² − 2u³ along it). lottie-web pulls such handles onto the
+    // chord at thirds before placing ridges, so they fall evenly.
+    const raw = path.segments[k];
+    const segment = {
+      ...raw,
+      c1: samePoint(raw.c1, raw.p0) ? lerpPoint(raw.p0, raw.p1, 1 / 3) : raw.c1,
+      c2: samePoint(raw.c2, raw.p1) ? lerpPoint(raw.p0, raw.p1, 2 / 3) : raw.c2,
+    };
     const chord = smooth ? Math.hypot(segment.p1.x - segment.p0.x, segment.p1.y - segment.p0.y) / span : 0;
     for (let r = 0; r < ridges; r += 1) {
       side = -side;
