@@ -107,7 +107,12 @@ function sourceDefaults(file: string, componentName: string): Record<string, str
   return defaults;
 }
 
-const normalise = (value: string) => value.replace(/\s+/g, " ").replace(/'/g, '"').trim();
+const normalise = (value: string) =>
+  value
+    .replace(/\s+as const$/, "")
+    .replace(/\s+/g, " ")
+    .replace(/'/g, '"')
+    .trim();
 
 describe("motion lane component-reference matches the source", () => {
   it("covers every motion component", () => {

@@ -245,6 +245,10 @@ const PREVIEWS: Record<string, PreviewLoader> = {
   "shape-layer": () => import("./previews/shape-layer").then((m) => ({ default: m.ShapeLayerPreview })),
   "text-animator": () => import("./previews/text-animator").then((m) => ({ default: m.TextAnimatorPreview })),
   "effector-field": () => import("./previews/effector-field").then((m) => ({ default: m.EffectorFieldPreview })),
+  "slit-scan": () => import("./previews/slit-scan").then((m) => ({ default: m.SlitScanPreview })),
+  "ik-rig": () => import("./previews/ik-rig").then((m) => ({ default: m.IkRigPreview })),
+  "track-matte": () => import("./previews/track-matte").then((m) => ({ default: m.TrackMattePreview })),
+  "follow-through": () => import("./previews/follow-through").then((m) => ({ default: m.FollowThroughPreview })),
 };
 
 /**

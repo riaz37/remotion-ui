@@ -4687,6 +4687,119 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "rig",
+      "type": "registry:lib",
+      "description": "Duik-style rig maths: law-of-cosines two-bone IK with bend and stretch, and constant-length rubber-hose arcs",
+      "dependencies": [],
+      "registryDependencies": [
+        "ae-motion"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/lib/rig.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "follow",
+      "type": "registry:lib",
+      "description": "Overlapping action: a chain of damped springs following a leader track, simulated deterministically from frame 0 and memoised",
+      "dependencies": [],
+      "registryDependencies": [
+        "ae-motion"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/lib/follow.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "slit-geometry",
+      "type": "registry:lib",
+      "description": "Slit-scan strips (bands at any angle or radial rings) with per-strip delays grouped into a bounded number of child renders",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/bases/default/lib/slit-geometry.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "slit-scan",
+      "type": "registry:ui",
+      "description": "Slit-scan time displacement: each strip of any child — rows, columns, rings or a gradient map — shows that child at a different moment, deterministically",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "slit-geometry"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/slit-scan.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "ik-rig",
+      "type": "registry:ui",
+      "description": "Two-bone inverse kinematics with rubber-hose limbs, bend direction and stretch, driven by null and target positions from keyframe tracks",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "ae-motion",
+        "rig"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/ik-rig.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "track-matte",
+      "type": "registry:ui",
+      "description": "After Effects track mattes: reveal any child through any other with alpha, inverted alpha, luma or inverted luma",
+      "dependencies": [
+        "remotion",
+        "react-dom"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/track-matte.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "follow-through",
+      "type": "registry:ui",
+      "description": "Overlapping action along a chain: every element follows one leader track with its own delay, drag, overshoot and settle",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "ae-motion",
+        "bezier-path",
+        "follow"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/follow-through.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

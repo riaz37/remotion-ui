@@ -405,6 +405,10 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   "shape-layer": { lane: "motion", drive: "time", tier: "advanced", tags: ["shapes", "paths"] },
   "text-animator": { lane: "motion", drive: "time", tier: "advanced", tags: ["text"] },
   "effector-field": { lane: "motion", drive: "time", tier: "advanced", tags: ["mograph"] },
+  "slit-scan": { lane: "motion", drive: "time", tier: "advanced", tags: ["time"] },
+  "ik-rig": { lane: "motion", drive: "time", tier: "advanced", tags: ["rigging"] },
+  "track-matte": { lane: "motion", drive: "time", tier: "advanced", tags: ["matte", "masking"] },
+  "follow-through": { lane: "motion", drive: "time", tier: "advanced", tags: ["secondary-motion"] },
 };
 
 export function getAtlasMeta(name: string): AtlasMeta | undefined {

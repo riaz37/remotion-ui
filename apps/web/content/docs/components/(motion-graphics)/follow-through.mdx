@@ -1,0 +1,40 @@
+---
+title: "Follow Through"
+description: "Overlapping action along a chain: every element follows one leader track with its own delay, drag, overshoot and settle. Install with npx remotion-ui@latest add follow-through."
+new: true
+---
+
+import { FollowThroughPreview } from '@/components/previews/follow-through';
+
+<ComponentPage name="follow-through" preview={FollowThroughPreview}>
+
+Animate one leader and the rest of the chain animates itself: every link is a damped spring chasing the link ahead, so the chain drags behind a move, overshoots when the leader stops and settles after it. It is AE's delay and inertia expressions, but simulated from frame 0 with a fixed sub-step, so any frame renders identically in any order and on any machine.
+
+The preview puts three tails on one staccato leader that halts dead at every stop. **Teal** is critically damped (`damping={1}`) with a per-link `delay`, so it snakes along the leader's exact path; **rose** is underdamped and swings past each stop; **phosphor** is a looser spring that softens toward the tail with `falloff`, like a whip.
+
+- **`frequency`** (Hz) sets how tight the springs are; **`damping`** below 1 overshoots. Many underdamped links in a row amplify each other — raise damping as you add links.
+- **`delay`** makes each link replay the one ahead a few frames later — lag without springiness.
+- **`preroll`** starts the simulation early so a looping leader is already in steady motion on frame 0; set it to the loop length for a seamless cycle.
+- **`renderLink`** draws each element (positioned and, with `orient`, rotated for you); **`renderSpine`** draws the path through them — a rope, a tail, a ribbon.
+
+The simulation is memoised per leader, so pass a stable leader (a module constant or `useMemo`) — a new track object every render recomputes from frame 0.
+
+## Usage
+
+```tsx
+import { FollowThrough } from "@/remotion/primitives/follow-through";
+import { easyEase } from "@/remotion/lib/ae-motion";
+
+const LEADER = [easyEase(0, [200, 300]), easyEase(24, [760, 240]), easyEase(48, [480, 420])];
+
+<FollowThrough
+  leader={LEADER}
+  links={12}
+  frequency={4}
+  damping={0.5}
+  renderSpine={({ d }) => <path d={d} stroke="#e8b86d" strokeWidth={8} strokeLinecap="round" fill="none" />}
+  renderLink={(link) => <div style={{ width: 14, height: 14, borderRadius: 7, background: "#e8b86d" }} />}
+/>
+```
+
+</ComponentPage>

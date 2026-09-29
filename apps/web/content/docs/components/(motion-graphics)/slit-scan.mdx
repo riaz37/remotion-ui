@@ -1,0 +1,35 @@
+---
+title: "Slit Scan"
+description: "Slit-scan time displacement: each strip of any child — rows, columns, rings or a gradient map — shows that child at a different moment, deterministically. Install with npx remotion-ui@latest add slit-scan."
+new: true
+---
+
+import { SlitScanPreview } from '@/components/previews/slit-scan';
+
+<ComponentPage name="slit-scan" preview={SlitScanPreview}>
+
+The frame is cut into strips and each strip shows the child a little earlier than the one before, so motion bends, smears and spirals across the frame. The preview is three nested stars turning at different speeds seen through 120 rings of time: the outer rings are up to 40 frames behind the centre, so the arms curl into a vortex.
+
+- **`bands`** slices straight strips perpendicular to `angle` (0 = vertical slits sweeping left→right, 90 = horizontal slits sweeping down). **`radial`** slices rings around `center`.
+- **`curve`** maps strip position to delay — a sine gives a travelling time-wave, a power curve pushes the lag to the edges.
+- **`loopFrames`** wraps sampled frames into the child's loop, so strips looking back past frame 0 see the end of the previous cycle and a looping piece stays seamless.
+
+**Cost.** Each distinct delay is one `<Freeze>` of the child, so a slit-scan costs `levels` renders of the child per frame — strips are free. Delays are fractional, so a fast child does not step between strips, but a smooth radial spiral wants one level per ring (the preview uses 120). Start around 16–24 levels for footage and raise it only if you see steps.
+
+## Usage
+
+```tsx
+import { SlitScan } from "@/remotion/primitives/slit-scan";
+
+// Vertical slits, the right edge a second behind the left.
+<SlitScan mode="bands" angle={0} strips={96} levels={24} maxDelay={30}>
+  <OffthreadVideo src={staticFile("clip.mp4")} />
+</SlitScan>
+
+// A travelling time-wave.
+<SlitScan mode="bands" angle={90} strips={80} levels={32} maxDelay={20} curve={(t) => 0.5 + 0.5 * Math.sin(t * Math.PI * 4)}>
+  <MyScene />
+</SlitScan>
+```
+
+</ComponentPage>

@@ -284,6 +284,10 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "shape-layer": { durationInFrames: 150 },
   "text-animator": { durationInFrames: 150 },
   "effector-field": { durationInFrames: 150 },
+  "slit-scan": { durationInFrames: 150 },
+  "ik-rig": { durationInFrames: 150 },
+  "track-matte": { durationInFrames: 150 },
+  "follow-through": { durationInFrames: 150 },
 };
 
 export function previewMeta(slug: string): Required<PreviewMeta> {

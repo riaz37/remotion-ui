@@ -1,0 +1,39 @@
+---
+title: "IK Rig"
+description: "Two-bone inverse kinematics with rubber-hose limbs, bend direction and stretch, driven by null and target positions from keyframe tracks. Install with npx remotion-ui@latest add ik-rig."
+new: true
+---
+
+import { IkRigPreview } from '@/components/previews/ik-rig';
+
+<ComponentPage name="ik-rig" preview={IkRigPreview}>
+
+Character rigging in the manner of Duik for After Effects. You animate a few **null objects** — hips, hands, a lamp's head — and the limbs between them solve themselves. Nulls are `Animatable` (static, keyframed with [`ae-motion`](/docs/components/ae-motion), or expressions) and can be **parented**, so moving a body carries its shoulders and hips.
+
+- **`bones`** limbs are two segments solved with the law of cosines. `bend` picks the side the joint folds to, and `stretch` lets the bones lengthen to reach a target that is too far away instead of stopping short.
+- **`hose`** limbs are rubber hose: one arc of constant length. Bring the ends together and the hose curls rather than shrinking — the 1930s cartoon look.
+
+The preview is a desk lamp that pays attention: the orb floats on a keyframed path with spatial bézier handles; the lamp's head chases a spring-lagged copy of it from [`follow-through`](/docs/components/follow-through), so it lags and overshoots; a bones arm solves the elbow; the base is a parent null that shuffles toward the orb, and its rubber-hose power cord flexes as it moves. Draw anything else — heads, shades, light — from the solved positions in `renderUnder` and `renderOver`.
+
+## Usage
+
+```tsx
+import { IkRig } from "@/remotion/primitives/ik-rig";
+
+<IkRig
+  nulls={{
+    body: { position: ({ time }) => [480, 260 + Math.sin(time * 6) * 8] },
+    hip: { parent: "body", position: [0, 60] },
+    foot: { position: ({ time }) => [480 + Math.sin(time * 3) * 70, 460] },
+    shoulder: { parent: "body", position: [0, -40] },
+    hand: { position: [620, 200] },
+  }}
+  limbs={[
+    { from: "hip", to: "foot", style: "hose", length: 190, bend: 1, thickness: 16 },
+    { from: "shoulder", to: "hand", style: "bones", length: [110, 100], bend: -1, jointRadius: 8 },
+  ]}
+  renderOver={({ nulls }) => <circle cx={nulls.body[0]} cy={nulls.body[1]} r={50} fill="#e8b86d" />}
+/>
+```
+
+</ComponentPage>

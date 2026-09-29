@@ -1,0 +1,41 @@
+---
+title: "Track Matte"
+description: "After Effects track mattes: reveal any child through any other with alpha, inverted alpha, luma or inverted luma. Install with npx remotion-ui@latest add track-matte."
+new: true
+---
+
+import { TrackMattePreview } from '@/components/previews/track-matte';
+
+<ComponentPage name="track-matte" preview={TrackMattePreview}>
+
+The content shows through the matte by the matte's **alpha**, **inverted alpha**, **luminance** or **inverted luminance** — AE's four track-matte modes. The preview runs two at once, in opposite directions: behind, flight footage is the *matte*, and its own luminance reveals a turning gradient, so roads and coastlines glow in colour; in front, a headline is the matte and the letters are windows onto the lane's glowing MoGraph floor.
+
+**What can be a matte.** Anything SVG, in a `width` × `height` space: shapes, `<text>`, `<image>`, and whole nested SVGs — a [`ShapeLayer`](/docs/components/shape-layer) drops straight in. For footage, use `<MatteVideo src=…>`: each frame arrives through `onVideoFrame`, is drawn to a canvas and placed in the mask, and during a render the frame is held until its matte is in place, so matte and content never drift. Arbitrary HTML cannot be a matte — browsers do not paint `<foreignObject>` inside a mask — so HTML content goes on the revealed side, which can be anything.
+
+This generalises [`text-mask-video`](/docs/components/text-mask-video), which stays as the one-line way to put footage in a headline.
+
+## Usage
+
+```tsx
+import { MatteVideo, TrackMatte } from "@/remotion/primitives/track-matte";
+
+// Footage through type.
+<TrackMatte
+  mode="alpha"
+  matte={<text x={480} y={340} textAnchor="middle" fontSize={230} fontWeight={800} fill="white">MATTE</text>}
+>
+  <OffthreadVideo src={staticFile("clip.mp4")} />
+</TrackMatte>
+
+// Everything except a shape.
+<TrackMatte mode="alpha-inverted" matte={<ShapeLayer shapes={[{ type: "star", points: 5, outerRadius: 200, innerRadius: 80 }]} fill="white" stroke={null} width={960} height={540} />}>
+  <MyScene />
+</TrackMatte>
+
+// A colour field revealed by footage luminance.
+<TrackMatte mode="luma" matte={<MatteVideo src={staticFile("clip.mp4")} />}>
+  <div style={{ width: 960, height: 540, background: "linear-gradient(90deg, #e8b86d, #f472b6)" }} />
+</TrackMatte>
+```
+
+</ComponentPage>

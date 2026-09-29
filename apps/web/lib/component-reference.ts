@@ -5286,6 +5286,104 @@ import { easyEase } from "@/remotion/lib/ae-motion";
     note: "Fields: spherical (center, radius, falloff), linear (center, angle, length), noise (scale, speed, seed, contrast); each with invert, strength and blend. children/renderClone are DOM-only; use renderer=\"canvas\" past ~1,000 clones (5,000 at 1080p render in ~80ms/frame).",
     related: ["dynamic-grid", "particle-field", "shape-layer"],
   },
+  "slit-scan": {
+    category: "primitive",
+    usage: `import { SlitScan } from "@/remotion/primitives/slit-scan";
+
+<SlitScan mode="radial" strips={120} levels={60} maxDelay={30} loopFrames={150}>
+  <MyLoopingScene />
+</SlitScan>`,
+    props: [
+      { name: "children", type: "ReactNode", required: true, description: "Anything time-based: footage, a scene, another motion component." },
+      { name: "width", type: "number", default: "960", description: "Frame width in px." },
+      { name: "height", type: "number", default: "540", description: "Frame height in px." },
+      { name: "mode", type: '"bands" | "radial"', default: '"bands"', description: "Straight strips at an angle, or rings around a centre." },
+      { name: "strips", type: "number", default: "48", description: "Number of strips. Free — levels sets the cost." },
+      { name: "angle", type: "number", default: "0", description: "Bands: direction the delay grows along, degrees." },
+      { name: "center", type: "[number, number]", default: "[0.5, 0.5]", description: "Radial: centre as shares of the frame." },
+      { name: "maxDelay", type: "number", default: "20", description: "Delay of the last strip, in frames (fractional ok)." },
+      { name: "levels", type: "number", default: "16", description: "Distinct delays = renders of the child per frame." },
+      { name: "curve", type: "(t: number) => number", description: "Maps strip position 0–1 to delay share 0–1. Default linear." },
+      { name: "loopFrames", type: "number", description: "Wrap sampled frames into a loop, so strips look back into the previous cycle." },
+      { name: "frame", type: "number", description: "Render this frame instead of the current one." },
+    ],
+    note: "Cost is `levels` renders of the child per frame. Each strip is a <Freeze> of the child clipped with a CSS path() clip.",
+    related: ["track-matte", "shape-layer", "effector-field"],
+  },
+  "ik-rig": {
+    category: "primitive",
+    usage: `import { IkRig } from "@/remotion/primitives/ik-rig";
+
+<IkRig
+  nulls={{
+    hip: { position: [480, 300] },
+    foot: { position: ({ time }) => [480 + Math.sin(time * 4) * 60, 460] },
+  }}
+  limbs={[{ from: "hip", to: "foot", style: "hose", length: 200, bend: 1 }]}
+/>`,
+    props: [
+      { name: "nulls", type: "Record<string, IkNull>", required: true, description: "Null objects: { position, rotation?, parent? } — Animatable and parentable." },
+      { name: "limbs", type: "IkLimb[]", required: true, description: "{ from, to, style: hose|bones, length, bend, stretch, thickness, color, jointRadius }." },
+      { name: "width", type: "number", default: "960", description: "SVG width in px." },
+      { name: "height", type: "number", default: "540", description: "SVG height in px." },
+      { name: "renderUnder", type: "(rig: SolvedRig) => ReactNode", description: "SVG drawn under the limbs, from solved positions." },
+      { name: "renderOver", type: "(rig: SolvedRig) => ReactNode", description: "SVG drawn over the limbs — heads, hands, props." },
+      { name: "color", type: "string", default: '"#f4f4f5"', description: "Default limb colour." },
+      { name: "frame", type: "number", description: "Render this frame instead of the current one." },
+    ],
+    note: "Hoses keep their length and bow as the ends meet; bones use law-of-cosines IK with optional stretch. solveRig() is exported for rigs drawn elsewhere.",
+    related: ["follow-through", "path-draw"],
+  },
+  "track-matte": {
+    category: "primitive",
+    usage: `import { MatteVideo, TrackMatte } from "@/remotion/primitives/track-matte";
+
+<TrackMatte mode="alpha" matte={<text x={480} y={330} textAnchor="middle" fontSize={220} fill="white">WORD</text>}>
+  <OffthreadVideo src={staticFile("clip.mp4")} />
+</TrackMatte>
+
+// Footage as the matte:
+<TrackMatte mode="luma" matte={<MatteVideo src={staticFile("clip.mp4")} />}>
+  <Gradient />
+</TrackMatte>`,
+    props: [
+      { name: "mode", type: '"alpha" | "alpha-inverted" | "luma" | "luma-inverted"', default: '"alpha"', description: "How the matte decides visibility." },
+      { name: "matte", type: "ReactNode (SVG)", required: true, description: "SVG content in the width × height space: shapes, <text>, <image>, a nested <svg>, or <MatteVideo>." },
+      { name: "children", type: "ReactNode", required: true, description: "What is revealed — any HTML." },
+      { name: "width", type: "number", default: "960", description: "Matte and content width in px." },
+      { name: "height", type: "number", default: "540", description: "Matte and content height in px." },
+    ],
+    note: "The matte must be SVG (browsers do not paint <foreignObject> in masks); footage mattes use <MatteVideo>, which holds each rendered frame until its matte is drawn.",
+    related: ["text-mask-video", "slit-scan", "shape-layer"],
+  },
+  "follow-through": {
+    category: "primitive",
+    usage: `import { FollowThrough } from "@/remotion/primitives/follow-through";
+
+<FollowThrough
+  leader={[easyEase(0, [200, 300]), easyEase(30, [760, 240])]}
+  links={12}
+  damping={0.45}
+  renderSpine={({ d }) => <path d={d} stroke="#e8b86d" strokeWidth={6} fill="none" />}
+/>`,
+    props: [
+      { name: "leader", type: "Animatable<[number, number]>", required: true, description: "The leader's path: keyframe track, expression or fixed point." },
+      { name: "links", type: "number", default: "8", description: "Elements after the leader." },
+      { name: "frequency", type: "number", default: "2.2", description: "Spring frequency in Hz; higher is tighter." },
+      { name: "damping", type: "number", default: "0.45", description: "1 settles without overshoot; lower overshoots and rings." },
+      { name: "delay", type: "number", default: "0", description: "Frames each link looks back at the one ahead." },
+      { name: "falloff", type: "number", default: "1", description: "Per-link frequency multiplier; below 1 the tail loosens." },
+      { name: "preroll", type: "number", default: "0", description: "Simulate this many frames early so a looping leader starts in steady motion." },
+      { name: "renderLink", type: "(link: FollowLink) => ReactNode", description: "Draws one link; positioned and optionally rotated for you." },
+      { name: "renderSpine", type: "({ d, links }) => ReactNode", description: "Draws the chain's spine as SVG — ropes, tails, ribbons." },
+      { name: "orient", type: "boolean", default: "true", description: "Rotate each link to face the one ahead." },
+      { name: "width", type: "number", default: "960", description: "Stage width in px." },
+      { name: "height", type: "number", default: "540", description: "Stage height in px." },
+      { name: "frame", type: "number", description: "Render this frame instead of the current one." },
+    ],
+    note: "Deterministic: the chain is integrated from frame 0 with a fixed sub-step and memoised per leader, so any frame renders identically in any order.",
+    related: ["ik-rig", "motion-trail", "effector-field"],
+  },
 };
 
 export function getComponentReference(name: string): ComponentReference | undefined {
