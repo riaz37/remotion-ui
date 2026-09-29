@@ -30,6 +30,18 @@ const MISMATCH_THRESHOLD = 32;
  */
 const SIDES = ["LottieWarm", "Gen"];
 
+/**
+ * Frames where the warm lottie-web reference itself is wrong. They are still
+ * scored against it (no swapping); results.json and the sheet flag them.
+ * Evidence: README.md, "Known lottie-web bugs".
+ */
+const KNOWN_REFERENCE_BUGS: Record<string, { frames: number[]; bug: string }> = {
+  "zig-zag-animated": {
+    frames: [0],
+    bug: "ZigZagModifier skips work at amplitude 0 without resetting the path, so a return to frame 0 keeps the previous frame's zig-zag",
+  },
+};
+
 const aliases = {
   "@/components": path.join(appRoot, "components"),
   "@/remotion/primitives": path.join(appRoot, "registry/bases/default/primitives"),
@@ -144,42 +156,36 @@ async function main() {
       for (const index of [0, 1]) {
         await renderStill({ serveUrl, composition: comps[index], frame, output: files[index], imageFormat: "png", puppeteerInstance: browser, overwrite: true });
       }
-      const warm = { ...ffmpegScores(files[0], files[1]), ...(await mismatch(files[0], files[1])) };
-      let chosen = warm;
-      let reference = "warm";
+      // One fixed policy: every frame is scored against the warm reference.
+      const { psnr, ssim, share, diff, width, height } = {
+        ...ffmpegScores(files[0], files[1]),
+        ...(await mismatch(files[0], files[1])),
+      };
       let firstRender: Record<string, unknown> | undefined;
       if (frame === 0) {
-        // lottie-web's frame 0 depends on what it rendered before: the first
-        // paint of a page can be incomplete (stacked repeaters), and returning
-        // to frame 0 can keep a stale modifier cache (a zig-zag whose size
-        // animates to 0). Both are real lottie-web output, so score against
-        // both, keep the closer one, and record the two numbers.
+        // Evidence only, never the score: lottie-web's frame 0 depends on what
+        // it rendered before (see README.md, "Known lottie-web bugs"), so the
+        // cold first paint is rendered and compared to the warm reference too.
         const cold = path.join(outDir, `${slug}_lottie-cold_0.png`);
         const coldComp = await selectComposition({ serveUrl, id: `Lottie-${slug}`, puppeteerInstance: browser });
         await renderStill({ serveUrl, composition: coldComp, frame: 0, output: cold, imageFormat: "png", puppeteerInstance: browser, overwrite: true });
-        const coldScore = { ...ffmpegScores(cold, files[1]), ...(await mismatch(cold, files[1])) };
-        const coldVsWarm = await mismatch(cold, files[0]);
+        const coldVsWarm = { ...ffmpegScores(cold, files[0]), ...(await mismatch(cold, files[0])) };
         if (coldVsWarm.share > 0.002) {
+          const genVsCold = { ...ffmpegScores(cold, files[1]), ...(await mismatch(cold, files[1])) };
           firstRender = {
-            coldVsWarmMismatch: +(coldVsWarm.share * 100).toFixed(3),
-            genVsCold: { psnr: +coldScore.psnr.toFixed(2), mismatch: +(coldScore.share * 100).toFixed(3) },
-            genVsWarm: { psnr: +warm.psnr.toFixed(2), mismatch: +(warm.share * 100).toFixed(3) },
+            coldVsWarm: { psnr: +coldVsWarm.psnr.toFixed(2), mismatch: +(coldVsWarm.share * 100).toFixed(3) },
+            genVsCold: { psnr: +genVsCold.psnr.toFixed(2), mismatch: +(genVsCold.share * 100).toFixed(3) },
           };
         }
-        if (coldScore.share < warm.share) {
-          chosen = coldScore;
-          reference = "cold";
-          files[0] = cold;
-        }
       }
-      const { psnr, ssim, share, diff, width, height } = chosen;
+      const referenceBug = KNOWN_REFERENCE_BUGS[slug]?.frames.includes(frame) ?? false;
       scores.push({
         frame,
         name,
-        reference,
         psnr: Number.isFinite(psnr) ? +psnr.toFixed(2) : "inf",
         ssim: +ssim.toFixed(4),
         mismatch: +(share * 100).toFixed(3),
+        ...(referenceBug ? { referenceBug: KNOWN_REFERENCE_BUGS[slug].bug } : {}),
         ...(firstRender ? { firstRender } : {}),
       });
       const tile = (input: Buffer | string, raw?: boolean) =>
@@ -188,7 +194,7 @@ async function main() {
       const tileMeta = await sharp(tiles[0]).metadata();
       const tw = tileMeta.width ?? 360;
       const th = tileMeta.height ?? 360;
-      const caption = `f${frame} (${name}${reference === "cold" ? ", vs first paint" : ""})  PSNR ${Number.isFinite(psnr) ? psnr.toFixed(1) : "inf"} dB  SSIM ${ssim.toFixed(3)}  mismatch ${(share * 100).toFixed(2)}%`;
+      const caption = `f${frame} (${name}${referenceBug ? ", reference wrong: lottie-web bug" : ""})  PSNR ${Number.isFinite(psnr) ? psnr.toFixed(1) : "inf"} dB  SSIM ${ssim.toFixed(3)}  mismatch ${(share * 100).toFixed(2)}%`;
       rows.push(
         await sharp({ create: { width: tw * 3 + 8, height: th + 28, channels: 3, background: "#888" } })
           .composite([
@@ -217,6 +223,7 @@ async function main() {
       slug,
       frames: scores,
       minPsnr: Math.min(...psnrs),
+      referenceBugFrames: scores.filter((s) => s.referenceBug).map((s) => s.frame),
       firstRenderArtifact: scores.find((s) => s.firstRender)?.firstRender ?? null,
       meanSsim: +(scores.reduce((s, x) => s + Number(x.ssim), 0) / scores.length).toFixed(4),
       maxMismatch: Math.max(...scores.map((s) => Number(s.mismatch))),

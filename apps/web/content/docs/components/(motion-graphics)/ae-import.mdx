@@ -93,9 +93,10 @@ Hidden layers and hidden items import with `hidden: true`, so you can switch the
 
 Measured by rendering each fixture with `@remotion/lottie` and with the generated TSX at the same frames (first, a keyframe, both quarters, middle, last), then scoring PSNR, SSIM and the share of pixels differing by more than 32/255. The bench, 26 fixtures from Airbnb's lottie-android tests (Apache-2.0) and the lottie-docs examples (CC BY 4.0) plus animated variants of them, lives in `apps/web/showcase/import-ae-bench`.
 
-- 25 of 26 fixtures match lottie-web at **≥ 41.9 dB minimum PSNR** and **≤ 0.17% mismatched pixels** on every sampled frame, including Airbnb's Lottie logo animations and stacked, animated repeaters. The remaining difference is anti-aliasing along edges.
+- 24 of 26 fixtures match lottie-web at **≥ 41.9 dB minimum PSNR** and **≤ 0.17% mismatched pixels** on every sampled frame, including Airbnb's Lottie logo animations and stacked, animated repeaters. The remaining difference is anti-aliasing along edges.
 - An animated Offset Paths fixture scores 32 dB: large inward offsets on sharp corners draw stray spikes (see below).
-- lottie-web's frame 0 depends on what it drew before: its first paint of a page can be incomplete, and returning to frame 0 can keep a stale modifier cache. The bench scores frame 0 against both and records both numbers.
+- An animated Zig Zag fixture scores 27.7 dB on frame 0 only, where the reference is wrong: lottie-web keeps a stale zig-zag when its size is 0. Its other frames score ≥ 58.7 dB.
+- The reference is always lottie-web after it has drawn another frame, never swapped per fixture. The bench README documents the two lottie-web bugs it hit, with evidence.
 
 ## lottie-web is the reference
 
