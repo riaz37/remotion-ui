@@ -4587,6 +4587,30 @@
       ]
     },
     {
+      "name": "ae-import",
+      "type": "registry:lib",
+      "description": "Runtime for `remotion-ui import-ae`: After Effects shape, solid, null and precomp layers with parenting, time remap and lottie-web's stacking rules, drawn as SVG from ae-motion data",
+      "dependencies": [
+        "remotion",
+        "@remotion/paths"
+      ],
+      "registryDependencies": [
+        "ae-motion",
+        "bezier-path",
+        "shape-ops"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/lib/lottie-shapes.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/bases/default/lib/ae-import.tsx",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "text-selectors",
       "type": "registry:lib",
       "description": "AE text range and wiggly selectors: per-unit selection with shapes, ease high/low, random order and combine modes",
