@@ -91,15 +91,21 @@ Hidden layers and hidden items import with `hidden: true`, so you can switch the
 
 ## Fidelity
 
-Measured by rendering each fixture with `@remotion/lottie` and with the generated TSX at the same frames (first, a keyframe, both quarters, middle, last), then scoring PSNR, SSIM and the share of pixels differing by more than 32/255. The bench, 25 fixtures from Airbnb's lottie-android tests (Apache-2.0) and the lottie-docs examples (CC BY 4.0), lives in `apps/web/showcase/import-ae-bench`.
+Measured by rendering each fixture with `@remotion/lottie` and with the generated TSX at the same frames (first, a keyframe, both quarters, middle, last), then scoring PSNR, SSIM and the share of pixels differing by more than 32/255. The bench, 26 fixtures from Airbnb's lottie-android tests (Apache-2.0) and the lottie-docs examples (CC BY 4.0) plus animated variants of them, lives in `apps/web/showcase/import-ae-bench`.
 
-- 22 of 25 fixtures match lottie-web at **≥ 41.9 dB minimum PSNR** and **≤ 0.17% mismatched pixels** on every sampled frame, including Airbnb's Lottie logo animations. The remaining difference is anti-aliasing along edges.
+- 25 of 26 fixtures match lottie-web at **≥ 41.9 dB minimum PSNR** and **≤ 0.17% mismatched pixels** on every sampled frame, including Airbnb's Lottie logo animations and stacked, animated repeaters. The remaining difference is anti-aliasing along edges.
 - An animated Offset Paths fixture scores 32 dB: large inward offsets on sharp corners draw stray spikes (see below).
-- The two repeater fixtures with animated offsets differ by design, see below.
+- lottie-web's frame 0 depends on what it drew before: its first paint of a page can be incomplete, and returning to frame 0 can keep a stale modifier cache. The bench scores frame 0 against both and records both numbers.
+
+## lottie-web is the reference
+
+lottie-web is what designers preview in (LottieFiles, the Bodymovin preview), so `import-ae` reproduces its behaviour, quirks included:
+
+- **Repeaters keep their originals.** When a repeater's fill or stroke sits below it, those styles also paint the original, un-repeated shapes, so a non-zero offset shows the original alongside the copies.
+- **Repeater position and rotation** compose as lottie-web does: each copy is rotated and scaled about the anchor, then moved by its position steps.
+- **Spatial speed** is measured along the motion path, as AE's speed graph measures it, so a position that loops back to its start keeps its ease.
+- **Time remap** landing exactly on a precomp layer's out point shows the frame before.
 
 ## Known differences
-
-- **Repeaters with styles below them.** When a repeater's fill or stroke sits below the repeater and its offset is non-zero, lottie-web also draws the original, un-repeated shape. `import-ae` draws exactly `copies` instances, as AE does. Two repeaters stacked in one group also diverge from lottie-web for the same reason.
-- **Repeater position and rotation** combine the way lottie-web does (position steps do not curl with rotation).
 - **Offset Paths** uses `shape-ops`' offsetter. Outward offsets and small insets match; a large inward offset on a sharp corner (e.g. −20 px on a star) leaves self-intersection loops that draw as spikes, and round joins are slightly tighter than lottie-web's.
 - Colours floor to 0–255 and gradient offsets round to whole percents, both as lottie-web does.
