@@ -797,8 +797,10 @@ export function layerMatrix({
   let m = translation(-anchor[0], -anchor[1]);
   m = multiply(scaling(sx, sy), m);
   if (skew !== 0) {
+    // lottie-web's convention (our fidelity reference): rotate onto the skew
+    // axis, shear along x by tan(-skew), rotate back — R(-axis)·K·R(+axis).
     const shear: Mat2D = [1, 0, Math.tan((-skew * Math.PI) / 180), 1, 0, 0];
-    m = multiply(multiply(rotation(skewAxis), multiply(shear, rotation(-skewAxis))), m);
+    m = multiply(multiply(rotation(-skewAxis), multiply(shear, rotation(skewAxis))), m);
   }
   m = multiply(rotation(degrees), m);
   return multiply(translation(position[0], position[1]), m);

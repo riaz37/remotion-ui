@@ -289,6 +289,39 @@ describe("transforms and parenting", () => {
     closeMat(multiply(m, back), IDENTITY);
   });
 
+  it("skews about its axis with lottie-web's sign convention", () => {
+    // lottie-web: skewFromAxis(-skew, axis) = R(+axis) · shearX(tan(-skew)) ·
+    // R(-axis), composed on row vectors — so R(+axis) applies to the point first.
+    const lottie = (skew: number, axis: number, [x, y]: [number, number]): [number, number] => {
+      const a = (axis * Math.PI) / 180;
+      const k = Math.tan((-skew * Math.PI) / 180);
+      const rot = ([px, py]: [number, number], t: number): [number, number] => [
+        px * Math.cos(t) - py * Math.sin(t),
+        px * Math.sin(t) + py * Math.cos(t),
+      ];
+      const [rx, ry] = rot([x, y], a);
+      return rot([rx + ry * k, ry], -a);
+    };
+    for (const [skew, axis] of [
+      [30, 45],
+      [-20, 90],
+      [15, 30],
+      [40, -60],
+    ]) {
+      const m = layerMatrix({ skew, skewAxis: axis });
+      for (const point of [
+        [10, 0],
+        [0, 10],
+        [7, -3],
+      ] as Array<[number, number]>) {
+        const [ex, ey] = lottie(skew, axis, point);
+        const [ax, ay] = applyToPoint(m, point);
+        close(ax, ex);
+        close(ay, ey);
+      }
+    }
+  });
+
   it("exposes the easy-ease constant", () => {
     expect(EASY_EASE.speed).toBe(0);
   });
