@@ -4601,6 +4601,10 @@
       ],
       "files": [
         {
+          "path": "registry/bases/default/lib/lottie-geometry.ts",
+          "type": "registry:lib"
+        },
+        {
           "path": "registry/bases/default/lib/lottie-shapes.ts",
           "type": "registry:lib"
         },

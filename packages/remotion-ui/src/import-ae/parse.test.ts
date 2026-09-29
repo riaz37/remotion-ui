@@ -121,6 +121,29 @@ describe("parseLottie", () => {
     expect(keys[1].spatialIn).toEqual([0, 10]);
   });
 
+  it("keeps the ease of a spatial segment that loops back to its start", () => {
+    const layer = shapeLayer({
+      ks: {
+        p: {
+          a: 1,
+          k: [
+            { t: 0, s: [50, 50, 0], to: [40, -40, 0], ti: [40, 40, 0], o: { x: 0.6, y: 0.1 }, i: { x: 0.4, y: 0.9 } },
+            { t: 30, s: [50, 50, 0] },
+          ],
+        },
+      },
+    });
+    const [box] = parseLottie(lottie([layer])).main.layers;
+    const [first, second] = (box.spec.transform as { position: Call }).position.args[0] as {
+      easeOut: { speed: number; influence: number };
+      easeIn: { speed: number; influence: number };
+    }[];
+    // Speed is measured along the path, so it is not collapsed to 0 by a zero chord.
+    expect(first.easeOut.influence).toBeCloseTo(0.6);
+    expect(first.easeOut.speed).toBeGreaterThan(0);
+    expect(second.easeIn.speed).toBeGreaterThan(0);
+  });
+
   it("resolves parenting and keeps precomp time offsets only on precomps", () => {
     const parsed = parseLottie(
       lottie(

@@ -2,7 +2,6 @@ import { createContext, useContext, useId, useMemo, type ReactNode } from "react
 import { AbsoluteFill, useCurrentFrame } from "remotion";
 import {
   cubicBezierAt,
-  easeToCubicBezier,
   multiply,
   resolveAnimatable,
   toCssMatrix,
@@ -150,6 +149,31 @@ function motionPath(from: SpatialKeyframe, to: SpatialKeyframe): { points: PolyP
   return entry;
 }
 
+/**
+ * Eased progress along a motion path. Spatial speed is measured along the
+ * path (AE's speed graph for position), so the ease survives a path that
+ * returns to its start, where a straight-line average would be zero. With
+ * no tangents the path length is the distance, and this is exactly
+ * `ae-motion`'s `easeToCubicBezier`.
+ */
+function spatialProgress(from: SpatialKeyframe, to: SpatialKeyframe, length: number, fps: number, x: number): number {
+  const seconds = (to.frame - from.frame) / fps;
+  const average = seconds > 0 ? length / seconds : 0;
+  if (average === 0) return x;
+  const influence = (ease: { influence: number } | undefined) => Math.min(1, Math.max(0.001, ease?.influence ?? 1 / 6));
+  const outInfluence = influence(from.easeOut);
+  const inInfluence = influence(to.easeIn);
+  const outSpeed = from.easeOut ? from.easeOut.speed : average;
+  const inSpeed = to.easeIn ? to.easeIn.speed : average;
+  return cubicBezierAt(
+    outInfluence,
+    (outSpeed / average) * outInfluence,
+    1 - inInfluence,
+    1 - (inSpeed / average) * inInfluence,
+    x,
+  );
+}
+
 function sampleSpatial(keys: readonly SpatialKeyframe[], frame: number, fps: number): Vec2 {
   if (frame <= keys[0].frame) return keys[0].value;
   const last = keys[keys.length - 1];
@@ -161,9 +185,8 @@ function sampleSpatial(keys: readonly SpatialKeyframe[], frame: number, fps: num
   const mode = from.interpolation ?? "bezier";
   if (mode === "hold") return from.value;
   const x = (frame - from.frame) / (to.frame - from.frame);
-  const curve = mode === "bezier" ? easeToCubicBezier(from, to, fps) : null;
-  const progress = curve ? cubicBezierAt(curve[0], curve[1], curve[2], curve[3], x) : x;
   const { points, length } = motionPath(from, to);
+  const progress = mode === "bezier" ? spatialProgress(from, to, length, fps, x) : x;
   // Arc length along the motion path, over the same 150-point polyline
   // lottie-web walks, so the ease is spread evenly along the curve.
   const target = length * progress;
@@ -248,6 +271,18 @@ function ShapeContents({ items, frame, fps }: { items: readonly ContentItem[]; f
   return <>{renderNodes(nodes, idBase, "g")}</>;
 }
 
+/**
+ * The precomp frame a precomp layer shows at a composition frame: time remap
+ * if set, else offset by the start time and divided by the stretch. A remap
+ * landing exactly on the layer's out point shows the frame before, as
+ * lottie-web does (that frame is past the end of most precomps).
+ */
+export function precompFrame(layer: PrecompLayer, compFrame: number, fps: number): number {
+  if (layer.timeRemap === undefined) return (compFrame - (layer.startTime ?? 0)) / (layer.timeStretch ?? 1);
+  const remapped = resolveAnimatable(layer.timeRemap, compFrame, { fps });
+  return remapped === layer.outPoint ? layer.outPoint - 1 : remapped;
+}
+
 export type AeLayerProps = {
   layer: Layer;
   /** A precomp layer's contents: the precomp's own layers. */
@@ -268,9 +303,7 @@ export function AeLayer({ layer, children }: AeLayerProps) {
   } else if (layer.type === "solid") {
     content = <rect x={0} y={0} width={layer.width} height={layer.height} fill={layer.color} />;
   } else if (layer.type === "precomp") {
-    const inner = layer.timeRemap
-      ? resolveAnimatable(layer.timeRemap, compFrame, { fps })
-      : (compFrame - (layer.startTime ?? 0)) / (layer.timeStretch ?? 1);
+    const inner = precompFrame(layer, compFrame, fps);
     content = (
       <>
         <clipPath id={clipId}>

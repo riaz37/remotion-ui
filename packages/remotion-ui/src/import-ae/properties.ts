@@ -3,6 +3,7 @@ import {
   easesFromHandles,
   handlesFor,
   isLinear,
+  motionPathLength,
   sameAcrossDimensions,
   type TemporalEase,
 } from "./easing.js";
@@ -150,7 +151,12 @@ function toAeKeys(keys: NormalKey[], fps: number, pickValue: (v: number[]) => nu
       eases[k].interpolation = "linear";
       continue;
     }
-    const { easeOut, easeIn } = easesFromHandles(h, averageSpeed(values[k], values[k + 1], seconds));
+    // Spatial keys measure speed along the motion path (AE's definition), so
+    // a path that loops back to its start keeps a meaningful ease.
+    const average = spatialMode
+      ? motionPathLength(values[k], values[k + 1], keys[k].to, keys[k].ti) / seconds
+      : averageSpeed(values[k], values[k + 1], seconds);
+    const { easeOut, easeIn } = easesFromHandles(h, average);
     eases[k].easeOut = easeOut;
     eases[k + 1].easeIn = easeIn;
   }

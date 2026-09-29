@@ -78,7 +78,36 @@ export function averageSpeed(from: readonly number[], to: readonly number[], sec
   return distance / seconds;
 }
 
-const clampInfluence = (value: number) => Math.min(1, Math.max(MIN_INFLUENCE, value));
+/** Samples on a motion path — lottie-web's count, mirrored by the ae-import runtime. */
+export const SPATIAL_SAMPLES = 150;
+
+/**
+ * Arc length of a spatial segment (tangents relative to their key), over the
+ * same polyline lottie-web and the runtime walk. Spatial keys measure speed
+ * along this length, as AE's speed graph does for position, so a loop that
+ * starts and ends on one point still keeps its ease.
+ */
+export function motionPathLength(
+  a: readonly number[],
+  b: readonly number[],
+  out: readonly number[] = [0, 0],
+  inn: readonly number[] = [0, 0],
+): number {
+  const c1 = [a[0] + (out[0] ?? 0), a[1] + (out[1] ?? 0)];
+  const c2 = [b[0] + (inn[0] ?? 0), b[1] + (inn[1] ?? 0)];
+  let length = 0;
+  let prev: number[] | null = null;
+  for (let k = 0; k < SPATIAL_SAMPLES; k += 1) {
+    const u = k / (SPATIAL_SAMPLES - 1);
+    const m = 1 - u;
+    const point = [0, 1].map((i) => m * m * m * a[i] + 3 * m * m * u * c1[i] + 3 * m * u * u * c2[i] + u * u * u * b[i]);
+    if (prev) length += Math.hypot(point[0] - prev[0], point[1] - prev[1]);
+    prev = point;
+  }
+  return length;
+}
+
+const clampInfluence =(value: number) => Math.min(1, Math.max(MIN_INFLUENCE, value));
 
 /**
  * The exact `ae-motion` eases for one Lottie segment.

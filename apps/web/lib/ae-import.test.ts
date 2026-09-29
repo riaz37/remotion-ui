@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { easesFromHandles, averageSpeed } from "../../../packages/remotion-ui/src/import-ae/easing";
+import { easesFromHandles, averageSpeed, motionPathLength } from "../../../packages/remotion-ui/src/import-ae/easing";
 import { sampleTrack, applyToPoint, type Keyframe } from "../registry/bases/default/lib/ae-motion";
 import { pathLength } from "../registry/bases/default/lib/bezier-path";
 import {
@@ -19,7 +19,7 @@ import {
   zigZagPath,
   type RenderNode,
 } from "../registry/bases/default/lib/lottie-shapes";
-import { layerWorldMatrix, nullLayer, shapeLayer, spatial } from "../registry/bases/default/lib/ae-import";
+import { layerWorldMatrix, nullLayer, precompFrame, precompLayer, shapeLayer, spatial } from "../registry/bases/default/lib/ae-import";
 
 const ctx = { frame: 0, fps: 30 };
 const paints = (nodes: RenderNode[]): Extract<RenderNode, { kind: "paint" }>[] =>
@@ -181,6 +181,44 @@ describe("ae-import layers", () => {
     const child = shapeLayer({ name: "Dot", parent: rig, inPoint: 0, outPoint: 60, transform: { position: [5, 5] }, contents: [] });
     const m = layerWorldMatrix(child, 5, 30);
     expect(applyToPoint(m, [0, 0])).toEqual([55, 5]);
+  });
+
+  it("keeps the ease on a motion path that returns to its start", () => {
+    // Codegen measures spatial speed along the path; mirror it here.
+    const h = { ox: 0.6, oy: 0.1, ix: 0.4, iy: 0.9 };
+    const keysFor = (length: number) => {
+      const { easeOut, easeIn } = easesFromHandles(h, length / 1);
+      return [
+        { frame: 0, value: [0, 0] as [number, number], spatialOut: [100, -100] as [number, number], easeOut },
+        { frame: 30, value: [0, 0] as [number, number], spatialIn: [100, 100] as [number, number], easeIn },
+      ];
+    };
+    const length = motionPathLength([0, 0], [0, 0], [100, -100], [100, 100]);
+    const position = spatial(keysFor(length));
+    // Walk the same polyline to the eased distance and compare.
+    const expectedAt = (progress: number) => {
+      const loose = spatial([
+        { frame: 0, value: [0, 0], spatialOut: [100, -100], interpolation: "linear" },
+        { frame: 30, value: [0, 0], spatialIn: [100, 100] },
+      ]);
+      return loose({ frame: progress * 30, time: 0, fps: 30 });
+    };
+    for (const f of [6, 12, 21]) {
+      const [x, y] = position({ frame: f, time: f / 30, fps: 30 });
+      const [ex, ey] = expectedAt(lottieEase(h, f / 30));
+      expect(x).toBeCloseTo(ex, 3);
+      expect(y).toBeCloseTo(ey, 3);
+    }
+    // And it really is eased: not where linear timing would put it.
+    const [lx] = expectedAt(12 / 30);
+    expect(Math.abs(position({ frame: 12, time: 0.4, fps: 30 })[0] - lx)).toBeGreaterThan(1);
+  });
+
+  it("clamps a time remap landing exactly on the precomp's out point, like lottie-web", () => {
+    const base = { name: "Pre", inPoint: 0, outPoint: 60, width: 100, height: 100 };
+    expect(precompFrame(precompLayer({ ...base, timeRemap: 60 }), 10, 30)).toBe(59);
+    expect(precompFrame(precompLayer({ ...base, timeRemap: 42 }), 10, 30)).toBe(42);
+    expect(precompFrame(precompLayer({ ...base, startTime: 10, timeStretch: 2 }), 30, 30)).toBe(10);
   });
 
   it("follows a curved motion path by arc length", () => {
