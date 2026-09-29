@@ -28,6 +28,7 @@ import {
   type Pt,
   type Segment,
 } from "./bezier-path";
+import { fitPolyline } from "./curve-fit";
 
 /**
  * An After Effects shape layer, as data: shapes at the top, then an ordered
@@ -641,7 +642,9 @@ export function offsetPath(
     emit({ x: p.x + n2.x * d, y: p.y + n2.y * d });
   }
   const window = Math.ceil((Math.abs(d) * 2) / FLATTEN_SPACING) + 6;
-  return polylineThrough(removeLocalLoops(out, window), path.closed);
+  // Offsetting is exact on dense points; fitting brings the result back to a
+  // few real bézier curves, and corner detection keeps miters and bevels sharp.
+  return fitPolyline(removeLocalLoops(out, window), path.closed);
 }
 
 function applyOffset(items: ShapeItem[], op: OffsetOp, ctx: Ctx): ShapeItem[] {

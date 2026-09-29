@@ -4557,13 +4557,27 @@
       ]
     },
     {
+      "name": "curve-fit",
+      "type": "registry:lib",
+      "description": "Fit cubic béziers through a polyline (Schneider) with corner detection, so dense-point operators emit real curves",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/bases/default/lib/curve-fit.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "shape-ops",
       "type": "registry:lib",
       "description": "AE shape-layer operators — trim, repeater, offset, wiggle, zig-zag, pucker & bloat — run as an ordered stack",
       "dependencies": [],
       "registryDependencies": [
         "ae-motion",
-        "bezier-path"
+        "bezier-path",
+        "curve-fit"
       ],
       "files": [
         {
