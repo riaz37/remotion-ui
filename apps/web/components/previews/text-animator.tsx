@@ -1,112 +1,83 @@
 "use client";
 
-import { useCurrentFrame, useVideoConfig } from "remotion";
-import {
-  easyEase,
-  resolveAnimatable,
-  type Animatable,
-} from "../../registry/bases/default/lib/ae-motion";
+import { easyEase, type Animatable } from "../../registry/bases/default/lib/ae-motion";
 import {
   TextAnimator,
   type TextAnimatorLayer,
 } from "../../registry/bases/default/primitives/text-animator";
 import { DEMO_PALETTE } from "@/lib/demo-assets";
-import { PREVIEW_MONO_FONT, PREVIEW_UI_FONT, PreviewFrame } from "./preview-frame";
+import { PREVIEW_UI_FONT, PreviewFrame } from "./preview-frame";
 import { usePreviewStage } from "./preview-stage";
 
 /**
- * Three animators on a set line — no per-glyph keyframes anywhere.
+ * Four animators, overlapping in time, on a set line — and no per-glyph
+ * keyframes anywhere. Each is one or two selectors plus a target:
  *
- * - The wave is a Smooth range whose offset is keyframed once: each glyph it
- *   passes lifts, grows and takes the accent, and the selector's shape is what
- *   makes that read as a wave.
- * - The defocus is a Square range with Randomize Order: its end sweeps out and
- *   its start follows, so glyphs soften in a shuffled order and come back in
- *   the same one.
- * - The breath has no selector at all (everything selected) and animates
- *   tracking: the measured layout pushes every neighbour and re-centres each
- *   line as it widens.
+ * 1. Characters · Smooth range: a wave that lifts, grows and warms each glyph
+ *    it passes.
+ * 2. Characters · Smooth range ∩ Wiggly: the wiggly selector alone would shake
+ *    the whole line; intersected with a travelling range it only exists inside
+ *    that window — a tremor band chasing the wave.
+ * 3. Lines · Square range on the second line: its tracking breathes and it
+ *    turns rose, and the measured layout re-centres it as it widens.
+ * 4. Words · Triangle range: whole words lean forward one after another.
  *
  * The clip starts and ends on the set line.
  */
-const WAVE_OFFSET: Animatable = [easyEase(4, -0.42), easyEase(68, 1.02)];
-const DEFOCUS_END: Animatable = [easyEase(54, 0), easyEase(100, 1)];
-const DEFOCUS_START: Animatable = [easyEase(70, 0), easyEase(116, 1)];
-const TRACKING: Animatable = [easyEase(92, 0), easyEase(118, 10), easyEase(146, 0)];
+const WAVE: Animatable = [easyEase(4, -0.45), easyEase(66, 1.05)];
+const TREMOR_BAND: Animatable = [easyEase(34, -0.4), easyEase(118, 1.05)];
+const LINE_BREATH: Animatable = [easyEase(64, 0), easyEase(96, 1), easyEase(140, 0)];
+const WORD_LEAN: Animatable = [easyEase(84, -0.55), easyEase(146, 1.05)];
 
 const ANIMATORS: TextAnimatorLayer[] = [
   {
     basedOn: "characters-excluding-spaces",
-    properties: {
-      position: [0, -16],
-      scale: 1.1,
-      rotation: -6,
-      fill: DEMO_PALETTE.phosphor,
-    },
-    selectors: [{ shape: "smooth", start: 0, end: 0.4, offset: WAVE_OFFSET }],
+    properties: { position: [0, -22], scale: 1.12, fill: DEMO_PALETTE.phosphor },
+    selectors: [{ shape: "smooth", start: 0, end: 0.45, offset: WAVE }],
   },
   {
     basedOn: "characters-excluding-spaces",
-    properties: { opacity: 0.5, blur: 4.5, scale: 1.18, fill: DEMO_PALETTE.teal },
+    properties: { position: [0, 26], rotation: 28 },
     selectors: [
+      { shape: "smooth", start: 0, end: 0.4, offset: TREMOR_BAND },
       {
-        shape: "square",
-        start: DEFOCUS_START,
-        end: DEFOCUS_END,
-        randomizeOrder: true,
-        seed: 7,
+        type: "wiggly",
+        mode: "intersect",
+        minAmount: -1,
+        maxAmount: 1,
+        wigglesPerSecond: 5,
+        correlation: 0.15,
+        seed: 3,
       },
     ],
   },
-  { properties: { tracking: TRACKING } },
+  {
+    basedOn: "lines",
+    properties: { tracking: 16, fill: DEMO_PALETTE.rose },
+    selectors: [{ start: 0.5, end: 1, amount: LINE_BREATH }],
+  },
+  {
+    basedOn: "words",
+    properties: { skew: -16, fill: DEMO_PALETTE.teal },
+    selectors: [{ shape: "triangle", start: 0, end: 0.55, offset: WORD_LEAN }],
+  },
 ];
-
-const Readout: React.FC = () => {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const tokens = usePreviewStage();
-  const at = (value: Animatable) => resolveAnimatable(value, frame, { fps }).toFixed(2);
-  const cell = (label: string, detail: string, tone: string) => (
-    <span style={{ display: "flex", gap: 10 }}>
-      <span style={{ color: tokens.ink }}>{label}</span>
-      <span style={{ color: tone, fontVariantNumeric: "tabular-nums" }}>{detail}</span>
-    </span>
-  );
-  return (
-    <div
-      style={{
-        display: "flex",
-        gap: 36,
-        fontFamily: PREVIEW_MONO_FONT,
-        fontSize: 16,
-        color: tokens.muted,
-      }}
-    >
-      {cell("Smooth range", `offset ${at(WAVE_OFFSET)}`, DEMO_PALETTE.phosphor)}
-      {cell("Random range", `${at(DEFOCUS_START)} → ${at(DEFOCUS_END)}`, DEMO_PALETTE.teal)}
-      {cell("Tracking", `${at(TRACKING)} px`, DEMO_PALETTE.rose)}
-    </div>
-  );
-};
 
 export const TextAnimatorPreview: React.FC = () => {
   const tokens = usePreviewStage();
   return (
-    <PreviewFrame lane="motion">
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 44 }}>
-        <TextAnimator
-          text={"Every letter keeps\nits own clock"}
-          animators={ANIMATORS}
-          fontSize={78}
-          fontFamily={PREVIEW_UI_FONT}
-          fontWeight={700}
-          color={tokens.ink}
-          letterSpacing={-0.03}
-          lineHeight={1.22}
-          maxWidth={780}
-        />
-        <Readout />
-      </div>
+    <PreviewFrame lane="motion" padding={0}>
+      <TextAnimator
+        text={"Every letter\nkeeps time"}
+        animators={ANIMATORS}
+        fontSize={128}
+        fontFamily={PREVIEW_UI_FONT}
+        fontWeight={800}
+        color={tokens.ink}
+        letterSpacing={-0.04}
+        lineHeight={1.08}
+        maxWidth={860}
+      />
     </PreviewFrame>
   );
 };

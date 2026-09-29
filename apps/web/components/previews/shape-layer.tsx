@@ -1,67 +1,60 @@
 "use client";
 
-import { useCurrentFrame, useVideoConfig } from "remotion";
-import {
-  easyEase,
-  resolveAnimatable,
-  type Animatable,
-} from "../../registry/bases/default/lib/ae-motion";
+import { easyEase, type Animatable } from "../../registry/bases/default/lib/ae-motion";
 import {
   ShapeLayer,
   type ShapeOperator,
   type ShapeSource,
 } from "../../registry/bases/default/primitives/shape-layer";
 import { DEMO_PALETTE } from "@/lib/demo-assets";
-import { PREVIEW_MONO_FONT, PreviewFrame } from "./preview-frame";
-import { usePreviewStage } from "./preview-stage";
+import { PreviewFrame } from "./preview-frame";
 
 /**
- * One star, four operators. The stack is the subject: Pucker & Bloat breathes
- * the base shape, the Repeater compounds it into a nest that crawls inward,
- * and Trim Paths sitting *below* the repeater treats all 22 copies as one
- * line, so a single stroke of light spirals out through the nest. Put the
- * trim above the repeater and every copy would draw at once instead.
+ * One star, three layers, one stack of operators reused between them.
  *
- * The faint layer underneath runs the same stack without the trim — the
- * same operators, reused, not re-authored.
+ * - Behind: the star through Offset Paths with nine copies. Its copy offset
+ *   loops once over the clip, so contour rings ripple out past the frame
+ *   edges and the last frame hands back to the first.
+ * - Middle: the same star through Pucker & Bloat and a compounding Repeater —
+ *   a nest of 22 copies that crawls inward, left faint.
+ * - Front: the same nest with Trim Paths *below* the Repeater, so the trim
+ *   treats all 22 copies as one line and a single stroke of light spirals out
+ *   through them. Above the repeater, every copy would draw at once instead.
  */
-const SHAPES: ShapeSource[] = [
+const SIZE = { width: 960, height: 540 };
+const LOOP = 150;
+
+const STAR: ShapeSource[] = [
   {
     type: "star",
     points: 5,
-    outerRadius: 188,
-    innerRadius: 84,
+    outerRadius: 215,
+    innerRadius: 98,
     outerRoundness: 0.15,
     innerRoundness: 0.5,
   },
 ];
 
-const PUCKER: Animatable = [easyEase(0, -0.2), easyEase(75, 0.28), easyEase(150, -0.2)];
-const COPIES = 22;
-/** One full step over the clip: the nest crawls inward and lands where it began. */
-const REPEAT_OFFSET: Animatable = [
+const PUCKER: Animatable = [easyEase(0, -0.2), easyEase(LOOP / 2, 0.28), easyEase(LOOP, -0.2)];
+const ONE_STEP: Animatable = [
   { frame: 0, value: 0 },
-  { frame: 150, value: 1 },
-];
-const TRIM_OFFSET: Animatable = [
-  { frame: 0, value: 0.18 },
-  { frame: 150, value: 2.18 },
+  { frame: LOOP, value: 1 },
 ];
 
-const BASE: ShapeOperator[] = [
+const NEST: ShapeOperator[] = [
   { op: "pucker-bloat", amount: PUCKER },
   {
     op: "repeater",
-    copies: COPIES,
+    copies: 22,
     scale: 0.905,
     rotation: 5,
     position: [0, 0],
-    offset: REPEAT_OFFSET,
+    offset: ONE_STEP,
     startOpacity: 1,
     endOpacity: 0.3,
   },
 ];
-const WIGGLE: ShapeOperator = {
+const TREMOR: ShapeOperator = {
   op: "wiggle",
   size: 1.1,
   detail: 3,
@@ -69,81 +62,70 @@ const WIGGLE: ShapeOperator = {
   correlation: 0.75,
   seed: 4,
 };
-const GHOST: ShapeOperator[] = [...BASE, WIGGLE];
+
+/**
+ * The ripples offset a rounded pentagon, not the star: offsetting the looped,
+ * bloated star at these distances ties itself in knots (as it would in AE).
+ * A convex source offsets cleanly at any distance.
+ */
+const PENTAGON: ShapeSource[] = [{ type: "polygon", points: 5, radius: 110, roundness: 0.3 }];
+const RIPPLES: ShapeOperator[] = [
+  { op: "offset", amount: 42, copies: 10, copyOffset: ONE_STEP, join: "round" },
+];
+const GHOST: ShapeOperator[] = [...NEST, TREMOR];
 const LIT: ShapeOperator[] = [
-  ...BASE,
-  { op: "trim", mode: "individual", start: 0, end: 0.3, offset: TRIM_OFFSET },
-  WIGGLE,
+  ...NEST,
+  {
+    op: "trim",
+    mode: "individual",
+    start: 0,
+    end: 0.3,
+    offset: [
+      { frame: 0, value: 0.18 },
+      { frame: LOOP, value: 2.18 },
+    ],
+  },
+  TREMOR,
 ];
 
-const SIZE = 500;
-
-/** The layer panel: operator order and live values, as AE's timeline shows them. */
-const StackReadout: React.FC = () => {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const tokens = usePreviewStage();
-  const value = (animatable: Animatable) => resolveAnimatable(animatable, frame, { fps });
-  const rows: Array<[string, string]> = [
-    ["Pucker & Bloat", `${value(PUCKER) >= 0 ? "+" : ""}${(value(PUCKER) * 100).toFixed(0)}%`],
-    ["Repeater", `${COPIES} × ${value(REPEAT_OFFSET).toFixed(2)}`],
-    ["Trim Paths", `30% @ ${value(TRIM_OFFSET).toFixed(2)}`],
-    ["Wiggle Paths", "1.1 px"],
-  ];
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 14,
-        fontFamily: PREVIEW_MONO_FONT,
-        fontSize: 17,
-        width: 250,
-      }}
-    >
-      {rows.map(([name, reading], index) => (
-        <div key={name} style={{ display: "flex", gap: 14, alignItems: "baseline" }}>
-          <span style={{ color: tokens.muted, width: 16 }}>{index + 1}</span>
-          <span style={{ color: tokens.ink, flex: 1 }}>{name}</span>
-          <span style={{ color: DEMO_PALETTE.phosphor, fontVariantNumeric: "tabular-nums" }}>
-            {reading}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-};
+const Layer: React.FC<{ opacity?: number; children: React.ReactNode }> = ({ opacity = 1, children }) => (
+  <div style={{ gridArea: "1 / 1", opacity }}>{children}</div>
+);
 
 export const ShapeLayerPreview: React.FC = () => (
   <PreviewFrame lane="motion" padding={0}>
-    <div style={{ display: "flex", alignItems: "center", gap: 56, marginLeft: 40 }}>
-      <StackReadout />
-      <div style={{ display: "grid", width: SIZE, height: SIZE }}>
-        <div style={{ gridArea: "1 / 1", opacity: 0.16 }}>
-          <ShapeLayer
-            shapes={SHAPES}
-            operators={GHOST}
-            width={SIZE}
-            height={SIZE}
-            stroke={DEMO_PALETTE.phosphor}
-            strokeEnd={DEMO_PALETTE.rose}
-            strokeWidth={1}
-          />
-        </div>
-        <div style={{ gridArea: "1 / 1" }}>
-          <ShapeLayer
-            shapes={SHAPES}
-            operators={LIT}
-            width={SIZE}
-            height={SIZE}
-            stroke={DEMO_PALETTE.phosphor}
-            strokeEnd={DEMO_PALETTE.rose}
-            strokeWidth={2}
-            glow={4}
-          />
-        </div>
-      </div>
+    <div style={{ display: "grid", ...SIZE }}>
+      <Layer opacity={0.32}>
+        <ShapeLayer
+          shapes={PENTAGON}
+          operators={RIPPLES}
+          {...SIZE}
+          stroke={DEMO_PALETTE.rose}
+          strokeEnd={DEMO_PALETTE.phosphor}
+          strokeWidth={1.3}
+        />
+      </Layer>
+      <Layer opacity={0.3}>
+        <ShapeLayer
+          shapes={STAR}
+          operators={GHOST}
+          {...SIZE}
+          stroke={DEMO_PALETTE.phosphor}
+          strokeEnd={DEMO_PALETTE.rose}
+          strokeWidth={1}
+        />
+      </Layer>
+      <Layer>
+        <ShapeLayer
+          shapes={STAR}
+          operators={LIT}
+          {...SIZE}
+          stroke={DEMO_PALETTE.phosphor}
+          strokeEnd={DEMO_PALETTE.rose}
+          strokeWidth={2.2}
+          glow={5}
+        />
+      </Layer>
     </div>
   </PreviewFrame>
 );
