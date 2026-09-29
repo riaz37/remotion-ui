@@ -4,6 +4,7 @@ import { addCommand } from "./commands/add.js";
 import { buildCommand } from "./commands/build.js";
 import { diffCommand } from "./commands/diff.js";
 import { doctorCommand } from "./commands/doctor.js";
+import { importAeCommand } from "./commands/import-ae.js";
 import { initCommand } from "./commands/init.js";
 import { listCommand } from "./commands/list.js";
 import { updateCommand } from "./commands/update.js";
@@ -248,6 +249,49 @@ program
       }
       console.error(
         error instanceof Error ? error.message : "Diff failed",
+      );
+      process.exit(1);
+    }
+  });
+
+program
+  .command("import-ae")
+  .description(
+    "Convert an After Effects Bodymovin/Lottie JSON export into editable Remotion TSX",
+  )
+  .argument("<file>", "Bodymovin / Lottie .json file")
+  .option("-o, --out <dir>", "output directory (default: <compositions>/<name>)")
+  .option("-n, --name <Name>", "component and composition id, PascalCase")
+  .option(
+    "--skip-unsupported",
+    "generate anyway, listing unsupported features in the output header",
+  )
+  .option("-f, --force", "overwrite existing generated files")
+  .option("--no-register", "do not add the composition to Root.tsx")
+  .option("--no-install", "do not install the ae-import runtime")
+  .option(
+    "-r, --registry-url <url>",
+    "Registry base URL or local path to public/r/ (for the runtime install)",
+  )
+  .option("--json", "Output machine-readable JSON")
+  .action(async (file: string, options) => {
+    try {
+      await importAeCommand(file, {
+        out: options.out,
+        name: options.name,
+        skipUnsupported: options.skipUnsupported,
+        force: options.force,
+        register: options.register,
+        install: options.install,
+        registryUrl: options.registryUrl,
+        json: options.json,
+      });
+    } catch (error) {
+      if (options.json) {
+        process.exit(1);
+      }
+      console.error(
+        error instanceof Error ? error.message : "import-ae failed",
       );
       process.exit(1);
     }

@@ -9,6 +9,8 @@ export type ErrorCode =
   | "TARGET_EXISTS"
   | "INVALID_ARGS"
   | "DEPENDENCY_SPEC_INVALID"
+  | "LOTTIE_INVALID"
+  | "LOTTIE_UNSUPPORTED"
   | "UNKNOWN";
 
 export class RemotionUiError extends Error {
