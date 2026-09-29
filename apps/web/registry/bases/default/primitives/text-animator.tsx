@@ -35,6 +35,13 @@ export type TextAnimatorProps = {
   maxWidth?: number;
   /** Pivot for scale and rotation: each glyph, its word, its line, or the block. */
   anchorGrouping?: "character" | "word" | "line" | "all";
+  /**
+   * Resolves when the face is ready — pass `waitUntilDone` from
+   * `@remotion/google-fonts` / `@remotion/fonts`. Without it the component
+   * waits for a loaded face of the primary family to appear (up to 1.5s,
+   * after which it assumes a system font).
+   */
+  waitForFont?: () => Promise<unknown>;
   /** Render a specific frame instead of the current one. */
   frame?: number;
   style?: CSSProperties;
@@ -42,15 +49,44 @@ export type TextAnimatorProps = {
 };
 
 
-const REFERENCE_SIZE = 100;
 const DEFAULT_FAMILY = "Inter, system-ui, sans-serif";
 
+/** How long to wait for a web font face to be registered before assuming a system font. */
+const FACE_WAIT_MS = 1500;
+const FACE_POLL_MS = 40;
+
+/** The first family in a CSS font-family list, unquoted. */
+function primaryFamily(stack: string): string {
+  return stack.split(",")[0].trim().replace(/^["']|["']$/g, "");
+}
+
+function hasLoadedFace(family: string): boolean {
+  let found = false;
+  document.fonts.forEach((face) => {
+    if (face.family.replace(/^["']|["']$/g, "") === family && face.status === "loaded") found = true;
+  });
+  return found;
+}
+
 /**
- * Holds the render until the face is available, then flips `ready`. Measuring
- * before the font arrives would measure the fallback face — and
- * `measureText` caches by string, so the wrong widths would stick.
+ * Holds the render until the text can be measured in the face it will be
+ * drawn in, and not a moment before.
+ *
+ * `document.fonts.load()` is not enough on its own: `@remotion/google-fonts`
+ * fetches and loads a face *outside* the font set and only then adds it, so
+ * until that moment `load()` resolves at once and measurement falls back to
+ * system-ui — which `measureText` then caches. In a headless render that
+ * made every word ~9% narrower than the glyphs drawn over it and swallowed
+ * the word gaps. So nothing is measured until a loaded face for the primary
+ * family is actually in the set, or `waitForFont` (e.g. `waitUntilDone` from
+ * `loadFont`) resolves. With neither, after FACE_WAIT_MS it is taken to be a
+ * system font, which measures correctly as it is.
  */
-function useFontReady(fontFamily: string, fontWeight: number): boolean {
+function useFontReady(
+  fontFamily: string,
+  fontWeight: number,
+  waitForFont: (() => Promise<unknown>) | undefined,
+): boolean {
   const [ready, setReady] = useState(false);
   const { delayRender, continueRender, cancelRender } = useDelayRender();
   const pending = useRef<number | null>(null);
@@ -68,25 +104,38 @@ function useFontReady(fontFamily: string, fontWeight: number): boolean {
       return undefined;
     }
     let active = true;
-    pending.current = delayRender(`text-animator: loading ${fontWeight} ${fontFamily}`);
-    Promise.all([
-      document.fonts.load(`${fontWeight} ${REFERENCE_SIZE}px ${fontFamily}`),
-      document.fonts.ready,
-    ])
-      .then(() => {
-        if (!active) return;
-        setReady(true);
-        release();
-      })
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    pending.current = delayRender(`text-animator: waiting for ${fontWeight} ${fontFamily}`);
+    const family = primaryFamily(fontFamily);
+
+    const settle = () => {
+      if (!active) return;
+      setReady(true);
+      release();
+    };
+    const waitForFace = (startedAt: number) => {
+      if (!active) return;
+      if (hasLoadedFace(family) || Date.now() - startedAt >= FACE_WAIT_MS) {
+        document.fonts.load(`${fontWeight} 100px ${fontFamily}`).then(settle, settle);
+        return;
+      }
+      timer = setTimeout(() => waitForFace(startedAt), FACE_POLL_MS);
+    };
+
+    const explicit = waitForFont ? waitForFont() : Promise.resolve();
+    explicit
+      .then(() => Promise.all([document.fonts.load(`${fontWeight} 100px ${fontFamily}`), document.fonts.ready]))
+      .then(() => (waitForFont ? settle() : waitForFace(Date.now())))
       .catch((error: unknown) => {
         release();
         cancelRender(error instanceof Error ? error : new Error(String(error)));
       });
     return () => {
       active = false;
+      if (timer) clearTimeout(timer);
       release();
     };
-  }, [fontFamily, fontWeight, delayRender, cancelRender, release]);
+  }, [fontFamily, fontWeight, waitForFont, delayRender, cancelRender, release]);
 
   return ready;
 }
@@ -125,6 +174,7 @@ export const TextAnimator: React.FC<TextAnimatorProps> = ({
   align = "center",
   maxWidth: maxWidthProp,
   anchorGrouping = "character",
+  waitForFont,
   frame: frameOverride,
   style,
   className,
@@ -134,7 +184,7 @@ export const TextAnimator: React.FC<TextAnimatorProps> = ({
   const frame = frameOverride ?? currentFrame;
   const fontSize = fontSizeProp ?? Math.round((84 * width) / 1080);
   const maxWidth = maxWidthProp ?? width * 0.84;
-  const ready = useFontReady(fontFamily, fontWeight);
+  const ready = useFontReady(fontFamily, fontWeight, waitForFont);
 
   const layout = useMemo<GlyphLayout | null>(() => {
     if (!ready) return null;

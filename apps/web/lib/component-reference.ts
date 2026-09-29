@@ -5245,6 +5245,7 @@ import { easyEase } from "@/remotion/lib/ae-motion";
       { name: "align", type: '"left" | "center" | "right"', default: '"center"', description: "Line alignment; follows animated tracking." },
       { name: "maxWidth", type: "number", description: "Wrap width. Defaults to 84% of the composition width." },
       { name: "anchorGrouping", type: '"character" | "word" | "line" | "all"', default: '"character"', description: "Pivot for scale and rotation." },
+      { name: "waitForFont", type: "() => Promise<unknown>", description: "Resolves when the face is loaded — pass waitUntilDone from loadFont. Without it, waits up to 1.5s for a loaded face of the primary family." },
       { name: "frame", type: "number", description: "Render this frame instead of the current one." },
     ],
     note: "Selectors: range (start/end/offset, shape square|ramp-up|ramp-down|triangle|round|smooth, easeHigh/easeLow, randomizeOrder, mode, amount) and wiggly. Installs @remotion/layout-utils.",

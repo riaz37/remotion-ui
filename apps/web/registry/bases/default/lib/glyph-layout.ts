@@ -64,6 +64,17 @@ export type GlyphLayoutOptions = {
   measure: MeasureFn;
 };
 
+/**
+ * A word gap as text actually renders it: the space between two glyphs, not
+ * a lone space. Measuring " " on its own is environment-sensitive — under the
+ * Node bundler API it measured near zero while every visible string measured
+ * correctly, which collapsed every word gap. Differencing two strings with
+ * the same glyphs cancels that out.
+ */
+function spaceWidth(size: number, measure: MeasureFn): number {
+  return Math.max(0, measure("x x", size) - measure("xx", size));
+}
+
 function wordWidth(word: string, size: number, spacing: number, measure: MeasureFn): number {
   return measure(word, size) + Array.from(word).length * spacing;
 }
@@ -79,7 +90,7 @@ function wrap(
   maxWidth: number,
   measure: MeasureFn,
 ): string[][] {
-  const space = measure(" ", size) + spacing;
+  const space = spaceWidth(size, measure) + spacing;
   const lines: string[][] = [];
   for (const words of paragraphs) {
     let current: string[] = [];
@@ -123,7 +134,7 @@ export function layoutGlyphs({
   const size =
     longest > maxWidth ? Math.max(minFontSize, (fontSize * maxWidth) / longest) : fontSize;
   const spacing = letterSpacing * size;
-  const space = measure(" ", size) + spacing;
+  const space = spaceWidth(size, measure) + spacing;
   const lineHeightPx = size * lineHeight;
 
   const glyphs: GlyphBox[] = [];
