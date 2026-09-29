@@ -4527,6 +4527,152 @@
           "type": "registry:block"
         }
       ]
+    },
+    {
+      "name": "ae-motion",
+      "type": "registry:lib",
+      "description": "After Effects mechanics as pure functions: graph-editor keyframe easing, loopIn/loopOut, deterministic wiggle and noise, repeater powers and parented transforms",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/bases/default/lib/ae-motion.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "bezier-path",
+      "type": "registry:lib",
+      "description": "Paths as cubic segments: parse any SVG d, measure, slice by arc length, resample and rebuild",
+      "dependencies": [
+        "@remotion/paths"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/bases/default/lib/bezier-path.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "shape-ops",
+      "type": "registry:lib",
+      "description": "AE shape-layer operators — trim, repeater, offset, wiggle, zig-zag, pucker & bloat — run as an ordered stack",
+      "dependencies": [],
+      "registryDependencies": [
+        "ae-motion",
+        "bezier-path"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/lib/shape-ops.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "text-selectors",
+      "type": "registry:lib",
+      "description": "AE text range and wiggly selectors: per-unit selection with shapes, ease high/low, random order and combine modes",
+      "dependencies": [],
+      "registryDependencies": [
+        "ae-motion",
+        "text-split"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/lib/text-selectors.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "glyph-layout",
+      "type": "registry:lib",
+      "description": "Measured per-glyph layout with kerning-preserving prefixes, word-safe wrapping and fit-to-width",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/bases/default/lib/glyph-layout.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "mograph",
+      "type": "registry:lib",
+      "description": "Cinema 4D MoGraph maths: cloner layouts, spherical/linear/noise falloff fields and stacked effectors",
+      "dependencies": [],
+      "registryDependencies": [
+        "ae-motion"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/lib/mograph.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "shape-layer",
+      "type": "registry:ui",
+      "description": "After Effects shape layer with an ordered operator stack — trim paths, repeater, offset paths, wiggle paths, zig-zag and pucker & bloat — evaluated per frame as pure geometry",
+      "dependencies": [
+        "remotion",
+        "@remotion/paths"
+      ],
+      "registryDependencies": [
+        "ae-motion",
+        "bezier-path",
+        "shape-ops"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/shape-layer.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "text-animator",
+      "type": "registry:ui",
+      "description": "After Effects text animator: range and wiggly selectors drive per-character, per-word or per-line position, scale, rotation, opacity, blur, tracking and fill over measured layout",
+      "dependencies": [
+        "remotion",
+        "@remotion/layout-utils"
+      ],
+      "registryDependencies": [
+        "ae-motion",
+        "glyph-layout",
+        "text-selectors"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/text-animator.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "effector-field",
+      "type": "registry:ui",
+      "description": "Cinema 4D MoGraph cloner and effectors: clone any element into a grid, radial or linear arrangement and let animatable spherical, linear or noise falloff fields drive each clone",
+      "dependencies": [
+        "remotion"
+      ],
+      "registryDependencies": [
+        "ae-motion",
+        "mograph"
+      ],
+      "files": [
+        {
+          "path": "registry/bases/default/primitives/effector-field.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

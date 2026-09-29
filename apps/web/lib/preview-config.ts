@@ -281,6 +281,9 @@ export const PREVIEW_META: Record<string, PreviewMeta> = {
   "text-extrude-3d": { durationInFrames: 150 },
   "card-stack-3d": { durationInFrames: 150 },
   "globe-points-3d": { durationInFrames: 150 },
+  "shape-layer": { durationInFrames: 150 },
+  "text-animator": { durationInFrames: 150 },
+  "effector-field": { durationInFrames: 150 },
 };
 
 export function previewMeta(slug: string): Required<PreviewMeta> {

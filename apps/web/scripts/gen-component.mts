@@ -25,7 +25,17 @@ const WEB = join(dirname(fileURLToPath(import.meta.url)), "..");
 const REPO = join(WEB, "..", "..");
 const SPEC = join(REPO, "docs-internal", "expansion-200-spec.md");
 
-type Lane = "atoms" | "signals" | "vectors" | "spatial" | "3d" | "shaders" | "blocks" | "cuts" | "reels";
+type Lane =
+  | "atoms"
+  | "signals"
+  | "vectors"
+  | "spatial"
+  | "3d"
+  | "shaders"
+  | "motion"
+  | "blocks"
+  | "cuts"
+  | "reels";
 type Kind = "primitive" | "block";
 
 type SpecEntry = {
@@ -50,6 +60,7 @@ const LANE_DRIVE: Record<Lane, string> = {
   spatial: "spatial",
   "3d": "time",
   shaders: "time",
+  motion: "time",
 };
 
 // ---------------------------------------------------------------- spec parsing

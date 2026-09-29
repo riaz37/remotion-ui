@@ -1,0 +1,39 @@
+---
+title: "Text Animator"
+description: "After Effects text animator: range and wiggly selectors drive per-character, per-word or per-line position, scale, rotation, opacity, blur, tracking and fill over measured layout. Install with npx remotion-ui@latest add text-animator."
+new: true
+---
+
+import { TextAnimatorPreview } from '@/components/previews/text-animator';
+
+<ComponentPage name="text-animator" preview={TextAnimatorPreview}>
+
+An animator declares what selected glyphs should become — lower, blurred, rotated, recoloured — and a selector decides how much of that each glyph gets. You animate the **selector**, usually its offset, so one keyframe pair moves a whole line. The preview has no per-glyph keyframes at all: a Smooth range passes through as a wave, a randomised Square range defocuses glyphs in a shuffled order, and a selector-less animator breathes the tracking.
+
+**Selectors.** `range`: `start` / `end` / `offset` (0–1, or unit indices with `units: "index"`), `shape` (`square`, `ramp-up`, `ramp-down`, `triangle`, `round`, `smooth`), `easeHigh` / `easeLow`, `smoothness`, `randomizeOrder` + `seed`, `amount`, and a combine `mode` (`add`, `subtract`, `intersect`, `min`, `max`, `difference`). `wiggly`: `minAmount` / `maxAmount`, `wigglesPerSecond`, `correlation`, phases and `seed`. Ramps are one-sided as in AE, so a sweeping offset reveals a line and leaves it revealed.
+
+**Properties** apply in proportion to the selection: `position`, `scale`, `rotation`, `skew`, `opacity`, `blur`, `tracking`, `fill` and `characterOffset`. `basedOn` picks the unit: characters (spaces count), characters excluding spaces, words or lines. `anchorGrouping` pivots scale and rotation on each glyph, its word, its line or the whole block.
+
+**Layout is measured.** The component waits for the font, measures each word by its prefixes (so kerning survives), wraps without ever splitting a word, and shrinks the type only when a single word cannot fit. Animated tracking pushes real neighbours and re-centres the line.
+
+## Usage
+
+```tsx
+import { TextAnimator } from "@/remotion/primitives/text-animator";
+import { easyEase } from "@/remotion/lib/ae-motion";
+
+<TextAnimator
+  text="Every letter keeps its own clock"
+  animators={[
+    {
+      basedOn: "characters-excluding-spaces",
+      properties: { position: [0, 60], rotation: 12, opacity: 0, blur: 12 },
+      selectors: [
+        { shape: "ramp-up", start: 0, end: 0.3, offset: [easyEase(0, -0.3), easyEase(45, 1)] },
+      ],
+    },
+  ]}
+/>
+```
+
+</ComponentPage>

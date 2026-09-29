@@ -25,6 +25,10 @@ export const ATLAS_LANES = {
     label: "Shaders",
     description: "Full-frame GPU fields evaluated per pixel",
   },
+  motion: {
+    label: "Motion graphics",
+    description: "After Effects and MoGraph mechanics as frame-driven primitives",
+  },
   blocks: {
     label: "Scenes",
     description: "Composed layouts, cards, and UI blocks",
@@ -64,6 +68,7 @@ export const TAG_GROUPS: Record<AtlasLane, AtlasTagGroup[]> = {
   spatial: [],
   "3d": [],
   shaders: [],
+  motion: [],
   blocks: [
     { tag: "ai", label: "AI composers", minItems: 3 },
     { tag: "code", label: "Code & terminal", minItems: 3 },
@@ -397,6 +402,9 @@ export const REGISTRY_ATLAS: Record<string, AtlasMeta> = {
   "text-extrude-3d": { lane: "3d", drive: "time", tier: "advanced", tags: ["new"] },
   "card-stack-3d": { lane: "3d", drive: "time", tier: "advanced", tags: ["new"] },
   "globe-points-3d": { lane: "3d", drive: "time", tier: "advanced", tags: ["new"] },
+  "shape-layer": { lane: "motion", drive: "time", tier: "advanced", tags: ["shapes", "paths"] },
+  "text-animator": { lane: "motion", drive: "time", tier: "advanced", tags: ["text"] },
+  "effector-field": { lane: "motion", drive: "time", tier: "advanced", tags: ["mograph"] },
 };
 
 export function getAtlasMeta(name: string): AtlasMeta | undefined {

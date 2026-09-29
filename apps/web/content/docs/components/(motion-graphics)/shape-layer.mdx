@@ -1,0 +1,46 @@
+---
+title: "Shape Layer"
+description: "After Effects shape layer with an ordered operator stack — trim paths, repeater, offset paths, wiggle paths, zig-zag and pucker & bloat — evaluated per frame as pure geometry. Install with npx remotion-ui@latest add shape-layer."
+new: true
+---
+
+import { ShapeLayerPreview } from '@/components/previews/shape-layer';
+
+<ComponentPage name="shape-layer" preview={ShapeLayerPreview}>
+
+Shapes at the top, then an operator stack that runs top to bottom, each operator reading what the ones above it produced. Order is the feature: a Trim Paths **below** a Repeater treats every copy as one line and draws through them in turn, and the same Trim **above** it draws every copy at once. The preview is one star and four operators; the faint layer underneath is the same stack without the trim.
+
+| Operator | What it does |
+|----------|--------------|
+| `trim` | `start` / `end` (0–1) and `offset` (turns). `individual` mode trims all paths as one continuous line. |
+| `repeater` | `copies` (fractional counts fade the last copy in), `offset`, and a compounding step `position` / `rotation` / `scale` around a pivot `anchor`; opacity ramp; `composite` above or below. |
+| `offset` | Grows or shrinks paths by pixels whichever way they wind, with miter, round or bevel joins; `copies` + `copyOffset` for concentric ripples. |
+| `wiggle` | Deterministic noise displacement with `detail`, `wigglesPerSecond`, `correlation` and phases. |
+| `zigzag` | Alternating ridges between vertices, corner or smooth. |
+| `pucker-bloat` | Moves vertices and tangent handles in opposite directions around the path centre. |
+| `transform` | Anchor, position, scale, rotation and opacity for everything above it. |
+
+Every numeric parameter is `Animatable`: a number, a keyframe track from [`ae-motion`](/docs/components/ae-motion), or an expression `({ frame, time, fps }) => value`. The stack is also available headless as `evaluateShapeStack()` from `shape-ops`, for driving your own SVG or canvas.
+
+## Usage
+
+```tsx
+import { ShapeLayer } from "@/remotion/primitives/shape-layer";
+import { easyEase } from "@/remotion/lib/ae-motion";
+
+<ShapeLayer
+  shapes={[{ type: "star", points: 5, outerRadius: 160, innerRadius: 70 }]}
+  operators={[
+    { op: "pucker-bloat", amount: [easyEase(0, -0.2), easyEase(60, 0.3)] },
+    { op: "repeater", copies: 16, scale: 0.9, rotation: 6, position: [0, 0] },
+    { op: "trim", mode: "individual", end: 0.3, offset: [easyEase(0, 0), easyEase(90, 1)] },
+    { op: "wiggle", size: 1.5, detail: 3 },
+  ]}
+  stroke="#e8b86d"
+  strokeEnd="#f472b6"
+  width={480}
+  height={480}
+/>
+```
+
+</ComponentPage>

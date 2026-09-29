@@ -5185,6 +5185,103 @@ import { DeviceMockup3D } from "@/remotion/scenes/device-mockup-3d";
       { name: "durationInFrames", type: "number", default: "30", description: "Length of the entrance." },
     ],
   },
+  "shape-layer": {
+    category: "primitive",
+    usage: `import { ShapeLayer } from "@/remotion/primitives/shape-layer";
+import { easyEase } from "@/remotion/lib/ae-motion";
+
+<ShapeLayer
+  shapes={[{ type: "star", points: 5, outerRadius: 160, innerRadius: 70 }]}
+  operators={[
+    { op: "repeater", copies: 12, scale: 0.88, rotation: 8, position: [0, 0] },
+    { op: "trim", mode: "individual", end: 0.3, offset: [easyEase(0, 0), easyEase(90, 1)] },
+    { op: "wiggle", size: 2, detail: 3 },
+  ]}
+  width={480}
+  height={480}
+/>`,
+    props: [
+      { name: "shapes", type: "ShapeSource[]", required: true, description: "path (any SVG d), ellipse, rect, star or polygon. Merged into one geometry list." },
+      { name: "operators", type: "ShapeOperator[]", default: "[]", description: "Operator stack run top to bottom: trim, repeater, offset, wiggle, zigzag, pucker-bloat, transform. Order changes the result." },
+      { name: "width", type: "number", default: "400", description: "Rendered width in px; shape units are px." },
+      { name: "height", type: "number", default: "400", description: "Rendered height in px." },
+      { name: "origin", type: '"center" | "top-left"', default: '"center"', description: "Where (0, 0) sits in the layer." },
+      { name: "stroke", type: "string | null", default: '"#e8b86d"', description: "Stroke colour; null for no stroke." },
+      { name: "strokeEnd", type: "string", description: "Colour the last repeater copy ramps to." },
+      { name: "strokeWidth", type: "Animatable<number>", default: "3", description: "Static, keyframed or expression." },
+      { name: "fill", type: "string | null", default: "null", description: "Fill colour." },
+      { name: "fillEnd", type: "string", description: "Fill colour the last repeater copy ramps to." },
+      { name: "lineCap", type: '"butt" | "round" | "square"', default: '"round"', description: "Stroke cap." },
+      { name: "lineJoin", type: '"miter" | "round" | "bevel"', default: '"round"', description: "Stroke join." },
+      { name: "glow", type: "number", default: "0", description: "Bloom radius in px; 0 turns it off." },
+      { name: "frame", type: "number", description: "Render this frame instead of the current one." },
+    ],
+    note: "Every numeric operator/shape parameter is Animatable: a number, an ae-motion keyframe track, or ({ frame, time, fps }) => value. Installs @remotion/paths.",
+    related: ["path-draw", "shape-morph", "text-animator"],
+  },
+  "text-animator": {
+    category: "primitive",
+    usage: `import { TextAnimator } from "@/remotion/primitives/text-animator";
+import { easyEase } from "@/remotion/lib/ae-motion";
+
+<TextAnimator
+  text="Every letter keeps its own clock"
+  animators={[
+    {
+      properties: { position: [0, 60], opacity: 0, blur: 12 },
+      selectors: [{ shape: "ramp-up", start: 0, end: 0.3, offset: [easyEase(0, -0.3), easyEase(45, 1)] }],
+    },
+  ]}
+/>`,
+    props: [
+      { name: "text", type: "string", required: true, description: "Copy. \\n forces a line break; words wrap at maxWidth and never split." },
+      { name: "animators", type: "TextAnimatorLayer[]", default: "[]", description: "{ properties, selectors?, basedOn? }. Properties: position, scale, rotation, skew, opacity, blur, tracking, fill, characterOffset." },
+      { name: "fontSize", type: "number", description: "Defaults to 84px at 1080 wide, scaled. Shrinks only if one word cannot fit." },
+      { name: "fontFamily", type: "string", default: '"Inter, system-ui, sans-serif"', description: "The render waits for this face before measuring." },
+      { name: "fontWeight", type: "number", default: "700", description: "Weight used for measuring and drawing." },
+      { name: "color", type: "string", default: '"#f4f4f5"', description: "Base fill before any animator recolours a glyph." },
+      { name: "lineHeight", type: "number", default: "1.12", description: "Multiple of the font size." },
+      { name: "letterSpacing", type: "number", default: "-0.02", description: "Base tracking in em." },
+      { name: "align", type: '"left" | "center" | "right"', default: '"center"', description: "Line alignment; follows animated tracking." },
+      { name: "maxWidth", type: "number", description: "Wrap width. Defaults to 84% of the composition width." },
+      { name: "anchorGrouping", type: '"character" | "word" | "line" | "all"', default: '"character"', description: "Pivot for scale and rotation." },
+      { name: "frame", type: "number", description: "Render this frame instead of the current one." },
+    ],
+    note: "Selectors: range (start/end/offset, shape square|ramp-up|ramp-down|triangle|round|smooth, easeHigh/easeLow, randomizeOrder, mode, amount) and wiggly. Installs @remotion/layout-utils.",
+    related: ["split-text-chars", "tracking-in", "scramble-text"],
+  },
+  "effector-field": {
+    category: "primitive",
+    usage: `import { EffectorField } from "@/remotion/primitives/effector-field";
+
+<EffectorField
+  layout={{ mode: "grid", columns: 24, rows: 12, spacing: 26 }}
+  effectors={[
+    {
+      fields: [{ shape: "spherical", center: ({ time }) => [Math.cos(time) * 200, 0], radius: 160 }],
+      position: [0, 0, 120],
+      scale: 1.5,
+      color: "#e8b86d",
+    },
+  ]}
+  tilt={50}
+/>`,
+    props: [
+      { name: "layout", type: "ClonerLayout", required: true, description: "grid, honeycomb, radial (count, radius, sweep, align) or linear (count, step, rotationStep, scaleStep)." },
+      { name: "effectors", type: "Effector[]", default: "[]", description: "{ fields?, position [x,y,z], scale, rotation [x,y,z], opacity, color, strength }, run in order." },
+      { name: "width", type: "number", default: "800", description: "Stage width in px." },
+      { name: "height", type: "number", default: "450", description: "Stage height in px." },
+      { name: "cloneSize", type: "number", default: "18", description: "Size of each clone's box." },
+      { name: "color", type: "string", default: '"#f4f4f5"', description: "Clone colour before tints; children can use currentColor." },
+      { name: "children", type: "ReactNode", description: "Element to clone, painted in currentColor. Defaults to a rounded tile." },
+      { name: "renderClone", type: "(clone: CloneRenderState) => ReactNode", description: "Per-clone renderer; receives weight, index, u/v and the tinted colour." },
+      { name: "perspective", type: "number", default: "1400", description: "Camera distance for z moves and x/y rotation." },
+      { name: "tilt", type: "number", default: "0", description: "Tilts the cloner plane away from the camera, degrees." },
+      { name: "frame", type: "number", description: "Render this frame instead of the current one." },
+    ],
+    note: "Fields: spherical (center, radius, falloff), linear (center, angle, length), noise (scale, speed, seed, contrast); each with invert, strength and blend.",
+    related: ["dynamic-grid", "particle-field", "shape-layer"],
+  },
 };
 
 export function getComponentReference(name: string): ComponentReference | undefined {

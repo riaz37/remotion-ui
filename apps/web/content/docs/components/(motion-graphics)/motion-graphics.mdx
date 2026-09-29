@@ -1,0 +1,15 @@
+---
+title: "Motion graphics"
+description: "After Effects and Cinema 4D mechanics — keyframe easing, shape operators, text animators, MoGraph effectors — as composable, frame-driven primitives."
+---
+
+Most motion-graphics kits ship finished pieces: a burst, a glitch, a reveal, each with its timing sealed inside. This lane ships the machinery those pieces are made of, the same machinery After Effects and Cinema 4D expose, so you build the piece yourself and every number stays in your hands.
+
+- **`ae-motion`** is the foundation: keyframe tracks with graph-editor easing (speed and influence per key), `loopOut`/`loopIn`, deterministic `wiggle`, `valueAtTime`, and parented transforms. Every parameter in the lane is `Animatable`: a number, a keyframe track, or an expression.
+- **Shape Layer** runs an ordered operator stack over vector shapes: Trim Paths, Repeater, Offset Paths, Wiggle Paths, Zig Zag, Pucker & Bloat. The order changes the result, exactly as it does in AE.
+- **Text Animator** drives per-character, per-word or per-line properties through range and wiggly selectors, over a layout measured from the real font.
+- **Effector Field** is a MoGraph cloner: fields decide how strongly each clone is affected, and effectors turn that into lift, rotation, scale, opacity and colour.
+
+Everything is a pure function of the frame, so a render is identical on every run and every machine.
+
+<CategoryGrid category="motion-graphics" />

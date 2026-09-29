@@ -267,6 +267,9 @@ function getAiUseCase(
   if (lane === "3d") {
     return "3D product shots and WebGL scenes rendered frame by frame";
   }
+  if (lane === "motion") {
+    return "After Effects-style motion graphics built from composable, keyframeable operators";
+  }
   if (lane === "shaders") {
     return "full-frame shader backgrounds and ambient GPU fields";
   }

@@ -39,6 +39,11 @@ export const LANE_VISUALS: Record<AtlasLane, LaneVisual> = {
     hue: 282,
     iconPath: "M4 7h16M4 12h16M4 17h16M8 4v16M16 4v16",
   },
+  motion: {
+    label: ATLAS_LANES.motion.label,
+    hue: 75,
+    iconPath: "M4 18c4 0 5-12 8-12s4 12 8 12M4 6h3M17 18h3",
+  },
   blocks: {
     label: ATLAS_LANES.blocks.label,
     hue: 48,

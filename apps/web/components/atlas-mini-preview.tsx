@@ -242,6 +242,9 @@ const PREVIEWS: Record<string, PreviewLoader> = {
   "text-extrude-3d": () => import("./previews/text-extrude-3d").then((m) => ({ default: m.TextExtrude3dPreview })),
   "card-stack-3d": () => import("./previews/card-stack-3d").then((m) => ({ default: m.CardStack3dPreview })),
   "globe-points-3d": () => import("./previews/globe-points-3d").then((m) => ({ default: m.GlobePoints3dPreview })),
+  "shape-layer": () => import("./previews/shape-layer").then((m) => ({ default: m.ShapeLayerPreview })),
+  "text-animator": () => import("./previews/text-animator").then((m) => ({ default: m.TextAnimatorPreview })),
+  "effector-field": () => import("./previews/effector-field").then((m) => ({ default: m.EffectorFieldPreview })),
 };
 
 /**

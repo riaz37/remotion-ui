@@ -1,0 +1,48 @@
+---
+title: AE Motion
+description: Keyframe tracks with After Effects graph-editor easing, loopOut/loopIn, deterministic wiggle, valueAtTime and parented transforms, as pure functions.
+---
+
+<InstallCommand name="ae-motion" />
+
+The foundation the motion lane is built on. Every function is pure, so a frame rendered out of order, twice, or on another machine comes out identical.
+
+## Keyframes with graph-editor easing
+
+A key carries AE's temporal ease: `speed` (units per second, what the graph editor shows) and `influence` (0 to 1) on each side. Leave an ease off and that side is linear. Scalars are solved on their own value graph, so two equal keys can still overshoot through their speed handles.
+
+<CodeSnippet label="Keyframe track" code={`import { easyEase, sampleTrack, easeToCubicBezier } from "@/remotion/lib/ae-motion";
+
+const x = [
+  easyEase(0, 0),                                   // F9: speed 0, influence 1/3
+  { frame: 30, value: 400, easeIn: { speed: 0, influence: 0.8 } },
+];
+
+const value = sampleTrack(x, frame, { fps });
+easeToCubicBezier(x[0], x[1], fps); // [x1, y1, x2, y2] for Easing.bezier()`} />
+
+## Loops, wiggle and expressions
+
+<CodeSnippet label="Loops and wiggle" code={`import { sampleTrack, wiggle, valueAtTime, resolveAnimatable } from "@/remotion/lib/ae-motion";
+
+sampleTrack(track, frame, { loopOut: "pingpong" });           // cycle | pingpong | offset | continue
+sampleTrack(track, frame, { loopOut: { type: "cycle", keyframes: 2 } });
+valueAtTime(track, 1.5, { fps });                              // seconds, like AE
+const shake = wiggle(3, 12, seed, frame, { fps, octaves: 2 }); // deterministic
+
+// Animatable = static value | keyframe track | expression
+resolveAnimatable(({ time }) => Math.sin(time * 2) * 40, frame, { fps });`} />
+
+## Parenting
+
+<CodeSnippet label="Null objects" code={`import { resolveParenting, toCssMatrix } from "@/remotion/lib/ae-motion";
+
+const world = resolveParenting({
+  rig: { transform: { position: [480, 270], rotation: frame * 2 } },
+  arm: { parent: "rig", transform: { position: [120, 0] } },
+  hand: { parent: "arm", transform: { position: [60, 0], scale: 0.5 } },
+});
+
+<div style={{ transform: toCssMatrix(world.hand) }} />`} />
+
+A child's world matrix is its parent's times its own, so moving the null carries everything under it. Opacity does not inherit, as in AE. Cycles and missing parents throw with the chain named.

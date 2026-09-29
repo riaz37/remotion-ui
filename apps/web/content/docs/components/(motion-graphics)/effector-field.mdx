@@ -1,0 +1,46 @@
+---
+title: "Effector Field"
+description: "Cinema 4D MoGraph cloner and effectors: clone any element into a grid, radial or linear arrangement and let animatable spherical, linear or noise falloff fields drive each clone. Install with npx remotion-ui@latest add effector-field."
+new: true
+---
+
+import { EffectorFieldPreview } from '@/components/previews/effector-field';
+
+<ComponentPage name="effector-field" preview={EffectorFieldPreview}>
+
+A cloner lays out copies of any element — `grid`, `honeycomb`, `radial` or `linear`. Fields measure how far inside a region each clone sits, and effectors turn that value into a move toward the camera, a rotation about any axis, a scale, an opacity and a colour. Effectors run in order and sample their fields at each clone's rest position, so one effector pushing clones around never changes which clones the next one selects.
+
+The preview is one grid and three effectors. Two spherical fields travel on expression-driven paths whose period is the clip length, lifting and tinting the floor where they pass; a slow noise field underneath dims and shrinks tiles so it never reads as a flat grid. The crest glow comes from `renderClone`, which receives each clone's field weight.
+
+| Field | Parameters |
+|-------|------------|
+| `spherical` | `center`, `radius`, `falloff` (share of the radius that ramps) |
+| `linear` | `center`, `angle`, `length` — rises from 0 to 1 across a plane |
+| `noise` | `scale`, `speed`, `seed`, `contrast` |
+
+Every field takes `invert`, `strength` and a `blend` mode against the fields before it. Centres, radii and effector values are `Animatable` — static, keyframed with [`ae-motion`](/docs/components/ae-motion), or an expression.
+
+## Usage
+
+```tsx
+import { EffectorField } from "@/remotion/primitives/effector-field";
+
+<EffectorField
+  layout={{ mode: "grid", columns: 24, rows: 12, spacing: 26 }}
+  effectors={[
+    {
+      fields: [{ shape: "spherical", center: ({ time }) => [Math.cos(time) * 200, 0], radius: 160 }],
+      position: [0, 0, 120],
+      rotation: [-60, 0, 0],
+      scale: 1.5,
+      color: "#e8b86d",
+    },
+  ]}
+  tilt={50}
+>
+  {/* Anything: painted in currentColor */}
+  <svg viewBox="0 0 10 10" width="100%" height="100%"><circle cx="5" cy="5" r="5" fill="currentColor" /></svg>
+</EffectorField>
+```
+
+</ComponentPage>
