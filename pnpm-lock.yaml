@@ -126,6 +126,9 @@ importers:
       '@remotion/cli':
         specifier: ^4.0.524
         version: 4.0.525(@swc/helpers@0.5.15)(lightningcss@1.32.0)(postcss@8.5.15)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3)
+      '@remotion/lottie':
+        specifier: 4.0.525
+        version: 4.0.525(lottie-web@5.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@remotion/renderer':
         specifier: ^4.0.524
         version: 4.0.525(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -147,6 +150,9 @@ importers:
       ajv:
         specifier: ^8.17.1
         version: 8.20.0
+      lottie-web:
+        specifier: ^5.13.0
+        version: 5.13.0
       sharp:
         specifier: ^0.34.5
         version: 0.34.5
@@ -1860,6 +1866,13 @@ packages:
   '@remotion/light-leaks@4.0.525':
     resolution: {integrity: sha512-o75NjLw3yAK4BB08mGN4DVy+ReAdqB9g+gNxNsy0K/Al9P9HdAIDmHj0kDi9F5D6m+uISAVpHGK7+dGADiMAHg==}
     peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+
+  '@remotion/lottie@4.0.525':
+    resolution: {integrity: sha512-7oEPOYKBqx5Fmx+jeup9CPftTcO78Wo5nvs6FGb2xRIOHd+XSu+Qy9orGcITNaPRrgWBdmitz7qg9bw3H6Vb7w==}
+    peerDependencies:
+      lottie-web: ^5
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
 
@@ -4131,6 +4144,9 @@ packages:
 
   longest-streak@3.1.0:
     resolution: {integrity: sha512-9Ri+o0JYgehTaVBBDoMqIl8GXtbWg711O3srftcHhZ0dqnETqLaoIK0x17fUw9rFSlK/0NlsKe0Ahhyl5pXE2g==}
+
+  lottie-web@5.13.0:
+    resolution: {integrity: sha512-+gfBXl6sxXMPe8tKQm7qzLnUy5DUPJPKIyRHwtpCpyUEYjHYRJC/5gjUvdkuO2c3JllrPtHXH5UJJK8LRYl5yQ==}
 
   lower-case@2.0.2:
     resolution: {integrity: sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==}
@@ -6985,6 +7001,13 @@ snapshots:
       react-dom: 19.2.8(react@19.2.8)
       remotion: 4.0.525(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       zod: 4.5.4
+
+  '@remotion/lottie@4.0.525(lottie-web@5.13.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+    dependencies:
+      lottie-web: 5.13.0
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+      remotion: 4.0.525(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
 
   '@remotion/media-parser@4.0.525': {}
 
@@ -10076,6 +10099,8 @@ snapshots:
   loader-runner@4.3.2: {}
 
   longest-streak@3.1.0: {}
+
+  lottie-web@5.13.0: {}
 
   lower-case@2.0.2:
     dependencies:

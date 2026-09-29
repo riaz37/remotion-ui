@@ -64,6 +64,7 @@
   "devDependencies": {
     "@remotion/bundler": "^4.0.524",
     "@remotion/cli": "^4.0.524",
+    "@remotion/lottie": "4.0.525",
     "@remotion/renderer": "^4.0.524",
     "@remotionui/typescript-config": "workspace:*",
     "@types/node": "^26.5.1",
@@ -71,6 +72,7 @@
     "@types/react-dom": "~19.2.3",
     "@types/three": "^0.186.0",
     "ajv": "^8.17.1",
+    "lottie-web": "^5.13.0",
     "sharp": "^0.34.5",
     "tsx": "^4.19.3",
     "typescript": "^6.0.3",
