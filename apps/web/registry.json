@@ -4605,6 +4605,10 @@
           "type": "registry:lib"
         },
         {
+          "path": "registry/bases/default/lib/lottie-paint.ts",
+          "type": "registry:lib"
+        },
+        {
           "path": "registry/bases/default/lib/lottie-shapes.ts",
           "type": "registry:lib"
         },
