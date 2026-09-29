@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   applyEffectors,
+  cloneOutline,
+  projectClone,
   layoutClones,
   sampleFields,
   type Effector,
@@ -97,6 +99,49 @@ describe("fields", () => {
     ];
     expect(sampleFields(fields, 50, 0, { frame: 5, fps: 30 })).toBe(1);
     expect(sampleFields(fields, 0, 0, { frame: 5, fps: 30 })).toBe(0);
+  });
+});
+
+describe("canvas projection", () => {
+  const camera = { width: 800, height: 400, perspective: 1000, tilt: 0 };
+  const rest = applyEffectors(layoutClones({ mode: "linear", count: 1, step: [0, 0] }), [], ctx)[0];
+  const square = cloneOutline("square", 20);
+
+  it("maps an untransformed clone to its CSS box", () => {
+    const { points } = projectClone(rest, square, camera);
+    expect(points[0][0]).toBeCloseTo(390);
+    expect(points[0][1]).toBeCloseTo(190);
+    expect(points[2][0]).toBeCloseTo(410);
+    expect(points[2][1]).toBeCloseTo(210);
+  });
+
+  it("enlarges clones moved toward the camera by p / (p - z) about the perspective origin", () => {
+    const { points, depth } = projectClone({ ...rest, z: 500 }, square, camera);
+    // origin sits at 50% / 40%: (400, 160); the clone centre is (400, 200).
+    expect(depth).toBe(500);
+    expect(points[2][0] - points[0][0]).toBeCloseTo(40);
+    expect((points[0][1] + points[2][1]) / 2).toBeCloseTo(160 + 40 * 2);
+  });
+
+  it("foreshortens a tilted plane and sorts by depth", () => {
+    const near = projectClone({ ...rest, y: 100 }, square, { ...camera, tilt: 60 });
+    const far = projectClone({ ...rest, y: -100 }, square, { ...camera, tilt: 60 });
+    expect(near.depth).toBeGreaterThan(far.depth);
+    const height = (p: typeof near) => p.points[2][1] - p.points[0][1];
+    expect(height(near)).toBeLessThan(20);
+    expect(height(near)).toBeGreaterThan(height(far));
+  });
+
+  it("turns a clone edge-on at 90 degrees about x", () => {
+    // Seen from its own eye line (origin on the tile), an edge-on tile has no height.
+    const { points } = projectClone({ ...rest, rotationX: 90 }, square, { ...camera, origin: [0.5, 0.5] });
+    expect(Math.abs(points[2][1] - points[0][1])).toBeLessThan(0.5);
+  });
+
+  it("builds closed outlines for every shape", () => {
+    expect(cloneOutline("square", 10)).toHaveLength(4);
+    expect(cloneOutline("rounded", 10)).toHaveLength(16);
+    expect(cloneOutline("circle", 10)).toHaveLength(20);
   });
 });
 

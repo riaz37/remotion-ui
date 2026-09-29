@@ -258,6 +258,105 @@ export type Effector = {
   strength?: A;
 };
 
+export type Camera = {
+  width: number;
+  height: number;
+  /** CSS `perspective` distance, px. */
+  perspective: number;
+  /** Degrees the cloner plane tilts away from the camera about x. */
+  tilt: number;
+  /** CSS `perspective-origin` as shares of the stage. */
+  origin?: readonly [number, number];
+};
+
+export type CloneShape = "square" | "rounded" | "circle";
+
+/** Outline of a clone in its own space, centred on 0,0, before any transform. */
+export function cloneOutline(shape: CloneShape, size: number): Array<[number, number]> {
+  const half = size / 2;
+  if (shape === "circle") {
+    return Array.from({ length: 20 }, (_, i) => {
+      const a = (i / 20) * Math.PI * 2;
+      return [Math.cos(a) * half, Math.sin(a) * half];
+    });
+  }
+  if (shape === "square") {
+    return [
+      [-half, -half],
+      [half, -half],
+      [half, half],
+      [-half, half],
+    ];
+  }
+  // Rounded: the same 22% corner the DOM tile uses, four samples per corner.
+  const r = size * 0.22;
+  const corners: Array<[number, number, number]> = [
+    [half - r, -half + r, -Math.PI / 2],
+    [half - r, half - r, 0],
+    [-half + r, half - r, Math.PI / 2],
+    [-half + r, -half + r, Math.PI],
+  ];
+  return corners.flatMap(([cx, cy, start]) =>
+    Array.from({ length: 4 }, (_, k): [number, number] => {
+      const a = start + (k / 3) * (Math.PI / 2);
+      return [cx + Math.cos(a) * r, cy + Math.sin(a) * r];
+    }),
+  );
+}
+
+const DEG = Math.PI / 180;
+
+/**
+ * Where a clone's outline lands on screen, reproducing the DOM path's CSS 3D
+ * exactly: the clone's `translate3d · rotateZ · rotateY · rotateX · scale`,
+ * the plane's `rotateX(tilt)` about the stage centre, then CSS perspective
+ * about the perspective origin. `depth` is the post-tilt z — larger is nearer.
+ */
+export function projectClone(
+  state: CloneState,
+  outline: ReadonlyArray<readonly [number, number]>,
+  camera: Camera,
+): { points: Array<[number, number]>; depth: number } {
+  const [ox, oy] = camera.origin ?? [0.5, 0.4];
+  const originX = camera.width * ox - camera.width / 2;
+  const originY = camera.height * oy - camera.height / 2;
+  const cz = Math.cos(state.rotationZ * DEG);
+  const sz = Math.sin(state.rotationZ * DEG);
+  const cy = Math.cos(state.rotationY * DEG);
+  const sy = Math.sin(state.rotationY * DEG);
+  const cx = Math.cos(state.rotationX * DEG);
+  const sx = Math.sin(state.rotationX * DEG);
+  const ct = Math.cos(camera.tilt * DEG);
+  const st = Math.sin(camera.tilt * DEG);
+  const p = camera.perspective;
+
+  const transform = (lx: number, ly: number): [number, number, number] => {
+    // scale, then rotateX, rotateY, rotateZ (CSS applies the rightmost first)
+    let x = lx * state.scale;
+    let y = ly * state.scale;
+    let z = 0;
+    [y, z] = [y * cx - z * sx, y * sx + z * cx];
+    [x, z] = [x * cy + z * sy, -x * sy + z * cy];
+    [x, y] = [x * cz - y * sz, x * sz + y * cz];
+    x += state.x;
+    y += state.y;
+    z += state.z;
+    // plane tilt
+    return [x, y * ct - z * st, y * st + z * ct];
+  };
+
+  const [, , depth] = transform(0, 0);
+  const points = outline.map(([lx, ly]): [number, number] => {
+    const [x, y, z] = transform(lx, ly);
+    const k = p / Math.max(1e-3, p - z);
+    return [
+      camera.width / 2 + originX + (x - originX) * k,
+      camera.height / 2 + originY + (y - originY) * k,
+    ];
+  });
+  return { points, depth };
+}
+
 export type CloneState = Clone & {
   z: number;
   rotationX: number;
