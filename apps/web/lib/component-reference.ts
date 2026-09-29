@@ -5277,9 +5277,12 @@ import { easyEase } from "@/remotion/lib/ae-motion";
       { name: "renderClone", type: "(clone: CloneRenderState) => ReactNode", description: "Per-clone renderer; receives weight, index, u/v and the tinted colour." },
       { name: "perspective", type: "number", default: "1400", description: "Camera distance for z moves and x/y rotation." },
       { name: "tilt", type: "number", default: "0", description: "Tilts the cloner plane away from the camera, degrees." },
+      { name: "renderer", type: '"dom" | "canvas"', default: '"dom"', description: "dom clones any React child; canvas draws cloneShape with the same camera, for thousands of clones." },
+      { name: "cloneShape", type: '"square" | "rounded" | "circle"', default: '"rounded"', description: "Canvas renderer only: the drawn shape." },
+      { name: "glow", type: "number", default: "0", description: "Canvas renderer only: bloom radius in px at full field weight." },
       { name: "frame", type: "number", description: "Render this frame instead of the current one." },
     ],
-    note: "Fields: spherical (center, radius, falloff), linear (center, angle, length), noise (scale, speed, seed, contrast); each with invert, strength and blend.",
+    note: "Fields: spherical (center, radius, falloff), linear (center, angle, length), noise (scale, speed, seed, contrast); each with invert, strength and blend. children/renderClone are DOM-only; use renderer=\"canvas\" past ~1,000 clones (5,000 at 1080p render in ~80ms/frame).",
     related: ["dynamic-grid", "particle-field", "shape-layer"],
   },
 };
