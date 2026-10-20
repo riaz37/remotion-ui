@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- **`update` pulls registry changes again.** Since 0.9.1 skipped files with local changes, `update` treated every file the registry had changed as a local edit and skipped it, so it only updated anything with `--yes`, and `--yes` also overwrote your edits. `add` and `update` now record a hash of each file they write in `remotion-ui-lock.json`. A file that still matches its hash is replaced. A file you have edited is skipped and listed. Files installed before the lockfile existed are untracked: review them with `diff`, or run `update --yes` once to start tracking them. Commit the lockfile.
+- `update` ends with "Updated N component(s)" instead of "Added", and its `--yes` help now says what the flag does.
+
 ## 0.9.1
 
 **`add` no longer overwrites your edits.** The whole premise is that installed components are source you own, but re-running `add` — to pick up a registry fix, or because a dependency pulled the item back in — wrote over every file unconditionally, customizations included.

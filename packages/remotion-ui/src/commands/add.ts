@@ -18,6 +18,14 @@ import { writeFile } from "../utils/index.js";
 import { printStarPrompt } from "../utils/star-prompt.js";
 import { RemotionUiError, toErrorJson } from "../utils/errors.js";
 import { getInstalledRemotionVersion } from "../utils/get-installed-remotion-version.js";
+import {
+  hashContent,
+  isPristine,
+  readLockfile,
+  toLockKey,
+  writeLockfile,
+  type Lockfile,
+} from "../utils/lockfile.js";
 
 export type AddOptions = {
   cwd?: string;
@@ -28,6 +36,8 @@ export type AddOptions = {
   json?: boolean;
   /** Print nothing on stdout: for callers that own it (e.g. `import-ae --json`). */
   silent?: boolean;
+  /** Wording of the summary line; `update` reuses this command. */
+  verb?: "Added" | "Updated";
 };
 
 export async function addCommand(
@@ -55,20 +65,28 @@ export async function addCommand(
     const dependencies = new Set<string>();
     const skipped = new Set<string>();
     const installedRemotionVersion = await getInstalledRemotionVersion(cwd);
+    const lockfile = await readLockfile(cwd);
 
-    for (const name of names) {
-      await installComponent(name, {
-        cwd,
-        config,
-        registryUrl: options.registryUrl,
-        preset: options.preset ?? config.preset,
-        installed,
-        dependencies,
-        skipped,
-        overwrite: options.yes ?? false,
-        json: quiet,
-        installedRemotionVersion,
-      });
+    try {
+      for (const name of names) {
+        await installComponent(name, {
+          cwd,
+          config,
+          registryUrl: options.registryUrl,
+          preset: options.preset ?? config.preset,
+          installed,
+          dependencies,
+          skipped,
+          overwrite: options.yes ?? false,
+          json: quiet,
+          installedRemotionVersion,
+          lockfile,
+        });
+      }
+    } finally {
+      // Files already written by a run that fails midway must still be
+      // recorded, or the next update would treat them as local edits.
+      await writeLockfile(cwd, lockfile);
     }
 
     if (dependencies.size > 0) {
@@ -103,7 +121,9 @@ export async function addCommand(
         );
       }
 
-      console.log(`\nAdded ${names.length} component(s) successfully.`);
+      console.log(
+        `\n${options.verb ?? "Added"} ${names.length} component(s) successfully.`,
+      );
 
       if (options.showStarPrompt !== false) {
         printStarPrompt();
@@ -130,6 +150,7 @@ async function installComponent(
     overwrite: boolean;
     json: boolean;
     installedRemotionVersion?: string;
+    lockfile: Lockfile;
   },
 ): Promise<void> {
   if (ctx.installed.has(name)) {
@@ -157,16 +178,26 @@ async function installComponent(
 
     const targetPath = resolveInstallPath(ctx.cwd, ctx.config, file);
     const relativePath = path.relative(ctx.cwd, targetPath);
+    const lockKey = toLockKey(relativePath);
 
     if (!ctx.overwrite && (await fs.pathExists(targetPath))) {
       const existing = await fs.readFile(targetPath, "utf-8");
-      if (existing !== file.content) {
+      // A pristine file is one the CLI wrote and nobody touched since, so
+      // replacing it with the registry's newer version loses nothing.
+      if (
+        existing !== file.content &&
+        !isPristine(ctx.lockfile, lockKey, existing)
+      ) {
         ctx.skipped.add(relativePath);
         continue;
       }
     }
 
     await writeFile(targetPath, file.content);
+    ctx.lockfile.files[lockKey] = {
+      component: name,
+      sha256: hashContent(file.content),
+    };
     if (!ctx.json) {
       console.log(`  ✓ ${relativePath}`);
     }

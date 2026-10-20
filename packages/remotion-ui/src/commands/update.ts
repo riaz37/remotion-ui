@@ -3,7 +3,11 @@ import { RemotionUiError, toErrorJson } from "../utils/errors.js";
 
 export type UpdateOptions = AddOptions;
 
-/** Re-install a component from the registry, overwriting local files */
+/**
+ * Re-install a component from the registry. Files the user has not edited
+ * since install (per the lockfile) are replaced; edited files are skipped
+ * unless `yes` is set.
+ */
 export async function updateCommand(
   components: string[],
   options: UpdateOptions = {},
@@ -28,5 +32,9 @@ export async function updateCommand(
   // addCommand owns json success/error output for its own execution — do not
   // wrap this call in another try/catch or it would double-print the JSON
   // error blob when addCommand fails.
-  await addCommand(components, { ...options, showStarPrompt: false });
+  await addCommand(components, {
+    ...options,
+    showStarPrompt: false,
+    verb: "Updated",
+  });
 }

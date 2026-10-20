@@ -198,14 +198,16 @@ program
 
 program
   .command("update")
-  .description("Update installed component(s) from registry (overwrites files)")
+  .description(
+    "Update installed component(s) from registry (keeps files you edited)",
+  )
   .argument("[components...]", "component names to update")
   .option(
     "-r, --registry-url <url>",
     "Registry base URL or local path to public/r/",
   )
   .option("--preset <preset>", "Registry preset", "default")
-  .option("-y, --yes", "Skip confirmation prompts")
+  .option("-y, --yes", "Overwrite files with local edits too")
   .option("--json", "Output machine-readable JSON")
   .action(async (components: string[], options) => {
     try {

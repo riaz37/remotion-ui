@@ -9,7 +9,7 @@
 | `remotion-ui init [--agent-skill\|--no-agent-skill]` | Install/skip the RemotionUI agent skill at `.claude/skills/remotionui-agent/SKILL.md` — defaults to **on** with `--existing`, **off** for a fresh scaffold |
 | `remotion-ui add <name...>` | Add component(s) from registry |
 | `remotion-ui doctor` | Diagnose `remotion-ui.json`, aliases, and Remotion setup |
-| `remotion-ui update <name...>` | Re-install from registry (overwrites files) |
+| `remotion-ui update <name...>` | Pull registry changes into unedited files (tracked in `remotion-ui-lock.json`); `--yes` also overwrites edited ones |
 | `remotion-ui diff <name>` | Diff installed vs registry version |
 | `remotion-ui search -q <query> [--lane] [--tier]` | Search the registry |
 | `remotion-ui list` | List registry components and installed status |

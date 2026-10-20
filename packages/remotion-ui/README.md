@@ -31,7 +31,7 @@ Components are installed into your project as source files. You own the code.
 | `remotion-ui view <name>` | View registry item metadata |
 | `remotion-ui list` | List registry components and installed status |
 | `remotion-ui diff <name>` | Diff installed vs registry |
-| `remotion-ui update <name...>` | Re-install from registry (overwrites files) |
+| `remotion-ui update <name...>` | Pull registry changes into unedited files (tracked in `remotion-ui-lock.json`); `--yes` also overwrites edited ones |
 | `remotion-ui build [registry.json]` | Build a custom registry |
 
 Every command accepts `--json` for machine-readable output. On failure it prints `{"ok": false, "error": {"code", "message"}}` and exits non-zero instead of a human-readable error message — codes include `CONFIG_NOT_FOUND`, `CONFIG_INVALID`, `REGISTRY_ITEM_NOT_FOUND`, `REGISTRY_FETCH_FAILED`, `TEMPLATE_NOT_FOUND`, `TARGET_EXISTS`, `INVALID_ARGS`, and `DEPENDENCY_SPEC_INVALID`.

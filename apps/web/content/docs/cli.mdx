@@ -12,7 +12,7 @@ description: remotion-ui commands for init, add, doctor, and custom registries.
 | `add <name...>` | Install components and dependencies |
 | `doctor` | Diagnose config, aliases, and Remotion version |
 | `list` | List registry components and installed status |
-| `update <name...>` | Re-install from registry (overwrites files) |
+| `update <name...>` | Pull registry changes into files you haven't edited |
 | `diff <name>` | Compare installed files vs registry |
 | `search -q <query>` | Search the registry |
 | `view <name>` | View registry item metadata |
@@ -129,6 +129,8 @@ Each entry carries `name`, `type`, `required`, `default`, and `description`, plu
 <CommandRail label="Diff" command="npx remotion-ui@latest diff fade-in" />
 
 <CommandRail label="Update" command="npx remotion-ui@latest update fade-in" />
+
+`add` and `update` record a hash of every file they write in `remotion-ui-lock.json`. On `update`, a file that still matches its recorded hash is replaced with the registry version; a file you have edited is skipped and listed, so you can review it with `diff` or overwrite it with `--yes`. Commit the lockfile so the rest of your team gets the same behavior.
 
 ## Custom registry
 
