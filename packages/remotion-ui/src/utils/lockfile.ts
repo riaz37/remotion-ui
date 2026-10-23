@@ -39,9 +39,16 @@ export async function readLockfile(cwd: string): Promise<Lockfile> {
     return { version: 1, files: {} };
   }
 
-  const result = lockfileSchema.safeParse(await fs.readJson(lockPath));
   // A corrupt or foreign lockfile only costs pristine detection: every file
-  // reads as untracked, so nothing gets overwritten without --yes.
+  // reads as untracked, so nothing gets overwritten without --yes. That
+  // includes invalid JSON, e.g. a lockfile left with git conflict markers.
+  let raw: unknown;
+  try {
+    raw = await fs.readJson(lockPath);
+  } catch {
+    return { version: 1, files: {} };
+  }
+  const result = lockfileSchema.safeParse(raw);
   return result.success ? result.data : { version: 1, files: {} };
 }
 
