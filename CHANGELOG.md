@@ -1,11 +1,18 @@
 # Changelog
 
-## Unreleased
+## 0.10.0
+
+**Bring After Effects animations in as editable code.** `import-ae` turns a Bodymovin/Lottie export into Remotion components you own, and `update` works again without `--yes`.
+
+### Added
+
+- **`import-ae <file.json>`** converts an After Effects export (Bodymovin/Lottie JSON) into editable TSX. Each layer becomes a named component, keyframes become `ae-motion` tracks with the exact speed/influence easing, and a composition is registered with the export's size, fps and duration. Input is validated up front: errors name the JSON path, and size and depth limits apply. Unsupported features fail with their location unless you pass `--skip-unsupported`. `--json` prints exactly one JSON document. If the registry has no `ae-import` item, the error lists the files already written and points to `--registry-url` and `--no-install`.
 
 ### Fixed
 
 - **`update` pulls registry changes again.** Since 0.9.1 skipped files with local changes, `update` treated every file the registry had changed as a local edit and skipped it, so it only updated anything with `--yes`, and `--yes` also overwrote your edits. `add` and `update` now record a hash of each file they write in `remotion-ui-lock.json`. A file that still matches its hash is replaced. A file you have edited is skipped and listed. Files installed before the lockfile existed are untracked: review them with `diff`, or run `update --yes` once to start tracking them. Commit the lockfile.
 - `update` ends with "Updated N component(s)" instead of "Added", and its `--yes` help now says what the flag does.
+- **A corrupt `remotion-ui-lock.json` no longer crashes `add` and `update`.** A lockfile that is not valid JSON, such as one left with git conflict markers, is treated as empty, so you lose only the edit detection for that run.
 
 ## 0.9.1
 
