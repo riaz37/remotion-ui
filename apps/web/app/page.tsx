@@ -2,13 +2,12 @@ import { HomeLayout } from "fumadocs-ui/layouts/home";
 import type { Metadata } from "next";
 import { InstallStrip } from "@/components/landing/install-strip";
 import { EndSlateCta } from "@/components/landing/end-slate-cta";
-import { EarlyAccessSection } from "@/components/early-access/early-access-section";
-import { KineBanner } from "@/components/early-access/kine-banner";
+import { MemfindBanner } from "@/components/memfind/memfind-banner";
 import { ComponentContactSheet } from "@/components/landing/component-contact-sheet";
 import { StudioHero } from "@/components/landing/studio-hero";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteLogo } from "@/components/site-logo";
-import { kineNavLink } from "@/components/early-access/kine-nav-link";
+import { memfindNavLink } from "@/components/memfind/memfind-nav-link";
 import { githubStarNavLink, xNavLink } from "@/lib/github-nav-link";
 import { navLinks, siteConfig } from "@/lib/site-config";
 
@@ -32,7 +31,7 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
-      <KineBanner />
+      <MemfindBanner />
       <HomeLayout
       nav={{
         title: <SiteLogo />,
@@ -44,7 +43,7 @@ export default function HomePage() {
           url: link.url,
           active: link.active,
         })),
-        kineNavLink,
+        memfindNavLink,
         xNavLink,
         githubStarNavLink,
       ]}
@@ -53,7 +52,6 @@ export default function HomePage() {
       <StudioHero />
       <ComponentContactSheet />
       <InstallStrip />
-      <EarlyAccessSection />
       <EndSlateCta />
       <SiteFooter />
       </HomeLayout>
