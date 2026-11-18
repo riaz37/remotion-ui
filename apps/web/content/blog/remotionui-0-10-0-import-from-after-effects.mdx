@@ -1,0 +1,104 @@
+---
+title: "RemotionUI 0.10.0: import from After Effects"
+description: import-ae turns a Bodymovin/Lottie export into Remotion components you own, with AE's exact easing and no lottie-web at render time. And update pulls registry changes again.
+date: 2026-11-18
+author: RemotionUI
+tags: ["release", "remotion"]
+---
+
+RemotionUI 0.10.0 adds one command, `import-ae`, and fixes `update`, which hasn't
+pulled registry changes without `--yes` since 0.9.1.
+
+<CommandRail label="Import" command="npx remotion-ui@latest import-ae hero.json" />
+
+## `import-ae`: After Effects in, source code out
+
+`@remotion/lottie` plays a Lottie file back as-is. You can't retime one layer,
+drive a colour from props, or delete the logo bounce the client hates. `import-ae`
+takes the same Bodymovin export and writes it out as TSX that you own.
+
+- **Layers become named components.** They're listed bottom of the AE timeline
+  first, so later children draw on top. Reorder, wrap or delete them like any JSX.
+- **Keyframes become data.** Each one is an [`ae-motion`](/docs/components/ae-motion)
+  track entry with the speed and influence values from AE's Keyframe Velocity dialog.
+  Change a key and re-render.
+- **Any value can be a function.** Replace a track with a number or with
+  `({ frame, time, fps }) => value` to parametrize it from props.
+- **The composition is registered for you** in `Root.tsx`, with the export's width,
+  height, fps and duration.
+
+Nothing runs `lottie-web` at render time. The output is ordinary Remotion code on
+top of `ae-motion`, `bezier-path` and `shape-ops`, which `import-ae` installs.
+
+Here is the lottie-docs bouncing ball, abridged:
+
+```tsx
+const layerLayer = shapeLayer({
+  name: "Layer",
+  inPoint: 0,
+  outPoint: 120,
+  contents: [
+    group(
+      "Ellipse Group",
+      [ellipse({ position: [204, 169], size: [153, 153] }), fill({ color: "#b53046" })],
+      {
+        anchor: [204, 169],
+        position: [
+          { frame: 0, value: [235, 106], easeOut: { speed: 0, influence: 0.333 } },
+          { frame: 60, value: [265, 441], easeIn: { speed: 0, influence: 0.001 } },
+          { frame: 120, value: [235, 106], easeIn: { speed: 0, influence: 0.333 } },
+        ],
+      },
+    ),
+  ],
+});
+
+export const Layer = () => <AeLayer layer={layerLayer} />;
+```
+
+### It matches what designers previewed
+
+Designers check their work in lottie-web (LottieFiles, the Bodymovin preview), so
+`import-ae` treats lottie-web as the reference and copies its quirks too:
+repeaters that keep their originals, spatial speed measured along the motion
+path, and an Offset Paths port of lottie-web's own offsetter.
+
+We measured it against 26 fixtures from Airbnb's lottie-android tests and the
+lottie-docs examples, comparing frames rendered with `@remotion/lottie` and with
+the generated TSX. 25 of 26 score at least 41.9 dB PSNR with at most 0.17% of
+pixels mismatched on every sampled frame. The remaining differences are
+anti-aliasing along edges. The one outlier is frame 0 of an animated Zig Zag,
+where lottie-web itself draws a stale shape; its other frames score at least 58.7 dB.
+
+### It fails loudly
+
+Text, image and video layers, masks, track mattes, effects, expressions and 3D
+layers are not supported yet. By default, if a file uses any of them, `import-ae`
+writes nothing and prints each one with its layer and JSON path. Pass
+`--skip-unsupported` to generate everything else; the parts it left out are listed
+at the top of the generated file.
+
+The [import guide](/docs/components/ae-import) has the full support table and
+every flag.
+
+## Fixed: `update` pulls registry changes again
+
+0.9.1 taught `add` to skip files you'd edited. That protected your changes, but it
+also broke `update`: every file the registry had changed looked like a local edit,
+so `update` skipped all of them. The only workaround was `--yes`, which also
+overwrote the edits you actually made.
+
+`add` and `update` now record a hash of every file they write in
+`remotion-ui-lock.json`. A file that still matches its hash gets replaced. A file
+you edited gets skipped and listed at the end of the run. Commit the lockfile.
+
+Files installed before 0.10.0 have no hash yet. Review them with `diff`, or run
+`update --yes` once to start tracking them.
+
+A lockfile that isn't valid JSON, such as one left with git conflict markers, no
+longer crashes `add` or `update`. It is treated as empty, so that run loses edit
+detection and nothing else.
+
+Full notes are in the [changelog](https://github.com/riaz37/remotion-ui/blob/main/CHANGELOG.md).
+
+[Read the import guide →](/docs/components/ae-import)
