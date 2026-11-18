@@ -14,7 +14,7 @@ export const memfindOffer = {
   name: "Memfind",
   code: OFFER_CODE,
   price: "$1.99",
-  regularPrice: "$9.99",
+  regularPrice: "$14.99",
   definition:
     "Search your photos, screenshots, videos and PDFs in your own words. Everything stays on your device.",
   /** Opens the App Store redeem sheet with the code pre-filled. */
