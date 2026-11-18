@@ -8,12 +8,12 @@
  */
 const APP_STORE_ID = "6825525742";
 
-export const OFFER_CODE = "REMOTIONUI";
+export const OFFER_CODE = "REMOTIONUI5";
 
 export const memfindOffer = {
   name: "Memfind",
   code: OFFER_CODE,
-  price: "$1.99",
+  price: "$4.99",
   regularPrice: "$14.99",
   definition:
     "Search your photos, screenshots, videos and PDFs in your own words. Everything stays on your device.",
