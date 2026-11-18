@@ -17,6 +17,12 @@ const legacyComponentSections = [
 const config = {
   reactStrictMode: true,
   transpilePackages: ["remotion", "@remotion/player"],
+  // The llms routes read raw MDX from disk (`getText("raw")`). File tracing
+  // can't see those reads, so without this the function ships without the
+  // docs and fails with ENOENT on any request that misses the static cache.
+  outputFileTracingIncludes: {
+    "/llms.mdx/**": ["./content/docs/**/*"],
+  },
   async rewrites() {
     // beforeFiles: the generated public/llms*.txt would otherwise shadow the routes.
     return {
@@ -30,17 +36,11 @@ const config = {
   },
   async redirects() {
     return [
+      // Kine early access was retired; its old addresses are still linked.
       {
-        source: "/early-access",
-        destination: "/kine",
+        source: "/:page(kine|cutaway|early-access)",
+        destination: "/",
         permanent: false,
-      },
-      // The page was /cutaway until the product settled on the name Kine.
-      // Permanent, and kept indefinitely: the old address is in the wild.
-      {
-        source: "/cutaway",
-        destination: "/kine",
-        permanent: true,
       },
       {
         source: "/docs/ai/recipes/:slug*",

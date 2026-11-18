@@ -1,18 +1,16 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
+import { memfindOffer } from "@/components/memfind/memfind-offer";
 
-const STORAGE_KEY = "remotionui:kine-banner-2026-09";
+const STORAGE_KEY = "remotionui:memfind-banner-2026-11";
 
 /**
  * Sits above the nav on the homepage only. Dismissal persists in
- * localStorage, so a visitor who closes it won't see it again on this
- * device. Deliberately not fumadocs' `Banner`, since its FOUC-prevention `<script>`
- * triggers a "scripts never execute on client render" dev warning, which we
- * don't need since this banner doesn't shift page layout.
+ * localStorage. Deliberately not fumadocs' `Banner`: its FOUC-prevention
+ * `<script>` triggers a dev warning, and this banner doesn't shift layout.
  */
-export function KineBanner() {
+export function MemfindBanner() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -28,18 +26,25 @@ export function KineBanner() {
   if (!open) return null;
 
   return (
-    <div className="relative flex items-center justify-center gap-2 bg-fd-secondary px-4 py-2.5 text-center text-sm">
-      <Link href="/kine" className="group inline-flex items-center gap-2">
+    <div className="relative flex items-center justify-center gap-2 bg-fd-secondary px-10 py-2.5 text-center text-sm">
+      <a
+        href={memfindOffer.redeemUrl}
+        target="_blank"
+        rel="noopener"
+        className="group inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1"
+      >
         <span className="text-mono-xs rounded-full border border-[var(--bay-phosphor)]/45 px-2 py-0.5 uppercase text-[var(--bay-phosphor)] transition-colors group-hover:border-[var(--bay-phosphor)]">
-          New
+          From us
         </span>
         <span>
-          Kine turns your localhost into a demo video. Early access is open
+          {memfindOffer.name}: search your phone in your own words.{" "}
+          {memfindOffer.price} for RemotionUI users with code{" "}
+          <code className="font-mono">{memfindOffer.code}</code>
         </span>
         <span className="underline decoration-fd-muted-foreground/40 underline-offset-4 transition-colors group-hover:decoration-fd-foreground">
-          Join the waitlist →
+          Redeem →
         </span>
-      </Link>
+      </a>
 
       <button
         type="button"

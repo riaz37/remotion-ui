@@ -1,7 +1,7 @@
 import { HomeLayout } from "fumadocs-ui/layouts/home";
 import type { Metadata } from "next";
 import { EarlyAccessForm } from "@/components/early-access/early-access-form";
-import { kineNavLink } from "@/components/early-access/kine-nav-link";
+import { memfindNavLink } from "@/components/memfind/memfind-nav-link";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteLogo } from "@/components/site-logo";
 import { VisitorsThisHour } from "@/components/visitors-this-hour";
@@ -55,7 +55,7 @@ export default async function SponsorPage() {
           url: link.url,
           active: link.active,
         })),
-        kineNavLink,
+        memfindNavLink,
         xNavLink,
         githubStarNavLink,
       ]}

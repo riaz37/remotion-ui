@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteLogo } from "@/components/site-logo";
 import { StatusSlate } from "@/components/status-slate";
-import { kineNavLink } from "@/components/early-access/kine-nav-link";
+import { memfindNavLink } from "@/components/memfind/memfind-nav-link";
 import { githubStarNavLink, xNavLink } from "@/lib/github-nav-link";
 import { navLinks } from "@/lib/site-config";
 
@@ -23,7 +23,7 @@ export default function NotFound() {
           url: link.url,
           active: link.active,
         })),
-        kineNavLink,
+        memfindNavLink,
         xNavLink,
         githubStarNavLink,
       ]}
