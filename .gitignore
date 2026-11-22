@@ -110,3 +110,6 @@ temp/
 var/
 
 .gstack/
+
+# Cloudflare wrangler local state
+.wrangler/

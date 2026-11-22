@@ -100,3 +100,5 @@ export default async function BlogOpenGraphImage(props: {
     { ...size },
   );
 }
+
+export const dynamic = "force-static";

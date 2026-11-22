@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "pnpm registry:build && next build",
+    "build": "pnpm registry:build && next build && node scripts/postexport.mjs",
     "start": "next start",
     "lint": "tsc --noEmit",
     "registry:build": "tsx scripts/build-registry.mts",
@@ -44,8 +44,6 @@
     "@remotion/transitions": "^4.0.545",
     "@tailwindcss/postcss": "^4.3.0",
     "@turf/turf": "^7.2.0",
-    "@vercel/analytics": "^2.0.1",
-    "@vercel/speed-insights": "^2.0.0",
     "fumadocs-core": "^16.15.9",
     "fumadocs-mdx": "^15.4.0",
     "fumadocs-ui": "^16.15.9",

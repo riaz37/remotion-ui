@@ -1,0 +1,29 @@
+# Cloudflare Pages redirects (was next.config.mjs redirects + middleware.ts).
+# First match wins. Markdown/registry rewrites are handled by copying files in
+# scripts/postexport.mjs, not here.
+
+# Kine early access was retired; its old addresses are still linked.
+/kine            /  302
+/cutaway         /  302
+/early-access    /  302
+
+/docs/components          /docs/components/browse  301
+/docs/atlas               /docs/components/browse  301
+/docs/atlas/*             /docs/components/browse  301
+/docs/recipes             /docs/components/browse  301
+/docs/recipes/*           /docs/components/browse  301
+/docs/ai/recipes          /docs/components/browse  301
+/docs/ai/recipes/*        /docs/components/browse  301
+/docs/ai/start            /docs/ai                 301
+/docs/advanced            /docs/guides             301
+/docs/advanced/*          /docs/guides/:splat      301
+
+# Legacy component sections all moved under /docs/components.
+/docs/primitives/*    /docs/components/:splat  301
+/docs/signals/*       /docs/components/:splat  301
+/docs/vectors/*       /docs/components/:splat  301
+/docs/spatial/*       /docs/components/:splat  301
+/docs/cuts/*          /docs/components/:splat  301
+/docs/scenes/*        /docs/components/:splat  301
+/docs/compositions/*  /docs/components/:splat  301
+/docs/utilities/*     /docs/components/:splat  301

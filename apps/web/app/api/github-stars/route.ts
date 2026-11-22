@@ -1,16 +1,10 @@
-import { STARS_TTL_SECONDS, getGitHubStars } from "@/lib/github-stars";
+import { getGitHubStars } from "@/lib/github-stars";
 
-export const revalidate = 3600;
+// Static export: the count is fetched at build time. The client falls back to
+// shields.io if this file is missing or empty.
+export const dynamic = "force-static";
 
 export async function GET() {
   const stars = await getGitHubStars();
-
-  return Response.json(
-    { stars },
-    {
-      headers: {
-        "Cache-Control": `public, s-maxage=${STARS_TTL_SECONDS}, stale-while-revalidate=86400`,
-      },
-    },
-  );
+  return Response.json({ stars });
 }

@@ -2,8 +2,6 @@ import { RootProvider } from "fumadocs-ui/provider/next";
 import type { Metadata } from "next";
 import { IBM_Plex_Sans, JetBrains_Mono, Newsreader } from "next/font/google";
 import type { ReactNode } from "react";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import { MemfindCornerPromo } from "@/components/memfind/memfind-corner-promo";
 import {
   siteMetadata,
@@ -101,12 +99,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <RootProvider theme={{ defaultTheme: "dark" }}>
+        <RootProvider theme={{ defaultTheme: "dark" }} search={{ options: { type: "static" } }}>
           {children}
           <MemfindCornerPromo />
         </RootProvider>
-        <Analytics />
-        <SpeedInsights />
       </body>
     </html>
   );

@@ -4,7 +4,6 @@ import { EarlyAccessForm } from "@/components/early-access/early-access-form";
 import { memfindNavLink } from "@/components/memfind/memfind-nav-link";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteLogo } from "@/components/site-logo";
-import { VisitorsThisHour } from "@/components/visitors-this-hour";
 import { githubStarNavLink, xNavLink } from "@/lib/github-nav-link";
 import { getSponsorTraffic } from "@/lib/sponsor-traffic";
 import { navLinks, siteConfig } from "@/lib/site-config";
@@ -12,9 +11,6 @@ import { navLinks, siteConfig } from "@/lib/site-config";
 const title = "Sponsor";
 const description =
   "Sponsor RemotionUI: one placement on every component page, seen by developers building videos with React and Remotion.";
-
-// Matches the visitors-this-hour fetch; the 30-day stats keep their own hourly cache.
-export const revalidate = 60;
 
 export const metadata: Metadata = {
   title,
@@ -75,7 +71,6 @@ export default async function SponsorPage() {
           </p>
 
           <div className="mt-12">
-            <VisitorsThisHour />
           </div>
 
           <dl className="mt-4 grid max-w-[720px] gap-px overflow-hidden rounded-sm border border-[var(--bay-border)] bg-[var(--bay-border)] sm:grid-cols-3">
