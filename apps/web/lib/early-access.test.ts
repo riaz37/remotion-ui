@@ -64,14 +64,33 @@ describe("readSupabaseConfig", () => {
     expect(readSupabaseConfig({ SUPABASE_URL: "https://x.supabase.co" })).toBe(
       null,
     );
-    expect(readSupabaseConfig({ SUPABASE_SERVICE_ROLE_KEY: "key" })).toBe(null);
+    expect(readSupabaseConfig({ SUPABASE_SECRET_KEY: "key" })).toBe(null);
     expect(readSupabaseConfig({})).toBe(null);
+  });
+
+  it("prefers the sb_secret key over the legacy service_role JWT", () => {
+    const config = readSupabaseConfig({
+      SUPABASE_URL: "https://x.supabase.co",
+      SUPABASE_SECRET_KEY: "sb_secret_new",
+      SUPABASE_SERVICE_ROLE_KEY: "legacy-jwt",
+    });
+
+    expect(config?.serviceKey).toBe("sb_secret_new");
+  });
+
+  it("falls back to the legacy service_role key when no secret key is set", () => {
+    const config = readSupabaseConfig({
+      SUPABASE_URL: "https://x.supabase.co",
+      SUPABASE_SERVICE_ROLE_KEY: "legacy-jwt",
+    });
+
+    expect(config?.serviceKey).toBe("legacy-jwt");
   });
 
   it("strips a trailing slash so the REST path never doubles up", () => {
     const config = readSupabaseConfig({
       SUPABASE_URL: "https://x.supabase.co/",
-      SUPABASE_SERVICE_ROLE_KEY: " key ",
+      SUPABASE_SECRET_KEY: " key ",
     });
 
     expect(config).toEqual({ url: "https://x.supabase.co", serviceKey: "key" });
@@ -101,13 +120,27 @@ describe("recordSignup", () => {
     expect(url).toBe(
       `https://x.supabase.co/rest/v1/${EARLY_ACCESS_TABLE}`,
     );
-    expect((init.headers as Record<string, string>).apikey).toBe("service-key");
+    const headers = init.headers as Record<string, string>;
+    expect(headers.apikey).toBe("service-key");
+    expect(headers.Authorization).toBe("Bearer service-key");
     expect(JSON.parse(init.body as string)).toEqual({
       email: "riaz@example.com",
       source: "exit-intent",
       referrer: "https://remotionui.com/",
       user_agent: "vitest",
     });
+  });
+
+  it("sends an sb_secret key only as apikey, never as a Bearer token", async () => {
+    const fetchMock = vi.fn(async () => new Response(null, { status: 201 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await recordSignup(input, {}, { ...config, serviceKey: "sb_secret_abc" });
+
+    const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    const headers = init.headers as Record<string, string>;
+    expect(headers.apikey).toBe("sb_secret_abc");
+    expect(headers.Authorization).toBeUndefined();
   });
 
   it("reads a unique violation as an existing signup, not a failure", async () => {

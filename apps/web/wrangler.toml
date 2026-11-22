@@ -1,6 +1,6 @@
 # Cloudflare Pages project for the static export.
 # Deploy: pnpm build && npx wrangler pages deploy
-# Secrets (sponsor form): SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY — set in the
+# Secrets (sponsor form): SUPABASE_URL, SUPABASE_SECRET_KEY — set in the
 # Pages dashboard or with `wrangler pages secret put`.
 name = "remotion-ui"
 pages_build_output_dir = "./out"

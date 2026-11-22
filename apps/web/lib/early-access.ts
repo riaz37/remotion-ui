@@ -56,12 +56,17 @@ export const EARLY_ACCESS_TABLE = "remotionui_early_access";
 /**
  * Read at call time, not module scope: a missing key must surface as a 503 at
  * request time rather than crashing the build of every other page.
+ *
+ * SUPABASE_SECRET_KEY is the new opaque `sb_secret_...` key. The legacy
+ * service_role JWT is still read as a fallback so an older deploy keeps
+ * working until its env is updated.
  */
 export function readSupabaseConfig(
   env: Partial<Record<string, string>> = process.env,
 ): SupabaseConfig | null {
   const url = env.SUPABASE_URL?.trim();
-  const serviceKey = env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+  const serviceKey =
+    env.SUPABASE_SECRET_KEY?.trim() || env.SUPABASE_SERVICE_ROLE_KEY?.trim();
 
   if (!url || !serviceKey) return null;
 
@@ -85,8 +90,7 @@ export async function recordSignup(
     {
       method: "POST",
       headers: {
-        apikey: config.serviceKey,
-        Authorization: `Bearer ${config.serviceKey}`,
+        ...authHeaders(config.serviceKey),
         "Content-Type": "application/json",
         Prefer: "return=minimal",
       },
@@ -110,6 +114,15 @@ export async function recordSignup(
   throw new Error(
     `Supabase insert failed (${response.status}): ${body.slice(0, 300)}`,
   );
+}
+
+/**
+ * `sb_` keys are not JWTs: Supabase wants them in `apikey` only. A legacy
+ * service_role JWT also goes in Authorization, as it always did.
+ */
+function authHeaders(key: string): Record<string, string> {
+  if (key.startsWith("sb_")) return { apikey: key };
+  return { apikey: key, Authorization: `Bearer ${key}` };
 }
 
 function truncate(value: string | null | undefined, max: number) {

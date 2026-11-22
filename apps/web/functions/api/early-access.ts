@@ -2,7 +2,7 @@
  * Cloudflare Pages Function for POST /api/early-access (the sponsor inquiry
  * form). The site itself is a static export, so this is the one route that
  * still runs code. Secrets come from the Pages project environment:
- * SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.
+ * SUPABASE_URL and SUPABASE_SECRET_KEY (sb_secret_...).
  */
 import {
   earlyAccessInputSchema,
@@ -55,7 +55,7 @@ export async function onRequestPost({ request, env }: PagesContext): Promise<Res
   const config = readSupabaseConfig(env);
 
   if (!config) {
-    console.error("[early-access] SUPABASE_URL/SUPABASE_SERVICE_ROLE_KEY not set");
+    console.error("[early-access] SUPABASE_URL/SUPABASE_SECRET_KEY not set");
     return Response.json(
       { ok: false, error: "Signups are temporarily unavailable. Try again soon." },
       { status: 503 },
