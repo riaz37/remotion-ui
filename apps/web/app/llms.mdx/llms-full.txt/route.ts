@@ -1,6 +1,5 @@
 import { buildLlmsFullTxt } from "@/lib/llms";
 
-export const revalidate = false;
 
 // Served at /llms-full.txt through a beforeFiles rewrite in next.config.mjs.
 export async function GET() {
@@ -8,3 +7,5 @@ export async function GET() {
     headers: { "Content-Type": "text/plain; charset=utf-8" },
   });
 }
+
+export const dynamic = "force-static";

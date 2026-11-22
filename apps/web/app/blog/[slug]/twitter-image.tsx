@@ -5,3 +5,5 @@ export {
   generateStaticParams,
   default,
 } from "./opengraph-image";
+
+export const dynamic = "force-static";

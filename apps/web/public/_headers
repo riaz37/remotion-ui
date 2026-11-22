@@ -1,0 +1,6 @@
+# Static-export JSON endpoints have no file extension, so Cloudflare would
+# serve them as octet-stream and skip compression (the search index is ~2 MB).
+/api/search
+  Content-Type: application/json; charset=utf-8
+/api/github-stars
+  Content-Type: application/json; charset=utf-8

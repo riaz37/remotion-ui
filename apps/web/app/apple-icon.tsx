@@ -24,3 +24,5 @@ export default function AppleIcon() {
     { ...size },
   );
 }
+
+export const dynamic = "force-static";
