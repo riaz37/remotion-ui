@@ -42,7 +42,7 @@
     "publish:npm": "npm publish --access public"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@modelcontextprotocol/sdk": "^1.32.2",
     "remotion-ui": "^0.9.1",
     "zod": "^4.6.5"
   },
