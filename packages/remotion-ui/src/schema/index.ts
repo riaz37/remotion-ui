@@ -34,18 +34,14 @@ export const compositionMetaSchema = z.object({
   importPath: z.string().optional(),
 });
 
+// Atlas values are display and filter metadata only. They stay open strings so
+// a registry that adds a lane, drive or tier does not break CLIs already
+// installed: an enum here made 0.9.1 and 0.10.0 reject the whole index as soon
+// as the registry gained the "motion", "shaders" and "3d" lanes.
 export const atlasMetaSchema = z.object({
-  lane: z.enum([
-    "atoms",
-    "signals",
-    "vectors",
-    "spatial",
-    "blocks",
-    "cuts",
-    "reels",
-  ]),
-  drive: z.enum(["time", "data", "media", "spatial"]),
-  tier: z.enum(["core", "advanced"]),
+  lane: z.string(),
+  drive: z.string(),
+  tier: z.string(),
   tags: z.array(z.string()).optional(),
 });
 
