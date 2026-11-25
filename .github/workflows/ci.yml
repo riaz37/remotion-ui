@@ -8,7 +8,8 @@ on:
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Never cancel a run on main: it may be mid-deploy.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -40,3 +41,15 @@ jobs:
 
       - name: Build docs site
         run: pnpm --filter web build
+
+      # Production deploy: only after everything above passed on main.
+      # Uploads apps/web/out plus apps/web/functions (see wrangler.toml).
+      - name: Deploy to Cloudflare Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.167.0"
+          workingDirectory: apps/web
+          command: pages deploy --branch main --commit-hash ${{ github.sha }}
