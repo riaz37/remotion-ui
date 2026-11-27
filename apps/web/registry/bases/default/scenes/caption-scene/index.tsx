@@ -95,7 +95,7 @@ function CaptionPage({
   bottomSlot,
 }: CaptionPageProps) {
   const frame = useCurrentFrame();
-  const { fps, width } = useVideoConfig();
+  const { width } = useVideoConfig();
   const enter = interpolate(frame, [0, DURATION.fast], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",

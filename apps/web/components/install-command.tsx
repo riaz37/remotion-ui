@@ -52,7 +52,7 @@ export function RenderCommand({
 }) {
   const command =
     renderCommand ??
-    `npx remotion render src/Root.tsx ${compositionId} out/${compositionIdToOutputFile(compositionId)}`;
+    `npx remotion render src/index.ts ${compositionId} out/${compositionIdToOutputFile(compositionId)}`;
 
   return <CommandRail label="Render" command={command} />;
 }

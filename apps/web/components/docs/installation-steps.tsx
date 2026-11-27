@@ -16,7 +16,7 @@ const STEPS = [
   {
     step: 3,
     label: "Render",
-    command: "npx remotion render src/Root.tsx SocialClip out/social-clip.mp4",
+    command: "npx remotion render src/index.ts SocialClip out/social-clip.mp4",
   },
 ] as const;
 

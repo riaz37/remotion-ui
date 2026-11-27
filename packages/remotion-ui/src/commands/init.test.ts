@@ -84,6 +84,36 @@ describe("initCommand", () => {
     expect(parsed.projectDir).toBe(path.join(tempDir, "my-video"));
   });
 
+  describe("--existing on a create-video project", () => {
+    it("teaches the bundler the @ alias so added components resolve", async () => {
+      await fs.writeJson(path.join(tempDir, "package.json"), {
+        name: "existing-app",
+        dependencies: { remotion: "4.0.547" },
+      });
+      await fs.writeFile(
+        path.join(tempDir, "remotion.config.ts"),
+        'import { Config } from "@remotion/cli/config";\n\nConfig.setRspack(true);\n',
+      );
+
+      await initCommand("my-video", {
+        cwd: tempDir,
+        existing: true,
+        agentSkill: false,
+        json: true,
+      });
+
+      const config = await fs.readFile(
+        path.join(tempDir, "remotion.config.ts"),
+        "utf-8",
+      );
+      expect(config).toContain("Config.overrideBundlerConfig(");
+      expect(config).toContain('alias["@"] = path.resolve("./src")');
+
+      const out = JSON.parse(String(consoleSpy.mock.calls.at(-1)?.[0]));
+      expect(out.bundlerAlias).toBe("added");
+    });
+  });
+
   describe("agent skill install", () => {
     const skillPath = (root: string) =>
       path.join(root, ".claude", "skills", "remotionui-agent", "SKILL.md");

@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+**`init --existing` works on projects made with `create-video`.** The quick start for an existing project failed at the first render.
+
+### Fixed
+
+- **`add` components now bundle in an existing project.** `init --existing` added the `@/*` path to `tsconfig.json` but never told Remotion's bundler about it, so every `@/...` import failed with "Module not found". Current `create-video` templates bundle with Rspack, so this hit every new project. `init --existing` now adds the alias to `remotion.config.ts` through `overrideBundlerConfig` (or `overrideWebpackConfig` before Remotion 4.0.499), and creates the file if it is missing. If your config already overrides the bundler, it is left alone and the snippet to paste is printed. `--json` reports this as `bundlerAlias`.
+- **Installed components pass `noUnusedLocals`.** `caption-highlight`, `caption-scene`, `ik-rig` and `ai-composer-showcase` had unused variables, which failed `tsc` in `create-video` projects. The docs site now typechecks with `noUnusedLocals` so this can't come back.
+- **Render commands in the docs used the wrong entry point.** They passed `src/Root.tsx`, which Remotion rejects because that file does not call `registerRoot`. They now pass `src/index.ts`.
+- The README's `SocialClip` example says `durationInFrames={216}`, matching what `add` registers.
+
 ## 0.10.0
 
 **Bring After Effects animations in as editable code.** `import-ae` turns a Bodymovin/Lottie export into Remotion components you own, and `update` works again without `--yes`.

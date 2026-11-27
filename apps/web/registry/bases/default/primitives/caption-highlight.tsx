@@ -6,10 +6,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import {
-  getAbsoluteTimeMs,
-  getTokenEmphasis,
-} from "@/remotion/lib/caption-utils";
+import { getTokenEmphasis } from "@/remotion/lib/caption-utils";
 import { scaleFont } from "@/remotion/lib/layout";
 import { EASING, EMPHASIS } from "@/remotion/lib/motion-tokens";
 
@@ -70,7 +67,6 @@ export const CaptionHighlight: React.FC<CaptionHighlightProps> = ({
   const frame = frameOverride ?? localFrame;
   const { fps, width } = useVideoConfig();
   const fontSize = fontSizeProp ?? scaleFont(64, width);
-  const absoluteTimeMs = getAbsoluteTimeMs(page, frame, fps);
 
   return (
     <div

@@ -205,7 +205,7 @@ const DefaultArm: React.FC<{ pose: IkPose; look: ArmLook }> = ({ pose, look }) =
   const { id, thickness: w, armColor, accentColor, inkColor, lightAngle, shadow, cable, bend } = look;
   const light: Vec2 = [Math.cos(lightAngle * DEG), Math.sin(lightAngle * DEG)];
   const cast: Vec2 = [-light[0], -light[1]];
-  const [a, b] = pose.lengths;
+  const [a] = pose.lengths;
   const upper = { from: pose.base, angle: pose.upperAngle, length: a, w0: w, w1: w * 0.82 };
   const fore = { from: pose.elbow, angle: pose.lowerAngle, length: Math.hypot(pose.hand[0] - pose.elbow[0], pose.hand[1] - pose.elbow[1]), w0: w * 0.7, w1: w * 0.52 };
   const lift = Math.max(0, pose.lift);

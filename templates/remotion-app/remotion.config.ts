@@ -9,7 +9,8 @@ Config.setOverwriteOutput(true);
 // blank or unshaded — and the render still exits 0, so it fails silently.
 // Use "swangle" instead on a machine with no GPU.
 Config.setChromiumOpenGlRenderer("angle");
-Config.overrideWebpackConfig((currentConfiguration) => {
+// Resolve "@/..." imports for Webpack and Rspack (mirrors tsconfig "paths").
+Config.overrideBundlerConfig((currentConfiguration) => {
   currentConfiguration.resolve ??= {};
   currentConfiguration.resolve.alias ??= {};
   currentConfiguration.resolve.alias["@"] = path.resolve("./src");
