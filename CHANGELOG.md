@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.10.1
 
 **`init --existing` works on projects made with `create-video`.** The quick start for an existing project failed at the first render.
 
