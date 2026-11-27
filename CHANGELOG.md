@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- **Anonymous usage telemetry.** Each command sends one event: the command, registry component names, success or failure, and the CLI version. No paths, project names or personal data, and nothing from custom registries. Turn it off with `REMOTION_UI_TELEMETRY=0` or `DO_NOT_TRACK=1`; nothing is sent in CI. The first run prints a notice, and `REMOTION_UI_TELEMETRY_DEBUG=1` shows the event instead of sending it. The request times out after 1.5 seconds and never changes a command's result. See [the CLI docs](https://remotionui.com/docs/cli#telemetry).
+
 ## 0.10.1
 
 **`init --existing` works on projects made with `create-video`.** The quick start for an existing project failed at the first render.

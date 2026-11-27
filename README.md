@@ -122,6 +122,8 @@ npx remotion-ui@latest doctor              # diagnose config and aliases
 
 Full reference: [remotionui.com/docs/cli](https://remotionui.com/docs/cli)
 
+The CLI sends anonymous usage events (command, registry component names, success or failure, CLI version; no paths or personal data). Turn them off with `REMOTION_UI_TELEMETRY=0` or `DO_NOT_TRACK=1`. Nothing is sent in CI. [What is sent](https://remotionui.com/docs/cli#telemetry).
+
 ## Guides
 
 **Build** — [Authoring scenes](https://remotionui.com/docs/guides/authoring-scenes) · [Motion tokens](https://remotionui.com/docs/guides/motion-tokens) · [Transitions](https://remotionui.com/docs/guides/transitions)

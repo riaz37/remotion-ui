@@ -10,16 +10,44 @@ import { listCommand } from "./commands/list.js";
 import { updateCommand } from "./commands/update.js";
 import { searchCommand } from "./commands/search.js";
 import { viewCommand } from "./commands/view.js";
+import { recordCommand, type CommandRun } from "./utils/telemetry.js";
 
 const require = createRequire(import.meta.url);
 const { version } = require("../package.json") as { version: string };
 
 const program = new Command();
 
+type CurrentRun = Pick<CommandRun, "command" | "args" | "options">;
+let currentRun: CurrentRun | null = null;
+
+/** Sends at most one event per invocation; see utils/telemetry.ts. */
+async function trackRun(ok: boolean): Promise<void> {
+  const run = currentRun;
+  if (!run) return;
+  currentRun = null;
+  await recordCommand({ ...run, ok, cliVersion: version });
+}
+
+async function exitWithFailure(): Promise<never> {
+  await trackRun(false);
+  process.exit(1);
+}
+
 program
   .name("remotion-ui")
   .description("Add Remotion video components to your project")
-  .version(version);
+  .version(version)
+  .hook("preAction", (_root, action) => {
+    currentRun = {
+      command: action.name(),
+      args: action.args,
+      options: action.opts(),
+    };
+  })
+  .hook("postAction", async () => {
+    // doctor reports problems through exitCode rather than throwing.
+    await trackRun(!process.exitCode);
+  });
 
 program
   .command("init")
@@ -58,12 +86,12 @@ program
       });
     } catch (error) {
       if (options.json) {
-        process.exit(1);
+        await exitWithFailure();
       }
       console.error(
         error instanceof Error ? error.message : "Failed to initialize project",
       );
-      process.exit(1);
+      await exitWithFailure();
     }
     },
   );
@@ -89,12 +117,12 @@ program
       });
     } catch (error) {
       if (options.json) {
-        process.exit(1);
+        await exitWithFailure();
       }
       console.error(
         error instanceof Error ? error.message : "Failed to add components",
       );
-      process.exit(1);
+      await exitWithFailure();
     }
   });
 
@@ -109,7 +137,7 @@ program
       console.error(
         error instanceof Error ? error.message : "Doctor failed",
       );
-      process.exit(1);
+      await exitWithFailure();
     }
   });
 
@@ -131,7 +159,7 @@ program
       console.error(
         error instanceof Error ? error.message : "List failed",
       );
-      process.exit(1);
+      await exitWithFailure();
     }
   });
 
@@ -166,7 +194,7 @@ program
       console.error(
         error instanceof Error ? error.message : "Search failed",
       );
-      process.exit(1);
+      await exitWithFailure();
     }
     },
   );
@@ -192,7 +220,7 @@ program
       console.error(
         error instanceof Error ? error.message : "View failed",
       );
-      process.exit(1);
+      await exitWithFailure();
     }
   });
 
@@ -219,12 +247,12 @@ program
       });
     } catch (error) {
       if (options.json) {
-        process.exit(1);
+        await exitWithFailure();
       }
       console.error(
         error instanceof Error ? error.message : "Failed to update components",
       );
-      process.exit(1);
+      await exitWithFailure();
     }
   });
 
@@ -247,12 +275,12 @@ program
       });
     } catch (error) {
       if (options.json) {
-        process.exit(1);
+        await exitWithFailure();
       }
       console.error(
         error instanceof Error ? error.message : "Diff failed",
       );
-      process.exit(1);
+      await exitWithFailure();
     }
   });
 
@@ -290,12 +318,12 @@ program
       });
     } catch (error) {
       if (options.json) {
-        process.exit(1);
+        await exitWithFailure();
       }
       console.error(
         error instanceof Error ? error.message : "import-ae failed",
       );
-      process.exit(1);
+      await exitWithFailure();
     }
   });
 
@@ -315,13 +343,13 @@ program
       });
     } catch (error) {
       if (options.json) {
-        process.exit(1);
+        await exitWithFailure();
       }
       console.error(
         error instanceof Error ? error.message : "Build failed",
       );
-      process.exit(1);
+      await exitWithFailure();
     }
   });
 
-program.parse();
+await program.parseAsync();
