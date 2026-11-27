@@ -44,6 +44,7 @@ export async function initCommand(
             existing: true,
             configPath: result.configPath,
             root: result.root,
+            bundlerAlias: result.bundlerAlias,
           }),
         );
       }

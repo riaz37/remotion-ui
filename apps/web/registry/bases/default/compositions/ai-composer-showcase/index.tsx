@@ -25,7 +25,6 @@ const { fontFamily } = loadFont("normal", {
 
 const BG = "#080810";
 const PHOSPHOR = "#e8b86d";
-const ENTER_EASE = Easing.bezier(0.16, 1, 0.3, 1);
 const EXIT_EASE = Easing.in(Easing.cubic);
 
 const FADE = transitionFade({ durationInFrames: 12 });

@@ -1,21 +1,6 @@
 import Link from "next/link";
-import { DocsBinCard } from "@/components/docs/docs-bin-card";
 import { RenderQueueStrip } from "@/components/landing/render-queue-strip";
-import { InitCommand } from "@/components/install-command";
 import { CLI_PACKAGE, cliAddCommand } from "@/lib/docs-cli";
-
-const QUICK_PATHS = [
-  {
-    title: "Components",
-    description: "Browse 62 components with live previews.",
-    href: "/docs/components",
-  },
-  {
-    title: "Installation",
-    description: "Initialize a project and add your first composition.",
-    href: "/docs/installation",
-  },
-] as const;
 
 const HOW_IT_WORKS = [
   {
@@ -32,7 +17,7 @@ const HOW_IT_WORKS = [
   {
     step: 3,
     label: "Render",
-    command: "npx remotion render src/Root.tsx SocialClip out/social-clip.mp4",
+    command: "npx remotion render src/index.ts SocialClip out/social-clip.mp4",
   },
 ] as const;
 

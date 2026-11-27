@@ -11,7 +11,6 @@ import {
   DEMO_SPEAKER_SRC,
 } from "@/lib/demo-assets";
 import { useDemoAudioSrc } from "@/lib/demo-assets-audio";
-import { siteConfig } from "@/lib/site-config";
 
 export const CreatorReelPreview: React.FC = () => {
   const audioSrc = useDemoAudioSrc();

@@ -16,6 +16,7 @@
       }
     ],
     "allowJs": true,
+    "noUnusedLocals": true,
     "incremental": true
   },
   "include": [

@@ -3,6 +3,12 @@ import path from "node:path";
 import { remotionUiConfigSchema } from "../schema/index.js";
 import { RemotionUiError } from "../utils/errors.js";
 import { getInstalledRemotionVersion } from "../utils/get-installed-remotion-version.js";
+import {
+  aliasSnippet,
+  ensureBundlerAlias,
+  REMOTION_CONFIG_FILES,
+  type ConfigPatchStatus,
+} from "../remotion/config-patch.js";
 
 const ROOT_CANDIDATES = [
   "src/Root.tsx",
@@ -18,7 +24,17 @@ export type BootstrapExistingProjectOptions = {
 export type BootstrapExistingProjectResult = {
   configPath: string;
   root: string;
+  bundlerAlias: ConfigPatchStatus;
 };
+
+async function findExistingConfig(cwd: string): Promise<string | undefined> {
+  for (const candidate of REMOTION_CONFIG_FILES) {
+    if (await fs.pathExists(path.join(cwd, candidate))) {
+      return candidate;
+    }
+  }
+  return undefined;
+}
 
 export async function bootstrapExistingProject(
   cwd: string,
@@ -58,9 +74,8 @@ export async function bootstrapExistingProject(
     tsx: true,
     remotion: {
       version: major,
-      config: (await fs.pathExists(path.join(cwd, "remotion.config.ts")))
-        ? "remotion.config.ts"
-        : "remotion.config.ts",
+      config:
+        (await findExistingConfig(cwd)) ?? REMOTION_CONFIG_FILES[0],
       root,
     },
     aliases: {
@@ -74,15 +89,36 @@ export async function bootstrapExistingProject(
 
   await fs.writeJson(configPath, config, { spaces: 2 });
   await ensureTsconfigPaths(cwd, options);
+  const alias = await ensureBundlerAlias(cwd, remotionVersion);
+  const bundlerAlias = alias.status;
 
   if (!options.json) {
+    printBundlerAliasStatus(alias.status, alias.configFile, alias.version);
     console.log(`Created remotion-ui.json`);
     console.log(`Detected Remotion root: ${root}`);
     console.log(`\nNext step:`);
     console.log(`  npx remotion-ui add social-clip`);
   }
 
-  return { configPath, root };
+  return { configPath, root, bundlerAlias };
+}
+
+function printBundlerAliasStatus(
+  status: ConfigPatchStatus,
+  configFile: string,
+  remotionVersion: string | undefined,
+): void {
+  if (status === "added") {
+    console.log(`Added the "@" import alias to ${configFile}`);
+  } else if (status === "created") {
+    console.log(`Created ${configFile} with the "@" import alias`);
+  } else if (status === "manual") {
+    console.log(
+      `\n${configFile} was left unchanged (it overrides the bundler, uses require(), or is not TypeScript).\n` +
+        `RemotionUI components import from "@/...". Add this alias inside your existing override:\n\n` +
+        aliasSnippet(remotionVersion),
+    );
+  }
 }
 
 async function detectRootPath(cwd: string): Promise<string> {
