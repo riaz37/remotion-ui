@@ -15,3 +15,5 @@ alter table public.remotionui_cli_events enable row level security;
 
 create index if not exists remotionui_cli_events_created_at_idx
   on public.remotionui_cli_events (created_at desc);
+
+comment on table public.remotionui_cli_events is 'Anonymous CLI usage events from remotion-ui, written by /api/telemetry with the secret key.';
