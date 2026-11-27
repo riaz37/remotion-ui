@@ -4,13 +4,14 @@ import {
   recordCliEvent,
   TELEMETRY_MAX_BYTES,
   TELEMETRY_TABLE,
+  type TelemetryEvent,
 } from "./telemetry";
 
 afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-const valid = {
+const valid: TelemetryEvent = {
   command: "add",
   components: ["social-clip"],
   ok: true,
