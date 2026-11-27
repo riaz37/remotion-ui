@@ -148,3 +148,26 @@ Each entry carries `name`, `type`, `required`, `default`, and `description`, plu
     "hooks": "@/remotion/hooks"
   }
 }`} />
+
+## Telemetry
+
+The CLI sends one anonymous event per command so we can see which commands and components get used and which ones fail.
+
+Each event contains exactly four fields:
+
+| Field | Example |
+|-------|---------|
+| `command` | `add` |
+| `components` | `["social-clip"]`: registry names passed to `add`, `update`, `view` or `diff`. Empty for other commands, and always empty with `--registry-url`, so private registry names are never sent. |
+| `ok` | `true` if the command succeeded |
+| `cliVersion` | `0.11.0` |
+
+No file paths, project names, flags, machine ids or account data are sent, and the IP address is used only for rate limiting and is not stored. The request gives up after 1.5 seconds, and failures are ignored, so telemetry never slows down or breaks a command. The first run prints a one-line notice.
+
+Turn it off with either variable:
+
+<CodeSnippet label="Opt out" code={`export REMOTION_UI_TELEMETRY=0
+# or the cross-tool standard
+export DO_NOT_TRACK=1`} />
+
+Nothing is sent when a CI environment variable is set (`CI`, `GITHUB_ACTIONS`, `GITLAB_CI`, `BUILDKITE`, `CIRCLECI` and others). To see the exact event without sending it, run with `REMOTION_UI_TELEMETRY_DEBUG=1`; it prints to stderr.

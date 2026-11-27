@@ -46,7 +46,7 @@ export type SignupMeta = {
   userAgent?: string | null;
 };
 
-type SupabaseConfig = {
+export type SupabaseConfig = {
   url: string;
   serviceKey: string;
 };
@@ -120,7 +120,7 @@ export async function recordSignup(
  * `sb_` keys are not JWTs: Supabase wants them in `apikey` only. A legacy
  * service_role JWT also goes in Authorization, as it always did.
  */
-function authHeaders(key: string): Record<string, string> {
+export function authHeaders(key: string): Record<string, string> {
   if (key.startsWith("sb_")) return { apikey: key };
   return { apikey: key, Authorization: `Bearer ${key}` };
 }

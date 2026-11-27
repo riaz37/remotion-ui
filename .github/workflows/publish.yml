@@ -81,13 +81,25 @@ jobs:
         working-directory: packages/remotion-ui
         run: npm publish --access public
 
+      # npm takes a little while to serve a new version; until it does, `@latest`
+      # still resolves to the previous release, so pin the version and retry.
       - name: Verify published CLI version
         if: ${{ inputs.publish_cli && !inputs.dry_run }}
-        run: npx --yes remotion-ui@latest --version
+        run: |
+          VERSION="$(node -p "require('./packages/remotion-ui/package.json').version")"
+          for attempt in $(seq 1 12); do
+            if [ "$(npx --yes "remotion-ui@$VERSION" --version 2>/dev/null)" = "$VERSION" ]; then
+              echo "remotion-ui@$VERSION is live"; exit 0
+            fi
+            echo "Attempt $attempt: remotion-ui@$VERSION not served yet"; sleep 10
+          done
+          exit 1
 
       - name: Verify published registry search
         if: ${{ inputs.publish_cli && !inputs.dry_run }}
-        run: npx --yes remotion-ui@latest search -q caption
+        run: |
+          VERSION="$(node -p "require('./packages/remotion-ui/package.json').version")"
+          REMOTION_UI_TELEMETRY=0 npx --yes "remotion-ui@$VERSION" search -q caption
 
       - name: Build MCP server
         if: inputs.publish_mcp

@@ -43,6 +43,10 @@ Every command accepts `--json` for machine-readable output. On failure it prints
 - Registry items carry a `compat.remotion` semver range; `add`/`update` warn (not block) when the installed `remotion` version in the target project's `package.json` doesn't satisfy it.
 - Flagship components carry a JSON Schema fragment per prop (`PropDefinition.schema`) alongside the human-readable `type` string, for agents that validate props before writing code.
 
+## Telemetry
+
+Each command sends one anonymous event: the command, registry component names (never with `--registry-url`), success or failure, and the CLI version. No paths, project names or personal data. Opt out with `REMOTION_UI_TELEMETRY=0` or `DO_NOT_TRACK=1`; nothing is sent in CI. `REMOTION_UI_TELEMETRY_DEBUG=1` prints the event instead of sending it. Details: [remotionui.com/docs/cli#telemetry](https://remotionui.com/docs/cli#telemetry).
+
 ## Configuration
 
 Create `remotion-ui.json` in your project root (included by `init`):
